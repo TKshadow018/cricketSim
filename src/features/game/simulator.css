@@ -140,7 +140,6 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
   gap: 0.7rem;
-  max-height: 360px;
   overflow-y: auto;
   padding-right: 0.3rem;
 }

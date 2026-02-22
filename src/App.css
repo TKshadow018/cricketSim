@@ -18,6 +18,11 @@
   box-sizing: border-box;
 }
 
+p, h1, h2, h3, h4, h5, h6, div, span {
+  color: var(--text-main);
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
 .auth-layout,
 .dashboard-page {
   min-height: 100vh;

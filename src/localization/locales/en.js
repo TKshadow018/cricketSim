@@ -66,7 +66,7 @@ const en = {
     },
   },
   dashboard: {
-    kicker: 'Simulation Portal',
+    kicker: 'Cricket Sim',
     welcome: 'Welcome, {name} 👋',
     fallbackName: 'Coach',
     subtitle: 'You are successfully logged in. This is your base to build match simulations.',

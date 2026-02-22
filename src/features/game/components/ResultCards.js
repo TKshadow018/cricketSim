@@ -15,7 +15,6 @@ export function TossResultCard({
   return (
     <div className="sim-result-block">
       <h3>{winner} won the toss</h3>
-      <p>Decision: {decision.toUpperCase()}</p>
       <p>Commentator: {commentator}</p>
 
       {isUserWinner ? (

@@ -15,28 +15,42 @@ function DashboardPage() {
   };
 
   return (
-    <main className="dashboard-page game-dashboard-page">
-      <section className="dashboard-card game-dashboard-card">
-        <div className="dashboard-header-row">
-          <div>
-            <p className="dashboard-kicker">{t('dashboard.kicker')}</p>
-            <h1 className="dashboard-title">
-              {t('dashboard.welcome', { name: user?.displayName || t('dashboard.fallbackName') })}
-            </h1>
-            <p className="dashboard-subtitle">{t('dashboard.subtitle')}</p>
-          </div>
-
-          <AppButton
-            text={t('dashboard.logout')}
-            variant="secondary"
-            onClick={onLogout}
-            isLoading={isLoading}
-            fullWidth={false}
-          />
+    <main className="dashboard-page game-dashboard-page dashboard-shell">
+      <header className="dashboard-navbar">
+        <div>
+          <p className="dashboard-kicker">{t('dashboard.kicker')}</p>
+          <h1 className="dashboard-title">
+            {t('dashboard.welcome', { name: user?.displayName || t('dashboard.fallbackName') })}
+          </h1>
         </div>
+        <AppButton
+          text={t('dashboard.logout')}
+          variant="secondary"
+          onClick={onLogout}
+          isLoading={isLoading}
+          fullWidth={false}
+        />
+      </header>
 
-        <CricketSimulator />
-      </section>
+      <div className="dashboard-main-grid">
+        <aside className="dashboard-sidebar dashboard-sidebar-left">
+          <h3>Quick Panel</h3>
+          <p>Use setup stages, choose strategies, and simulate ball-by-ball.</p>
+          <p>Desktop layout keeps controls and match board visible together.</p>
+        </aside>
+
+        <section className="dashboard-center">
+          <section className="dashboard-card game-dashboard-card">
+            <CricketSimulator />
+          </section>
+        </section>
+
+        <aside className="dashboard-sidebar dashboard-sidebar-right">
+          <h3>Match Notes</h3>
+          <p>Track intent limits, choose bowlers carefully, and manage phase changes.</p>
+          <p>Use scoreboard toggles to monitor batting and bowling performance.</p>
+        </aside>
+      </div>
     </main>
   );
 }

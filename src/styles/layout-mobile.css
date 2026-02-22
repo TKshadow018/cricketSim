@@ -1,0 +1,29 @@
+@media (max-width: 1024px) {
+  .dashboard-navbar,
+  .dashboard-sidebar {
+    display: none;
+  }
+
+  .dashboard-shell {
+    padding: 1.25rem;
+    align-items: stretch;
+    place-items: stretch;
+  }
+
+  .dashboard-main-grid {
+    display: block;
+  }
+
+  .dashboard-center {
+    width: 100%;
+  }
+
+  .dashboard-center .game-dashboard-card {
+    width: 100%;
+    margin: 0;
+  }
+
+  .dashboard-mobile-logout {
+    display: block;
+  }
+}

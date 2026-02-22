@@ -48,7 +48,6 @@ import {
   createBattingStats,
   createBowlingStats,
   formatBallProgress,
-  getBestBowlerIndex,
   getMaxOversPerBowler,
   getNextBatterIndex,
   getOpponentDecision,
@@ -249,7 +248,7 @@ export function useCricketSimulatorController() {
         innings.lastEvent = isUserBatting ? innings.lastEvent : 'Choose your opening bowler.';
       } else {
         innings.waitingForNextBowler = false;
-        innings.currentBowlerIndex = getBestBowlerIndex(bowlingSide);
+        innings.currentBowlerIndex = getBestEligibleBowlerIndex(bowlingSide);
       }
     } else {
       innings.waitingForNextBowler = false;
@@ -258,10 +257,31 @@ export function useCricketSimulatorController() {
         bowlingSide,
         previousBowlerIndex: null,
       });
-      innings.currentBowlerIndex = openingBowlerIndex ?? getBestBowlerIndex(bowlingSide);
+      innings.currentBowlerIndex = openingBowlerIndex ?? getBestEligibleBowlerIndex(bowlingSide);
     }
 
     return innings;
+  };
+
+  // Returns best available eligible bowler index and never selects a non-bowler.
+  const getBestEligibleBowlerIndex = (players = [], excludeIndex = null) => {
+    const eligibleIndices = players
+      .map((player, index) => ({ player, index }))
+      .filter(({ player }) => isEligibleBowler(player))
+      .map(({ index }) => index);
+
+    if (!eligibleIndices.length) {
+      return null;
+    }
+
+    const rankedIndices = [...eligibleIndices].sort((left, right) => {
+      const leftScore = (players[left]?.paceAbility || 0) + (players[left]?.spinAbility || 0);
+      const rightScore = (players[right]?.paceAbility || 0) + (players[right]?.spinAbility || 0);
+      return rightScore - leftScore;
+    });
+
+    const withoutExcluded = rankedIndices.find((index) => index !== excludeIndex);
+    return withoutExcluded ?? rankedIndices[0];
   };
 
   // Chooses computer bowler with first-four-over pattern and hard validity checks.
@@ -286,7 +306,7 @@ export function useCricketSimulatorController() {
         return underLimitIndices[Math.floor(Math.random() * underLimitIndices.length)];
       }
 
-      return getBestBowlerIndex(bowlingSide, previousBowlerIndex);
+      return null;
     }
 
     const randomFromIndices = (indices) => indices[Math.floor(Math.random() * indices.length)];
@@ -688,7 +708,7 @@ export function useCricketSimulatorController() {
 
     const striker = battingSide[inningState.strikerIndex];
     const partner = battingSide[inningState.nonStrikerIndex];
-    const fallbackBowlerIndex = getBestBowlerIndex(bowlingSide);
+    const fallbackBowlerIndex = getBestEligibleBowlerIndex(bowlingSide, inningState.lastOverBowlerIndex);
     const hasAssignedBowler = inningState.currentBowlerIndex !== null && inningState.currentBowlerIndex !== undefined;
     const currentBowlerIndex = hasAssignedBowler
       ? inningState.currentBowlerIndex
@@ -704,7 +724,15 @@ export function useCricketSimulatorController() {
       return;
     }
 
-    const bowler = bowlingSide[currentBowlerIndex] || bowlingSide[fallbackBowlerIndex];
+    const bowler =
+      bowlingSide[currentBowlerIndex] ||
+      (fallbackBowlerIndex === null || fallbackBowlerIndex === undefined
+        ? null
+        : bowlingSide[fallbackBowlerIndex]);
+
+    if (!bowler) {
+      return;
+    }
 
     const wasFreeHit = isUserBatting && inningState.freeHitArmed;
     const usedSuperShot = isUserBatting && battingIntent === battingAction.superShot;
@@ -891,7 +919,7 @@ export function useCricketSimulatorController() {
           eventLine = `${eventLine} Over complete. Choose next bowler.`;
         } else {
           nextWaitingForNextBowler = false;
-          nextCurrentBowlerIndex = getBestBowlerIndex(bowlingSide, currentBowlerIndex);
+          nextCurrentBowlerIndex = getBestEligibleBowlerIndex(bowlingSide, currentBowlerIndex);
         }
       } else {
         nextCurrentBowlerIndex = selectComputerBowler({
