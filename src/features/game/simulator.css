@@ -1,0 +1,672 @@
+.sim-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.sim-top-strip {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: linear-gradient(120deg, rgba(29, 56, 111, 0.65), rgba(12, 22, 42, 0.72));
+  padding: 0.7rem 1rem;
+  margin-top: 1.5rem;
+}
+
+.sim-top-strip p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.sim-stage-card {
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(140deg, rgba(22, 36, 65, 0.85), rgba(8, 12, 22, 0.88));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 20px 45px rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.sim-stage-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 85% 10%, rgba(136, 180, 255, 0.22), transparent 38%);
+  pointer-events: none;
+}
+
+.sim-stage-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+}
+
+.sim-stage-header h2 {
+  margin: 0;
+  color: var(--text-main);
+}
+
+.sim-stage-header p {
+  margin: 0.35rem 0 0;
+  color: var(--text-muted);
+}
+
+.sim-stage-step {
+  margin: 0;
+  color: #89a8ff !important;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sim-stage-content {
+  margin-top: 0.9rem;
+  display: grid;
+  gap: 0.9rem;
+  position: relative;
+  z-index: 1;
+}
+
+.sim-stage-dark {
+  background: #000;
+}
+
+.sim-stage-dark .sim-stage-header p,
+.sim-stage-dark .sim-stage-content p,
+.sim-stage-dark small {
+  color: #d0d7e7;
+}
+
+.sim-wave-title {
+  color: #f1f4ff;
+  text-shadow: 0 2px 10px rgba(79, 126, 255, 0.45);
+  letter-spacing: 0.03em;
+  font-weight: 700;
+}
+
+.sim-wave-title div {
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+}
+
+.sim-empty-message {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: #d8e2ff;
+  padding: 1rem;
+}
+
+.sim-pulse-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #69e6ff;
+  box-shadow: 0 0 14px #69e6ff;
+}
+
+.sim-intro-grid {
+  display: grid;
+  gap: 0.8rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.sim-intro-grid.clickable {
+  cursor: pointer;
+}
+
+.sim-click-hint {
+  color: #b4c4f5 !important;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.sim-intro-grid p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.sim-card-grid,
+.sim-flag-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 0.7rem;
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 0.3rem;
+}
+
+.sim-choice-card,
+.sim-flag-card {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--text-main);
+  text-align: left;
+  cursor: pointer;
+  padding: 0.75rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+}
+
+.sim-choice-card.active,
+.sim-flag-card.active {
+  border-color: #6f95ff;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(111, 149, 255, 0.45), 0 16px 30px rgba(40, 78, 172, 0.25);
+}
+
+.sim-choice-card h4,
+.sim-flag-card h4 {
+  margin: 0;
+  color: #1e2b45;
+}
+
+.sim-choice-card p,
+.sim-flag-card p,
+.sim-choice-card small {
+  display: block;
+  margin-top: 0.3rem;
+  color: #5a6888;
+}
+
+.sim-choice-visual {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 0.45rem;
+  background: linear-gradient(145deg, #f4b190, #f8ddcd);
+  color: #16223f;
+  font-size: 1.15rem;
+}
+
+.sim-choice-badge {
+  display: inline-block;
+  margin-top: 0.45rem;
+  border-radius: 999px;
+  background: #188c5c;
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.16rem 0.5rem;
+}
+
+.sim-flag-card {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.72);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.sim-flag-holder {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 0.55rem;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.24);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sim-flag-holder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sim-flag-card.disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.sim-flag-card h4,
+.sim-flag-card p {
+  color: #e8edff;
+}
+
+.sim-toss-panel {
+  display: grid;
+  justify-items: center;
+  gap: 0.8rem;
+  text-align: center;
+}
+
+.sim-toss-panel p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.sim-toss-icons {
+  display: flex;
+  gap: 1rem;
+}
+
+.sim-toss-buttons button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.sim-toss-buttons button.active img {
+  box-shadow: 0 0 0 3px rgba(113, 163, 255, 0.65);
+}
+
+.sim-toss-icons img {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.88);
+  padding: 8px;
+}
+
+.sim-toss-title div {
+  font-size: clamp(1.7rem, 3.3vw, 2.6rem);
+}
+
+.sim-condition-grid {
+  width: min(760px, 100%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
+  gap: 0.6rem;
+}
+
+.sim-condition-card {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.07);
+  padding: 0.65rem;
+  text-align: center;
+}
+
+.sim-condition-icon {
+  width: 120px;
+  height: 120px;
+  display: block;
+  margin: 0 auto 0.5rem;
+  border-radius: 12px;
+}
+
+.sim-condition-card h4,
+.sim-condition-card p {
+  margin: 0;
+}
+
+.sim-condition-card p {
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.sim-coin {
+  font-size: 3.3rem;
+  filter: drop-shadow(0 0 14px rgba(255, 226, 143, 0.8));
+}
+
+.sim-result-block {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 1rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.sim-choice-icons {
+  display: flex;
+  gap: 0.7rem;
+}
+
+.sim-choice-buttons button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.sim-choice-buttons button.selectable {
+  cursor: pointer;
+}
+
+.sim-choice-buttons button.locked {
+  cursor: not-allowed;
+}
+
+.sim-choice-buttons button:disabled {
+  cursor: not-allowed;
+}
+
+.sim-choice-icons img {
+  width: 92px;
+  height: 92px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 12px;
+}
+
+.sim-choice-icons img.faded {
+  opacity: 0.38;
+  filter: grayscale(0.5);
+}
+
+.sim-choice-icons img.active {
+  opacity: 1;
+  box-shadow: 0 0 0 2px rgba(102, 139, 255, 0.45);
+}
+
+.sim-result-block h3,
+.sim-result-block p {
+  margin: 0;
+}
+
+.sim-result-block p {
+  color: var(--text-muted);
+}
+
+.sim-score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sim-score-row h3 {
+  margin: 0;
+  color: var(--text-main);
+}
+
+.sim-score-pill {
+  border-radius: 999px;
+  border: 1px solid rgba(127, 244, 183, 0.6);
+  background: rgba(127, 244, 183, 0.16);
+  color: #beffe1;
+  padding: 0.22rem 0.8rem;
+  font-weight: 700;
+}
+
+.sim-subtitle {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.sim-innings-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.sim-event-line {
+  margin: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.75rem;
+  color: var(--text-main);
+}
+
+.sim-player-strip {
+  margin-top: 0.6rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.sim-player-strip p {
+  margin: 0;
+  color: #c9d7ff;
+  font-size: 0.86rem;
+}
+
+.sim-section-title {
+  margin: 0.75rem 0 0.45rem;
+  color: #aac1ff;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sim-intent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
+}
+
+.sim-intent-btn {
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-main);
+  padding: 0.55rem;
+  cursor: pointer;
+  color: #dbe4ff;
+}
+
+.sim-intent-btn.active {
+  border-color: #88a9ff;
+  background: rgba(136, 169, 255, 0.2);
+}
+
+.sim-player-pick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.45rem;
+}
+
+.sim-player-pick-btn {
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e9ff;
+  padding: 0.5rem 0.6rem;
+  cursor: pointer;
+  text-align: left;
+  display: grid;
+  gap: 0.18rem;
+}
+
+.sim-player-pick-btn.active {
+  border-color: #89a9ff;
+  background: rgba(137, 169, 255, 0.24);
+}
+
+.sim-player-pick-btn small {
+  color: #aebce7;
+  font-size: 0.72rem;
+}
+
+.sim-player-pick-btn.disabled,
+.sim-player-pick-btn:disabled {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  color: #8f9bbd;
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.sim-scoreboard-panel {
+  margin-top: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.65rem;
+}
+
+.sim-scoreboard-panel h4,
+.sim-scoreboard-panel p {
+  margin: 0;
+}
+
+.sim-scoreboard-panel p {
+  margin-top: 0.28rem;
+  color: #cad7ff;
+}
+
+.sim-scoreboard-table-wrap {
+  margin-top: 0.6rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sim-scoreboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(6, 12, 24, 0.6);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sim-scoreboard-table th,
+.sim-scoreboard-table td {
+  padding: 0.4rem 0.45rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+  color: #d8e3ff;
+  font-size: 0.82rem;
+}
+
+.sim-scoreboard-table th {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f3f7ff;
+  font-weight: 700;
+}
+
+.sim-scoreboard-table tr:last-child td {
+  border-bottom: none;
+}
+
+.sim-scoreboard-row-notout td {
+  background: rgba(102, 202, 146, 0.16);
+}
+
+.sim-scoreboard-row-current td {
+  background: rgba(110, 145, 255, 0.2);
+}
+
+.sim-innings-action {
+  margin-top: auto;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.sim-action-icons {
+  display: flex;
+  gap: 0.55rem;
+  margin-bottom: 0.5rem;
+}
+
+.sim-action-icons img {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  padding: 6px;
+}
+
+.sim-match-action-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  height: 600px;
+  overflow-y: auto;
+}
+
+.sim-commentary-feed {
+  margin: 0;
+  padding: 0.85rem;
+  list-style: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  max-height: 600px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.sim-commentary-feed li {
+  border-left: 2px solid rgba(112, 141, 243, 0.95);
+  padding-left: 0.6rem;
+  color: var(--text-muted);
+  line-height: 1.34;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+}
+
+.sim-ball-tag {
+  min-width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(122, 157, 255, 0.6);
+  background: rgba(122, 157, 255, 0.18);
+  color: #e6eeff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.sim-commentary-text {
+  flex: 1;
+}
+
+.sim-final-grid {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.sim-final-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.7rem;
+}
+
+.sim-final-card h4,
+.sim-final-card p {
+  margin: 0;
+}
+
+.sim-final-card p {
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+}
+
+.sim-winner-line {
+  margin: 0.2rem 0;
+  color: #c6ffe6;
+  text-align: center;
+}
+
+.sim-stage-2,
+.sim-stage-3,
+.sim-stage-4,
+.sim-stage-7,
+.sim-stage-8,
+.sim-stage-9,
+.sim-stage-10 {
+  background: #000;
+}
+
+@media (max-width: 900px) {
+  .sim-condition-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sim-innings-layout {
+    grid-template-columns: 1fr;
+  }
+}

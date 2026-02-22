@@ -1,0 +1,79 @@
+let me give you a completly different formula
+outcomePossibilityArray = [0,0,0,...] // total 100
+defaultWeights = 
+[
+ {  0: 10, 1: 20, 2: 20, 3: 3, 4: 20, 6: 15, wide: 1, nb: 1, W: 10 }, // micro 1 over match
+ {  0: 15, 1: 25, 2: 15, 3: 4, 4: 17, 6: 12, wide: 1, nb: 1, W: 10 }, // mini 5 over match
+ {  0: 20, 1: 25, 2: 15, 3: 5, 4: 15, 6: 10, wide: 1, nb: 1, W: 8 }, // T10 match
+ {  0: 25, 1: 25, 2: 15, 3: 5, 4: 12, 6: 8, wide: 1, nb: 1, W: 7 }, // T20 match
+ {  0: 50, 1: 22, 2: 10, 3: 3, 4: 7, 6: 3, wide: 1, nb: 1, W: 3 }, // ODI match
+ {  0: 65, 1: 17, 2: 8, 3: 1, 4: 5, 6: 1, wide: 1, nb: 1, W: 1 } , // Test match, practice test micro, practice test mini matches
+]
+
+It uses a dynamic probability model influenced by:
+- batting intent
+- bowling intent
+
+Effects:
+1. Set activeDefaultWeights based on match type (micro, mini, T10, T20, ODI, Test)
+2. Pitch Effect
+   Batsmans abilityToPlayPaceBall = PitchEffect.goodForBatting + Batsmans abilityToPlayPaceBall
+   Batsmans abilityToPlaySpinBall = PitchEffect.goodForBatting + Batsmans abilityToPlaySpinBall
+   Bowlers spinAbility = PitchEffect.goodForSpinBowling + Bowlers spinAbility
+   Bowlers paceAbility = PitchEffect.goodForPaceBowling + Bowlers paceAbility
+3. Weather Effect
+   if weather is rainy, reduce all type of batting ability by 5% and increase all type of bowling ability by 5%
+   if weather is windy, increase all type of batting ability by 10% and decrease all type of bowling ability by 5%
+   if weather is stormy, reduce all type of batting ability by 5% and increase all type of bowling ability by 2%
+4. Outfield Effect
+   if 0 < boundaryScoring < 4, defaultWeights[6] -= 1 and defaultWeights[4] -= 1 and defaultWeights[0] += 2
+   else if 4 <= boundaryScoring < 6, defaultWeights[6] -= 0 and defaultWeights[4] -= 0 and defaultWeights[0] += 0
+   else if 6 <= boundaryScoring > 8, defaultWeights[6] -= 0 and defaultWeights[4] += 1 and defaultWeights[0] -= 1
+   else if 8 <= boundaryScoring > 10, defaultWeights[6] += 1 and defaultWeights[4] += 2 and defaultWeights[0] -= 3
+5. Match Phase Effect (not applicatable for test and practice matches)
+    if remainingOvers<(0.15*totalOvers), activeDefaultWeights = defaultWeights[activeDefaultWeightsIndex-1] 
+    // that means if match is odi, go into t20 weights in last 15% overs, if match is t20, go into t10 weights in last 15% overs and so on
+6. striker and bowler abilities
+   1. Find ability difference = (strikers batting ability - bowlers bowling ability) [if bowler is pacer, consider paceAbility, if bowler is spinner, consider spinAbility]
+   2. 
+   if ability difference < 50, add following values to activeDefaultWeights:
+   {  0: -10, 1: +4, 2: +2, 3: +1 , 4: +4 , 6: +2, wide: 0, nb: 0, W: -3 }
+   if ability difference > 20, add following values to activeDefaultWeights:
+   {  0: -7, 1: +4, 2: +1, 3: +1, 4: +2, 6: +1, wide: 0, nb: 0, W: -2 }
+   if ability difference > 5, add following values to activeDefaultWeights:
+   {  0: -4, 1: +2, 2: +1, 3: 0, 4: +2, 6: 0, wide: 0, nb: 0, W: -1 }
+   if ability difference < -5, add following values to activeDefaultWeights:
+   {  0: +5, 1: -2, 2: -1, 3: 0, 4: -2, 6: -1, wide: 0, nb: 0, W: +1 }
+   if ability difference < -20, add following values to activeDefaultWeights:
+   {  0: +7, 1: -4, 2: -1, 3: -1, 4: -2, 6: -1, wide: 0, nb: 0, W: +2 }
+   if ability difference < -50, add following values to activeDefaultWeights:
+   {  0: +20, 1: -12, 2: -5, 3: -2, 4: -4, 6: -2, wide: 0, nb: 0, W: +5 }
+7a. When user Batting
+    Based on batting Intent Add following values to activeDefaultWeights:
+    Defend {  0: +15, 1: -4, 2: -2, 3: -1 , 4: -4 , 6: -2, wide: 0, nb: 0, W: -2 }
+    Normal // good as it is
+    Hit Big {  0: -10, 1: +4, 2: +1, 3: +1 , 4: +2 , 6: +1, wide: 0, nb: 0, W: +1 }
+    Super Shot  {  0: -15, 1: +5, 2: +3, 3: 0 , 4: +3 , 6: +2, wide: 0, nb: 0, W: +2 }
+    Free Hit {  0: +15, 1: -4, 2: -2, 3: -1 , 4: -4 , 6: -2, wide: 0, nb: 0, W: set wicket possibility = 0, and possibility 0 runs accordingly so that total possibility = 100}
+8a. When user Bowling
+    Based on bowling Intent Add following values to activeDefaultWeights:
+    Save Run {  0: +20, 1: -8, 2: -3, 3: -1 , 4: -4 , 6: -2, wide: 0, nb: 0, W: -2 }
+    Wicket Ball {  0: -15, 1: +4, 2: +2, 3: +1 , 4: +4 , 6: +1, wide: 0, nb: 0, W: +3 }
+    Normal // good as it is
+    Special Ball {  0: -4, 1: -5, 2: -2, 3: -1 , 4: +2 , 6: +1, wide: +1, nb: +1, W: +7 }
+9. Make sure that after all the addition and subtraction, possibility of each outcome should not be less than 0 and total possibility should be 100, 
+   if there is any negative possibility, set it to 0
+   if total possibility is not 100, by adjusting 0 runs possibility, make total possibility 100
+10. Based on final activeDefaultWeights, create outcomePossibilityArray and assign a outcome to each index from 0 to 99 based on their possibility,
+ for example if activeDefaultWeights is {  0: 10, 1: 20, 2: 20, 3: 3, 4: 20, 6: 15, wide: 1, nb: 1, W: 10 }, then outcomePossibilityArray should have 10 '0's, followed by 20 '1's, followed by 20 '2's and so on.
+11. Then generate a random number between 0 and 99 and check the outcome in outcomePossibilityArray for that index, that will be the outcome of that ball.
+
+Other facts I want you to fix
+1. When Batting
+when batting, super shot should be available to batsman who has batiing ability over 70 (based on bowling type), otherwise disable it. Maximum 1 per over and max 3 per match. gets 1 extra after each six.
+Free Hit should be visible only after a 'no ball' otherwise disable it, when it is enabled disable other batting intent options and when it is used.
+
+2. When Bowling
+when bowling, special ball should be available to bowler who has bowling ability over 70 either spinAbility or paceAbility, otherwise disable it. Maximum 1 per over and max 3 per match. gets 1 extra after each wicket he takes.
+
+3. Currenytly wide ball and no ball are treated as normal deliveries, but they should not be, they should give 1 extra run and an extra ball, and in case of no ball, batsman should get free hit in next delivery.
