@@ -8,19 +8,14 @@ const SriLankaStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1986",
     "matchesHosted": {
       "Test Matches": 21,
       "ODIs": 136,
       "T20Is": 38
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Pallekele International Cricket Stadium",
@@ -31,19 +26,14 @@ const SriLankaStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "2009",
     "matchesHosted": {
       "Test Matches": 10,
       "ODIs": 41,
       "T20Is": 27
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Galle International Stadium",
@@ -54,19 +44,14 @@ const SriLankaStadiums = [
       "Practice Pitches",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1998",
     "matchesHosted": {
       "Test Matches": 33,
       "ODIs": 29,
       "T20Is": 7
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Mahinda Rajapaksa International Cricket Stadium",
@@ -77,19 +62,14 @@ const SriLankaStadiums = [
       "Indoor Nets",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "2011",
     "matchesHosted": {
       "Test Matches": 9,
       "ODIs": 35,
       "T20Is": 26
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Asgiriya Stadium",
@@ -100,18 +80,13 @@ const SriLankaStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1982",
     "matchesHosted": {
       "Test Matches": 13,
       "ODIs": 16
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Sinhalese Sports Club Ground",
@@ -122,18 +97,13 @@ const SriLankaStadiums = [
       "Media Center",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1899",
     "matchesHosted": {
       "Test Matches": 40,
       "ODIs": 32
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Sara Stadium",
@@ -144,18 +114,13 @@ const SriLankaStadiums = [
       "Practice Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1979",
     "matchesHosted": {
       "ODIs": 13,
       "T20Is": 3
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Rangiri Dambulla International Stadium",
@@ -166,18 +131,13 @@ const SriLankaStadiums = [
       "Practice Pitches",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "2000",
     "matchesHosted": {
       "ODIs": 38,
       "T20Is": 16
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Nondescripts Cricket Club Ground",
@@ -188,17 +148,12 @@ const SriLankaStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1937",
     "matchesHosted": {
       "ODIs": 2
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Moratuwa Sports Complex",
@@ -209,11 +164,12 @@ const SriLankaStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2003",
     "matchesHosted": {
       "ODIs": 2
-    }
+    },
+    "outfieldType": "lushGreen"
   }
 ];
 

@@ -8,19 +8,14 @@ const UAEStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "2004",
     "matchesHosted": {
       "Test Matches": 23,
       "ODIs": 64,
       "T20Is": 32
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Dubai International Cricket Stadium",
@@ -31,19 +26,14 @@ const UAEStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "2009",
     "matchesHosted": {
       "Test Matches": 20,
       "ODIs": 79,
       "T20Is": 39
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Sharjah Cricket Stadium",
@@ -54,19 +44,14 @@ const UAEStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1982",
     "matchesHosted": {
       "Test Matches": 18,
       "ODIs": 236,
       "T20Is": 72
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Zayed Cricket Stadium Nursery 1",
@@ -77,17 +62,12 @@ const UAEStadiums = [
       "Practice Pitches",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2007",
     "matchesHosted": {
       "T20Is": 7
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Zayed Cricket Stadium Nursery 2",
@@ -98,17 +78,12 @@ const UAEStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2007",
     "matchesHosted": {
       "T20Is": 5
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "ICC Academy Ground No. 1",
@@ -119,17 +94,12 @@ const UAEStadiums = [
       "Practice Pitches",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "2010",
     "matchesHosted": {
       "ODIs": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "ICC Academy Ground No. 2",
@@ -140,17 +110,12 @@ const UAEStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "2010",
     "matchesHosted": {
       "ODIs": 2
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "ICC Academy Ground No. 3",
@@ -161,17 +126,12 @@ const UAEStadiums = [
       "Practice Pitches",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "2010",
     "matchesHosted": {
       "ODIs": 3
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "ICC Academy Ground No. 4",
@@ -182,17 +142,12 @@ const UAEStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2010",
     "matchesHosted": {
       "ODIs": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "ICC Academy Ground No. 5",
@@ -203,11 +158,12 @@ const UAEStadiums = [
       "Practice Pitches",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2010",
     "matchesHosted": {
       "ODIs": 2
-    }
+    },
+    "outfieldType": "lushGreen"
   }
 ];
 

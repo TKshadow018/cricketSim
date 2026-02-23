@@ -8,19 +8,14 @@ const PakistanStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1955",
     "matchesHosted": {
       "Test Matches": 41,
       "ODIs": 75,
       "T20Is": 12
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Gaddafi Stadium",
@@ -31,19 +26,14 @@ const PakistanStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1959",
     "matchesHosted": {
       "Test Matches": 41,
       "ODIs": 96,
       "T20Is": 22
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Rawalpindi Cricket Stadium",
@@ -54,19 +44,14 @@ const PakistanStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1992",
     "matchesHosted": {
       "Test Matches": 9,
       "ODIs": 23,
       "T20Is": 8
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Multan Cricket Stadium",
@@ -77,19 +62,14 @@ const PakistanStadiums = [
       "Practice Pitches",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "2001",
     "matchesHosted": {
       "Test Matches": 12,
       "ODIs": 27,
       "T20Is": 9
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Arbab Niaz Stadium",
@@ -100,19 +80,14 @@ const PakistanStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1984",
     "matchesHosted": {
       "Test Matches": 6,
       "ODIs": 15,
       "T20Is": 5
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Iqbal Stadium",
@@ -123,19 +98,14 @@ const PakistanStadiums = [
       "Indoor Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1978",
     "matchesHosted": {
       "Test Matches": 18,
       "ODIs": 29,
       "T20Is": 8
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Rawalakot Cricket Stadium",
@@ -146,17 +116,12 @@ const PakistanStadiums = [
       "Practice Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "2008",
     "matchesHosted": {
       "T20Is": 3
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Abbottabad Cricket Stadium",
@@ -167,17 +132,12 @@ const PakistanStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2007",
     "matchesHosted": {
       "ODIs": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Sukkur Cricket Stadium",
@@ -188,17 +148,12 @@ const PakistanStadiums = [
       "Practice Pitches",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "2010",
     "matchesHosted": {
       "T20Is": 2
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Multan Cricket Stadium (New)",
@@ -209,11 +164,12 @@ const PakistanStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "2020",
     "matchesHosted": {
       "ODIs": 1
-    }
+    },
+    "outfieldType": "wetWithDew"
   }
 ];
 

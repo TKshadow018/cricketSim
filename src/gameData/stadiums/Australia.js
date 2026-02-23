@@ -8,19 +8,14 @@ const AustraliaStadiums = [
       "Ponsford Stand",
       "Media Center"
     ],
-    "pitchType": "Drop-in",
+    "pitchType": "dry",
     "inaugurated": "1853",
     "matchesHosted": {
       "Test Matches": 117,
       "ODIs": 169,
       "T20Is": 20
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Sydney Cricket Ground (SCG)",
@@ -31,19 +26,14 @@ const AustraliaStadiums = [
       "Media Center",
       "Indoor Nets"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1848",
     "matchesHosted": {
       "Test Matches": 111,
       "ODIs": 156,
       "T20Is": 21
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "The Gabba",
@@ -54,19 +44,14 @@ const AustraliaStadiums = [
       "Media Center",
       "Practice Pitches"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1895",
     "matchesHosted": {
       "Test Matches": 65,
       "ODIs": 82,
       "T20Is": 12
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Adelaide Oval",
@@ -77,19 +62,14 @@ const AustraliaStadiums = [
       "Media Center",
       "Indoor Training"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1871",
     "matchesHosted": {
       "Test Matches": 82,
       "ODIs": 91,
       "T20Is": 11
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Perth Stadium",
@@ -100,19 +80,14 @@ const AustraliaStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Drop-in",
+    "pitchType": "grassy",
     "inaugurated": "2018",
     "matchesHosted": {
       "Test Matches": 7,
       "ODIs": 18,
       "T20Is": 6
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Bellerive Oval",
@@ -123,19 +98,14 @@ const AustraliaStadiums = [
       "Media Center",
       "Nets Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1914",
     "matchesHosted": {
       "Test Matches": 33,
       "ODIs": 33,
       "T20Is": 10
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Manuka Oval",
@@ -146,18 +116,13 @@ const AustraliaStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1929",
     "matchesHosted": {
       "ODIs": 13,
       "T20Is": 8
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Traeger Park",
@@ -168,18 +133,13 @@ const AustraliaStadiums = [
       "Training Facilities",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "2008",
     "matchesHosted": {
       "ODIs": 3,
       "T20Is": 2
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Junction Oval",
@@ -190,17 +150,12 @@ const AustraliaStadiums = [
       "Media Center",
       "Practice Pitches"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1856",
     "matchesHosted": {
       "ODIs": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Sydney Showground Stadium",
@@ -211,12 +166,13 @@ const AustraliaStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1998",
     "matchesHosted": {
       "ODIs": 5,
       "T20Is": 4
-    }
+    },
+    "outfieldType": "dryAndPatchy"
   }
 ];
 

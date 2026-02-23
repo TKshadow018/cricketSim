@@ -17,6 +17,157 @@ const STADIUM_ICON_POOL = [
   '/asset/img/icon/stadium/stadium5.png',
 ];
 
+const PITCH_ICON_PATH = '/asset/img/icon/conditions/pitch-512.svg';
+const OUTFIELD_ICON_PATH = '/asset/img/icon/conditions/outfield-512.svg';
+
+const formatConditionLabel = (value = '') =>
+  String(value)
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[-_]/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+const COMMENTATOR_NAME_BANK = {
+  India: {
+    male: ['Aakash Chopra', 'Nikhil Verma', 'Rohan Mehta', 'Dev Malhotra', 'Arjun Bhat', 'Karan Iyer'],
+    female: ['Meera Joshi', 'Ananya Rao', 'Kavya Menon', 'Riya Sharma', 'Isha Nair', 'Pooja Singh'],
+  },
+  England: {
+    male: ['Oliver Grant', 'George Turner', 'Harry Walton', 'Arthur Blake', 'Noah Carter', 'Leo Hughes'],
+    female: ['Sophie Bennett', 'Amelia Clarke', 'Lily Brooks', 'Emily Harper', 'Grace Moore', 'Olivia Hall'],
+  },
+  Australia: {
+    male: ['Liam Cooper', 'Jack Miller', 'Ethan Wright', 'Hudson Grant', 'Aiden Blake', 'Mason Reid'],
+    female: ['Charlotte Hayes', 'Mia Collins', 'Zoe Parker', 'Ava Turner', 'Matilda Brooks', 'Chloe Bennett'],
+  },
+  USA: {
+    male: ['James Carter', 'Logan Reed', 'Lucas Hayes', 'Henry Stone', 'Mason Parker', 'Ethan Brooks'],
+    female: ['Emma Brooks', 'Sophia Morgan', 'Avery Mitchell', 'Harper Clark', 'Mia Carter', 'Ella Jones'],
+  },
+  Canada: {
+    male: ['Noah Sinclair', 'Evan Clarke', 'Ryan Fraser', 'Owen Martin', 'Liam Adams', 'Jacob Wright'],
+    female: ['Olivia Martin', 'Chloe Bennett', 'Mila Adams', 'Emma Fraser', 'Ava Clarke', 'Claire Wilson'],
+  },
+  Ireland: {
+    male: ['Conor Murphy', 'Sean Kelly', 'Ronan Doyle', 'Niall Quinn', 'Cian Walsh', 'Darragh Byrne'],
+    female: ['Aoife Nolan', 'Niamh OBrien', 'Ciara Quinn', 'Orla Murphy', 'Saoirse Kelly', 'Clodagh Ryan'],
+  },
+  NewZealand: {
+    male: ['Arlo Mason', 'Finn Walker', 'Theo Hudson', 'Lucas Reid', 'Hunter Blake', 'Mason Cole'],
+    female: ['Isla Harper', 'Ruby Bennett', 'Sienna Blake', 'Ella Morgan', 'Willow Carter', 'Ava Mason'],
+  },
+  SouthAfrica: {
+    male: ['Thabo Ndlovu', 'Kagiso Mokoena', 'Aiden Smith', 'Ruan Jacobs', 'Liam Naidoo', 'Ethan Khumalo'],
+    female: ['Leah Jacobs', 'Amara Naidoo', 'Naledi Khumalo', 'Zara Mokoena', 'Mia Ndlovu', 'Ava Smith'],
+  },
+  Pakistan: {
+    male: ['Hamza Ali', 'Usman Qureshi', 'Saad Malik', 'Ayaan Khan', 'Zayan Raza', 'Bilal Ahmed'],
+    female: ['Aisha Khan', 'Noor Ahmed', 'Hania Raza', 'Mariam Ali', 'Alina Qureshi', 'Zara Malik'],
+  },
+  Bangladesh: {
+    male: ['Rahim Hasan', 'Arif Hossain', 'Rafi Karim', 'Siam Islam', 'Nafis Rahman', 'Hasan Chowdhury'],
+    female: ['Nusrat Jahan', 'Sadia Noor', 'Tania Akter', 'Afiya Rahman', 'Mahi Hasan', 'Mim Karim'],
+  },
+  SriLanka: {
+    male: ['Kasun Perera', 'Dilan Silva', 'Ravin Senanayake', 'Ishan Fernando', 'Charith Jayawardene', 'Nimal De Silva'],
+    female: ['Ishani Fernando', 'Anuki Jayasuriya', 'Piumi De Silva', 'Nethmi Perera', 'Dilani Silva', 'Madhavi Senanayake'],
+  },
+  Japan: {
+    male: ['Haruto Sato', 'Kaito Suzuki', 'Ren Nakamura', 'Daiki Tanaka', 'Sota Kobayashi', 'Yuki Yamamoto'],
+    female: ['Aoi Tanaka', 'Sakura Yamamoto', 'Mio Kobayashi', 'Hina Sato', 'Rin Suzuki', 'Yui Nakamura'],
+  },
+  France: {
+    male: ['Louis Martin', 'Arthur Bernard', 'Jules Petit', 'Hugo Moreau', 'Lucas Laurent', 'Noah Dubois'],
+    female: ['Chloe Dubois', 'Lea Moreau', 'Camille Laurent', 'Emma Bernard', 'Ines Petit', 'Jade Martin'],
+  },
+  Default: {
+    male: ['Jordan Brown', 'Alex Taylor', 'Sam Parker', 'Jamie Wilson', 'Chris Carter', 'Ryan Stone'],
+    female: ['Casey Morgan', 'Riley Carter', 'Alexis Parker', 'Taylor Brooks', 'Morgan Hayes', 'Jamie Reed'],
+  },
+};
+
+const hashText = (text = '') => {
+  let value = 0;
+  for (let index = 0; index < text.length; index += 1) {
+    value = (value * 31 + text.charCodeAt(index)) >>> 0;
+  }
+  return value;
+};
+
+const regionToCountry = {
+  IN: 'India',
+  GB: 'England',
+  UK: 'England',
+  US: 'USA',
+  AU: 'Australia',
+  CA: 'Canada',
+  IE: 'Ireland',
+  NZ: 'NewZealand',
+  ZA: 'SouthAfrica',
+  PK: 'Pakistan',
+  BD: 'Bangladesh',
+  LK: 'SriLanka',
+  JP: 'Japan',
+  FR: 'France',
+};
+
+const inferCountryKey = (lang = '', voiceName = '') => {
+  const parts = String(lang).split('-');
+  const region = (parts[1] || '').toUpperCase();
+  if (regionToCountry[region]) {
+    return regionToCountry[region];
+  }
+
+  const countryInName = String(voiceName).match(/\(([^)]+)\)/)?.[1]?.trim();
+  if (countryInName) {
+    const normalized = countryInName.replace(/\s+/g, '').toLowerCase();
+    const matched = Object.keys(COMMENTATOR_NAME_BANK).find(
+      (key) => key.toLowerCase() === normalized
+    );
+    if (matched) {
+      return matched;
+    }
+  }
+
+  return 'Default';
+};
+
+const inferGender = (voice = {}) => {
+  const explicit = String(voice.gender || '').toLowerCase();
+  if (explicit === 'male' || explicit === 'female') {
+    return explicit;
+  }
+
+  const text = String(voice.name || '').toLowerCase();
+  const femaleTokens = ['female', 'heera', 'zira', 'aria', 'jenny', 'sara', 'maya', 'priya', 'mia', 'olivia'];
+  const maleTokens = ['male', 'david', 'mark', 'james', 'ryan', 'guy', 'adam', 'liam', 'oliver', 'haruto'];
+
+  if (femaleTokens.some((token) => text.includes(token))) {
+    return 'female';
+  }
+  if (maleTokens.some((token) => text.includes(token))) {
+    return 'male';
+  }
+
+  return hashText(`${voice.name || ''}::${voice.lang || ''}`) % 2 === 0 ? 'male' : 'female';
+};
+
+const setCommentatorName = (voiceInput = {}) => {
+  const voice =
+    typeof voiceInput === 'string'
+      ? {
+        name: voiceInput,
+        lang: '',
+      }
+      : (voiceInput || {});
+
+  const countryKey = inferCountryKey(voice.lang, voice.name);
+  const bank = COMMENTATOR_NAME_BANK[countryKey] || COMMENTATOR_NAME_BANK.Default;
+  const gender = inferGender(voice);
+  const pool = bank[gender] || bank.male || bank.female || COMMENTATOR_NAME_BANK.Default.male;
+  const seed = hashText(`${voice.name || ''}::${voice.lang || ''}`);
+  return pool[seed % pool.length] || COMMENTATOR_NAME_BANK.Default.male[0];
+};
+
 function PreMatchStages({
   stage,
   stageCommonProps,
@@ -26,6 +177,7 @@ function PreMatchStages({
   availableVoices,
   matchVisual,
   goToNextStage,
+  goToPreviousStage,
   setMatchTypeKey,
   setOwnTeam,
   setOpponentTeam,
@@ -93,6 +245,19 @@ function PreMatchStages({
       }),
     [venueStadiums]
   );
+
+  const showSetupBackButton =
+    stage >= matchStatusEnum.ChooseOwnTeam && stage < matchStatusEnum.TeamOneBat;
+  const setupBackSlot = showSetupBackButton ? (
+    <AppButton text="Back" variant="secondary" fullWidth={false} onClick={goToPreviousStage} />
+  ) : null;
+
+  const selectedCommentatorVoice = useMemo(
+    () => availableVoices.find((voice) => voice.name === game.commentator),
+    [availableVoices, game.commentator]
+  );
+
+  const commentatorDisplayName = setCommentatorName(selectedCommentatorVoice || game.commentator);
 
   const onDragStart = (teamKey, sourceList, playerId) => {
     setDragPayload({ teamKey, sourceList, playerId });
@@ -329,7 +494,7 @@ function PreMatchStages({
       )}
 
       {stage === matchStatusEnum.ChooseOwnTeam && (
-        <StageShell {...stageCommonProps} title="Choose Your Team" subtitle="Pick your national side." dark>
+        <StageShell {...stageCommonProps} title="Choose Your Team" subtitle="Pick your national side." rightSlot={setupBackSlot} dark>
           <FlagTeamGrid
             teams={countryList}
             selectedName={game.ownTeam}
@@ -343,7 +508,7 @@ function PreMatchStages({
       )}
 
       {stage === matchStatusEnum.ChooseOpponent && (
-        <StageShell {...stageCommonProps} title="Choose Opponent" subtitle="Set the rival team for this showdown." dark>
+        <StageShell {...stageCommonProps} title="Choose Opponent" subtitle="Set the rival team for this showdown." rightSlot={setupBackSlot} dark>
           <FlagTeamGrid
             teams={countryList}
             selectedName={game.opponentTeam}
@@ -358,7 +523,7 @@ function PreMatchStages({
       )}
 
       {stage === matchStatusEnum.ChooseMatchLocation && (
-        <StageShell {...stageCommonProps} title="Choose Match Country" subtitle="Decide where the match will be hosted." dark>
+        <StageShell {...stageCommonProps} title="Choose Match Country" subtitle="Decide where the match will be hosted." rightSlot={setupBackSlot} dark>
           <FlagTeamGrid
             teams={countryList}
             selectedName={game.locationCountry}
@@ -373,7 +538,7 @@ function PreMatchStages({
       )}
 
       {stage === matchStatusEnum.ChooseStadium && (
-        <StageShell {...stageCommonProps} title="Choose Stadium" subtitle="Pick the exact ground and conditions.">
+        <StageShell {...stageCommonProps} title="Choose Stadium" subtitle="Pick the exact ground and conditions." rightSlot={setupBackSlot}>
           <SelectionGrid
             items={stadiumSelectionItems}
             selectedKey={game.selectedStadium}
@@ -384,14 +549,25 @@ function PreMatchStages({
             }}
             keyOf={(item) => item.name}
             renderTitle={(item) => item.name}
-            renderMeta={(item) => `${item.location} • ${item.pitchType}`}
-            renderDescription={(item) => `Capacity ${item.capacity?.toLocaleString?.() || 'N/A'}`}
+            renderMeta={(item) => (
+              <div className="sim-stadium-meta-row">
+                <span className="sim-stadium-meta-chip">
+                  <img src={PITCH_ICON_PATH} alt="pitch" />
+                  <span>{formatConditionLabel(item.pitchType)}</span>
+                </span>
+                <span className="sim-stadium-meta-chip">
+                  <img src={OUTFIELD_ICON_PATH} alt="outfield" />
+                  <span>{formatConditionLabel(item.outfieldType)}</span>
+                </span>
+              </div>
+            )}
+            renderDescription={(item) => `${item.location} • Capacity ${item.capacity?.toLocaleString?.() || 'N/A'}`}
           />
         </StageShell>
       )}
 
       {stage === matchStatusEnum.ChooseCommentator && (
-        <StageShell {...stageCommonProps} title="Choose Commentator" subtitle="Select commentary voice from real player names.">
+        <StageShell {...stageCommonProps} title="Choose Commentator" subtitle="Select commentary voice from real player names." rightSlot={setupBackSlot}>
           {availableVoices.length ? (
             <SelectionGrid
               items={availableVoices.map((voice) => ({
@@ -403,13 +579,31 @@ function PreMatchStages({
               onSelect={(voice) => {
                 setCommentator(voice.name);
                 setPreferredVoice(voice.name);
-                speak(`Commentary voice set to ${voice.name}`);
+                speak(`Commentary voice set to ${setCommentatorName(voice)}`);
                 goToNextStage();
               }}
               keyOf={(voice) => `${voice.name}-${voice.lang}`}
-              renderTitle={(voice) => voice.name}
+              renderTitle={(voice) => setCommentatorName(voice)}
               renderMeta={(voice) => voice.lang}
-              renderDescription={() => 'Speech synthesis commentator'}
+              renderDescription={(voice) => (
+                <div className="sim-commentator-row">
+                  <small>Speech synthesis commentator</small>
+                  <button
+                    type="button"
+                    className="sim-commentator-test-btn"
+                    title="Test sound"
+                    aria-label={`Test sound for ${setCommentatorName(voice)}`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      setPreferredVoice(voice.name);
+                      speak(`Hi I am ${setCommentatorName(voice)}`);
+                    }}
+                  >
+                    🔊
+                  </button>
+                </div>
+              )}
             />
           ) : (
             <div className="sim-empty-message">
@@ -420,7 +614,7 @@ function PreMatchStages({
       )}
 
       {stage === matchStatusEnum.TossTime && (
-        <StageShell {...stageCommonProps} title="Toss Time" subtitle="Flip and decide bat or bowl." dark>
+        <StageShell {...stageCommonProps} title="Toss Time" subtitle="Flip and decide bat or bowl." rightSlot={setupBackSlot} dark>
           <TossStage
             matchCondition={game.matchCondition}
             selectedCall={game.tossCall}
@@ -430,11 +624,11 @@ function PreMatchStages({
       )}
 
       {stage === matchStatusEnum.TossResult && (
-        <StageShell {...stageCommonProps} title="Toss Result" subtitle="The teams lock strategy before first ball." dark>
+        <StageShell {...stageCommonProps} title="Toss Result" subtitle="The teams lock strategy before first ball." rightSlot={setupBackSlot} dark>
           <TossResultCard
             winner={game.tossWinner}
             decision={game.tossDecision}
-            commentator={game.commentator}
+            commentator={commentatorDisplayName}
             isUserWinner={isUserWinner}
             onUserDecision={handleUserTossDecision}
           />
@@ -442,7 +636,7 @@ function PreMatchStages({
       )}
 
       {stage === matchStatusEnum.ChooseOwnPlayingXI && (
-        <StageShell {...stageCommonProps} title="Select Your Team" subtitle="Choose exactly 11 players for your playing XI." dark>
+        <StageShell {...stageCommonProps} title="Select Your Team" subtitle="Choose exactly 11 players for your playing XI." rightSlot={setupBackSlot} dark>
           <p className="sim-section-title">Selected: {ownSelectedXIIds.length} / 11</p>
           <div className="sim-xi-dnd-layout">
             <div
@@ -562,7 +756,7 @@ function PreMatchStages({
       )}
 
       {stage === matchStatusEnum.ChooseOpponentPlayingXI && (
-        <StageShell {...stageCommonProps} title="Select Opponent Team" subtitle="Choose exactly 11 players for opponent playing XI." dark>
+        <StageShell {...stageCommonProps} title="Select Opponent Team" subtitle="Choose exactly 11 players for opponent playing XI." rightSlot={setupBackSlot} dark>
           <p className="sim-section-title">Selected: {opponentSelectedXIIds.length} / 11</p>
           <div className="sim-xi-dnd-layout">
             <div

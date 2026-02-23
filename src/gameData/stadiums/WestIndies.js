@@ -8,19 +8,14 @@ const WestIndiesStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1882",
     "matchesHosted": {
       "Test Matches": 58,
       "ODIs": 87,
       "T20Is": 30
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Queen's Park Oval",
@@ -31,19 +26,14 @@ const WestIndiesStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1896",
     "matchesHosted": {
       "Test Matches": 60,
       "ODIs": 72,
       "T20Is": 23
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Sabina Park",
@@ -54,19 +44,14 @@ const WestIndiesStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1930",
     "matchesHosted": {
       "Test Matches": 52,
       "ODIs": 39,
       "T20Is": 18
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Sir Vivian Richards Stadium",
@@ -77,19 +62,14 @@ const WestIndiesStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2007",
     "matchesHosted": {
       "Test Matches": 14,
       "ODIs": 35,
       "T20Is": 17
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Darren Sammy National Cricket Stadium",
@@ -100,19 +80,14 @@ const WestIndiesStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "2002",
     "matchesHosted": {
       "Test Matches": 7,
       "ODIs": 30,
       "T20Is": 16
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Providence Stadium",
@@ -123,19 +98,14 @@ const WestIndiesStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "2007",
     "matchesHosted": {
       "Test Matches": 6,
       "ODIs": 28,
       "T20Is": 15
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Windsor Park",
@@ -146,19 +116,14 @@ const WestIndiesStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "2007",
     "matchesHosted": {
       "Test Matches": 5,
       "ODIs": 8,
       "T20Is": 6
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Arnos Vale Stadium",
@@ -169,18 +134,13 @@ const WestIndiesStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1972",
     "matchesHosted": {
       "ODIs": 23,
       "T20Is": 8
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Warner Park",
@@ -191,19 +151,14 @@ const WestIndiesStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2006",
     "matchesHosted": {
       "Test Matches": 3,
       "ODIs": 14,
       "T20Is": 12
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Grenada National Stadium",
@@ -214,13 +169,14 @@ const WestIndiesStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1999",
     "matchesHosted": {
       "Test Matches": 3,
       "ODIs": 22,
       "T20Is": 9
-    }
+    },
+    "outfieldType": "lushGreen"
   }
 ];
 

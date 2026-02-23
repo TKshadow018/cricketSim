@@ -8,18 +8,13 @@ const ScotlandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1832",
     "matchesHosted": {
       "ODIs": 11,
       "T20Is": 7
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Mannofield Park",
@@ -30,18 +25,13 @@ const ScotlandStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1897",
     "matchesHosted": {
       "ODIs": 6,
       "T20Is": 4
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Raeburn Place",
@@ -52,18 +42,13 @@ const ScotlandStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1855",
     "matchesHosted": {
       "ODIs": 4,
       "T20Is": 3
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "New Williamfield",
@@ -74,18 +59,13 @@ const ScotlandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1900",
     "matchesHosted": {
       "ODIs": 3,
       "T20Is": 2
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Cambusdoon New Ground",
@@ -96,18 +76,13 @@ const ScotlandStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1888",
     "matchesHosted": {
       "ODIs": 2,
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Glenpark",
@@ -118,17 +93,12 @@ const ScotlandStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1871",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Arbroath United Cricket Club",
@@ -139,17 +109,12 @@ const ScotlandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1856",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Duthie Park",
@@ -160,17 +125,12 @@ const ScotlandStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1905",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Fort Hill Cricket Club",
@@ -181,17 +141,12 @@ const ScotlandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1875",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Hamilton Crescent",
@@ -202,11 +157,12 @@ const ScotlandStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1845",
     "matchesHosted": {
       "ODIs": 1
-    }
+    },
+    "outfieldType": "wetWithDew"
   }
 ];
 

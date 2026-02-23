@@ -8,19 +8,14 @@ const ZimbabweStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1900",
     "matchesHosted": {
       "Test Matches": 29,
       "ODIs": 102,
       "T20Is": 28
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Queens Sports Club",
@@ -31,19 +26,14 @@ const ZimbabweStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1902",
     "matchesHosted": {
       "Test Matches": 30,
       "ODIs": 74,
       "T20Is": 22
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Mutare Sports Club",
@@ -54,18 +44,13 @@ const ZimbabweStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1923",
     "matchesHosted": {
       "ODIs": 18,
       "T20Is": 15
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Kwekwe Sports Club",
@@ -76,18 +61,13 @@ const ZimbabweStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1965",
     "matchesHosted": {
       "ODIs": 10,
       "T20Is": 8
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Queensmead Stadium",
@@ -98,18 +78,13 @@ const ZimbabweStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1953",
     "matchesHosted": {
       "ODIs": 8,
       "T20Is": 7
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Old Hararians Sports Club",
@@ -120,17 +95,12 @@ const ZimbabweStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1958",
     "matchesHosted": {
       "T20Is": 5
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Alexandra Sports Club",
@@ -141,17 +111,12 @@ const ZimbabweStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1914",
     "matchesHosted": {
       "T20Is": 4
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Gwanzura Stadium",
@@ -162,17 +127,12 @@ const ZimbabweStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1982",
     "matchesHosted": {
       "T20Is": 3
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Hartsfield T20 Cricket Ground",
@@ -183,17 +143,12 @@ const ZimbabweStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2000",
     "matchesHosted": {
       "T20Is": 2
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "ZimCric Academy Ground",
@@ -204,11 +159,12 @@ const ZimbabweStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2010",
     "matchesHosted": {
       "T20Is": 1
-    }
+    },
+    "outfieldType": "lushGreen"
   }
 ];
 

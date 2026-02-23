@@ -8,19 +8,14 @@ const EnglandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1814",
     "matchesHosted": {
       "Test Matches": 136,
       "ODIs": 68,
       "T20Is": 38
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "The Oval",
@@ -31,19 +26,14 @@ const EnglandStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1845",
     "matchesHosted": {
       "Test Matches": 100,
       "ODIs": 72,
       "T20Is": 32
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Old Trafford Cricket Ground",
@@ -54,19 +44,14 @@ const EnglandStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1857",
     "matchesHosted": {
       "Test Matches": 86,
       "ODIs": 66,
       "T20Is": 28
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Edgbaston Cricket Ground",
@@ -77,19 +62,14 @@ const EnglandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1882",
     "matchesHosted": {
       "Test Matches": 57,
       "ODIs": 63,
       "T20Is": 22
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Headingley",
@@ -100,19 +80,14 @@ const EnglandStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1890",
     "matchesHosted": {
       "Test Matches": 77,
       "ODIs": 42,
       "T20Is": 23
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Trent Bridge",
@@ -123,19 +98,14 @@ const EnglandStadiums = [
       "Practice Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1841",
     "matchesHosted": {
       "Test Matches": 63,
       "ODIs": 47,
       "T20Is": 20
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Rose Bowl",
@@ -146,18 +116,13 @@ const EnglandStadiums = [
       "Indoor Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "2001",
     "matchesHosted": {
       "ODIs": 31,
       "T20Is": 18
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Bristol County Ground",
@@ -168,18 +133,13 @@ const EnglandStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1889",
     "matchesHosted": {
       "ODIs": 18,
       "T20Is": 15
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "County Ground, Taunton",
@@ -190,18 +150,13 @@ const EnglandStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1882",
     "matchesHosted": {
       "ODIs": 17,
       "T20Is": 11
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "County Ground, Hove",
@@ -212,12 +167,13 @@ const EnglandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1872",
     "matchesHosted": {
       "ODIs": 14,
       "T20Is": 9
-    }
+    },
+    "outfieldType": "lushGreen"
   }
 ];
 

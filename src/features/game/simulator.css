@@ -177,6 +177,35 @@
   color: #5a6888;
 }
 
+.sim-commentator-row {
+  margin-top: 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.sim-commentator-row small {
+  margin: 0;
+}
+
+.sim-commentator-test-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(30, 43, 69, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.sim-commentator-test-btn:hover {
+  background: #ffffff;
+}
+
 .sim-choice-visual {
   width: 42px;
   height: 42px;
@@ -204,6 +233,35 @@
   height: 110px;
   display: block;
   object-fit: cover;
+}
+
+.sim-stadium-meta-row {
+  margin-top: 0.3rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.sim-stadium-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid rgba(30, 43, 69, 0.12);
+  border-radius: 999px;
+  padding: 0.14rem 0.42rem;
+  font-size: 0.72rem;
+  color: #44506c;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.sim-stadium-meta-chip span{
+   color: var(--text-secondary);
+}
+
+.sim-stadium-meta-chip img {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
 }
 
 .sim-choice-badge {

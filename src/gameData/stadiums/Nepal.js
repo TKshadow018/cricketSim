@@ -8,17 +8,12 @@ const NepalStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "2019",
     "matchesHosted": {
       "T20Is": 7
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Kirtipur Cricket Ground",
@@ -29,17 +24,12 @@ const NepalStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "2002",
     "matchesHosted": {
       "T20Is": 3
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Pokhara Rangasala",
@@ -50,17 +40,12 @@ const NepalStadiums = [
       "Training Facilities",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "2015",
     "matchesHosted": {
       "T20Is": 5
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "TU Cricket Ground",
@@ -71,17 +56,12 @@ const NepalStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "2000",
     "matchesHosted": {
       "T20Is": 2
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Fapla Cricket Ground",
@@ -92,17 +72,12 @@ const NepalStadiums = [
       "Practice Pitches",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2005",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Dhangadhi Cricket Academy",
@@ -113,17 +88,12 @@ const NepalStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2008",
     "matchesHosted": {
       "T20Is": 3
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Tikapur Cricket Ground",
@@ -134,17 +104,12 @@ const NepalStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "2010",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Biratnagar Cricket Ground",
@@ -155,17 +120,12 @@ const NepalStadiums = [
       "Practice Pitches",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "2003",
     "matchesHosted": {
       "T20Is": 4
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Mangalbare Cricket Ground",
@@ -176,17 +136,12 @@ const NepalStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "2011",
     "matchesHosted": {
       "T20Is": 2
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Birgunj Cricket Ground",
@@ -197,11 +152,12 @@ const NepalStadiums = [
       "Training Facilities",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2006",
     "matchesHosted": {
       "T20Is": 1
-    }
+    },
+    "outfieldType": "lushGreen"
   }
 ];
 

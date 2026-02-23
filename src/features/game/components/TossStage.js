@@ -33,6 +33,12 @@ const outfieldIcons = {
   dryAndPatchy: '🟤',
 };
 
+const formatConditionLabel = (value = '') =>
+  String(value)
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[-_]/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
 function TossStage({ onChooseCall, matchCondition, selectedCall }) {
   return (
     <div className="sim-toss-panel">
@@ -73,17 +79,17 @@ function TossStage({ onChooseCall, matchCondition, selectedCall }) {
             className="sim-condition-icon"
           />
           <h4>{weatherIcons[matchCondition.weather]} Weather</h4>
-          <p>{matchCondition.weather}</p>
+          <p>{formatConditionLabel(matchCondition.weather)}</p>
         </div>
         <div className="sim-condition-card">
           <img src="/asset/img/icon/conditions/pitch-512.svg" alt="pitch" className="sim-condition-icon" />
           <h4>{pitchIcons[matchCondition.pitch]} Pitch</h4>
-          <p>{matchCondition.pitch}</p>
+          <p>{formatConditionLabel(matchCondition.pitch)}</p>
         </div>
         <div className="sim-condition-card">
           <img src="/asset/img/icon/conditions/outfield-512.svg" alt="outfield" className="sim-condition-icon" />
           <h4>{outfieldIcons[matchCondition.outfield]} Outfield</h4>
-          <p>{matchCondition.outfield}</p>
+          <p>{formatConditionLabel(matchCondition.outfield)}</p>
         </div>
       </div>
     </div>

@@ -8,18 +8,13 @@ const CanadaStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1908",
     "matchesHosted": {
       "ODIs": 12,
       "T20Is": 9
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "King City Cricket Club",
@@ -30,18 +25,13 @@ const CanadaStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1996",
     "matchesHosted": {
       "ODIs": 9,
       "T20Is": 6
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Maple Leaf Cricket Club",
@@ -52,18 +42,13 @@ const CanadaStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "2004",
     "matchesHosted": {
       "ODIs": 7,
       "T20Is": 5
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Bayview Cricket Club",
@@ -74,18 +59,13 @@ const CanadaStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1975",
     "matchesHosted": {
       "ODIs": 6,
       "T20Is": 4
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Victoria Park",
@@ -96,17 +76,12 @@ const CanadaStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1950",
     "matchesHosted": {
       "T20Is": 3
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Edmonton Cricket Ground",
@@ -117,17 +92,12 @@ const CanadaStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1989",
     "matchesHosted": {
       "T20Is": 2
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Winnipeg Cricket Oval",
@@ -138,17 +108,12 @@ const CanadaStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1995",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Montreal Cricket Club",
@@ -159,17 +124,12 @@ const CanadaStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1872",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Calgary Cricket Park",
@@ -180,17 +140,12 @@ const CanadaStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "2008",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Ottawa Cricket Club",
@@ -201,11 +156,12 @@ const CanadaStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1963",
     "matchesHosted": {
       "T20Is": 1
-    }
+    },
+    "outfieldType": "fastAndHard"
   }
 ];
 

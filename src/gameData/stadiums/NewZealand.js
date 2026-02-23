@@ -8,19 +8,14 @@ const NewZealandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1900",
     "matchesHosted": {
       "Tests": 65,
       "ODIs": 140,
       "T20Is": 38
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Hagley Oval",
@@ -31,19 +26,14 @@ const NewZealandStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1886",
     "matchesHosted": {
       "Tests": 27,
       "ODIs": 44,
       "T20Is": 17
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Wellington Regional Stadium",
@@ -54,19 +44,14 @@ const NewZealandStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1999",
     "matchesHosted": {
       "Tests": 24,
       "ODIs": 49,
       "T20Is": 21
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Seddon Park",
@@ -77,19 +62,14 @@ const NewZealandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1950",
     "matchesHosted": {
       "Tests": 31,
       "ODIs": 65,
       "T20Is": 19
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Basin Reserve",
@@ -100,19 +80,14 @@ const NewZealandStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1886",
     "matchesHosted": {
       "Tests": 60,
       "ODIs": 34,
       "T20Is": 12
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Bay Oval",
@@ -123,18 +98,13 @@ const NewZealandStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2004",
     "matchesHosted": {
       "ODIs": 14,
       "T20Is": 9
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "McLean Park",
@@ -145,18 +115,13 @@ const NewZealandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1951",
     "matchesHosted": {
       "ODIs": 51,
       "T20Is": 16
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "University Oval",
@@ -167,19 +132,14 @@ const NewZealandStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "2003",
     "matchesHosted": {
       "Tests": 7,
       "ODIs": 24,
       "T20Is": 8
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Cobham Oval",
@@ -190,18 +150,13 @@ const NewZealandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "2001",
     "matchesHosted": {
       "ODIs": 9,
       "T20Is": 6
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Pukekura Park",
@@ -212,12 +167,13 @@ const NewZealandStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1947",
     "matchesHosted": {
       "ODIs": 5,
       "T20Is": 4
-    }
+    },
+    "outfieldType": "dryAndPatchy"
   }
 ];
 

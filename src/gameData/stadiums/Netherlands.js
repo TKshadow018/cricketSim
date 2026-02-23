@@ -8,18 +8,13 @@ const NetherlandsStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1957",
     "matchesHosted": {
       "ODIs": 22,
       "T20Is": 14
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Rotterdam Cricket Club Ground",
@@ -30,18 +25,13 @@ const NetherlandsStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1962",
     "matchesHosted": {
       "ODIs": 16,
       "T20Is": 10
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "The Hague Cricket Ground",
@@ -52,18 +42,13 @@ const NetherlandsStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1970",
     "matchesHosted": {
       "ODIs": 12,
       "T20Is": 8
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Utrecht Cricket Club Ground",
@@ -74,18 +59,13 @@ const NetherlandsStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1975",
     "matchesHosted": {
       "ODIs": 8,
       "T20Is": 6
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Haarlem Cricket Club Ground",
@@ -96,18 +76,13 @@ const NetherlandsStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1980",
     "matchesHosted": {
       "ODIs": 6,
       "T20Is": 4
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Amstelveen Cricket Club Ground",
@@ -118,18 +93,13 @@ const NetherlandsStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1985",
     "matchesHosted": {
       "ODIs": 4,
       "T20Is": 3
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Delft Cricket Club Ground",
@@ -140,18 +110,13 @@ const NetherlandsStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1990",
     "matchesHosted": {
       "ODIs": 2,
       "T20Is": 2
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Leiden Cricket Club Ground",
@@ -162,17 +127,12 @@ const NetherlandsStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1995",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Eindhoven Cricket Club Ground",
@@ -183,17 +143,12 @@ const NetherlandsStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "2000",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Groningen Cricket Club Ground",
@@ -204,11 +159,12 @@ const NetherlandsStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "2005",
     "matchesHosted": {
       "T20Is": 1
-    }
+    },
+    "outfieldType": "dryAndPatchy"
   }
 ];
 

@@ -8,18 +8,13 @@ const AfghanistanStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2008",
     "matchesHosted": {
       "ODIs": 20,
       "T20Is": 11
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Kandahar International Cricket Stadium",
@@ -30,18 +25,13 @@ const AfghanistanStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "2011",
     "matchesHosted": {
       "ODIs": 7,
       "T20Is": 4
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Herat International Cricket Stadium",
@@ -52,18 +42,13 @@ const AfghanistanStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "2015",
     "matchesHosted": {
       "ODIs": 8,
       "T20Is": 5
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Nangarhar International Cricket Stadium",
@@ -74,18 +59,13 @@ const AfghanistanStadiums = [
       "Practice Pitches",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "2017",
     "matchesHosted": {
       "ODIs": 6,
       "T20Is": 3
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Balkh Cricket Stadium",
@@ -96,18 +76,13 @@ const AfghanistanStadiums = [
       "Indoor Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2019",
     "matchesHosted": {
       "ODIs": 5,
       "T20Is": 2
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Khost Cricket Stadium",
@@ -118,17 +93,12 @@ const AfghanistanStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "2016",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Paktia Cricket Stadium",
@@ -139,17 +109,12 @@ const AfghanistanStadiums = [
       "Practice Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "2018",
     "matchesHosted": {
       "T20Is": 2
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Bamyan Cricket Stadium",
@@ -160,17 +125,12 @@ const AfghanistanStadiums = [
       "Practice Pitches",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "2020",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Zabul Cricket Stadium",
@@ -181,17 +141,12 @@ const AfghanistanStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "2019",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Logar Cricket Stadium",
@@ -202,11 +157,12 @@ const AfghanistanStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2021",
     "matchesHosted": {
       "T20Is": 1
-    }
+    },
+    "outfieldType": "fastAndHard"
   }
 ];
 

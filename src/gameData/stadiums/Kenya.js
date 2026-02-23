@@ -8,18 +8,13 @@ const KenyaStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1935",
     "matchesHosted": {
       "ODIs": 22,
       "T20Is": 14
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Mombasa Sports Club Ground",
@@ -30,18 +25,13 @@ const KenyaStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1952",
     "matchesHosted": {
       "ODIs": 16,
       "T20Is": 10
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Ruaraka Sports Club Ground",
@@ -52,18 +42,13 @@ const KenyaStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1968",
     "matchesHosted": {
       "ODIs": 12,
       "T20Is": 8
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Eldoret Sports Club Ground",
@@ -74,18 +59,13 @@ const KenyaStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1976",
     "matchesHosted": {
       "ODIs": 8,
       "T20Is": 6
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Nairobi Jafferys Sports Club Ground",
@@ -96,18 +76,13 @@ const KenyaStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1992",
     "matchesHosted": {
       "ODIs": 6,
       "T20Is": 4
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Kericho Green Stadium",
@@ -118,18 +93,13 @@ const KenyaStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1985",
     "matchesHosted": {
       "ODIs": 4,
       "T20Is": 3
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Nakuru Athletic Club Ground",
@@ -140,18 +110,13 @@ const KenyaStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1970",
     "matchesHosted": {
       "ODIs": 2,
       "T20Is": 2
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Kisumu Simba Club Ground",
@@ -162,18 +127,13 @@ const KenyaStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "1991",
     "matchesHosted": {
       "ODIs": 2,
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Thika Municipal Stadium",
@@ -184,17 +144,12 @@ const KenyaStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1980",
     "matchesHosted": {
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Kakamega Showground",
@@ -205,11 +160,12 @@ const KenyaStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1987",
     "matchesHosted": {
       "T20Is": 1
-    }
+    },
+    "outfieldType": "dryAndPatchy"
   }
 ];
 

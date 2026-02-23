@@ -8,18 +8,13 @@ const IrelandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1864",
     "matchesHosted": {
       "ODIs": 20,
       "T20Is": 15
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Stormont Cricket Ground",
@@ -30,18 +25,13 @@ const IrelandStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1949",
     "matchesHosted": {
       "ODIs": 18,
       "T20Is": 12
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Bready Cricket Club Ground",
@@ -52,18 +42,13 @@ const IrelandStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "2003",
     "matchesHosted": {
       "ODIs": 12,
       "T20Is": 9
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Clontarf Cricket Club Ground",
@@ -74,18 +59,13 @@ const IrelandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1936",
     "matchesHosted": {
       "ODIs": 10,
       "T20Is": 7
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Eglinton Cricket Club Ground",
@@ -96,18 +76,13 @@ const IrelandStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1972",
     "matchesHosted": {
       "ODIs": 8,
       "T20Is": 5
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "The Village, Malahide",
@@ -118,18 +93,13 @@ const IrelandStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "2010",
     "matchesHosted": {
       "ODIs": 6,
       "T20Is": 4
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Pembroke Cricket Club Ground",
@@ -140,18 +110,13 @@ const IrelandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1924",
     "matchesHosted": {
       "ODIs": 4,
       "T20Is": 3
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Civil Service Cricket Club Ground",
@@ -162,18 +127,13 @@ const IrelandStadiums = [
       "Practice Nets",
       "Spectator Area"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1903",
     "matchesHosted": {
       "ODIs": 2,
       "T20Is": 2
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Oak Hill Cricket Club Ground",
@@ -184,18 +144,13 @@ const IrelandStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1998",
     "matchesHosted": {
       "ODIs": 2,
       "T20Is": 1
     },
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Railway Union Cricket Club Ground",
@@ -206,12 +161,13 @@ const IrelandStadiums = [
       "Indoor Nets",
       "Corporate Boxes"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1919",
     "matchesHosted": {
       "ODIs": 1,
       "T20Is": 1
-    }
+    },
+    "outfieldType": "wetWithDew"
   }
 ];
 

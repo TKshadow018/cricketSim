@@ -6,13 +6,12 @@ import { countries } from '../../../gameData/countries';
 import { stadiums } from '../../../gameData/stadiums';
 import { getPlayersForNations, playerListForNation } from '../../../gameData/playerListForNation';
 import { matchTypeList } from '../../../gameData/matchTypeList';
-import { outfieldType, pitchType } from '../../../gameData/matchCondition';
+import { outfieldType, pitchType, weather } from '../../../gameData/matchCondition';
 import { runVoice } from '../../../gameData/runVoice';
 import { outVoice } from '../../../gameData/outVoice';
 import { matchStatusEnum } from '../../../gameData/matchStatusEnum';
 import {
   buildInitialInnings,
-  buildRandomMatchCondition,
   hydrateGameState,
   resetMatchRuntime,
   setBattingIntent as setBattingIntentAction,
@@ -129,6 +128,14 @@ const battingIntentShift = {
   [battingAction.superShot]: { 0: -15, 1: 5, 2: 3, 3: 0, 4: 3, 6: 2, wide: 0, nb: 0, W: 2 },
 };
 
+const randomKey = (map) => {
+  const keys = Object.keys(map || {});
+  if (!keys.length) {
+    return '';
+  }
+  return keys[Math.floor(Math.random() * keys.length)];
+};
+
 const bowlingIntentShift = {
   [bowlingAction.saveRun]: { 0: 20, 1: -8, 2: -3, 3: -1, 4: -4, 6: -2, wide: 0, nb: 0, W: -2 },
   [bowlingAction.tryForWicket]: { 0: -15, 1: 4, 2: 2, 3: 1, 4: 4, 6: 1, wide: 0, nb: 0, W: 3 },
@@ -192,6 +199,7 @@ export function useCricketSimulatorController() {
     ownTeamRoles,
     opponentTeamRoles,
     locationCountry,
+    selectedStadium,
     commentator,
     tossWinner,
     firstBattingSide,
@@ -561,6 +569,13 @@ export function useCricketSimulatorController() {
     const currentIndex = stageOrder.indexOf(stage);
     if (currentIndex < stageOrder.length - 1) {
       dispatch(setStageAction(stageOrder[currentIndex + 1]));
+    }
+  };
+
+  const goToPreviousStage = () => {
+    const currentIndex = stageOrder.indexOf(stage);
+    if (currentIndex > 0) {
+      dispatch(setStageAction(stageOrder[currentIndex - 1]));
     }
   };
 
@@ -2021,9 +2036,26 @@ export function useCricketSimulatorController() {
     speak(`${winner} chose to ${decision} first. You must ${remaining} first.`);
   };
 
+  const resolveStadiumCondition = (stadiumName, weatherKey = randomKey(weather)) => {
+    const selected = (venueStadiums || []).find((stadium) => stadium?.name === stadiumName);
+    const pitch = pitchType[selected?.pitchType] ? selected.pitchType : 'sporting';
+    const outfield = outfieldType[selected?.outfieldType] ? selected.outfieldType : 'lushGreen';
+
+    return {
+      weather: weatherKey || randomKey(weather) || 'sunny',
+      pitch,
+      outfield,
+    };
+  };
+
+  const handleSetSelectedStadium = (value) => {
+    dispatch(setSelectedStadiumAction(value));
+    dispatch(setMatchConditionAction(resolveStadiumCondition(value, matchCondition.weather)));
+  };
+
   // Resolves toss call, condition generation, toss winner, and toss-result stage state.
   const handleTossCall = (call) => {
-    const nextCondition = buildRandomMatchCondition();
+    const nextCondition = resolveStadiumCondition(selectedStadium, randomKey(weather));
     dispatch(setMatchConditionAction(nextCondition));
     dispatch(setTossCallAction(call));
 
@@ -2248,7 +2280,9 @@ export function useCricketSimulatorController() {
     momRecommendations,
     announceManOfTheMatch,
     goToNextStage,
+    goToPreviousStage,
     toggleScoreboard: () => dispatch(toggleShowScoreboard()),
+    setSelectedStadium: handleSetSelectedStadium,
     setMatchTypeKey: (value) => dispatch(setMatchTypeKeyAction(value)),
     setOwnTeam: (value) => {
       dispatch(setOwnTeamAction(value));
@@ -2275,7 +2309,6 @@ export function useCricketSimulatorController() {
       );
     },
     setLocationCountry: (value) => dispatch(setLocationCountryAction(value)),
-    setSelectedStadium: (value) => dispatch(setSelectedStadiumAction(value)),
     setCommentator: (value) => dispatch(setCommentatorAction(value)),
     setBattingIntent: handleSetBattingIntent,
     setBowlingIntent: handleSetBowlingIntent,

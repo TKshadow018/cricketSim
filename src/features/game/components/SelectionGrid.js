@@ -9,6 +9,8 @@ function SelectionGrid({ items, selectedKey, onSelect, renderTitle, renderMeta, 
         const active = selectedKey === key;
         const visual = item.renderVisual ? item.renderVisual(item) : null;
         const badge = item.badge || null;
+        const meta = renderMeta ? renderMeta(item) : null;
+        const description = renderDescription ? renderDescription(item) : null;
         const visualClassName = item.visualClassName
           ? `sim-choice-visual ${item.visualClassName}`
           : 'sim-choice-visual';
@@ -24,8 +26,8 @@ function SelectionGrid({ items, selectedKey, onSelect, renderTitle, renderMeta, 
           >
             {visual ? <div className={visualClassName}>{visual}</div> : null}
             <h4>{renderTitle(item)}</h4>
-            {renderMeta ? <p>{renderMeta(item)}</p> : null}
-            {renderDescription ? <small>{renderDescription(item)}</small> : null}
+            {typeof meta === 'string' ? <p>{meta}</p> : meta}
+            {typeof description === 'string' ? <small>{description}</small> : description}
             {badge ? <span className="sim-choice-badge">{badge}</span> : null}
           </motion.button>
         );

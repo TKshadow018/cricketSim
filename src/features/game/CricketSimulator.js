@@ -32,6 +32,7 @@ function CricketSimulator() {
     momRecommendations,
     announceManOfTheMatch,
     goToNextStage,
+    goToPreviousStage,
     toggleScoreboard,
     setMatchTypeKey,
     setOwnTeam,
@@ -152,6 +153,7 @@ function CricketSimulator() {
             availableVoices={availableVoices}
             matchVisual={matchVisual}
             goToNextStage={goToNextStage}
+            goToPreviousStage={goToPreviousStage}
             setMatchTypeKey={setMatchTypeKey}
             setOwnTeam={setOwnTeam}
             setOpponentTeam={setOpponentTeam}

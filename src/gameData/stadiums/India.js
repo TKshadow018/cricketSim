@@ -8,19 +8,14 @@ const IndiaStadiums = [
       "Media Center",
       "Practice Pitches"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1864",
     "matchesHosted": [
       "Test Matches: 42",
       "ODIs: 30",
       "T20Is: 5"
     ],
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "Wankhede Stadium",
@@ -31,19 +26,14 @@ const IndiaStadiums = [
       "Media Center",
       "Training Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1974",
     "matchesHosted": [
       "Test Matches: 25",
       "ODIs: 23",
       "T20Is: 7"
     ],
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "M. Chinnaswamy Stadium",
@@ -54,19 +44,14 @@ const IndiaStadiums = [
       "Media Center",
       "Indoor Nets"
     ],
-    "pitchType": "Grass",
+    "pitchType": "grassy",
     "inaugurated": "1969",
     "matchesHosted": [
       "Test Matches: 24",
       "ODIs: 20",
       "T20Is: 7"
     ],
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Rajiv Gandhi International Cricket Stadium",
@@ -77,19 +62,14 @@ const IndiaStadiums = [
       "Media Center",
       "Practice Nets"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "2003",
     "matchesHosted": [
       "Test Matches: 6",
       "ODIs: 18",
       "T20Is: 7"
     ],
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Sardar Vallabhbhai Patel Stadium",
@@ -100,19 +80,14 @@ const IndiaStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1982",
     "matchesHosted": [
       "Test Matches: 12",
       "ODIs: 24",
       "T20Is: 10"
     ],
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "MA Chidambaram Stadium",
@@ -123,19 +98,14 @@ const IndiaStadiums = [
       "Media Center",
       "Gymnasium"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dusty",
     "inaugurated": "1916",
     "matchesHosted": [
       "Test Matches: 33",
       "ODIs: 24",
       "T20Is: 10"
     ],
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "fastAndHard"
   },
   {
     "name": "Holkar Cricket Stadium",
@@ -146,19 +116,14 @@ const IndiaStadiums = [
       "Media Center",
       "Training Ground"
     ],
-    "pitchType": "Grass",
+    "pitchType": "sporting",
     "inaugurated": "1990",
     "matchesHosted": [
       "Test Matches: 7",
       "ODIs: 16",
       "T20Is: 8"
     ],
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "wetWithDew"
   },
   {
     "name": "Greenfield International Stadium",
@@ -169,18 +134,13 @@ const IndiaStadiums = [
       "Media Center",
       "Indoor Training"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2017",
     "matchesHosted": [
       "ODIs: 6",
       "T20Is: 4"
     ],
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "lushGreen"
   },
   {
     "name": "Vidarbha Cricket Association Stadium",
@@ -191,19 +151,14 @@ const IndiaStadiums = [
       "Media Center",
       "Practice Facilities"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dead",
     "inaugurated": "2008",
     "matchesHosted": [
       "Test Matches: 8",
       "ODIs: 13",
       "T20Is: 5"
     ],
-    "battingCondition": [
-      9,
-      7
-    ],
-    "betterFor": 1,
-    "outfieldType": 4
+    "outfieldType": "dryAndPatchy"
   },
   {
     "name": "PCA IS Bindra Stadium",
@@ -214,13 +169,14 @@ const IndiaStadiums = [
       "Media Center",
       "Fitness Center"
     ],
-    "pitchType": "Grass",
+    "pitchType": "dry",
     "inaugurated": "1993",
     "matchesHosted": [
       "Test Matches: 13",
       "ODIs: 22",
       "T20Is: 8"
-    ]
+    ],
+    "outfieldType": "wetWithDew"
   }
 ];
 
