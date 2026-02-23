@@ -21,9 +21,16 @@ function CricketSimulator() {
     isUserWinner,
     firstInningsView,
     secondInningsView,
+    savedGames,
+    isSavingGame,
+    isGlobalSaving,
+    isSavesLoading,
+    saveMessage,
     teamOneFinal,
     teamTwoFinal,
     resultSummary,
+    momRecommendations,
+    announceManOfTheMatch,
     goToNextStage,
     toggleScoreboard,
     setMatchTypeKey,
@@ -34,6 +41,9 @@ function CricketSimulator() {
     setCommentator,
     setPreferredVoice,
     speak,
+    saveGame,
+    loadSavedGame,
+    deleteSavedGame,
     setBattingIntent,
     setBowlingIntent,
     processDelivery,
@@ -42,6 +52,28 @@ function CricketSimulator() {
     handleSelectBowler,
     handleTossCall,
     handleUserTossDecision,
+    ownAvailablePool,
+    opponentAvailablePool,
+    ownSelectedXIIds,
+    opponentSelectedXIIds,
+    ownSelectedXIPlayers,
+    opponentSelectedXIPlayers,
+    ownTeamRoles,
+    opponentTeamRoles,
+    ownXIReady,
+    opponentXIReady,
+    ownRolesReady,
+    opponentRolesReady,
+    moveOwnPlayerToXI,
+    removeOwnPlayerFromXI,
+    moveOpponentPlayerToXI,
+    removeOpponentPlayerFromXI,
+    setOwnRole,
+    setOpponentRole,
+    createCustomPlayer,
+    autoPickOwnXI,
+    autoPickOpponentXI,
+    startMatchWithSelectedXI,
     buildTeamOneScorecard,
     buildTeamTwoScorecard,
     resetMatch,
@@ -62,6 +94,12 @@ function CricketSimulator() {
 
   return (
     <div className="sim-shell">
+      {isGlobalSaving ? (
+        <div className="sim-saving-overlay" role="status" aria-live="polite">
+          <div className="sim-saving-ball">🏏</div>
+          <p>Saving match...</p>
+        </div>
+      ) : null}
       <AnimatePresence mode="wait">
         {isLiveStage ? (
           <>
@@ -84,6 +122,9 @@ function CricketSimulator() {
               secondInningsView={secondInningsView}
               setBattingIntent={setBattingIntent}
               setBowlingIntent={setBowlingIntent}
+              onSaveGame={saveGame}
+              isSavingGame={isSavingGame}
+              saveMessage={saveMessage}
               processDelivery={processDelivery}
               handleSelectOpener={handleSelectOpener}
               handleSelectNextBatter={handleSelectNextBatter}
@@ -94,6 +135,8 @@ function CricketSimulator() {
               teamOneFinal={teamOneFinal}
               teamTwoFinal={teamTwoFinal}
               resultSummary={resultSummary}
+              momRecommendations={momRecommendations}
+              onSelectManOfTheMatch={announceManOfTheMatch}
               resetMatch={resetMatch}
               oversDisplay={oversDisplay}
             />
@@ -117,9 +160,36 @@ function CricketSimulator() {
             setCommentator={setCommentator}
             setPreferredVoice={setPreferredVoice}
             speak={speak}
+            savedGames={savedGames}
+            isSavesLoading={isSavesLoading}
+            saveMessage={saveMessage}
+            onLoadSavedGame={loadSavedGame}
+            onDeleteSavedGame={deleteSavedGame}
             handleTossCall={handleTossCall}
             handleUserTossDecision={handleUserTossDecision}
             isUserWinner={isUserWinner}
+            ownAvailablePool={ownAvailablePool}
+            opponentAvailablePool={opponentAvailablePool}
+            ownSelectedXIIds={ownSelectedXIIds}
+            opponentSelectedXIIds={opponentSelectedXIIds}
+            ownSelectedXIPlayers={ownSelectedXIPlayers}
+            opponentSelectedXIPlayers={opponentSelectedXIPlayers}
+            ownTeamRoles={ownTeamRoles}
+            opponentTeamRoles={opponentTeamRoles}
+            ownXIReady={ownXIReady}
+            opponentXIReady={opponentXIReady}
+            ownRolesReady={ownRolesReady}
+            opponentRolesReady={opponentRolesReady}
+            moveOwnPlayerToXI={moveOwnPlayerToXI}
+            removeOwnPlayerFromXI={removeOwnPlayerFromXI}
+            moveOpponentPlayerToXI={moveOpponentPlayerToXI}
+            removeOpponentPlayerFromXI={removeOpponentPlayerFromXI}
+            setOwnRole={setOwnRole}
+            setOpponentRole={setOpponentRole}
+            createCustomPlayer={createCustomPlayer}
+            autoPickOwnXI={autoPickOwnXI}
+            autoPickOpponentXI={autoPickOpponentXI}
+            startMatchWithSelectedXI={startMatchWithSelectedXI}
           />
         )}
       </AnimatePresence>

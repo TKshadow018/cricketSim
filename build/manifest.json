@@ -1,6 +1,9 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "CricketSim",
+  "name": "Cricket Sim Arena - Realistic Online Cricket Games",
+  "description": "Realistic online cricket game with ball-by-ball simulation, strategy controls, and match scoreboards.",
+  "lang": "en",
+  "categories": ["games", "sports", "entertainment"],
   "icons": [
     {
       "src": "favicon.ico",
@@ -18,8 +21,8 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#0a1222",
+  "background_color": "#060b17"
 }

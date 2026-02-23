@@ -47,6 +47,20 @@ const initialState = {
   matchTypeKey: 't20',
   ownTeam: 'India',
   opponentTeam: 'Australia',
+  ownPlayingXI: [],
+  opponentPlayingXI: [],
+  ownCustomPlayers: [],
+  opponentCustomPlayers: [],
+  ownTeamRoles: {
+    captainId: null,
+    viceCaptainId: null,
+    wicketKeeperId: null,
+  },
+  opponentTeamRoles: {
+    captainId: null,
+    viceCaptainId: null,
+    wicketKeeperId: null,
+  },
   locationCountry: 'India',
   selectedStadium: '',
   commentator: '',
@@ -74,9 +88,51 @@ const gameSlice = createSlice({
     },
     setOwnTeam: (state, action) => {
       state.ownTeam = action.payload;
+      state.ownPlayingXI = [];
+      state.ownCustomPlayers = [];
+      state.ownTeamRoles = {
+        captainId: null,
+        viceCaptainId: null,
+        wicketKeeperId: null,
+      };
     },
     setOpponentTeam: (state, action) => {
       state.opponentTeam = action.payload;
+      state.opponentPlayingXI = [];
+      state.opponentCustomPlayers = [];
+      state.opponentTeamRoles = {
+        captainId: null,
+        viceCaptainId: null,
+        wicketKeeperId: null,
+      };
+    },
+    setOwnPlayingXI: (state, action) => {
+      state.ownPlayingXI = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setOpponentPlayingXI: (state, action) => {
+      state.opponentPlayingXI = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setOwnCustomPlayers: (state, action) => {
+      state.ownCustomPlayers = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setOpponentCustomPlayers: (state, action) => {
+      state.opponentCustomPlayers = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setOwnTeamRoles: (state, action) => {
+      const payload = action.payload || {};
+      state.ownTeamRoles = {
+        captainId: payload.captainId ?? null,
+        viceCaptainId: payload.viceCaptainId ?? null,
+        wicketKeeperId: payload.wicketKeeperId ?? null,
+      };
+    },
+    setOpponentTeamRoles: (state, action) => {
+      const payload = action.payload || {};
+      state.opponentTeamRoles = {
+        captainId: payload.captainId ?? null,
+        viceCaptainId: payload.viceCaptainId ?? null,
+        wicketKeeperId: payload.wicketKeeperId ?? null,
+      };
     },
     setLocationCountry: (state, action) => {
       state.locationCountry = action.payload;
@@ -120,12 +176,60 @@ const gameSlice = createSlice({
     toggleShowScoreboard: (state) => {
       state.showScoreboard = !state.showScoreboard;
     },
+    hydrateGameState: (state, action) => {
+      const payload = action.payload || {};
+      const hasLegacyNoXI = payload.ownPlayingXI === undefined && payload.opponentPlayingXI === undefined;
+      const stageValue = payload.stage;
+      const migratedStage =
+        hasLegacyNoXI && Number.isInteger(stageValue) && stageValue >= 9 && stageValue <= 11
+          ? stageValue + 2
+          : stageValue;
+      return {
+        ...state,
+        ...payload,
+        stage: migratedStage ?? state.stage,
+        ownPlayingXI: Array.isArray(payload.ownPlayingXI) ? payload.ownPlayingXI : state.ownPlayingXI,
+        opponentPlayingXI: Array.isArray(payload.opponentPlayingXI)
+          ? payload.opponentPlayingXI
+          : state.opponentPlayingXI,
+        ownCustomPlayers: Array.isArray(payload.ownCustomPlayers)
+          ? payload.ownCustomPlayers
+          : state.ownCustomPlayers,
+        opponentCustomPlayers: Array.isArray(payload.opponentCustomPlayers)
+          ? payload.opponentCustomPlayers
+          : state.opponentCustomPlayers,
+        ownTeamRoles: payload.ownTeamRoles || state.ownTeamRoles,
+        opponentTeamRoles: payload.opponentTeamRoles || state.opponentTeamRoles,
+        firstInnings: {
+          ...buildInitialInnings(),
+          ...(payload.firstInnings || state.firstInnings),
+        },
+        secondInnings: {
+          ...buildInitialInnings(),
+          ...(payload.secondInnings || state.secondInnings),
+        },
+      };
+    },
     resetMatchRuntime: (state) => {
       state.stage = matchStatusEnum.intro;
       state.tossWinner = '';
       state.tossDecision = 'bat';
       state.tossCall = '';
       state.firstBattingSide = 'own';
+      state.ownPlayingXI = [];
+      state.opponentPlayingXI = [];
+      state.ownCustomPlayers = [];
+      state.opponentCustomPlayers = [];
+      state.ownTeamRoles = {
+        captainId: null,
+        viceCaptainId: null,
+        wicketKeeperId: null,
+      };
+      state.opponentTeamRoles = {
+        captainId: null,
+        viceCaptainId: null,
+        wicketKeeperId: null,
+      };
       state.matchCondition = buildRandomMatchCondition();
       state.battingIntent = battingAction.normal;
       state.bowlingIntent = bowlingAction.normal;
@@ -141,6 +245,12 @@ export const {
   setMatchTypeKey,
   setOwnTeam,
   setOpponentTeam,
+  setOwnPlayingXI,
+  setOpponentPlayingXI,
+  setOwnCustomPlayers,
+  setOpponentCustomPlayers,
+  setOwnTeamRoles,
+  setOpponentTeamRoles,
   setLocationCountry,
   setSelectedStadium,
   setCommentator,
@@ -155,6 +265,7 @@ export const {
   setSecondInnings,
   setShowScoreboard,
   toggleShowScoreboard,
+  hydrateGameState,
   resetMatchRuntime,
 } = gameSlice.actions;
 

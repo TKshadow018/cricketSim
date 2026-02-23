@@ -38,6 +38,9 @@ function InningsStage({
   onBattingIntent,
   onBowlingIntent,
   onBowlBall,
+  onSaveGame,
+  isSavingGame,
+  saveMessage,
   canPlayNextBall,
   showScoreboard,
   scorecard,
@@ -238,6 +241,14 @@ function InningsStage({
               fullWidth={false}
               disabled={!canPlayNextBall}
             />
+            <AppButton
+              text={isSavingGame ? 'Saving...' : 'Save Game'}
+              onClick={onSaveGame}
+              variant="secondary"
+              fullWidth={false}
+              disabled={isSavingGame}
+            />
+            {saveMessage ? <small>{saveMessage}</small> : null}
           </div>
         </div>
 

@@ -16,6 +16,9 @@ function LiveMatchStages({
   secondInningsView,
   setBattingIntent,
   setBowlingIntent,
+  onSaveGame,
+  isSavingGame,
+  saveMessage,
   processDelivery,
   handleSelectOpener,
   handleSelectNextBatter,
@@ -26,6 +29,8 @@ function LiveMatchStages({
   teamOneFinal,
   teamTwoFinal,
   resultSummary,
+  momRecommendations,
+  onSelectManOfTheMatch,
   resetMatch,
   oversDisplay,
 }) {
@@ -73,6 +78,9 @@ function LiveMatchStages({
             onBattingIntent={setBattingIntent}
             onBowlingIntent={setBowlingIntent}
             onBowlBall={() => processDelivery(true)}
+            onSaveGame={onSaveGame}
+            isSavingGame={isSavingGame}
+            saveMessage={saveMessage}
             canPlayNextBall={firstInningsView.canPlayNextBall}
             showScoreboard={game.showScoreboard}
             scorecard={buildTeamOneScorecard()}
@@ -123,6 +131,9 @@ function LiveMatchStages({
             onBattingIntent={setBattingIntent}
             onBowlingIntent={setBowlingIntent}
             onBowlBall={() => processDelivery(false)}
+            onSaveGame={onSaveGame}
+            isSavingGame={isSavingGame}
+            saveMessage={saveMessage}
             canPlayNextBall={secondInningsView.canPlayNextBall}
             showScoreboard={game.showScoreboard}
             scorecard={buildTeamTwoScorecard()}
@@ -150,6 +161,8 @@ function LiveMatchStages({
             teamOneOvers={oversDisplay(game.firstInnings.balls)}
             teamTwoOvers={oversDisplay(game.secondInnings.balls)}
             summary={resultSummary}
+            momRecommendations={momRecommendations}
+            onSelectManOfTheMatch={onSelectManOfTheMatch}
             showScoreboard={game.showScoreboard}
             scorecard={buildTeamTwoScorecard()}
             onNewMatch={resetMatch}

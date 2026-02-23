@@ -10,6 +10,14 @@ const weatherIcons = {
   stormy: '⛈️',
 };
 
+const weatherImageByType = {
+  sunny: '/asset/img/icon/waether/sun.png',
+  rainy: '/asset/img/icon/waether/rainy.png',
+  cloudy: '/asset/img/icon/waether/cloudy.png',
+  windy: '/asset/img/icon/waether/windy.png',
+  stormy: '/asset/img/icon/waether/stormy.png',
+};
+
 const pitchIcons = {
   grassy: '🌱',
   dusty: '🏜️',
@@ -59,7 +67,11 @@ function TossStage({ onChooseCall, matchCondition, selectedCall }) {
 
       <div className="sim-condition-grid">
         <div className="sim-condition-card">
-          <img src="/asset/img/icon/conditions/weather-512.svg" alt="weather" className="sim-condition-icon" />
+          <img
+            src={weatherImageByType[matchCondition.weather] || '/asset/img/icon/conditions/weather-512.svg'}
+            alt="weather"
+            className="sim-condition-icon"
+          />
           <h4>{weatherIcons[matchCondition.weather]} Weather</h4>
           <p>{matchCondition.weather}</p>
         </div>

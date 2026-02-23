@@ -12,6 +12,8 @@ export const stageOrder = [
   matchStatusEnum.ChooseCommentator,
   matchStatusEnum.TossTime,
   matchStatusEnum.TossResult,
+  matchStatusEnum.ChooseOwnPlayingXI,
+  matchStatusEnum.ChooseOpponentPlayingXI,
   matchStatusEnum.TeamOneBat,
   matchStatusEnum.TeamTwoBat,
   matchStatusEnum.MatchEnd,
@@ -108,7 +110,7 @@ export const getBestBowlerIndex = (players = [], excludeIndex = null) => {
 };
 
 export const isEligibleBowler = (player) =>
-  (player?.paceAbility || 0) >= 30 || (player?.spinAbility || 0) >= 30;
+  !player?.isWicketKeeper && ((player?.paceAbility || 0) >= 30 || (player?.spinAbility || 0) >= 30);
 
 export const getMaxOversPerBowler = (totalOvers) => Math.max(1, Math.floor(totalOvers / 5));
 
@@ -123,8 +125,7 @@ export const canSelectNextBatter = (inningState, playerIndex) => {
 export const canSelectBowler = ({ inningState, bowlerIndex, maxOversPerBowler }) => {
   const isLastOverBowler = inningState.lastOverBowlerIndex === bowlerIndex;
   const balls = inningState.bowlingStats[bowlerIndex]?.balls || 0;
-  const completedOvers = Math.floor(balls / 6);
-  const hitOverLimit = completedOvers >= maxOversPerBowler;
+  const hitOverLimit = balls >= maxOversPerBowler * 6;
 
   return !isLastOverBowler && !hitOverLimit;
 };
@@ -137,6 +138,12 @@ export const createBattingStats = (players = []) =>
     outByBowler: '',
     outAtScore: '',
     outAtBall: '',
+    superShotPaceUnlocked: 0,
+    superShotSpinUnlocked: 0,
+    superShotPaceUsed: 0,
+    superShotSpinUsed: 0,
+    superShotPaceProgress: 0,
+    superShotSpinProgress: 0,
   }));
 
 export const createBowlingStats = (players = []) =>

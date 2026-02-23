@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { battingAction, bowlingAction } from '../../../gameData/actionType';
 import { countries } from '../../../gameData/countries';
 import { stadiums } from '../../../gameData/stadiums';
-import { playerListForNation } from '../../../gameData/playerListForNation';
+import { getPlayersForNations, playerListForNation } from '../../../gameData/playerListForNation';
 import { matchTypeList } from '../../../gameData/matchTypeList';
 import { outfieldType, pitchType } from '../../../gameData/matchCondition';
 import { runVoice } from '../../../gameData/runVoice';
@@ -12,6 +13,7 @@ import { matchStatusEnum } from '../../../gameData/matchStatusEnum';
 import {
   buildInitialInnings,
   buildRandomMatchCondition,
+  hydrateGameState,
   resetMatchRuntime,
   setBattingIntent as setBattingIntentAction,
   setBowlingIntent as setBowlingIntentAction,
@@ -21,7 +23,13 @@ import {
   setLocationCountry as setLocationCountryAction,
   setMatchCondition as setMatchConditionAction,
   setMatchTypeKey as setMatchTypeKeyAction,
+  setOpponentCustomPlayers as setOpponentCustomPlayersAction,
+  setOpponentPlayingXI as setOpponentPlayingXIAction,
+  setOpponentTeamRoles as setOpponentTeamRolesAction,
   setOpponentTeam as setOpponentTeamAction,
+  setOwnCustomPlayers as setOwnCustomPlayersAction,
+  setOwnPlayingXI as setOwnPlayingXIAction,
+  setOwnTeamRoles as setOwnTeamRolesAction,
   setOwnTeam as setOwnTeamAction,
   setSecondInnings as setSecondInningsAction,
   setSelectedStadium as setSelectedStadiumAction,
@@ -32,6 +40,13 @@ import {
   setTossWinner as setTossWinnerAction,
   toggleShowScoreboard,
 } from '../gameSlice';
+import {
+  createGameSave,
+  getAutoGameSave,
+  listGameSaves,
+  removeGameSave,
+  upsertAutoGameSave,
+} from '../../../firebase/firestoreService';
 import {
   announceTarget,
   announceTeamChoice,
@@ -120,14 +135,62 @@ const bowlingIntentShift = {
   [bowlingAction.specialBowl]: { 0: -4, 1: -5, 2: -2, 3: -1, 4: 2, 6: 1, wide: 1, nb: 1, W: 7 },
 };
 
+const runMilestoneBonus = (runs) => {
+  if (runs >= 200) {
+    return 20;
+  }
+  if (runs >= 150) {
+    return 10;
+  }
+  if (runs >= 100) {
+    return 5;
+  }
+  if (runs >= 50) {
+    return 2;
+  }
+  if (runs >= 30) {
+    return 1;
+  }
+  return 0;
+};
+
+const wicketMilestoneBonus = (wickets) => {
+  if (wickets >= 8) {
+    return 20;
+  }
+  if (wickets >= 6) {
+    return 10;
+  }
+  if (wickets >= 5) {
+    return 5;
+  }
+  if (wickets >= 4) {
+    return 2;
+  }
+  if (wickets >= 3) {
+    return 1;
+  }
+  return 0;
+};
+
+const formatOvers = (balls = 0) => `${Math.floor(balls / 6)}.${balls % 6}`;
+
 export function useCricketSimulatorController() {
   const dispatch = useDispatch();
+  const location = useLocation();
   const game = useSelector((state) => state.game);
+  const authUser = useSelector((state) => state.auth.user);
   const {
     stage,
     matchTypeKey,
     ownTeam,
     opponentTeam,
+    ownPlayingXI,
+    opponentPlayingXI,
+    ownCustomPlayers,
+    opponentCustomPlayers,
+    ownTeamRoles,
+    opponentTeamRoles,
     locationCountry,
     commentator,
     tossWinner,
@@ -140,6 +203,14 @@ export function useCricketSimulatorController() {
   } = game;
 
   const [availableVoices, setAvailableVoices] = useState([]);
+  const [savedGames, setSavedGames] = useState([]);
+  const [isSavingGame, setIsSavingGame] = useState(false);
+  const [isGlobalSaving, setIsGlobalSaving] = useState(false);
+  const [isSavesLoading, setIsSavesLoading] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
+  const inProgressRef = useRef(false);
+  const gameSnapshotRef = useRef(game);
+  const authUidRef = useRef(authUser?.uid || '');
 
   const countryList = useMemo(
     () => Object.values(countries).sort((a, b) => a.current_ranking - b.current_ranking),
@@ -151,13 +222,110 @@ export function useCricketSimulatorController() {
   );
   const matchType = matchTypeList[matchTypeKey] || matchTypeList.t20;
   const maxBalls = matchType.over * 6;
-  const ownPlayers = playerListForNation[ownTeam] || fallbackPlayers;
-  const opponentPlayers = playerListForNation[opponentTeam] || fallbackPlayers;
+  const { ownPlayers: fullOwnPlayers, opponentPlayers: fullOpponentPlayers } = getPlayersForNations(
+    ownTeam,
+    opponentTeam
+  );
+
+  const availableOwnPlayers =
+    fullOwnPlayers.length > 0
+      ? [...fullOwnPlayers, ...(Array.isArray(ownCustomPlayers) ? ownCustomPlayers : [])]
+      : fallbackPlayers;
+  const availableOpponentPlayers =
+    fullOpponentPlayers.length > 0
+      ? [...fullOpponentPlayers, ...(Array.isArray(opponentCustomPlayers) ? opponentCustomPlayers : [])]
+      : fallbackPlayers;
+
+  const normalizePlayingXIIds = (allPlayers, selectedIds) => {
+    const validIds = new Set(allPlayers.map((player) => player.id));
+    return Array.from(
+      new Set((selectedIds || []).filter((id) => validIds.has(id)))
+    ).slice(0, 11);
+  };
+
+  const sanitizeRoles = (roles, selectedIds) => {
+    const selectedSet = new Set(selectedIds);
+    return {
+      captainId: selectedSet.has(roles?.captainId) ? roles.captainId : null,
+      viceCaptainId: selectedSet.has(roles?.viceCaptainId) ? roles.viceCaptainId : null,
+      wicketKeeperId: selectedSet.has(roles?.wicketKeeperId) ? roles.wicketKeeperId : null,
+    };
+  };
+
+  const pickDefaultRoles = (players = [], selectedIds = []) => {
+    const selectedSet = new Set(selectedIds);
+    const selectedPlayers = players.filter((player) => selectedSet.has(player.id));
+    const captainId = selectedPlayers[0]?.id ?? null;
+    const viceCaptainId = selectedPlayers[1]?.id ?? selectedPlayers[0]?.id ?? null;
+    const keeperId =
+      selectedPlayers.find((player) => player.isWicketKeeper)?.id ??
+      selectedPlayers[0]?.id ??
+      null;
+
+    return {
+      captainId,
+      viceCaptainId,
+      wicketKeeperId: keeperId,
+    };
+  };
+
+  const buildPlayingXI = (allPlayers, selectedIds) => {
+    const normalizedIds = normalizePlayingXIIds(allPlayers, selectedIds);
+    const fallbackIds = allPlayers.slice(0, 11).map((player) => player.id);
+    const finalIds = normalizedIds.length === 11 ? normalizedIds : fallbackIds;
+    const byId = new Map(allPlayers.map((player) => [player.id, player]));
+
+    return finalIds.map((id) => byId.get(id)).filter(Boolean);
+  };
+
+  const ownPlayers = buildPlayingXI(availableOwnPlayers, ownPlayingXI);
+  const opponentPlayers = buildPlayingXI(availableOpponentPlayers, opponentPlayingXI);
+
+  const ownSelectedXIIds = normalizePlayingXIIds(availableOwnPlayers, ownPlayingXI);
+  const opponentSelectedXIIds = normalizePlayingXIIds(availableOpponentPlayers, opponentPlayingXI);
+
+  const ownSelectedXIPlayers = availableOwnPlayers.filter((player) => ownSelectedXIIds.includes(player.id));
+  const opponentSelectedXIPlayers = availableOpponentPlayers.filter((player) =>
+    opponentSelectedXIIds.includes(player.id)
+  );
+
+  const ownAvailablePool = availableOwnPlayers.filter((player) => !ownSelectedXIIds.includes(player.id));
+  const opponentAvailablePool = availableOpponentPlayers.filter(
+    (player) => !opponentSelectedXIIds.includes(player.id)
+  );
+
+  const ownSanitizedRoles = sanitizeRoles(ownTeamRoles, ownSelectedXIIds);
+  const opponentSanitizedRoles = sanitizeRoles(opponentTeamRoles, opponentSelectedXIIds);
+
+  const ownXIReady = ownSelectedXIIds.length === 11;
+  const opponentXIReady = opponentSelectedXIIds.length === 11;
+  const ownRolesReady =
+    !!ownSanitizedRoles.captainId &&
+    !!ownSanitizedRoles.viceCaptainId &&
+    !!ownSanitizedRoles.wicketKeeperId &&
+    ownSanitizedRoles.captainId !== ownSanitizedRoles.viceCaptainId;
+  const opponentRolesReady =
+    !!opponentSanitizedRoles.captainId &&
+    !!opponentSanitizedRoles.viceCaptainId &&
+    !!opponentSanitizedRoles.wicketKeeperId &&
+    opponentSanitizedRoles.captainId !== opponentSanitizedRoles.viceCaptainId;
   const venueStadiums = stadiums[locationCountry] || [];
 
   const isUserWinner = tossWinner === ownTeam;
   const firstInningsTeamName = firstBattingSide === 'own' ? ownTeam : opponentTeam;
   const secondInningsTeamName = firstBattingSide === 'own' ? opponentTeam : ownTeam;
+  const isGameInProgress =
+    stage === matchStatusEnum.TeamOneBat ||
+    stage === matchStatusEnum.TeamTwoBat ||
+    stage === matchStatusEnum.TossResult ||
+    stage === matchStatusEnum.ChooseOwnPlayingXI ||
+    stage === matchStatusEnum.ChooseOpponentPlayingXI;
+
+  useEffect(() => {
+    inProgressRef.current = isGameInProgress;
+    gameSnapshotRef.current = game;
+    authUidRef.current = authUser?.uid || '';
+  }, [authUser?.uid, game, isGameInProgress]);
 
   useEffect(() => {
     if (!('speechSynthesis' in window)) {
@@ -184,6 +352,32 @@ export function useCricketSimulatorController() {
       window.speechSynthesis.onvoiceschanged = null;
     };
   }, [commentator, dispatch]);
+
+  useEffect(() => {
+    const loadSavedGames = async () => {
+      if (!authUser?.uid) {
+        setSavedGames([]);
+        return;
+      }
+
+      setIsSavesLoading(true);
+      try {
+        const [manualSaves, autoSave] = await Promise.all([
+          listGameSaves(authUser.uid),
+          getAutoGameSave(authUser.uid),
+        ]);
+
+        const merged = autoSave ? [autoSave, ...manualSaves] : manualSaves;
+        setSavedGames(merged);
+      } catch (error) {
+        setSaveMessage(error?.message || 'Unable to load saved games.');
+      } finally {
+        setIsSavesLoading(false);
+      }
+    };
+
+    loadSavedGames();
+  }, [authUser?.uid]);
 
   // Resolves batting/bowling sides and user role for the requested innings.
   const getInningsContext = (isFirstInnings, firstSide = firstBattingSide) => {
@@ -295,7 +489,7 @@ export function useCricketSimulatorController() {
       .filter(({ player }) => isEligibleBowler(player))
       .filter(({ index }) => {
         const balls = inningState.bowlingStats[index]?.balls || 0;
-        return Math.floor(balls / 6) < maxOversPerBowler;
+        return balls < maxOversPerBowler * 6;
       })
       .map(({ index }) => index);
 
@@ -504,7 +698,16 @@ export function useCricketSimulatorController() {
   };
 
   // Simulates one-ball outcome using player abilities, intents, and match conditions.
-  const resolveOutcome = (striker, bowler, inningState, isUserBatting, isUserBowling) => {
+  const resolveOutcome = (
+    striker,
+    bowler,
+    inningState,
+    isUserBatting,
+    isUserBowling,
+    battingRoles,
+    bowlingRoles,
+    bowlingTeamName
+  ) => {
     const outcomes = ['0', '1', '2', '3', '4', '6', 'wide', 'nb', 'W'];
     const weatherKey = matchCondition.weather;
     const pitchProfile = pitchType[matchCondition.pitch] || pitchType.sporting;
@@ -536,6 +739,11 @@ export function useCricketSimulatorController() {
     let battingSpinAbility = abilityForSpinBase;
     let bowlingPaceAbility = bowlerPaceBase;
     let bowlingSpinAbility = bowlerSpinBase;
+
+    if (bowlingTeamName && bowlingTeamName === locationCountry) {
+      bowlingPaceAbility = toPercentAdjusted(bowlingPaceAbility, 0.05);
+      bowlingSpinAbility = toPercentAdjusted(bowlingSpinAbility, 0.05);
+    }
 
     if (weatherKey === 'rainy') {
       battingPaceAbility = toPercentAdjusted(battingPaceAbility, -0.05);
@@ -589,6 +797,22 @@ export function useCricketSimulatorController() {
     const bowlingMatchAbility = isPaceBowler ? bowlingPaceAbility : bowlingSpinAbility;
     const abilityDifference = battingAbility - bowlingMatchAbility;
     applyDelta(weights, abilityShiftByDiff(abilityDifference));
+
+    if (striker?.id && battingRoles?.captainId === striker.id) {
+      applyDelta(weights, { 0: -3, 1: 3 });
+    }
+
+    if (striker?.id && battingRoles?.viceCaptainId === striker.id) {
+      applyDelta(weights, { 0: -1, 1: 1 });
+    }
+
+    if (bowler?.id && bowlingRoles?.captainId === bowler.id) {
+      applyDelta(weights, { 0: 3, 1: -3 });
+    }
+
+    if (bowler?.id && bowlingRoles?.viceCaptainId === bowler.id) {
+      applyDelta(weights, { 0: 1, 1: -1 });
+    }
 
     if (isUserBatting) {
       applyDelta(weights, battingIntentShift[appliedBattingIntent]);
@@ -658,16 +882,25 @@ export function useCricketSimulatorController() {
   };
 
   // Checks if super shot can be used for the current striker with match and over caps.
-  const canUseSuperShot = ({ striker, bowler, inningState }) => {
+  const canUseSuperShot = ({ striker, bowler, inningState, strikerIndex }) => {
     if (!striker || !bowler) {
       return false;
     }
 
     const isPaceBowler = (bowler?.paceAbility || 0) >= (bowler?.spinAbility || 0);
     const relevantAbility = isPaceBowler ? striker?.abilityToPlayPaceBall || 0 : striker?.abilityToPlaySpinBall || 0;
-    const availableShots = 3 + (inningState.superShotBonus || 0) - (inningState.superShotUsedMatch || 0);
+    const maxShotsByAbility = Math.max(0, Math.floor((relevantAbility - 70) / 3));
+    const strikerStat = inningState.battingStats?.[strikerIndex] || {};
 
-    return relevantAbility > 70 && availableShots > 0 && (inningState.superShotUsedInOver || 0) < 1;
+    const unlocked = isPaceBowler
+      ? strikerStat.superShotPaceUnlocked || 0
+      : strikerStat.superShotSpinUnlocked || 0;
+    const used = isPaceBowler
+      ? strikerStat.superShotPaceUsed || 0
+      : strikerStat.superShotSpinUsed || 0;
+
+    const availableShots = Math.max(0, Math.min(unlocked, maxShotsByAbility) - used);
+    return maxShotsByAbility > 0 && availableShots > 0 && (inningState.superShotUsedInOver || 0) < 1;
   };
 
   // Checks if special ball can be used by current bowler with caps and earned bonuses.
@@ -710,7 +943,7 @@ export function useCricketSimulatorController() {
     const partner = battingSide[inningState.nonStrikerIndex];
     const fallbackBowlerIndex = getBestEligibleBowlerIndex(bowlingSide, inningState.lastOverBowlerIndex);
     const hasAssignedBowler = inningState.currentBowlerIndex !== null && inningState.currentBowlerIndex !== undefined;
-    const currentBowlerIndex = hasAssignedBowler
+    let currentBowlerIndex = hasAssignedBowler
       ? inningState.currentBowlerIndex
       : isUserBowling
         ? null
@@ -719,6 +952,30 @@ export function useCricketSimulatorController() {
             bowlingSide,
             previousBowlerIndex: inningState.lastOverBowlerIndex,
           });
+
+    const maxOversPerBowler = getMaxOversPerBowler(matchType.over);
+    const maxLegalBallsPerBowler = maxOversPerBowler * 6;
+
+    if (currentBowlerIndex !== null && currentBowlerIndex !== undefined) {
+      const assignedBalls = inningState.bowlingStats[currentBowlerIndex]?.balls || 0;
+      if (assignedBalls >= maxLegalBallsPerBowler) {
+        if (isUserBowling) {
+          updateInningsState(isFirstInnings, (previous) => ({
+            ...previous,
+            waitingForNextBowler: true,
+            currentBowlerIndex: null,
+            lastEvent: 'Selected bowler reached over limit. Choose another bowler.',
+          }));
+          return;
+        }
+
+        currentBowlerIndex = selectComputerBowler({
+          inningState,
+          bowlingSide,
+          previousBowlerIndex: currentBowlerIndex,
+        });
+      }
+    }
 
     if (currentBowlerIndex === null || currentBowlerIndex === undefined) {
       return;
@@ -734,10 +991,33 @@ export function useCricketSimulatorController() {
       return;
     }
 
+    const deliveryIsPaceBowler = (bowler?.paceAbility || 0) >= (bowler?.spinAbility || 0);
+    const deliveryMaxSuperShot = Math.max(
+      0,
+      Math.floor(
+        (((deliveryIsPaceBowler ? striker?.abilityToPlayPaceBall : striker?.abilityToPlaySpinBall) || 0) - 70) / 3
+      )
+    );
+    const unlockedKey = deliveryIsPaceBowler ? 'superShotPaceUnlocked' : 'superShotSpinUnlocked';
+    const usedKey = deliveryIsPaceBowler ? 'superShotPaceUsed' : 'superShotSpinUsed';
+    const progressKey = deliveryIsPaceBowler ? 'superShotPaceProgress' : 'superShotSpinProgress';
+
     const wasFreeHit = isUserBatting && inningState.freeHitArmed;
     const usedSuperShot = isUserBatting && battingIntent === battingAction.superShot;
     const usedSpecialBall = isUserBowling && bowlingIntent === bowlingAction.specialBowl;
-    const outcome = resolveOutcome(striker, bowler, inningState, isUserBatting, isUserBowling);
+    const battingRoles = isOwnBatting ? ownSanitizedRoles : opponentSanitizedRoles;
+    const bowlingRoles = isOwnBatting ? opponentSanitizedRoles : ownSanitizedRoles;
+    const bowlingTeamName = isOwnBatting ? opponentTeam : ownTeam;
+    const outcome = resolveOutcome(
+      striker,
+      bowler,
+      inningState,
+      isUserBatting,
+      isUserBowling,
+      battingRoles,
+      bowlingRoles,
+      bowlingTeamName
+    );
     const nextBalls = inningState.balls + (outcome.isLegalDelivery ? 1 : 0);
     const ballTag = formatBallProgress(nextBalls);
 
@@ -773,6 +1053,12 @@ export function useCricketSimulatorController() {
       outByBowler: '',
       outAtScore: '',
       outAtBall: '',
+      superShotPaceUnlocked: 0,
+      superShotSpinUnlocked: 0,
+      superShotPaceUsed: 0,
+      superShotSpinUsed: 0,
+      superShotPaceProgress: 0,
+      superShotSpinProgress: 0,
     };
     if (outcome.isLegalDelivery) {
       nextBattingStats[inningState.strikerIndex] = {
@@ -829,6 +1115,10 @@ export function useCricketSimulatorController() {
       if (usedSuperShot) {
         nextSuperShotUsedInOver += 1;
         nextSuperShotUsedMatch += 1;
+        nextBattingStats[inningState.strikerIndex] = {
+          ...nextBattingStats[inningState.strikerIndex],
+          [usedKey]: (nextBattingStats[inningState.strikerIndex]?.[usedKey] || 0) + 1,
+        };
       }
 
       if (usedSpecialBall) {
@@ -878,13 +1168,27 @@ export function useCricketSimulatorController() {
         runsConceded: (nextBowlingStats[currentBowlerIndex]?.runsConceded || 0) + outcome.runs,
       };
 
-      if (outcome.runs === 6 && isUserBatting) {
-        nextSuperShotBonus += 1;
-      }
-
       if (usedSuperShot) {
         nextSuperShotUsedInOver += 1;
         nextSuperShotUsedMatch += 1;
+        nextBattingStats[inningState.strikerIndex] = {
+          ...nextBattingStats[inningState.strikerIndex],
+          [usedKey]: (nextBattingStats[inningState.strikerIndex]?.[usedKey] || 0) + 1,
+        };
+      }
+
+      if (outcome.runs > 0) {
+        const currentUnlocked = nextBattingStats[inningState.strikerIndex]?.[unlockedKey] || 0;
+        const currentProgress = nextBattingStats[inningState.strikerIndex]?.[progressKey] || 0;
+        const earnedProgress = currentProgress + outcome.runs;
+        const unlockByRuns = Math.floor(earnedProgress / 5);
+        const unlockedAfterRuns = Math.min(deliveryMaxSuperShot, currentUnlocked + unlockByRuns);
+
+        nextBattingStats[inningState.strikerIndex] = {
+          ...nextBattingStats[inningState.strikerIndex],
+          [unlockedKey]: unlockedAfterRuns,
+          [progressKey]: unlockedAfterRuns >= deliveryMaxSuperShot ? 0 : earnedProgress % 5,
+        };
       }
 
       if (usedSpecialBall) {
@@ -981,6 +1285,7 @@ export function useCricketSimulatorController() {
         striker: battingSide[nextState.strikerIndex],
         bowler: bowlingSide[nextState.currentBowlerIndex ?? currentBowlerIndex],
         inningState: nextState,
+        strikerIndex: nextState.strikerIndex,
       });
 
       if (!nextCanUseSuperShot) {
@@ -1030,6 +1335,7 @@ export function useCricketSimulatorController() {
       striker,
       bowler: currentBowler,
       inningState,
+      strikerIndex: inningState.strikerIndex,
     });
     const canUseCurrentSpecialBall = canUseSpecialBall({
       bowler: currentBowler,
@@ -1107,8 +1413,7 @@ export function useCricketSimulatorController() {
       }))
       .filter((player) => isEligibleBowler(player))
       .map(({ index, name, balls, wasLastOver }) => {
-        const completedOvers = Math.floor(balls / 6);
-        const hitOverLimit = completedOvers >= maxOversPerBowler;
+        const hitOverLimit = balls >= maxOversPerBowler * 6;
         const disabled = wasLastOver || hitOverLimit;
 
         return {
@@ -1224,6 +1529,299 @@ export function useCricketSimulatorController() {
     ]
   );
 
+  const momRecommendations = useMemo(() => {
+    const firstBattingPlayers = firstBattingSide === 'own' ? ownPlayers : opponentPlayers;
+    const firstBowlingPlayers = firstBattingSide === 'own' ? opponentPlayers : ownPlayers;
+    const secondBattingPlayers = firstBattingSide === 'own' ? opponentPlayers : ownPlayers;
+    const secondBowlingPlayers = firstBattingSide === 'own' ? ownPlayers : opponentPlayers;
+    const firstBattingTeam = firstBattingSide === 'own' ? ownTeam : opponentTeam;
+    const firstBowlingTeam = firstBattingSide === 'own' ? opponentTeam : ownTeam;
+    const secondBattingTeam = firstBattingSide === 'own' ? opponentTeam : ownTeam;
+    const secondBowlingTeam = firstBattingSide === 'own' ? ownTeam : opponentTeam;
+
+    const performanceMap = new Map();
+    const getKey = (team, playerId, name) => `${team}::${playerId}::${name}`;
+
+    const ensurePlayer = (team, player) => {
+      if (!player) {
+        return null;
+      }
+
+      const key = getKey(team, player.id, player.name);
+      if (!performanceMap.has(key)) {
+        performanceMap.set(key, {
+          key,
+          playerId: player.id,
+          name: player.name,
+          team,
+          runs: 0,
+          balls: 0,
+          wickets: 0,
+          runsConceded: 0,
+          ballsBowled: 0,
+          notOut: false,
+          strikeRate: 0,
+          economy: 0,
+          runsPerWicket: null,
+          points: 0,
+          notes: [],
+        });
+      }
+
+      return performanceMap.get(key);
+    };
+
+    const addBattingStats = (teamName, players, inningState) => {
+      players.forEach((player, index) => {
+        const stat = inningState.battingStats[index] || { runs: 0, balls: 0, isOut: false };
+        const entry = ensurePlayer(teamName, player);
+        if (!entry) {
+          return;
+        }
+
+        entry.runs += stat.runs || 0;
+        entry.balls += stat.balls || 0;
+        if ((stat.balls || 0) > 0 && !stat.isOut) {
+          entry.notOut = true;
+        }
+      });
+    };
+
+    const addBowlingStats = (teamName, players, inningState) => {
+      players.forEach((player, index) => {
+        const stat = inningState.bowlingStats[index] || { wickets: 0, runsConceded: 0 };
+        const entry = ensurePlayer(teamName, player);
+        if (!entry) {
+          return;
+        }
+
+        entry.wickets += stat.wickets || 0;
+        entry.runsConceded += stat.runsConceded || 0;
+        entry.ballsBowled += stat.balls || 0;
+      });
+    };
+
+    addBattingStats(firstBattingTeam, firstBattingPlayers, firstInnings);
+    addBowlingStats(firstBowlingTeam, firstBowlingPlayers, firstInnings);
+    addBattingStats(secondBattingTeam, secondBattingPlayers, secondInnings);
+    addBowlingStats(secondBowlingTeam, secondBowlingPlayers, secondInnings);
+
+    const players = Array.from(performanceMap.values()).map((entry) => ({
+      ...entry,
+      strikeRate: entry.balls > 0 ? Number(((entry.runs / entry.balls) * 100).toFixed(2)) : 0,
+      economy:
+        entry.ballsBowled > 0
+          ? Number((entry.runsConceded / (entry.ballsBowled / 6)).toFixed(2))
+          : 0,
+      runsPerWicket:
+        entry.wickets > 0
+          ? Number((entry.runsConceded / entry.wickets).toFixed(2))
+          : null,
+    }));
+
+    const addPoints = (entry, value, reason) => {
+      if (!entry || !value) {
+        return;
+      }
+
+      entry.points += value;
+      entry.notes.push(`${reason} (+${value})`);
+    };
+
+    const byRuns = [...players].sort(
+      (left, right) =>
+        right.runs - left.runs ||
+        left.balls - right.balls ||
+        right.wickets - left.wickets ||
+        left.name.localeCompare(right.name)
+    );
+    const runTopPoints = [10, 7, 3];
+    runTopPoints.forEach((points, index) => {
+      const target = byRuns[index];
+      if (target && target.runs > 0) {
+        addPoints(target, points, `${index + 1}${index === 0 ? 'st' : index === 1 ? 'nd' : 'rd'} highest run scorer`);
+      }
+    });
+
+    const byWickets = [...players].sort(
+      (left, right) =>
+        right.wickets - left.wickets ||
+        left.runsConceded - right.runsConceded ||
+        right.runs - left.runs ||
+        left.name.localeCompare(right.name)
+    );
+    const wicketTopPoints = [7, 5, 2];
+    wicketTopPoints.forEach((points, index) => {
+      const target = byWickets[index];
+      if (target && target.wickets > 0) {
+        addPoints(target, points, `${index + 1}${index === 0 ? 'st' : index === 1 ? 'nd' : 'rd'} highest wicket taker`);
+      }
+    });
+
+    const topTenScorers = byRuns.slice(0, 10).filter((entry) => entry.balls > 0 && entry.runs > 0);
+    const byStrikeRate = [...topTenScorers].sort(
+      (left, right) =>
+        right.strikeRate - left.strikeRate ||
+        right.runs - left.runs ||
+        left.balls - right.balls ||
+        left.name.localeCompare(right.name)
+    );
+    const strikeRateTopPoints = [3, 2, 1];
+    strikeRateTopPoints.forEach((points, index) => {
+      const target = byStrikeRate[index];
+      if (target) {
+        addPoints(target, points, `${index + 1}${index === 0 ? 'st' : index === 1 ? 'nd' : 'rd'} strike rate in top 10 scorers`);
+      }
+    });
+
+    const topSevenWicketTakers = byWickets.slice(0, 7).filter((entry) => entry.wickets > 0);
+    const byLeastRunsPerWicket = [...topSevenWicketTakers].sort(
+      (left, right) =>
+        (left.runsPerWicket ?? Number.POSITIVE_INFINITY) - (right.runsPerWicket ?? Number.POSITIVE_INFINITY) ||
+        right.wickets - left.wickets ||
+        left.name.localeCompare(right.name)
+    );
+    const leastRunsPerWicketPoints = [3, 2, 1];
+    leastRunsPerWicketPoints.forEach((points, index) => {
+      const target = byLeastRunsPerWicket[index];
+      if (target) {
+        addPoints(
+          target,
+          points,
+          `${index + 1}${index === 0 ? 'st' : index === 1 ? 'nd' : 'rd'} least runs conceded per wicket (top 7 wicket takers)`
+        );
+      }
+    });
+
+    const economyEligible = players.filter((entry) => entry.ballsBowled > 0);
+    const byLeastEconomy = [...economyEligible].sort(
+      (left, right) =>
+        left.economy - right.economy ||
+        right.wickets - left.wickets ||
+        left.name.localeCompare(right.name)
+    );
+    const leastEconomyPoints = [3, 2, 1];
+    leastEconomyPoints.forEach((points, index) => {
+      const target = byLeastEconomy[index];
+      if (target) {
+        addPoints(target, points, `${index + 1}${index === 0 ? 'st' : index === 1 ? 'nd' : 'rd'} least average runs conceded`);
+      }
+    });
+
+    players.forEach((entry) => {
+      addPoints(entry, runMilestoneBonus(entry.runs), 'Innings run milestone');
+      addPoints(entry, wicketMilestoneBonus(entry.wickets), 'Innings wicket milestone');
+      addPoints(entry, entry.notOut ? 1 : 0, 'Not out as batsman');
+    });
+
+    let winnerTeam = '';
+    if (secondInnings.score > firstInnings.score) {
+      winnerTeam = secondInningsTeamName;
+    } else if (secondInnings.score < firstInnings.score) {
+      winnerTeam = firstInningsTeamName;
+    }
+
+    if (winnerTeam) {
+      const winningCaptainId = winnerTeam === ownTeam ? ownSanitizedRoles.captainId : opponentSanitizedRoles.captainId;
+      const winningViceCaptainId = winnerTeam === ownTeam ? ownSanitizedRoles.viceCaptainId : opponentSanitizedRoles.viceCaptainId;
+      const winningWicketKeeperId = winnerTeam === ownTeam ? ownSanitizedRoles.wicketKeeperId : opponentSanitizedRoles.wicketKeeperId;
+      const winningCaptain = players.find(
+        (entry) => entry.team === winnerTeam && entry.playerId === winningCaptainId
+      );
+      const winningViceCaptain = players.find(
+        (entry) => entry.team === winnerTeam && entry.playerId === winningViceCaptainId
+      );
+      const winningWicketKeeper = players.find(
+        (entry) => entry.team === winnerTeam && entry.playerId === winningWicketKeeperId
+      );
+      addPoints(winningCaptain, 1, 'Winning team captain');
+      addPoints(winningViceCaptain, 1, 'Winning team vice captain');
+      addPoints(winningWicketKeeper, 1, 'Winning team wicket keeper');
+    }
+
+    return [...players]
+      .sort(
+        (left, right) =>
+          right.points - left.points ||
+          right.runs - left.runs ||
+          right.wickets - left.wickets ||
+          right.strikeRate - left.strikeRate ||
+          left.name.localeCompare(right.name)
+      )
+      .slice(0, 5)
+      .map((entry, index) => ({
+        rank: index + 1,
+        recommended: index === 0,
+        name: entry.name,
+        team: entry.team,
+        points: entry.points,
+        runs: entry.runs,
+        balls: entry.balls,
+        notOut: entry.notOut,
+        ballsBowled: entry.ballsBowled,
+        oversBowled: formatOvers(entry.ballsBowled),
+        runsConceded: entry.runsConceded,
+        wickets: entry.wickets,
+        strikeRate: entry.strikeRate.toFixed(2),
+        economy: entry.economy.toFixed(2),
+        runsPerWicket:
+          entry.runsPerWicket === null
+            ? '-'
+            : entry.runsPerWicket.toFixed(2),
+        notes: entry.notes,
+      }));
+  }, [
+    firstBattingSide,
+    ownPlayers,
+    opponentPlayers,
+    firstInnings,
+    secondInnings,
+    ownTeam,
+    opponentTeam,
+    firstInningsTeamName,
+    secondInningsTeamName,
+    ownSanitizedRoles.captainId,
+    ownSanitizedRoles.viceCaptainId,
+    ownSanitizedRoles.wicketKeeperId,
+    opponentSanitizedRoles.captainId,
+    opponentSanitizedRoles.viceCaptainId,
+    opponentSanitizedRoles.wicketKeeperId,
+  ]);
+
+  const announceManOfTheMatch = (selected) => {
+    if (!selected) {
+      return;
+    }
+
+    let winnerTeam = '';
+    if (secondInnings.score > firstInnings.score) {
+      winnerTeam = secondInningsTeamName;
+    } else if (secondInnings.score < firstInnings.score) {
+      winnerTeam = firstInningsTeamName;
+    }
+
+    const pointsSummary = Array.isArray(selected.notes)
+      ? selected.notes.slice(0, 5).join(', ')
+      : '';
+
+    const congratsLine = winnerTeam
+      ? `Congratulations to ${winnerTeam} for winning the match.`
+      : 'The match is tied. Congratulations to both teams for a great game.';
+
+    const announcement = [
+      `Man of the Match is ${selected.name} from ${selected.team}.`,
+      `Batting performance ${selected.runs} runs in ${selected.balls} balls with strike rate ${selected.strikeRate}.`,
+      `Bowling performance ${selected.oversBowled} overs, ${selected.runsConceded} runs conceded, ${selected.wickets} wickets.`,
+      `Total Man of the Match points ${selected.points}.`,
+      pointsSummary ? `Key points: ${pointsSummary}.` : '',
+      congratsLine,
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    speak(announcement);
+  };
+
   useEffect(() => {
     if (stage === matchStatusEnum.MatchEnd) {
       speak(resultSummary);
@@ -1236,7 +1834,185 @@ export function useCricketSimulatorController() {
     const firstSide = decision === 'bat' ? 'own' : 'opponent';
     dispatch(setFirstBattingSideAction(firstSide));
     announceTeamChoice(ownTeam, decision);
-    openInnings(firstSide);
+    dispatch(setStageAction(matchStatusEnum.ChooseOwnPlayingXI));
+  };
+
+  const moveOwnPlayerToXI = (playerId) => {
+    if (ownSelectedXIIds.includes(playerId) || ownSelectedXIIds.length >= 11) {
+      return;
+    }
+
+    dispatch(setOwnPlayingXIAction([...ownSelectedXIIds, playerId]));
+    const player = availableOwnPlayers.find((item) => item.id === playerId);
+    if (player) {
+      speak(`${player.name} selected in ${ownTeam} playing eleven.`);
+    }
+  };
+
+  const removeOwnPlayerFromXI = (playerId) => {
+    if (!ownSelectedXIIds.includes(playerId)) {
+      return;
+    }
+
+    const nextIds = ownSelectedXIIds.filter((id) => id !== playerId);
+    dispatch(setOwnPlayingXIAction(nextIds));
+    dispatch(setOwnTeamRolesAction(sanitizeRoles(ownSanitizedRoles, nextIds)));
+    const player = availableOwnPlayers.find((item) => item.id === playerId);
+    if (player) {
+      speak(`${player.name} removed from ${ownTeam} playing eleven.`);
+    }
+  };
+
+  const moveOpponentPlayerToXI = (playerId) => {
+    if (opponentSelectedXIIds.includes(playerId) || opponentSelectedXIIds.length >= 11) {
+      return;
+    }
+
+    dispatch(setOpponentPlayingXIAction([...opponentSelectedXIIds, playerId]));
+    const player = availableOpponentPlayers.find((item) => item.id === playerId);
+    if (player) {
+      speak(`${player.name} selected in ${opponentTeam} playing eleven.`);
+    }
+  };
+
+  const removeOpponentPlayerFromXI = (playerId) => {
+    if (!opponentSelectedXIIds.includes(playerId)) {
+      return;
+    }
+
+    const nextIds = opponentSelectedXIIds.filter((id) => id !== playerId);
+    dispatch(setOpponentPlayingXIAction(nextIds));
+    dispatch(setOpponentTeamRolesAction(sanitizeRoles(opponentSanitizedRoles, nextIds)));
+    const player = availableOpponentPlayers.find((item) => item.id === playerId);
+    if (player) {
+      speak(`${player.name} removed from ${opponentTeam} playing eleven.`);
+    }
+  };
+
+  const setOwnRole = (roleKey, playerId) => {
+    const selectedMap = new Map(ownSelectedXIPlayers.map((player) => [player.id, player]));
+    const targetPlayer = selectedMap.get(playerId);
+    if (roleKey === 'wicketKeeperId' && playerId && !targetPlayer?.isWicketKeeper) {
+      return;
+    }
+
+    const nextRoles = {
+      ...ownSanitizedRoles,
+      [roleKey]: playerId || null,
+    };
+
+    if (roleKey === 'captainId' && nextRoles.viceCaptainId === playerId) {
+      nextRoles.viceCaptainId = null;
+    }
+    if (roleKey === 'viceCaptainId' && nextRoles.captainId === playerId) {
+      nextRoles.captainId = null;
+    }
+
+    dispatch(
+      setOwnTeamRolesAction(nextRoles)
+    );
+
+    if (playerId) {
+      const roleLabel =
+        roleKey === 'captainId' ? 'captain' : roleKey === 'viceCaptainId' ? 'vice captain' : 'wicketkeeper';
+      const player = ownSelectedXIPlayers.find((item) => item.id === playerId);
+      if (player) {
+        speak(`${player.name} selected as ${roleLabel} for ${ownTeam}.`);
+      }
+    }
+  };
+
+  const setOpponentRole = (roleKey, playerId) => {
+    const selectedMap = new Map(opponentSelectedXIPlayers.map((player) => [player.id, player]));
+    const targetPlayer = selectedMap.get(playerId);
+    if (roleKey === 'wicketKeeperId' && playerId && !targetPlayer?.isWicketKeeper) {
+      return;
+    }
+
+    const nextRoles = {
+      ...opponentSanitizedRoles,
+      [roleKey]: playerId || null,
+    };
+
+    if (roleKey === 'captainId' && nextRoles.viceCaptainId === playerId) {
+      nextRoles.viceCaptainId = null;
+    }
+    if (roleKey === 'viceCaptainId' && nextRoles.captainId === playerId) {
+      nextRoles.captainId = null;
+    }
+
+    dispatch(
+      setOpponentTeamRolesAction(nextRoles)
+    );
+
+    if (playerId) {
+      const roleLabel =
+        roleKey === 'captainId' ? 'captain' : roleKey === 'viceCaptainId' ? 'vice captain' : 'wicketkeeper';
+      const player = opponentSelectedXIPlayers.find((item) => item.id === playerId);
+      if (player) {
+        speak(`${player.name} selected as ${roleLabel} for ${opponentTeam}.`);
+      }
+    }
+  };
+
+  const createCustomPlayer = (teamKey, payload) => {
+    const targetPlayers = teamKey === 'own' ? availableOwnPlayers : availableOpponentPlayers;
+    const targetIds = targetPlayers.map((player) => player.id || 0);
+    const nextId = (targetIds.length ? Math.max(...targetIds) : 0) + 1;
+    const customPlayer = {
+      id: nextId,
+      name: payload.name,
+      abilityToPlayPaceBall: payload.abilityToPlayPaceBall,
+      abilityToPlaySpinBall: payload.abilityToPlaySpinBall,
+      battingAggresion: payload.battingAggresion,
+      isWicketKeeper: !!payload.isWicketKeeper,
+      spinAbility: payload.spinAbility,
+      paceAbility: payload.paceAbility,
+      currentMatch: {
+        run: 0,
+        ball: 0,
+        isBatting: 0,
+        b_run: 0,
+        b_ball: 0,
+        b_wkt: 0,
+      },
+    };
+
+    if (teamKey === 'own') {
+      const nextCustom = [...(ownCustomPlayers || []), customPlayer];
+      dispatch(setOwnCustomPlayersAction(nextCustom));
+      dispatch(setOwnPlayingXIAction([...ownSelectedXIIds, customPlayer.id].slice(0, 11)));
+      speak(`${customPlayer.name} created and added to ${ownTeam}.`);
+      return;
+    }
+
+    const nextCustom = [...(opponentCustomPlayers || []), customPlayer];
+    dispatch(setOpponentCustomPlayersAction(nextCustom));
+    dispatch(setOpponentPlayingXIAction([...opponentSelectedXIIds, customPlayer.id].slice(0, 11)));
+    speak(`${customPlayer.name} created and added to ${opponentTeam}.`);
+  };
+
+  // Auto-picks first 11 players for user's selected team.
+  const handleAutoPickOwnXI = () => {
+    const nextIds = availableOwnPlayers.slice(0, 11).map((player) => player.id);
+    dispatch(setOwnPlayingXIAction(nextIds));
+    dispatch(setOwnTeamRolesAction(pickDefaultRoles(availableOwnPlayers, nextIds)));
+  };
+
+  // Auto-picks first 11 players for opponent selected team.
+  const handleAutoPickOpponentXI = () => {
+    const nextIds = availableOpponentPlayers.slice(0, 11).map((player) => player.id);
+    dispatch(setOpponentPlayingXIAction(nextIds));
+    dispatch(setOpponentTeamRolesAction(pickDefaultRoles(availableOpponentPlayers, nextIds)));
+  };
+
+  // Opens innings only after both team XIs are finalized.
+  const handleStartMatchWithSelectedXI = () => {
+    if (!ownXIReady || !opponentXIReady || !ownRolesReady || !opponentRolesReady) {
+      return;
+    }
+
+    openInnings(firstBattingSide);
   };
 
   // Announces forced user role when opponent wins toss and decides first action.
@@ -1273,6 +2049,131 @@ export function useCricketSimulatorController() {
 
     dispatch(setStageAction(matchStatusEnum.TossResult));
   };
+
+  // Reloads the current user's saved game list from Firestore.
+  const refreshSavedGames = async () => {
+    if (!authUser?.uid) {
+      setSavedGames([]);
+      return;
+    }
+
+    const [manualSaves, autoSave] = await Promise.all([
+      listGameSaves(authUser.uid),
+      getAutoGameSave(authUser.uid),
+    ]);
+    setSavedGames(autoSave ? [autoSave, ...manualSaves] : manualSaves);
+  };
+
+  // Writes autosave snapshot for active game to recover on reload/navigation.
+  const persistAutoSaveSnapshot = async (snapshot, uid) => {
+    if (!uid || !snapshot) {
+      return;
+    }
+
+    await upsertAutoGameSave(uid, {
+      title: `Autosave: ${snapshot.ownTeam} vs ${snapshot.opponentTeam}`,
+      stage: snapshot.stage,
+      gameState: snapshot,
+    });
+  };
+
+  // Saves current game snapshot for logged-in user (max 5 saves).
+  const handleSaveGame = async () => {
+    if (!authUser?.uid || isSavingGame) {
+      return;
+    }
+
+    setIsSavingGame(true);
+    setIsGlobalSaving(true);
+    setSaveMessage('');
+
+    try {
+      const currentSaves = await listGameSaves(authUser.uid);
+      if (currentSaves.length >= 5) {
+        setSaveMessage('Maximum 5 saves reached. Delete one to save a new game.');
+        return;
+      }
+
+      await createGameSave(authUser.uid, {
+        title: `${ownTeam} vs ${opponentTeam} (${matchType.nameKey.toUpperCase()})`,
+        stage,
+        gameState: game,
+      });
+
+      await refreshSavedGames();
+      setSaveMessage('Game saved successfully.');
+      speak('Game saved.');
+    } catch (error) {
+      setSaveMessage(error?.message || 'Failed to save game.');
+    } finally {
+      setIsSavingGame(false);
+      setIsGlobalSaving(false);
+    }
+  };
+
+  // Loads selected save snapshot into Redux game state.
+  const handleLoadSavedGame = (saveItem) => {
+    if (!saveItem?.gameState) {
+      return;
+    }
+
+    dispatch(hydrateGameState(saveItem.gameState));
+    setSaveMessage('Saved game loaded.');
+    speak('Saved game loaded.');
+  };
+
+  // Deletes selected save from Firestore and refreshes save list.
+  const handleDeleteSavedGame = async (saveId) => {
+    if (!authUser?.uid || !saveId) {
+      return;
+    }
+
+    try {
+      await removeGameSave(authUser.uid, saveId);
+      await refreshSavedGames();
+      setSaveMessage('Saved game deleted.');
+    } catch (error) {
+      setSaveMessage(error?.message || 'Failed to delete saved game.');
+    }
+  };
+
+  useEffect(() => {
+    if (!authUser?.uid || !isGameInProgress) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      persistAutoSaveSnapshot(game, authUser.uid).catch(() => {
+        // best-effort autosave, ignore UI interruption
+      });
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [
+    authUser?.uid,
+    game,
+    isGameInProgress,
+    location.pathname,
+  ]);
+
+  useEffect(() => {
+    const flushAutoSave = () => {
+      if (!inProgressRef.current || !authUidRef.current) {
+        return;
+      }
+
+      persistAutoSaveSnapshot(gameSnapshotRef.current, authUidRef.current).catch(() => {
+        // best-effort autosave on unload/navigation
+      });
+    };
+
+    window.addEventListener('beforeunload', flushAutoSave);
+
+    return () => {
+      flushAutoSave();
+      window.removeEventListener('beforeunload', flushAutoSave);
+    };
+  }, []);
 
   // Sets batting intent only when currently allowed for the active user-batting innings.
   const handleSetBattingIntent = (value) => {
@@ -1336,14 +2237,43 @@ export function useCricketSimulatorController() {
     isUserWinner,
     firstInningsView,
     secondInningsView,
+    savedGames,
+    isSavingGame,
+    isGlobalSaving,
+    isSavesLoading,
+    saveMessage,
     teamOneFinal: `${firstInningsTeamName} ${firstInnings.score}/${firstInnings.wickets}`,
     teamTwoFinal: `${secondInningsTeamName} ${secondInnings.score}/${secondInnings.wickets}`,
     resultSummary,
+    momRecommendations,
+    announceManOfTheMatch,
     goToNextStage,
     toggleScoreboard: () => dispatch(toggleShowScoreboard()),
     setMatchTypeKey: (value) => dispatch(setMatchTypeKeyAction(value)),
-    setOwnTeam: (value) => dispatch(setOwnTeamAction(value)),
-    setOpponentTeam: (value) => dispatch(setOpponentTeamAction(value)),
+    setOwnTeam: (value) => {
+      dispatch(setOwnTeamAction(value));
+      dispatch(setOwnPlayingXIAction([]));
+      dispatch(setOwnCustomPlayersAction([]));
+      dispatch(
+        setOwnTeamRolesAction({
+          captainId: null,
+          viceCaptainId: null,
+          wicketKeeperId: null,
+        })
+      );
+    },
+    setOpponentTeam: (value) => {
+      dispatch(setOpponentTeamAction(value));
+      dispatch(setOpponentPlayingXIAction([]));
+      dispatch(setOpponentCustomPlayersAction([]));
+      dispatch(
+        setOpponentTeamRolesAction({
+          captainId: null,
+          viceCaptainId: null,
+          wicketKeeperId: null,
+        })
+      );
+    },
     setLocationCountry: (value) => dispatch(setLocationCountryAction(value)),
     setSelectedStadium: (value) => dispatch(setSelectedStadiumAction(value)),
     setCommentator: (value) => dispatch(setCommentatorAction(value)),
@@ -1351,12 +2281,39 @@ export function useCricketSimulatorController() {
     setBowlingIntent: handleSetBowlingIntent,
     setPreferredVoice,
     speak,
+    saveGame: handleSaveGame,
+    loadSavedGame: handleLoadSavedGame,
+    deleteSavedGame: handleDeleteSavedGame,
     processDelivery,
     handleSelectOpener,
     handleSelectNextBatter,
     handleSelectBowler,
     handleTossCall,
     handleUserTossDecision,
+    availableOwnPlayers,
+    availableOpponentPlayers,
+    ownAvailablePool,
+    opponentAvailablePool,
+    ownSelectedXIIds,
+    opponentSelectedXIIds,
+    ownSelectedXIPlayers,
+    opponentSelectedXIPlayers,
+    ownTeamRoles: ownSanitizedRoles,
+    opponentTeamRoles: opponentSanitizedRoles,
+    ownXIReady,
+    opponentXIReady,
+    ownRolesReady,
+    opponentRolesReady,
+    moveOwnPlayerToXI,
+    removeOwnPlayerFromXI,
+    moveOpponentPlayerToXI,
+    removeOpponentPlayerFromXI,
+    setOwnRole,
+    setOpponentRole,
+    createCustomPlayer,
+    autoPickOwnXI: handleAutoPickOwnXI,
+    autoPickOpponentXI: handleAutoPickOpponentXI,
+    startMatchWithSelectedXI: handleStartMatchWithSelectedXI,
     resetMatch: () => dispatch(resetMatchRuntime()),
     oversDisplay,
     buildTeamOneScorecard,

@@ -55,6 +55,33 @@
     font-size: 0.9rem;
   }
 
+  .admin-matrix-table {
+    margin-top: 0.5rem;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .admin-matrix-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 0.35rem 0.45rem;
+    font-size: 0.86rem;
+  }
+
+  .admin-matrix-row strong {
+    color: var(--text-main);
+  }
+
+  .admin-matrix-subhead {
+    margin: 0.75rem 0 0.45rem;
+    font-size: 0.92rem;
+    color: #d9e4ff;
+  }
+
   .dashboard-center {
     min-width: 0;
   }

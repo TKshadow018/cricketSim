@@ -189,6 +189,23 @@
   font-size: 1.15rem;
 }
 
+.sim-choice-visual-stadium {
+  width: 100%;
+  height: auto;
+  margin-bottom: 0.55rem;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0;
+}
+
+.sim-stadium-choice-image {
+  width: 100%;
+  height: 110px;
+  display: block;
+  object-fit: cover;
+}
+
 .sim-choice-badge {
   display: inline-block;
   margin-top: 0.45rem;
@@ -261,8 +278,8 @@
 }
 
 .sim-toss-icons img {
-  width: 64px;
-  height: 64px;
+  width: 128px;
+  height: 128px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.88);
   padding: 8px;
@@ -337,6 +354,8 @@
 
 .sim-choice-buttons button.locked {
   cursor: not-allowed;
+  opacity: 0.3;
+  filter: grayscale(0.5);
 }
 
 .sim-choice-buttons button:disabled {
@@ -454,30 +473,153 @@
 
 .sim-player-pick-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 0.45rem;
 }
 
+.sim-xi-dnd-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.sim-xi-column {
+  border: 1px dashed rgba(255, 255, 255, 0.24);
+  border-radius: 10px;
+  padding: 0.55rem;
+  background: rgba(255, 255, 255, 0.03);
+  display: grid;
+  gap: 0.5rem;
+  min-height: 280px;
+}
+
+.sim-xi-column h4 {
+  margin: 0;
+  color: #dce6ff;
+  font-size: 0.9rem;
+}
+
+.sim-xi-role-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 0.5rem;
+}
+
+.sim-xi-role-grid label {
+  display: grid;
+  gap: 0.25rem;
+  color: #dce6ff;
+  font-size: 0.8rem;
+}
+
+.sim-xi-role-grid select {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(10, 16, 30, 0.8);
+  color: #f0f5ff;
+  padding: 0.45rem 0.5rem;
+}
+
+.sim-custom-player-modal {
+  width: min(560px, 96vw);
+}
+
+.sim-custom-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.sim-custom-form-grid label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: #dce6ff;
+}
+
+.sim-custom-form-grid input {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(10, 16, 30, 0.82);
+  color: #f0f5ff;
+  padding: 0.42rem 0.48rem;
+}
+
+.sim-custom-checkbox {
+  grid-column: 1 / -1;
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem !important;
+}
+
 .sim-player-pick-btn {
-  border-radius: 9px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(160deg, rgba(26, 36, 63, 0.85), rgba(13, 18, 34, 0.82));
   color: #e2e9ff;
-  padding: 0.5rem 0.6rem;
+  padding: 0.6rem 0.65rem;
   cursor: pointer;
   text-align: left;
   display: grid;
-  gap: 0.18rem;
+  gap: 0.3rem;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
 }
 
 .sim-player-pick-btn.active {
-  border-color: #89a9ff;
-  background: rgba(137, 169, 255, 0.24);
+  border-color: #8eb0ff;
+  background: linear-gradient(160deg, rgba(58, 79, 133, 0.9), rgba(24, 35, 70, 0.9));
 }
 
 .sim-player-pick-btn small {
   color: #aebce7;
   font-size: 0.72rem;
+}
+
+.sim-player-pick-btn strong {
+  font-size: 0.87rem;
+  color: #f2f6ff;
+}
+
+.sim-player-stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+
+.sim-player-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.17rem 0.35rem;
+  border: 1px solid transparent;
+}
+
+.sim-player-stat-batpace {
+  background: rgba(76, 164, 255, 0.24);
+  border-color: rgba(76, 164, 255, 0.38);
+  color: #cde8ff;
+}
+
+.sim-player-stat-batspin {
+  background: rgba(128, 108, 255, 0.24);
+  border-color: rgba(128, 108, 255, 0.38);
+  color: #e2dcff;
+}
+
+.sim-player-stat-pace {
+  background: rgba(72, 201, 176, 0.24);
+  border-color: rgba(72, 201, 176, 0.4);
+  color: #d5fff4;
+}
+
+.sim-player-stat-spin {
+  background: rgba(255, 194, 91, 0.22);
+  border-color: rgba(255, 194, 91, 0.4);
+  color: #fff0ce;
 }
 
 .sim-player-pick-btn.disabled,
@@ -495,6 +637,9 @@
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.05);
   padding: 0.65rem;
+  gap: 0.3rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .sim-scoreboard-panel h4,
@@ -553,7 +698,112 @@
   margin-top: auto;
   margin-bottom: 8px;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.sim-save-row-actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.sim-saved-item {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 0;
+  overflow: hidden;
+}
+
+.sim-saved-item-content {
+  padding: 0.55rem 0.65rem;
+  display: grid;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.sim-delete-cross-btn {
+  border: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(202, 57, 74, 0.75);
+  color: #ffe7eb;
+  width: 52px;
+  min-height: 100%;
+  cursor: pointer;
+  font-size: 1.15rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+
+.sim-delete-cross-btn:hover {
+  background: rgba(228, 71, 90, 0.88);
+}
+
+.sim-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(0, 0, 0, 0.65);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.sim-confirm-modal {
+  width: min(420px, 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(8, 14, 28, 0.96);
+  padding: 1rem;
+}
+
+.sim-confirm-modal h4,
+.sim-confirm-modal p {
+  margin: 0;
+}
+
+.sim-confirm-modal p {
+  margin-top: 0.5rem;
+  color: var(--text-muted);
+}
+
+.sim-saving-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(4, 8, 15, 0.72);
+  display: grid;
+  place-items: center;
+  pointer-events: all;
+}
+
+.sim-saving-overlay p {
+  margin: 0.65rem 0 0;
+  color: #eaf0ff;
+  font-weight: 600;
+}
+
+.sim-saving-ball {
+  font-size: 2.1rem;
+  animation: simSpinBall 0.9s linear infinite;
+}
+
+@keyframes simSpinBall {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.08);
+  }
+  to {
+    transform: rotate(360deg) scale(1);
+  }
 }
 
 .sim-action-icons {
@@ -639,6 +889,119 @@
   margin: 0;
 }
 
+.sim-mom-panel {
+  grid-column: 1 / -1;
+  border: 1px solid rgba(17, 24, 39, 0.1);
+  border-radius: 16px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.05)
+}
+
+.sim-mom-panel h4,
+.sim-mom-panel p {
+  margin: 0;
+}
+
+.sim-mom-panel p {
+  margin-top: 4px;
+  opacity: 0.75;
+}
+
+.sim-mom-list {
+  margin: 12px 0 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+}
+
+.sim-mom-list-plain {
+  list-style: none;
+  padding-left: 0;
+}
+
+.sim-mom-list li {
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.sim-mom-item-recommended {
+  border-color: rgba(16, 185, 129, 0.65) !important;
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.sim-mom-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.sim-mom-head strong {
+  flex: 1;
+}
+
+.sim-mom-badge {
+  border: 1px solid rgba(16, 185, 129, 0.8);
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+  padding: 4px 8px;
+  font-weight: 600;
+}
+
+.sim-mom-meta {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.sim-mom-lines {
+  margin-top: 6px;
+  display: grid;
+  gap: 4px;
+}
+
+.sim-mom-lines p {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.92;
+}
+
+.sim-mom-points-list {
+  margin: 2px 0 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 2px;
+}
+
+.sim-mom-points-list li {
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  font-size: 12px;
+  opacity: 0.95;
+}
+
+.sim-mom-select-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 185, 129, 0.8);
+  background: rgba(16, 185, 129, 0.12);
+  color: #0ea271;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.sim-mom-select-btn:hover {
+  transform: scale(1.04);
+}
+
 .sim-final-card p {
   color: var(--text-muted);
   margin-top: 0.3rem;
@@ -666,6 +1029,15 @@
   }
 
   .sim-innings-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sim-xi-dnd-layout,
+  .sim-xi-role-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sim-custom-form-grid {
     grid-template-columns: 1fr;
   }
 }

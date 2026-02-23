@@ -61,10 +61,27 @@ export function MatchResultCard({
   teamOneOvers,
   teamTwoOvers,
   summary,
+  momRecommendations,
+  onSelectManOfTheMatch,
   onNewMatch,
   showScoreboard,
   scorecard,
 }) {
+  const [isMomPanelHidden, setIsMomPanelHidden] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMomPanelHidden(false);
+  }, [summary, teamOneLine, teamTwoLine]);
+
+  const handleSelectMom = (player) => {
+    if (!player) {
+      return;
+    }
+
+    onSelectManOfTheMatch?.(player);
+    setIsMomPanelHidden(true);
+  };
+
   const renderInningsScoreboard = (inningsData, keyPrefix) => {
     if (!inningsData) {
       return null;
@@ -147,6 +164,43 @@ export function MatchResultCard({
       >
         {summary}
       </motion.h3>
+      {!isMomPanelHidden && Array.isArray(momRecommendations) && momRecommendations.length ? (
+        <div className="sim-mom-panel">
+          <h4>Man of the Match Suggestions</h4>
+          <p>Choose one player from the top 5 ranked list.</p>
+          <ol className="sim-mom-list sim-mom-list-plain">
+            {momRecommendations.map((player) => (
+              <li key={`${player.rank}-${player.team}-${player.name}`} className={player.recommended ? 'sim-mom-item-recommended' : ''}>
+                <div className="sim-mom-head">
+                  <strong>#{player.rank} {player.name}</strong>
+                  {player.recommended ? <span className="sim-mom-badge">Recommended</span> : null}
+                  <button
+                    type="button"
+                    className="sim-mom-select-btn"
+                    onClick={() => handleSelectMom(player)}
+                    aria-label={`Select ${player.name} as Man of the Match`}
+                    title="Select as Man of the Match"
+                  >
+                    ✓
+                  </button>
+                </div>
+                <div className="sim-mom-lines">
+                  <p>Batting Performance {player.runs}({player.balls}) [{player.strikeRate}] {player.notOut ? 'Not Out' : ''}</p>
+                  <p>Bowling Performance {player.oversBowled}-{player.runsConceded}-{player.wickets}</p>
+                  <p>Team: {player.team} | Total MOM Points: {player.points}</p>
+                  {Array.isArray(player.notes) && player.notes.length ? (
+                    <ul className="sim-mom-points-list">
+                      {player.notes.map((note) => (
+                        <li key={`${player.name}-${note}`}>MOM Point: {note}</li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
       {showScoreboard ? (
         <div className="sim-scoreboard-panel">
           <h4>Full Scoreboard</h4>
