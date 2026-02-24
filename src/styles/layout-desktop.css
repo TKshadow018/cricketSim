@@ -94,4 +94,32 @@
   .dashboard-mobile-logout {
     display: none;
   }
+
+  .dashboard-history-list {
+    display: grid;
+    gap: 0.5rem;
+    max-height: 340px;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+  }
+
+  .dashboard-history-item {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0.5rem;
+  }
+
+  .dashboard-history-item p,
+  .dashboard-history-item small {
+    margin: 0.2rem 0 0;
+    display: block;
+    line-height: 1.35;
+  }
+
+  .dashboard-history-item strong {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    color: var(--text-main);
+  }
 }

@@ -21,6 +21,32 @@
   font-size: 0.85rem;
 }
 
+.sim-team-with-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  vertical-align: middle;
+}
+
+.sim-team-with-flag-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.sim-stage-team-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.sim-wave-title-static {
+  display: inline-flex;
+  align-items: center;
+}
+
 .sim-stage-card {
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -142,6 +168,86 @@
   gap: 0.7rem;
   overflow-y: auto;
   padding-right: 0.3rem;
+}
+
+.sim-series-mode-grid,
+.sim-series-length-grid,
+.sim-series-summary-grid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.sim-fixture-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.7rem;
+}
+
+.sim-fixture-grid label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  color: #d6e2ff;
+}
+
+.sim-fixture-grid select,
+.sim-fixture-grid input {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  color: #e8efff;
+  padding: 0.46rem 0.55rem;
+}
+
+.sim-series-mode-grid,
+.sim-series-length-grid {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.sim-series-mode-card,
+.sim-series-length-card {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8efff;
+  text-align: center;
+  padding: 0.9rem;
+  cursor: pointer;
+}
+
+.sim-series-mode-card h4,
+.sim-series-mode-card p,
+.sim-series-length-card small {
+  margin: 0;
+}
+
+.sim-series-mode-card p {
+  color: #c6d4ff;
+  margin-top: 0.35rem;
+}
+
+.sim-series-mode-card.active,
+.sim-series-length-card.active {
+  border-color: #74a6ff;
+  box-shadow: 0 0 0 2px rgba(116, 166, 255, 0.32), 0 0 24px rgba(116, 166, 255, 0.35);
+}
+
+.sim-series-mode-card.disabled {
+  opacity: 0.58;
+}
+
+.sim-series-length-card {
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+}
+
+.sim-series-length-number {
+  font-size: clamp(2.3rem, 5vw, 3.1rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #b9d6ff;
+  text-shadow: 0 0 10px rgba(89, 173, 255, 0.85), 0 0 22px rgba(73, 132, 255, 0.8), 0 0 34px rgba(29, 73, 201, 0.65);
 }
 
 .sim-choice-card,
@@ -1077,7 +1183,10 @@
 .sim-stage-7,
 .sim-stage-8,
 .sim-stage-9,
-.sim-stage-10 {
+.sim-stage-10,
+.sim-stage-14,
+.sim-stage-15,
+.sim-stage-17 {
   background: #000;
 }
 

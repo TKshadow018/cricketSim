@@ -178,6 +178,16 @@ function PreMatchStages({
   matchVisual,
   goToNextStage,
   goToPreviousStage,
+  selectGameMode,
+  selectSeriesLength,
+  tournamentUserTeam,
+  tournamentOpponentTeams,
+  tournamentMatches,
+  toggleTournamentOpponent,
+  prepareTournamentFixtures,
+  confirmTournamentFixtures,
+  randomizeTournamentFixtures,
+  updateTournamentFixture,
   setMatchTypeKey,
   setOwnTeam,
   setOpponentTeam,
@@ -247,7 +257,9 @@ function PreMatchStages({
   );
 
   const showSetupBackButton =
-    stage >= matchStatusEnum.ChooseOwnTeam && stage < matchStatusEnum.TeamOneBat;
+    (stage >= matchStatusEnum.ChooseMatchType && stage < matchStatusEnum.TeamOneBat) ||
+    stage === matchStatusEnum.ChooseSeriesLength ||
+    stage === matchStatusEnum.SetupTournamentFixtures;
   const setupBackSlot = showSetupBackButton ? (
     <AppButton text="Back" variant="secondary" fullWidth={false} onClick={goToPreviousStage} />
   ) : null;
@@ -371,20 +383,50 @@ function PreMatchStages({
     const stage = gameState.stage;
     const first = gameState.firstInnings || {};
     const second = gameState.secondInnings || {};
+    const seriesResults = Array.isArray(gameState.seriesResults) ? gameState.seriesResults : [];
+    const tournamentResults = Array.isArray(gameState.tournamentMatches)
+      ? gameState.tournamentMatches.filter((match) => match?.isComplete)
+      : [];
+    const isSeries = gameState.gameMode === 'series';
+    const isTournament = gameState.gameMode === 'tournament';
     const overs = (balls) => `${Math.floor((balls || 0) / 6)}.${(balls || 0) % 6}`;
 
+    const standing = seriesResults.reduce(
+      (acc, result) => {
+        if (result.winnerTeam === gameState.ownTeam) {
+          acc.ownWins += 1;
+        } else if (result.winnerTeam === gameState.opponentTeam) {
+          acc.opponentWins += 1;
+        } else {
+          acc.ties += 1;
+        }
+        return acc;
+      },
+      { ownWins: 0, opponentWins: 0, ties: 0 }
+    );
+
+    const prefix = isSeries
+      ? `${gameState.seriesLength || 1}-match series • ${gameState.ownTeam || 'Own'} ${standing.ownWins}-${standing.opponentWins} ${gameState.opponentTeam || 'Opponent'} • Match ${gameState.seriesCurrentMatch || 1}: `
+      : isTournament
+        ? `${(gameState.tournamentOpponentTeams || []).length + 1}-team knockout • ${gameState.tournamentUserTeam || gameState.ownTeam} • Completed ${tournamentResults.length}: `
+      : '';
+
     if (stage === matchStatusEnum.TeamOneBat) {
-      return `${gameState.firstBattingSide === 'own' ? gameState.ownTeam : gameState.opponentTeam}: ${
+      return `${prefix}${gameState.firstBattingSide === 'own' ? gameState.ownTeam : gameState.opponentTeam}: ${
         first.score || 0
       }/${first.wickets || 0} (${overs(first.balls)})`;
     }
 
     if (stage === matchStatusEnum.TeamTwoBat || stage === matchStatusEnum.MatchEnd) {
       const secondBattingTeam = gameState.firstBattingSide === 'own' ? gameState.opponentTeam : gameState.ownTeam;
-      return `${secondBattingTeam}: ${second.score || 0}/${second.wickets || 0} (${overs(second.balls)})`;
+      return `${prefix}${secondBattingTeam}: ${second.score || 0}/${second.wickets || 0} (${overs(second.balls)})`;
     }
 
-    return `Stage ${stage ?? '-'} setup in progress`;
+    if (stage === matchStatusEnum.SeriesSummary) {
+      return `${prefix}Series completed • Final ${standing.ownWins}-${standing.opponentWins}`;
+    }
+
+    return `${prefix}Stage ${stage ?? '-'} setup in progress`;
   };
 
   return (
@@ -493,6 +535,48 @@ function PreMatchStages({
         </StageShell>
       )}
 
+      {stage === matchStatusEnum.ChooseGameMode && (
+        <StageShell {...stageCommonProps} title="Choose Game Mode" subtitle="Pick how you want to play.">
+          <div className="sim-series-mode-grid">
+            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'quick' ? 'active' : ''}`} onClick={() => selectGameMode('quick')}>
+              <h4>Quick Match</h4>
+              <p>Single match experience.</p>
+            </button>
+            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'series' ? 'active' : ''}`} onClick={() => selectGameMode('series')}>
+              <h4>Play Series</h4>
+              <p>Multiple matches vs same opponent.</p>
+            </button>
+            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'tournament' ? 'active' : ''}`} onClick={() => selectGameMode('tournament')}>
+              <h4>Tournament</h4>
+              <p>4 / 8 / 16 team knockout.</p>
+            </button>
+          </div>
+        </StageShell>
+      )}
+
+      {stage === matchStatusEnum.ChooseSeriesLength && (
+        <StageShell
+          {...stageCommonProps}
+          title="Series Length"
+          subtitle="How many matches in this series?"
+          rightSlot={setupBackSlot}
+        >
+          <div className="sim-series-length-grid">
+            {[2, 3, 4, 5, 6, 7].map((value) => (
+              <button
+                key={`series-${value}`}
+                type="button"
+                className={`sim-series-length-card ${game.seriesLength === value ? 'active' : ''}`}
+                onClick={() => selectSeriesLength(value)}
+              >
+                <span className="sim-series-length-number">{value}</span>
+                <small>Matches</small>
+              </button>
+            ))}
+          </div>
+        </StageShell>
+      )}
+
       {stage === matchStatusEnum.ChooseOwnTeam && (
         <StageShell {...stageCommonProps} title="Choose Your Team" subtitle="Pick your national side." rightSlot={setupBackSlot} dark>
           <FlagTeamGrid
@@ -509,16 +593,115 @@ function PreMatchStages({
 
       {stage === matchStatusEnum.ChooseOpponent && (
         <StageShell {...stageCommonProps} title="Choose Opponent" subtitle="Set the rival team for this showdown." rightSlot={setupBackSlot} dark>
-          <FlagTeamGrid
-            teams={countryList}
-            selectedName={game.opponentTeam}
-            disabledName={game.ownTeam}
-            onSelect={(team) => {
-              setOpponentTeam(team.name);
-              speak(`Opponent team is ${team.name}.`);
-              goToNextStage();
-            }}
-          />
+          {game.gameMode === 'tournament' ? (
+            <>
+              <p className="sim-section-title">
+                Select opponents: {tournamentOpponentTeams.length} (allowed totals: 3, 7, 15)
+              </p>
+              <div className="sim-flag-grid">
+                {countryList
+                  .filter((team) => team.name !== tournamentUserTeam)
+                  .map((team) => {
+                    const active = tournamentOpponentTeams.includes(team.name);
+                    return (
+                      <button
+                        key={`tour-opp-${team.id}`}
+                        type="button"
+                        className={`sim-flag-card ${active ? 'active' : ''}`}
+                        onClick={() => toggleTournamentOpponent(team.name)}
+                      >
+                        <div className="sim-flag-holder">
+                          <img src={team.image.replace('./', '/')} alt={team.name} />
+                        </div>
+                        <h4>{team.name}</h4>
+                        <p>Rank #{team.current_ranking}</p>
+                      </button>
+                    );
+                  })}
+              </div>
+              <div className="sim-save-row-actions">
+                <AppButton
+                  text="Continue to Fixtures"
+                  fullWidth={false}
+                  onClick={prepareTournamentFixtures}
+                  disabled={![3, 7, 15].includes(tournamentOpponentTeams.length)}
+                />
+              </div>
+            </>
+          ) : (
+            <FlagTeamGrid
+              teams={countryList}
+              selectedName={game.opponentTeam}
+              disabledName={game.ownTeam}
+              onSelect={(team) => {
+                setOpponentTeam(team.name);
+                speak(`Opponent team is ${team.name}.`);
+                goToNextStage();
+              }}
+            />
+          )}
+        </StageShell>
+      )}
+
+      {stage === matchStatusEnum.SetupTournamentFixtures && (
+        <StageShell
+          {...stageCommonProps}
+          title="Setup Tournament Fixtures"
+          subtitle="Set first-round pairings and match dates, or randomize all fixtures."
+          rightSlot={setupBackSlot}
+          dark
+        >
+          <p className="sim-section-title">Teams: {[tournamentUserTeam, ...tournamentOpponentTeams].filter(Boolean).join(' • ')}</p>
+          <div className="sim-save-row-actions">
+            <AppButton text="Randomize Fixtures" variant="secondary" fullWidth={false} onClick={randomizeTournamentFixtures} />
+            <AppButton text="Confirm Fixtures" fullWidth={false} onClick={confirmTournamentFixtures} />
+          </div>
+          <div className="sim-series-summary-grid">
+            {(tournamentMatches || [])
+              .filter((match) => match.round === 1)
+              .map((match) => {
+                const teamOptions = [tournamentUserTeam, ...tournamentOpponentTeams].filter(Boolean);
+                return (
+                  <div key={`fixture-${match.id}`} className="sim-scoreboard-panel">
+                    <h4>{match.id}</h4>
+                    <div className="sim-fixture-grid">
+                      <label>
+                        Team A
+                        <select
+                          value={match.teamA}
+                          onChange={(event) => updateTournamentFixture(match.id, 'teamA', event.target.value)}
+                        >
+                          <option value="">Select team</option>
+                          {teamOptions.map((team) => (
+                            <option key={`fixture-a-${match.id}-${team}`} value={team}>{team}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        Team B
+                        <select
+                          value={match.teamB}
+                          onChange={(event) => updateTournamentFixture(match.id, 'teamB', event.target.value)}
+                        >
+                          <option value="">Select team</option>
+                          {teamOptions.map((team) => (
+                            <option key={`fixture-b-${match.id}-${team}`} value={team}>{team}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        Match Date
+                        <input
+                          type="date"
+                          value={match.date || ''}
+                          onChange={(event) => updateTournamentFixture(match.id, 'date', event.target.value)}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
         </StageShell>
       )}
 

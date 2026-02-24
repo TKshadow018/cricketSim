@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import AppButton from '../../../components/ui/AppButton';
+import TeamNameWithFlag from './TeamNameWithFlag';
 
 export function TossResultCard({
   winner,
@@ -14,7 +15,9 @@ export function TossResultCard({
 
   return (
     <div className="sim-result-block">
-      <h3>{winner} won the toss</h3>
+      <h3>
+        <TeamNameWithFlag teamName={winner} /> won the toss
+      </h3>
       <p>Commentator: {commentator}</p>
 
       {isUserWinner ? (
@@ -58,12 +61,19 @@ export function TossResultCard({
 export function MatchResultCard({
   teamOneLine,
   teamTwoLine,
+  teamOneName,
+  teamTwoName,
+  teamOneScore,
+  teamOneWickets,
+  teamTwoScore,
+  teamTwoWickets,
   teamOneOvers,
   teamTwoOvers,
   summary,
   momRecommendations,
   onSelectManOfTheMatch,
-  onNewMatch,
+  onPrimaryAction,
+  primaryActionLabel = 'Play New Match',
   showScoreboard,
   scorecard,
 }) {
@@ -150,11 +160,21 @@ export function MatchResultCard({
   return (
     <div className="sim-final-grid">
       <div className="sim-final-card">
-        <h4>{teamOneLine}</h4>
+        <h4>
+          {teamOneName ? <TeamNameWithFlag teamName={teamOneName} /> : null}{' '}
+          {Number.isFinite(teamOneScore) && Number.isFinite(teamOneWickets)
+            ? `${teamOneScore}/${teamOneWickets}`
+            : teamOneLine}
+        </h4>
         <p>Overs: {teamOneOvers}</p>
       </div>
       <div className="sim-final-card">
-        <h4>{teamTwoLine}</h4>
+        <h4>
+          {teamTwoName ? <TeamNameWithFlag teamName={teamTwoName} /> : null}{' '}
+          {Number.isFinite(teamTwoScore) && Number.isFinite(teamTwoWickets)
+            ? `${teamTwoScore}/${teamTwoWickets}`
+            : teamTwoLine}
+        </h4>
         <p>Overs: {teamTwoOvers}</p>
       </div>
       <motion.h3
@@ -208,7 +228,7 @@ export function MatchResultCard({
           {scorecard?.previousInnings ? renderInningsScoreboard(scorecard.previousInnings, 'previous') : null}
         </div>
       ) : null}
-      <AppButton text="Play New Match" onClick={onNewMatch} />
+      <AppButton text={primaryActionLabel} onClick={onPrimaryAction} />
     </div>
   );
 }

@@ -42,11 +42,28 @@ export const buildRandomMatchCondition = () => ({
   outfield: randomKey(outfieldType),
 });
 
+export const buildEmptyMatchCondition = () => ({
+  weather: '',
+  pitch: '',
+  outfield: '',
+});
+
 const initialState = {
   stage: matchStatusEnum.intro,
-  matchTypeKey: 't20',
-  ownTeam: 'India',
-  opponentTeam: 'Australia',
+  gameMode: 'quick',
+  seriesLength: 1,
+  seriesCurrentMatch: 1,
+  seriesResults: [],
+  seriesPlayerStats: {},
+  tournamentUserTeam: '',
+  tournamentOpponentTeams: [],
+  tournamentMatches: [],
+  tournamentCurrentMatchId: '',
+  tournamentChampion: '',
+  tournamentPlayerStats: {},
+  matchTypeKey: '',
+  ownTeam: '',
+  opponentTeam: '',
   ownPlayingXI: [],
   opponentPlayingXI: [],
   ownCustomPlayers: [],
@@ -61,14 +78,14 @@ const initialState = {
     viceCaptainId: null,
     wicketKeeperId: null,
   },
-  locationCountry: 'India',
+  locationCountry: '',
   selectedStadium: '',
   commentator: '',
   tossWinner: '',
-  tossDecision: 'bat',
+  tossDecision: '',
   tossCall: '',
-  firstBattingSide: 'own',
-  matchCondition: buildRandomMatchCondition(),
+  firstBattingSide: '',
+  matchCondition: buildEmptyMatchCondition(),
   battingIntent: battingAction.normal,
   bowlingIntent: bowlingAction.normal,
   firstInnings: buildInitialInnings(),
@@ -82,6 +99,39 @@ const gameSlice = createSlice({
   reducers: {
     setStage: (state, action) => {
       state.stage = action.payload;
+    },
+    setGameMode: (state, action) => {
+      state.gameMode = action.payload;
+    },
+    setSeriesLength: (state, action) => {
+      state.seriesLength = Math.max(1, Number(action.payload) || 1);
+    },
+    setSeriesCurrentMatch: (state, action) => {
+      state.seriesCurrentMatch = Math.max(1, Number(action.payload) || 1);
+    },
+    setSeriesResults: (state, action) => {
+      state.seriesResults = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setSeriesPlayerStats: (state, action) => {
+      state.seriesPlayerStats = action.payload && typeof action.payload === 'object' ? action.payload : {};
+    },
+    setTournamentUserTeam: (state, action) => {
+      state.tournamentUserTeam = action.payload || '';
+    },
+    setTournamentOpponentTeams: (state, action) => {
+      state.tournamentOpponentTeams = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setTournamentMatches: (state, action) => {
+      state.tournamentMatches = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setTournamentCurrentMatchId: (state, action) => {
+      state.tournamentCurrentMatchId = action.payload || '';
+    },
+    setTournamentChampion: (state, action) => {
+      state.tournamentChampion = action.payload || '';
+    },
+    setTournamentPlayerStats: (state, action) => {
+      state.tournamentPlayerStats = action.payload && typeof action.payload === 'object' ? action.payload : {};
     },
     setMatchTypeKey: (state, action) => {
       state.matchTypeKey = action.payload;
@@ -188,6 +238,28 @@ const gameSlice = createSlice({
         ...state,
         ...payload,
         stage: migratedStage ?? state.stage,
+        gameMode: payload.gameMode || state.gameMode,
+        seriesLength: Number(payload.seriesLength) > 0 ? Number(payload.seriesLength) : state.seriesLength,
+        seriesCurrentMatch:
+          Number(payload.seriesCurrentMatch) > 0 ? Number(payload.seriesCurrentMatch) : state.seriesCurrentMatch,
+        seriesResults: Array.isArray(payload.seriesResults) ? payload.seriesResults : state.seriesResults,
+        seriesPlayerStats:
+          payload.seriesPlayerStats && typeof payload.seriesPlayerStats === 'object'
+            ? payload.seriesPlayerStats
+            : state.seriesPlayerStats,
+        tournamentUserTeam: payload.tournamentUserTeam || state.tournamentUserTeam,
+        tournamentOpponentTeams: Array.isArray(payload.tournamentOpponentTeams)
+          ? payload.tournamentOpponentTeams
+          : state.tournamentOpponentTeams,
+        tournamentMatches: Array.isArray(payload.tournamentMatches)
+          ? payload.tournamentMatches
+          : state.tournamentMatches,
+        tournamentCurrentMatchId: payload.tournamentCurrentMatchId || state.tournamentCurrentMatchId,
+        tournamentChampion: payload.tournamentChampion || state.tournamentChampion,
+        tournamentPlayerStats:
+          payload.tournamentPlayerStats && typeof payload.tournamentPlayerStats === 'object'
+            ? payload.tournamentPlayerStats
+            : state.tournamentPlayerStats,
         ownPlayingXI: Array.isArray(payload.ownPlayingXI) ? payload.ownPlayingXI : state.ownPlayingXI,
         opponentPlayingXI: Array.isArray(payload.opponentPlayingXI)
           ? payload.opponentPlayingXI
@@ -212,10 +284,27 @@ const gameSlice = createSlice({
     },
     resetMatchRuntime: (state) => {
       state.stage = matchStatusEnum.intro;
+      state.gameMode = 'quick';
+      state.seriesLength = 1;
+      state.seriesCurrentMatch = 1;
+      state.seriesResults = [];
+      state.seriesPlayerStats = {};
+      state.tournamentUserTeam = '';
+      state.tournamentOpponentTeams = [];
+      state.tournamentMatches = [];
+      state.tournamentCurrentMatchId = '';
+      state.tournamentChampion = '';
+      state.tournamentPlayerStats = {};
+      state.matchTypeKey = '';
+      state.ownTeam = '';
+      state.opponentTeam = '';
+      state.locationCountry = '';
+      state.selectedStadium = '';
+      state.commentator = '';
       state.tossWinner = '';
-      state.tossDecision = 'bat';
+      state.tossDecision = '';
       state.tossCall = '';
-      state.firstBattingSide = 'own';
+      state.firstBattingSide = '';
       state.ownPlayingXI = [];
       state.opponentPlayingXI = [];
       state.ownCustomPlayers = [];
@@ -230,7 +319,7 @@ const gameSlice = createSlice({
         viceCaptainId: null,
         wicketKeeperId: null,
       };
-      state.matchCondition = buildRandomMatchCondition();
+      state.matchCondition = buildEmptyMatchCondition();
       state.battingIntent = battingAction.normal;
       state.bowlingIntent = bowlingAction.normal;
       state.firstInnings = buildInitialInnings();
@@ -242,6 +331,17 @@ const gameSlice = createSlice({
 
 export const {
   setStage,
+  setGameMode,
+  setSeriesLength,
+  setSeriesCurrentMatch,
+  setSeriesResults,
+  setSeriesPlayerStats,
+  setTournamentUserTeam,
+  setTournamentOpponentTeams,
+  setTournamentMatches,
+  setTournamentCurrentMatchId,
+  setTournamentChampion,
+  setTournamentPlayerStats,
   setMatchTypeKey,
   setOwnTeam,
   setOpponentTeam,

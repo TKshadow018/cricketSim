@@ -12,6 +12,7 @@ function StageShell({
   stageIndex,
   totalStages,
   title,
+  titleNode,
   subtitle,
   className = '',
   rightSlot,
@@ -29,9 +30,13 @@ function StageShell({
       <div className="sim-stage-header">
         <div>
           <p className="sim-stage-step">Stage {stageIndex} / {totalStages}</p>
-          <div className="sim-wave-title">
-            <Wave text={title} effect="verticalFadeIn" effectChange={1.1} effectDuration={0.7} />
-          </div>
+          {titleNode ? (
+            <div className="sim-wave-title sim-wave-title-static">{titleNode}</div>
+          ) : (
+            <div className="sim-wave-title">
+              <Wave text={title} effect="verticalFadeIn" effectChange={1.1} effectDuration={0.7} />
+            </div>
+          )}
           <p>{subtitle}</p>
         </div>
         {rightSlot}

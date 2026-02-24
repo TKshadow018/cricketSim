@@ -15,6 +15,7 @@ import { db } from './config';
 
 const usersCollection = 'users';
 const gameSavesCollection = 'gameSaves';
+const matchHistoryCollection = 'matchHistory';
 const autoSaveId = 'autosave';
 
 export const getUserProfile = async (uid) => {
@@ -85,4 +86,21 @@ export const upsertAutoGameSave = async (uid, payload) => {
     },
     { merge: true }
   );
+};
+
+export const createMatchHistoryEntry = async (uid, payload) => {
+  const historyRef = collection(db, usersCollection, uid, matchHistoryCollection);
+  return addDoc(historyRef, {
+    ...payload,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+};
+
+export const listRecentMatchHistory = async (uid, maxEntries = 10) => {
+  const safeLimit = Math.max(1, Math.min(25, Number(maxEntries) || 10));
+  const historyRef = collection(db, usersCollection, uid, matchHistoryCollection);
+  const historyQuery = query(historyRef, orderBy('updatedAt', 'desc'), limit(safeLimit));
+  const result = await getDocs(historyQuery);
+  return result.docs.map(mapSaveDoc);
 };

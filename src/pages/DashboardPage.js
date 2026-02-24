@@ -9,6 +9,8 @@ import { getPlayersForNations } from '../gameData/playerListForNation';
 import { outfieldType, pitchType } from '../gameData/matchCondition';
 import { battingAction, bowlingAction } from '../gameData/actionType';
 import { matchStatusEnum } from '../gameData/matchStatusEnum';
+import TeamNameWithFlag from '../features/game/components/TeamNameWithFlag';
+import { listRecentMatchHistory } from '../firebase/firestoreService';
 
 const baseMatchWeights = {
   micro: { 0: 10, 1: 20, 2: 20, 3: 3, 4: 20, 6: 15, wide: 1, nb: 1, W: 10 },
@@ -298,6 +300,8 @@ function DashboardPage() {
   const { user, isLoading } = useSelector((state) => state.auth);
   const game = useSelector((state) => state.game);
   const { t } = useLocalization();
+  const [recentMatchHistory, setRecentMatchHistory] = React.useState([]);
+  const [isHistoryLoading, setIsHistoryLoading] = React.useState(false);
 
   const adminEmail = (process.env.REACT_APP_FIREBASE_ADMIN_EMAIL || '').trim().toLowerCase();
   const isAdmin = !!adminEmail && (user?.email || '').toLowerCase() === adminEmail;
@@ -318,6 +322,54 @@ function DashboardPage() {
   const opponentSelectedPlayers = normalizeSelectedXIPlayers(opponentAllPlayers, game.opponentPlayingXI);
   const ownComposition = buildComposition(ownSelectedPlayers);
   const opponentComposition = buildComposition(opponentSelectedPlayers);
+
+  const loadRecentHistory = React.useCallback(async () => {
+    if (!user?.uid) {
+      setRecentMatchHistory([]);
+      return;
+    }
+
+    setIsHistoryLoading(true);
+    try {
+      const history = await listRecentMatchHistory(user.uid, 10);
+      setRecentMatchHistory(Array.isArray(history) ? history.slice(0, 10) : []);
+    } catch {
+      setRecentMatchHistory([]);
+    } finally {
+      setIsHistoryLoading(false);
+    }
+  }, [user?.uid]);
+
+  React.useEffect(() => {
+    loadRecentHistory();
+  }, [loadRecentHistory]);
+
+  React.useEffect(() => {
+    if (game.stage !== matchStatusEnum.MatchEnd) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      loadRecentHistory();
+    }, 650);
+
+    return () => clearTimeout(timer);
+  }, [game.stage, loadRecentHistory]);
+
+  const formatHistoryDate = (value) => {
+    if (value?.toDate) {
+      return value.toDate().toLocaleString();
+    }
+
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed.toLocaleString();
+    }
+
+    return 'Recently finished';
+  };
+
+  const oversFromBalls = (balls = 0) => `${Math.floor((Number(balls) || 0) / 6)}.${(Number(balls) || 0) % 6}`;
 
   const onLogout = () => {
     dispatch(logoutUser());
@@ -425,7 +477,7 @@ function DashboardPage() {
                   <h3 className="admin-matrix-subhead">Selection Profile</h3>
                   <div className="admin-matrix-table">
                     <div className="admin-matrix-row">
-                      <span>{game.ownTeam} selected</span>
+                      <span><TeamNameWithFlag teamName={game.ownTeam} /> selected</span>
                       <strong>{ownSelectedPlayers.length}/11</strong>
                     </div>
                     <div className="admin-matrix-row">
@@ -456,7 +508,7 @@ function DashboardPage() {
 
                   <div className="admin-matrix-table">
                     <div className="admin-matrix-row">
-                      <span>{game.opponentTeam} selected</span>
+                      <span><TeamNameWithFlag teamName={game.opponentTeam} /> selected</span>
                       <strong>{opponentSelectedPlayers.length}/11</strong>
                     </div>
                     <div className="admin-matrix-row">
@@ -498,7 +550,7 @@ function DashboardPage() {
                   <h3 className="admin-matrix-subhead">Selection Profile</h3>
                   <div className="admin-matrix-table">
                     <div className="admin-matrix-row">
-                      <span>{game.ownTeam} selected</span>
+                      <span><TeamNameWithFlag teamName={game.ownTeam} /> selected</span>
                       <strong>{ownSelectedPlayers.length}/11</strong>
                     </div>
                     <div className="admin-matrix-row"><span>Batsman</span><strong>{ownComposition.batsman}</strong></div>
@@ -511,7 +563,7 @@ function DashboardPage() {
 
                   <div className="admin-matrix-table">
                     <div className="admin-matrix-row">
-                      <span>{game.opponentTeam} selected</span>
+                      <span><TeamNameWithFlag teamName={game.opponentTeam} /> selected</span>
                       <strong>{opponentSelectedPlayers.length}/11</strong>
                     </div>
                     <div className="admin-matrix-row"><span>Batsman</span><strong>{opponentComposition.batsman}</strong></div>
@@ -535,7 +587,7 @@ function DashboardPage() {
                   <h3 className="admin-matrix-subhead">Selection Profile</h3>
                   <div className="admin-matrix-table">
                     <div className="admin-matrix-row">
-                      <span>{game.ownTeam} selected</span>
+                      <span><TeamNameWithFlag teamName={game.ownTeam} /> selected</span>
                       <strong>{ownSelectedPlayers.length}/11</strong>
                     </div>
                     <div className="admin-matrix-row"><span>Batsman</span><strong>{ownComposition.batsman}</strong></div>
@@ -548,7 +600,7 @@ function DashboardPage() {
 
                   <div className="admin-matrix-table">
                     <div className="admin-matrix-row">
-                      <span>{game.opponentTeam} selected</span>
+                      <span><TeamNameWithFlag teamName={game.opponentTeam} /> selected</span>
                       <strong>{opponentSelectedPlayers.length}/11</strong>
                     </div>
                     <div className="admin-matrix-row"><span>Batsman</span><strong>{opponentComposition.batsman}</strong></div>
@@ -572,17 +624,55 @@ function DashboardPage() {
 
         <aside className="dashboard-sidebar dashboard-sidebar-right">
           <h3>Match Notes</h3>
-          <p>Format: {selectedMatchType?.nameKey?.toUpperCase?.() || '-'}</p>
-          <p>
-            Teams: {game.ownTeam || '-'} vs {game.opponentTeam || '-'}
-          </p>
-          <p>Location Country: {game.locationCountry || '-'}</p>
-          <p>Stadium: {game.selectedStadium || '-'}</p>
-          <p>Weather: {game.matchCondition?.weather || '-'}</p>
-          <p>Pitch: {game.matchCondition?.pitch || '-'}</p>
-          <p>Outfield: {game.matchCondition?.outfield || '-'}</p>
-          <p>Toss Winner: {game.tossWinner || '-'}</p>
-          <p>Toss Decision: {game.tossDecision || '-'}</p>
+          {selectedMatchType?.nameKey ? <p>Format: {selectedMatchType.nameKey.toUpperCase()}</p> : null}
+          {game.ownTeam || game.opponentTeam ? (
+            <p>
+              Teams:{' '}
+              {game.ownTeam ? <TeamNameWithFlag teamName={game.ownTeam} /> : null}
+              {game.ownTeam && game.opponentTeam ? ' vs ' : null}
+              {game.opponentTeam ? <TeamNameWithFlag teamName={game.opponentTeam} /> : null}
+            </p>
+          ) : null}
+          {game.locationCountry ? <p>Location Country: {game.locationCountry}</p> : null}
+          {game.selectedStadium ? <p>Stadium: {game.selectedStadium}</p> : null}
+          {game.matchCondition?.weather ? <p>Weather: {game.matchCondition.weather}</p> : null}
+          {game.matchCondition?.pitch ? <p>Pitch: {game.matchCondition.pitch}</p> : null}
+          {game.matchCondition?.outfield ? <p>Outfield: {game.matchCondition.outfield}</p> : null}
+          {game.tossWinner ? (
+            <p>
+              Toss Winner: <TeamNameWithFlag teamName={game.tossWinner} />
+            </p>
+          ) : null}
+          {game.tossDecision ? <p>Toss Decision: {game.tossDecision}</p> : null}
+
+          {game.stage === matchStatusEnum.intro ? (
+            <>
+              <h3 className="admin-matrix-subhead">Recent Match History (Last 10)</h3>
+              {isHistoryLoading ? <p>Loading history...</p> : null}
+              {!isHistoryLoading && !recentMatchHistory.length ? <p>No completed matches saved yet.</p> : null}
+              {!isHistoryLoading && recentMatchHistory.length ? (
+                <div className="dashboard-history-list">
+                  {recentMatchHistory.map((entry) => (
+                    <div key={entry.id} className="admin-matrix-row dashboard-history-item">
+                      <div>
+                        <strong>
+                          <TeamNameWithFlag teamName={entry.ownTeam} showDashForEmpty /> vs{' '}
+                          <TeamNameWithFlag teamName={entry.opponentTeam} showDashForEmpty />
+                        </strong>
+                        <p>
+                          {entry.firstInningsTeamName}: {entry.firstInningsScore}/{entry.firstInningsWickets}
+                          {' '}({oversFromBalls(entry.firstInningsBalls)}) • {entry.secondInningsTeamName}: {entry.secondInningsScore}/
+                          {entry.secondInningsWickets} ({oversFromBalls(entry.secondInningsBalls)})
+                        </p>
+                        <p>{entry.summary || 'Result saved'}</p>
+                        <small>{formatHistoryDate(entry.updatedAt)}</small>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </>
+          ) : null}
         </aside>
       </div>
     </main>

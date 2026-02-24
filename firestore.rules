@@ -17,6 +17,37 @@ service cloud.firestore {
           && (request.resource.data.stage is string || request.resource.data.stage is int)
           && request.resource.data.gameState is map;
       }
+
+      match /matchHistory/{historyId} {
+        allow read, delete: if isOwner(userId);
+
+        allow create, update: if isOwner(userId)
+          && request.resource.data.keys().hasAll([
+            'ownTeam',
+            'opponentTeam',
+            'matchTypeKey',
+            'firstInningsTeamName',
+            'secondInningsTeamName',
+            'firstInningsScore',
+            'firstInningsWickets',
+            'secondInningsScore',
+            'secondInningsWickets',
+            'summary',
+            'winnerTeam',
+            'updatedAt'
+          ])
+          && request.resource.data.ownTeam is string
+          && request.resource.data.opponentTeam is string
+          && request.resource.data.matchTypeKey is string
+          && request.resource.data.firstInningsTeamName is string
+          && request.resource.data.secondInningsTeamName is string
+          && request.resource.data.firstInningsScore is int
+          && request.resource.data.firstInningsWickets is int
+          && request.resource.data.secondInningsScore is int
+          && request.resource.data.secondInningsWickets is int
+          && request.resource.data.summary is string
+          && request.resource.data.winnerTeam is string;
+      }
     }
   }
 }

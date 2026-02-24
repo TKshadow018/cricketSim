@@ -5,12 +5,31 @@ import { stageOrder } from "../../utils/simulatorUtils";
 import { matchStatusEnum } from "../../gameData/matchStatusEnum";
 import PreMatchStages from "./components/PreMatchStages";
 import LiveMatchStages from "./components/LiveMatchStages";
+import TeamNameWithFlag from './components/TeamNameWithFlag';
 import "./simulator.css";
 
 function CricketSimulator() {
   const controller = useCricketSimulatorController();
   const {
     game,
+    gameMode,
+    seriesLength,
+    seriesCurrentMatch,
+    seriesResults,
+    seriesStanding,
+    seriesTopRunScorers,
+    seriesTopWicketTakers,
+    seriesProgressLabel,
+    tournamentUserTeam,
+    tournamentOpponentTeams,
+    tournamentMatches,
+    tournamentChampion,
+    tournamentResults,
+    tournamentTopRunScorers,
+    tournamentTopWicketTakers,
+    tournamentProgressLabel,
+    isCurrentMatchUserInvolved,
+    autoSimMode,
     countryList,
     venueStadiums,
     availableVoices,
@@ -33,6 +52,16 @@ function CricketSimulator() {
     announceManOfTheMatch,
     goToNextStage,
     goToPreviousStage,
+    selectGameMode,
+    selectSeriesLength,
+    toggleTournamentOpponent,
+    prepareTournamentFixtures,
+    confirmTournamentFixtures,
+    randomizeTournamentFixtures,
+    updateTournamentFixture,
+    matchPrimaryAction,
+    simulateCurrentOver,
+    simulateFullMatch,
     toggleScoreboard,
     setMatchTypeKey,
     setOwnTeam,
@@ -91,6 +120,8 @@ function CricketSimulator() {
     matchStatusEnum.TeamOneBat,
     matchStatusEnum.TeamTwoBat,
     matchStatusEnum.MatchEnd,
+    matchStatusEnum.SeriesSummary,
+    matchStatusEnum.TournamentChampion,
   ].includes(game.stage);
 
   return (
@@ -105,10 +136,17 @@ function CricketSimulator() {
         {isLiveStage ? (
           <>
             <div className="sim-top-strip">
-              <p>{matchType.nameKey.toUpperCase()} Match</p>
               <p>
-                {game.ownTeam} vs {game.opponentTeam}
+                {gameMode === 'series'
+                  ? `${matchType.nameKey.toUpperCase()} Series`
+                  : gameMode === 'tournament'
+                    ? `${matchType.nameKey.toUpperCase()} Tournament`
+                    : `${matchType.nameKey.toUpperCase()} Match`}
               </p>
+              <p>
+                <TeamNameWithFlag teamName={game.ownTeam} /> vs <TeamNameWithFlag teamName={game.opponentTeam} />
+              </p>
+              <p>{gameMode === 'tournament' ? tournamentProgressLabel : seriesProgressLabel}</p>
               <p>Venue: {game.selectedStadium || game.locationCountry}</p>
             </div>
             <LiveMatchStages
@@ -138,6 +176,22 @@ function CricketSimulator() {
               resultSummary={resultSummary}
               momRecommendations={momRecommendations}
               onSelectManOfTheMatch={announceManOfTheMatch}
+              gameMode={gameMode}
+              seriesLength={seriesLength}
+              seriesCurrentMatch={seriesCurrentMatch}
+              seriesResults={seriesResults}
+              seriesStanding={seriesStanding}
+              seriesTopRunScorers={seriesTopRunScorers}
+              seriesTopWicketTakers={seriesTopWicketTakers}
+              tournamentChampion={tournamentChampion}
+              tournamentResults={tournamentResults}
+              tournamentTopRunScorers={tournamentTopRunScorers}
+              tournamentTopWicketTakers={tournamentTopWicketTakers}
+              isCurrentMatchUserInvolved={isCurrentMatchUserInvolved}
+              autoSimMode={autoSimMode}
+              onMatchPrimaryAction={matchPrimaryAction}
+              onSimulateOver={simulateCurrentOver}
+              onSimulateMatch={simulateFullMatch}
               resetMatch={resetMatch}
               oversDisplay={oversDisplay}
             />
@@ -154,6 +208,16 @@ function CricketSimulator() {
             matchVisual={matchVisual}
             goToNextStage={goToNextStage}
             goToPreviousStage={goToPreviousStage}
+            selectGameMode={selectGameMode}
+            selectSeriesLength={selectSeriesLength}
+            tournamentUserTeam={tournamentUserTeam}
+            tournamentOpponentTeams={tournamentOpponentTeams}
+            tournamentMatches={tournamentMatches}
+            toggleTournamentOpponent={toggleTournamentOpponent}
+            prepareTournamentFixtures={prepareTournamentFixtures}
+            confirmTournamentFixtures={confirmTournamentFixtures}
+            randomizeTournamentFixtures={randomizeTournamentFixtures}
+            updateTournamentFixture={updateTournamentFixture}
             setMatchTypeKey={setMatchTypeKey}
             setOwnTeam={setOwnTeam}
             setOpponentTeam={setOpponentTeam}

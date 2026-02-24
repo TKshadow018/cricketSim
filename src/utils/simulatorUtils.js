@@ -4,9 +4,12 @@ import { outfieldType, pitchType } from '../gameData/matchCondition';
 
 export const stageOrder = [
   matchStatusEnum.intro,
+  matchStatusEnum.ChooseGameMode,
+  matchStatusEnum.ChooseSeriesLength,
   matchStatusEnum.ChooseMatchType,
   matchStatusEnum.ChooseOwnTeam,
   matchStatusEnum.ChooseOpponent,
+  matchStatusEnum.SetupTournamentFixtures,
   matchStatusEnum.ChooseMatchLocation,
   matchStatusEnum.ChooseStadium,
   matchStatusEnum.ChooseCommentator,
@@ -17,6 +20,8 @@ export const stageOrder = [
   matchStatusEnum.TeamOneBat,
   matchStatusEnum.TeamTwoBat,
   matchStatusEnum.MatchEnd,
+  matchStatusEnum.SeriesSummary,
+  matchStatusEnum.TournamentChampion,
 ];
 
 export const battingActionList = [

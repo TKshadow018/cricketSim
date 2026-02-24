@@ -14,5 +14,10 @@ let matchStatusEnum =
     TeamOneBat: 11,
     TeamTwoBat: 12,
     MatchEnd: 13,
+    ChooseGameMode: 14,
+    ChooseSeriesLength: 15,
+    SeriesSummary: 16,
+    SetupTournamentFixtures: 17,
+    TournamentChampion: 18,
 };
 export { matchStatusEnum };

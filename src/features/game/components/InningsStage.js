@@ -42,6 +42,10 @@ function InningsStage({
   isSavingGame,
   saveMessage,
   canPlayNextBall,
+  showSimulationActions,
+  onSimulateOver,
+  onSimulateMatch,
+  isAutoSimulating,
   showScoreboard,
   scorecard,
   commentary,
@@ -236,11 +240,29 @@ function InningsStage({
 
           <div className="sim-innings-action">
             <AppButton
-              text="Play Next Ball"
+              text={isAutoSimulating ? 'Simulating...' : 'Play Next Ball'}
               onClick={onBowlBall}
               fullWidth={false}
-              disabled={!canPlayNextBall}
+              disabled={!canPlayNextBall || isAutoSimulating}
             />
+            {showSimulationActions ? (
+              <>
+                <AppButton
+                  text="Simulate Over"
+                  onClick={onSimulateOver}
+                  variant="secondary"
+                  fullWidth={false}
+                  disabled={!canPlayNextBall || isAutoSimulating}
+                />
+                <AppButton
+                  text="Simulate Full Match"
+                  onClick={onSimulateMatch}
+                  variant="secondary"
+                  fullWidth={false}
+                  disabled={!canPlayNextBall || isAutoSimulating}
+                />
+              </>
+            ) : null}
             <AppButton
               text={isSavingGame ? 'Saving...' : 'Save Game'}
               onClick={onSaveGame}
