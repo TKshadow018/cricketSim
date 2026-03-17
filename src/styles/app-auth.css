@@ -1,0 +1,236 @@
+:root {
+  --bg-main: #060b17;
+  --bg-card: #101a30;
+  --bg-soft: #16223f;
+  --text-main: #f5f8ff;
+  --text-muted: #a9b5d5;
+  --brand-primary: #4e7bff;
+  --brand-primary-dark: #355ee5;
+  --brand-secondary: #2a3556;
+  --danger: #ff6170;
+  --border: #2e3e67;
+  --success: #3bcf8e;
+  --radius-lg: 20px;
+  --radius-md: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+p, h1, h2, h3, h4, h5, h6, div, span {
+  color: var(--text-main);
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.auth-layout,
+.dashboard-page {
+  min-height: 100vh;
+  display: grid;
+  align-items: center;
+  background: radial-gradient(circle at 8% 12%, #1b2f57 0%, var(--bg-main) 45%);
+}
+
+.auth-layout {
+  grid-template-columns: 1.1fr 1fr;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.auth-brand-panel {
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(130deg, rgba(41, 74, 150, 0.65), rgba(15, 23, 42, 0.7));
+  backdrop-filter: blur(6px);
+}
+
+.auth-brand-kicker {
+  margin: 0;
+  color: var(--success);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.auth-brand-title {
+  margin: 0.9rem 0;
+  color: var(--text-main);
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.2;
+}
+
+.auth-brand-copy {
+  margin: 0;
+  color: var(--text-muted);
+  max-width: 50ch;
+}
+
+.auth-content-panel {
+  width: 100%;
+  max-width: 520px;
+  margin-inline: auto;
+}
+
+.auth-card,
+.dashboard-card {
+  border-radius: var(--radius-lg);
+  background: rgba(16, 26, 48, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 54px rgba(5, 9, 20, 0.45);
+  padding: 2rem;
+}
+
+.auth-card-title,
+.dashboard-title {
+  margin: 0;
+  color: var(--text-main);
+}
+
+.auth-card-subtitle,
+.dashboard-subtitle {
+  margin: 0.6rem 0 0;
+  color: var(--text-muted);
+}
+
+.auth-card-content {
+  margin-top: 1.5rem;
+}
+
+.auth-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.app-input-group {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.app-input-label {
+  color: var(--text-main);
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.app-input {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text-main);
+  padding: 0.8rem 0.9rem;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.app-input:focus {
+  border-color: var(--brand-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(78, 123, 255, 0.2);
+}
+
+.app-input-error {
+  border-color: var(--danger);
+}
+
+.app-field-error,
+.auth-server-error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 0.83rem;
+}
+
+.app-button {
+  border: 0;
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.app-button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.app-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.2);
+  opacity: 0.65;
+  transform: none;
+}
+
+.app-button-primary {
+  background: linear-gradient(120deg, var(--brand-primary), var(--brand-primary-dark));
+}
+
+.app-button-secondary {
+  background: var(--brand-secondary);
+}
+
+.app-button-full {
+  width: 100%;
+}
+
+.auth-footnote {
+  margin: 1.1rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.auth-footnote a {
+  color: var(--brand-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-footnote a:hover {
+  text-decoration: underline;
+}
+
+.route-loading {
+  min-height: 100vh;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-main);
+  background: var(--bg-main);
+}
+
+.dashboard-page {
+  place-items: center;
+  padding: 2rem;
+}
+
+.dashboard-card {
+  width: min(680px, 100%);
+}
+
+.dashboard-kicker {
+  margin: 0;
+  color: var(--success);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.dashboard-actions {
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 960px) {
+  .auth-layout {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .auth-brand-panel {
+    padding: 1.5rem;
+  }
+}

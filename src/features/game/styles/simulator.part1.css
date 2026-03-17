@@ -1,0 +1,415 @@
+.sim-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.sim-top-strip {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: linear-gradient(120deg, rgba(29, 56, 111, 0.65), rgba(12, 22, 42, 0.72));
+  padding: 0.7rem 1rem;
+  margin-top: 1.5rem;
+}
+
+.sim-top-strip p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.sim-team-with-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  vertical-align: middle;
+}
+
+.sim-team-with-flag-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.sim-stage-team-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.sim-wave-title-static {
+  display: inline-flex;
+  align-items: center;
+}
+
+.sim-stage-card {
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(140deg, rgba(22, 36, 65, 0.85), rgba(8, 12, 22, 0.88));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 20px 45px rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.sim-stage-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 85% 10%, rgba(136, 180, 255, 0.22), transparent 38%);
+  pointer-events: none;
+}
+
+.sim-stage-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+}
+
+.sim-stage-header h2 {
+  margin: 0;
+  color: var(--text-main);
+}
+
+.sim-stage-header p {
+  margin: 0.35rem 0 0;
+  color: var(--text-muted);
+}
+
+.sim-stage-step {
+  margin: 0;
+  color: #89a8ff !important;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sim-stage-content {
+  margin-top: 0.9rem;
+  display: grid;
+  gap: 0.9rem;
+  position: relative;
+  z-index: 1;
+}
+
+.sim-stage-dark {
+  background: #000;
+}
+
+.sim-stage-dark .sim-stage-header p,
+.sim-stage-dark .sim-stage-content p,
+.sim-stage-dark small {
+  color: #d0d7e7;
+}
+
+.sim-wave-title {
+  color: #f1f4ff;
+  text-shadow: 0 2px 10px rgba(79, 126, 255, 0.45);
+  letter-spacing: 0.03em;
+  font-weight: 700;
+}
+
+.sim-wave-title div {
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+}
+
+.sim-empty-message {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: #d8e2ff;
+  padding: 1rem;
+}
+
+.sim-pulse-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #69e6ff;
+  box-shadow: 0 0 14px #69e6ff;
+}
+
+.sim-intro-grid {
+  display: grid;
+  gap: 0.8rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.sim-intro-grid.clickable {
+  cursor: pointer;
+}
+
+.sim-click-hint {
+  color: #b4c4f5 !important;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.sim-intro-grid p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.sim-card-grid,
+.sim-flag-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 0.7rem;
+  overflow-y: auto;
+  padding-right: 0.3rem;
+}
+
+.sim-series-mode-grid,
+.sim-series-length-grid,
+.sim-series-summary-grid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.sim-fixture-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.7rem;
+}
+
+.sim-fixture-grid label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  color: #d6e2ff;
+}
+
+.sim-fixture-grid select,
+.sim-fixture-grid input {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  color: #e8efff;
+  padding: 0.46rem 0.55rem;
+}
+
+.sim-series-mode-grid,
+.sim-series-length-grid {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.sim-series-mode-card,
+.sim-series-length-card {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8efff;
+  text-align: center;
+  padding: 0.9rem;
+  cursor: pointer;
+}
+
+.sim-series-mode-card h4,
+.sim-series-mode-card p,
+.sim-series-length-card small {
+  margin: 0;
+}
+
+.sim-series-mode-card p {
+  color: #c6d4ff;
+  margin-top: 0.35rem;
+}
+
+.sim-series-mode-card.active,
+.sim-series-length-card.active {
+  border-color: #74a6ff;
+  box-shadow: 0 0 0 2px rgba(116, 166, 255, 0.32), 0 0 24px rgba(116, 166, 255, 0.35);
+}
+
+.sim-series-mode-card.disabled {
+  opacity: 0.58;
+}
+
+.sim-series-length-card {
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+}
+
+.sim-series-length-number {
+  font-size: clamp(2.3rem, 5vw, 3.1rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #b9d6ff;
+  text-shadow: 0 0 10px rgba(89, 173, 255, 0.85), 0 0 22px rgba(73, 132, 255, 0.8), 0 0 34px rgba(29, 73, 201, 0.65);
+}
+
+.sim-choice-card,
+.sim-flag-card {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--text-main);
+  text-align: left;
+  cursor: pointer;
+  padding: 0.75rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+}
+
+.sim-choice-card.active,
+.sim-flag-card.active {
+  border-color: #6f95ff;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(111, 149, 255, 0.45), 0 16px 30px rgba(40, 78, 172, 0.25);
+}
+
+.sim-choice-card h4,
+.sim-flag-card h4 {
+  margin: 0;
+  color: #1e2b45;
+}
+
+.sim-choice-card p,
+.sim-flag-card p,
+.sim-choice-card small {
+  display: block;
+  margin-top: 0.3rem;
+  color: #5a6888;
+}
+
+.sim-commentator-row {
+  margin-top: 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.sim-commentator-row small {
+  margin: 0;
+}
+
+.sim-commentator-test-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(30, 43, 69, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.sim-commentator-test-btn:hover {
+  background: #ffffff;
+}
+
+.sim-choice-visual {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 0.45rem;
+  background: linear-gradient(145deg, #f4b190, #f8ddcd);
+  color: #16223f;
+  font-size: 1.15rem;
+}
+
+.sim-choice-visual-stadium {
+  width: 100%;
+  height: auto;
+  margin-bottom: 0.55rem;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0;
+}
+
+.sim-stadium-choice-image {
+  width: 100%;
+  height: 110px;
+  display: block;
+  object-fit: cover;
+}
+
+.sim-stadium-meta-row {
+  margin-top: 0.3rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.sim-stadium-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid rgba(30, 43, 69, 0.12);
+  border-radius: 999px;
+  padding: 0.14rem 0.42rem;
+  font-size: 0.72rem;
+  color: #44506c;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.sim-stadium-meta-chip span{
+   color: var(--text-secondary);
+}
+
+.sim-stadium-meta-chip img {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+}
+
+.sim-choice-badge {
+  display: inline-block;
+  margin-top: 0.45rem;
+  border-radius: 999px;
+  background: #188c5c;
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.16rem 0.5rem;
+}
+
+.sim-flag-card {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.72);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.sim-flag-holder {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 0.55rem;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.24);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sim-flag-holder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sim-flag-card.disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.sim-flag-card h4,
+.sim-flag-card p {
+  color: #e8edff;
+}
+

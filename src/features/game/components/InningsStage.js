@@ -115,6 +115,9 @@ function InningsStage({
     );
   };
 
+  const safeOnBattingIntent = typeof onBattingIntent === 'function' ? onBattingIntent : () => {};
+  const safeOnBowlingIntent = typeof onBowlingIntent === 'function' ? onBowlingIntent : () => {};
+
   return (
     <>
       {showScoreboard ? (
@@ -149,7 +152,7 @@ function InningsStage({
                   <button
                     key={action.key}
                     className={`sim-intent-btn ${battingIntent === action.key ? 'active' : ''} ${action.disabled ? 'disabled' : ''}`}
-                    onClick={() => onBattingIntent(action.key)}
+                    onClick={() => safeOnBattingIntent(action.key)}
                     disabled={action.disabled}
                     title={action.reason || ''}
                   >
@@ -169,7 +172,7 @@ function InningsStage({
                   <button
                     key={action.key}
                     className={`sim-intent-btn ${bowlingIntent === action.key ? 'active' : ''} ${action.disabled ? 'disabled' : ''}`}
-                    onClick={() => onBowlingIntent(action.key)}
+                    onClick={() => safeOnBowlingIntent(action.key)}
                     disabled={action.disabled}
                     title={action.reason || ''}
                   >
