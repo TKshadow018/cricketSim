@@ -9,7 +9,6 @@ import gameReducer, {
   setOwnPlayingXI,
   setOpponentPlayingXI,
   setOwnTeamRoles,
-  setOpponentTeamRoles,
   setBattingIntent,
   setBowlingIntent,
   setFirstInnings,
