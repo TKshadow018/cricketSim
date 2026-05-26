@@ -73,6 +73,7 @@ describe('buildTopRunScorers', () => {
     const original = list.map((entry) => ({ ...entry }));
     buildTopRunScorers(list);
     expect(list).toEqual(original);
+    expect(list[0]).toEqual(original[0]);
   });
 });
 
@@ -186,6 +187,18 @@ describe('mergePlayerStatsForCurrentMatch', () => {
       ballsBowled: 12,
       runsConceded: 20,
       matches: 2,
+    });
+    expect(existing['India::p1::Player p1']).toEqual({
+      key: 'India::p1::Player p1',
+      team: 'India',
+      name: 'Player p1',
+      runs: 20,
+      outs: 0,
+      wickets: 0,
+      balls: 10,
+      ballsBowled: 0,
+      runsConceded: 0,
+      matches: 1,
     });
   });
 
