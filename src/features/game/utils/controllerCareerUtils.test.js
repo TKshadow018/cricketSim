@@ -70,7 +70,7 @@ describe('buildTopRunScorers', () => {
 
   it('does not mutate the input list', () => {
     const list = [makeEntry({ runs: 30, balls: 25, outs: 1 })];
-    const original = [...list];
+    const original = list.map((entry) => ({ ...entry }));
     buildTopRunScorers(list);
     expect(list).toEqual(original);
   });
@@ -175,7 +175,18 @@ describe('mergePlayerStatsForCurrentMatch', () => {
       firstInnings,
       secondInnings,
     });
-    expect(merged['India::p1::Player p1'].runs).toBeGreaterThanOrEqual(20);
+    expect(merged['India::p1::Player p1']).toEqual({
+      key: 'India::p1::Player p1',
+      team: 'India',
+      name: 'Player p1',
+      runs: 70,
+      outs: 1,
+      wickets: 1,
+      balls: 50,
+      ballsBowled: 12,
+      runsConceded: 20,
+      matches: 2,
+    });
   });
 
   it('increments matches count by 1', () => {
