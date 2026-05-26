@@ -21,10 +21,13 @@ export const useControllerRuntime = ({
     tournamentTopRunScorers,
     tournamentTopWicketTakers,
     tournamentProgressLabel,
+    careerTopRunScorers,
+    careerTopWicketTakers,
+    careerProgressLabel,
     announceManOfTheMatch,
   } = useControllerStats(base);
 
-  const { teamHandlers, competitionHandlers, tossAndSimulationHandlers, persistenceHandlers } =
+  const { teamHandlers, competitionHandlers, tossAndSimulationHandlers, persistenceHandlers, careerHandlers } =
     useControllerHandlersBundle({
       teamArgs: {
         ...base,
@@ -50,6 +53,12 @@ export const useControllerRuntime = ({
         ...base,
         dispatch,
         ...refs,
+      },
+      careerArgs: {
+        ...base,
+        dispatch,
+        ...actions,
+        careerResultCommitSignatureRef: refs.careerResultCommitSignatureRef,
       },
       prepareTournamentMatch,
       setPrepareTournamentMatch: (value) => {
@@ -120,10 +129,14 @@ export const useControllerRuntime = ({
     tournamentTopRunScorers,
     tournamentTopWicketTakers,
     tournamentProgressLabel,
+    careerTopRunScorers,
+    careerTopWicketTakers,
+    careerProgressLabel,
     announceManOfTheMatch,
     ...persistenceHandlers,
     ...teamHandlers,
     ...tossAndSimulationHandlers,
+    ...careerHandlers,
     matchPrimaryAction: competitionHandlers.handleMatchPrimaryAction,
     resetMatch: competitionHandlers.handlePlayFreshMatch,
     setBattingIntent: handleSetBattingIntent,

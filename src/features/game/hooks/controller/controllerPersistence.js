@@ -6,10 +6,11 @@ import {
   listGameSaves,
   removeGameSave,
   upsertAutoGameSave,
+  upsertCareerAutoSave,
 } from '../../../../firebase/firestoreService';
 import { hydrateGameState } from '../../gameSlice';
 import { speak } from '../../../../utils/speechUtils';
-import { MODE_SERIES, MODE_TOURNAMENT } from '../../utils/controllerCommonUtils';
+import { MODE_SERIES, MODE_TOURNAMENT, MODE_CAREER } from '../../utils/controllerCommonUtils';
 import { matchStatusEnum } from '../../../../gameData/matchStatusEnum';
 
 export const useControllerPersistence = ({
@@ -46,6 +47,10 @@ export const useControllerPersistence = ({
   selectedStadium,
   tossWinner,
   savedHistorySignatureRef,
+  careerTeam,
+  careerSeason,
+  careerMatchIndex,
+  careerSchedule,
 }) => {
   const refreshSavedGames = async () => {
     if (!authUser?.uid) {
@@ -62,6 +67,17 @@ export const useControllerPersistence = ({
 
   const persistAutoSaveSnapshot = async (snapshot, uid) => {
     if (!uid || !snapshot) {
+      return;
+    }
+
+    const careerTitle = `Career: ${snapshot.careerTeam || snapshot.ownTeam} — Season ${snapshot.careerSeason || 1}, Match ${(snapshot.careerMatchIndex || 0) + 1}`;
+
+    if (snapshot.gameMode === MODE_CAREER) {
+      await upsertCareerAutoSave(uid, {
+        title: careerTitle,
+        stage: snapshot.stage,
+        gameState: snapshot,
+      });
       return;
     }
 
@@ -95,11 +111,13 @@ export const useControllerPersistence = ({
 
       await createGameSave(authUser.uid, {
         title:
-          gameMode === MODE_SERIES
-            ? `${ownTeam} vs ${opponentTeam} (${seriesLength}-match series, ${matchType.nameKey.toUpperCase()}, ${seriesStanding.ownWins}-${seriesStanding.opponentWins})`
-            : gameMode === MODE_TOURNAMENT
-              ? `${tournamentUserTeam || ownTeam} tournament (${(tournamentOpponentTeams || []).length + 1} teams)`
-              : `${ownTeam} vs ${opponentTeam} (${matchType.nameKey.toUpperCase()})`,
+          gameMode === MODE_CAREER
+            ? `Career: ${careerTeam} — Season ${careerSeason}, Match ${(careerMatchIndex || 0) + 1} of ${(careerSchedule || []).length}`
+            : gameMode === MODE_SERIES
+              ? `${ownTeam} vs ${opponentTeam} (${seriesLength}-match series, ${matchType.nameKey.toUpperCase()}, ${seriesStanding.ownWins}-${seriesStanding.opponentWins})`
+              : gameMode === MODE_TOURNAMENT
+                ? `${tournamentUserTeam || ownTeam} tournament (${(tournamentOpponentTeams || []).length + 1} teams)`
+                : `${ownTeam} vs ${opponentTeam} (${matchType.nameKey.toUpperCase()})`,
         stage,
         gameState: game,
       });

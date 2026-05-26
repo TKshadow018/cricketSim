@@ -16,6 +16,8 @@ import { db } from './config';
 const usersCollection = 'users';
 const gameSavesCollection = 'gameSaves';
 const matchHistoryCollection = 'matchHistory';
+const careerSavesCollection = 'careerSaves';
+const careerSeasonHistoryCollection = 'careerSeasonHistory';
 const autoSaveId = 'autosave';
 
 export const getUserProfile = async (uid) => {
@@ -103,4 +105,57 @@ export const listRecentMatchHistory = async (uid, maxEntries = 10) => {
   const historyQuery = query(historyRef, orderBy('updatedAt', 'desc'), limit(safeLimit));
   const result = await getDocs(historyQuery);
   return result.docs.map(mapSaveDoc);
+};
+
+export const listCareerSaves = async (uid) => {
+  const savesRef = collection(db, usersCollection, uid, careerSavesCollection);
+  const savesQuery = query(savesRef, orderBy('updatedAt', 'desc'), limit(10));
+  const result = await getDocs(savesQuery);
+  return result.docs.map(mapSaveDoc).filter((save) => save.id !== autoSaveId);
+};
+
+export const createCareerSave = async (uid, payload) => {
+  const savesRef = collection(db, usersCollection, uid, careerSavesCollection);
+  return addDoc(savesRef, {
+    ...payload,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+};
+
+export const removeCareerSave = async (uid, saveId) => {
+  const saveRef = doc(db, usersCollection, uid, careerSavesCollection, saveId);
+  await deleteDoc(saveRef);
+};
+
+export const getCareerAutoSave = async (uid) => {
+  const saveRef = doc(db, usersCollection, uid, careerSavesCollection, autoSaveId);
+  const saveDoc = await getDoc(saveRef);
+  if (!saveDoc.exists()) {
+    return null;
+  }
+
+  return mapSaveDoc(saveDoc);
+};
+
+export const upsertCareerAutoSave = async (uid, payload) => {
+  const saveRef = doc(db, usersCollection, uid, careerSavesCollection, autoSaveId);
+  await setDoc(
+    saveRef,
+    {
+      ...payload,
+      isAutoSave: true,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+};
+
+export const saveCareerSeasonHistory = async (uid, payload) => {
+  const historyRef = collection(db, usersCollection, uid, careerSeasonHistoryCollection);
+  return addDoc(historyRef, {
+    ...payload,
+    createdAt: serverTimestamp(),
+  });
 };

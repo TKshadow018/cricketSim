@@ -1,5 +1,5 @@
 import { matchStatusEnum } from '../../../../gameData/matchStatusEnum';
-import { MODE_SERIES, MODE_TOURNAMENT, buildRoundOneFixtures, areRoundFixturesValid, shuffleArray } from '../../utils/controllerCommonUtils';
+import { MODE_SERIES, MODE_TOURNAMENT, MODE_CAREER, buildRoundOneFixtures, areRoundFixturesValid, shuffleArray } from '../../utils/controllerCommonUtils';
 
 export const createNavigationHandlers = ({
   stage,
@@ -22,6 +22,15 @@ export const createNavigationHandlers = ({
   setSeriesPlayerStatsAction,
   setSeriesLengthAction,
   setSaveMessage,
+  setCareerTeamAction,
+  setCareerSeasonAction,
+  setCareerSeasonLengthAction,
+  setCareerFormatAction,
+  setCareerMatchIndexAction,
+  setCareerScheduleAction,
+  setCareerStandingsAction,
+  setCareerPlayerStatsAction,
+  setCareerSeasonHistoryAction,
 }) => {
   const goToNextStage = () => {
     if (stage === matchStatusEnum.ChooseGameMode) {
@@ -141,9 +150,27 @@ export const createNavigationHandlers = ({
     dispatch(setSeriesResultsAction([]));
     dispatch(setSeriesPlayerStatsAction({}));
 
+    if (mode !== MODE_CAREER) {
+      dispatch(setCareerTeamAction(''));
+      dispatch(setCareerSeasonAction(0));
+      dispatch(setCareerSeasonLengthAction('standard'));
+      dispatch(setCareerFormatAction('t20'));
+      dispatch(setCareerMatchIndexAction(0));
+      dispatch(setCareerScheduleAction([]));
+      dispatch(setCareerStandingsAction({}));
+      dispatch(setCareerPlayerStatsAction({}));
+      dispatch(setCareerSeasonHistoryAction([]));
+    }
+
     if (mode === MODE_TOURNAMENT) {
       dispatch(setSeriesLengthAction(1));
       dispatch(setStageAction(matchStatusEnum.ChooseMatchType));
+      return;
+    }
+
+    if (mode === MODE_CAREER) {
+      dispatch(setSeriesLengthAction(1));
+      dispatch(setStageAction(matchStatusEnum.CareerSetup));
       return;
     }
 

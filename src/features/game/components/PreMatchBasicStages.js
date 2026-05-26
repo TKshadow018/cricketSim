@@ -15,6 +15,8 @@ import {
   setCommentatorName,
   buildSaveSummary,
 } from './preMatchStageUtils';
+import CareerSetupStage from './CareerSetupStage';
+import CareerSeasonScheduleStage from './CareerSeasonScheduleStage';
 
 function PreMatchBasicStages(props) {
   const {
@@ -52,6 +54,14 @@ function PreMatchBasicStages(props) {
     handleUserTossDecision,
     commentatorDisplayName,
     isUserWinner,
+    beginCareer,
+    careerTeam,
+    careerSeason,
+    careerMatchIndex,
+    careerSchedule,
+    careerStandings,
+    handleCareerStartNextMatch,
+    handleViewCareerHistory,
   } = props;
 
   return (
@@ -174,6 +184,10 @@ function PreMatchBasicStages(props) {
             <button type="button" className={`sim-series-mode-card ${game.gameMode === 'tournament' ? 'active' : ''}`} onClick={() => selectGameMode('tournament')}>
               <h4>Tournament</h4>
               <p>4 / 8 / 16 team knockout.</p>
+            </button>
+            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'career' ? 'active' : ''}`} onClick={() => selectGameMode('career')}>
+              <h4>Career</h4>
+              <p>Manage a national team across seasons.</p>
             </button>
           </div>
         </StageShell>
@@ -379,6 +393,28 @@ function PreMatchBasicStages(props) {
             onUserDecision={handleUserTossDecision}
           />
         </StageShell>
+      )}
+
+      {stage === matchStatusEnum.CareerSetup && (
+        <CareerSetupStage
+          stageCommonProps={stageCommonProps}
+          countryList={countryList}
+          game={game}
+          beginCareer={beginCareer}
+        />
+      )}
+
+      {stage === matchStatusEnum.CareerSeasonSchedule && (
+        <CareerSeasonScheduleStage
+          stageCommonProps={stageCommonProps}
+          careerTeam={careerTeam}
+          careerSeason={careerSeason}
+          careerMatchIndex={careerMatchIndex}
+          careerSchedule={careerSchedule}
+          careerStandings={careerStandings}
+          handleCareerStartNextMatch={handleCareerStartNextMatch}
+          handleViewCareerHistory={handleViewCareerHistory}
+        />
       )}
     </>
   );

@@ -9,6 +9,7 @@ import { matchTypeList } from '../../../gameData/matchTypeList';
 import { matchStatusEnum } from '../../../gameData/matchStatusEnum';
 import {
   resetMatchRuntime,
+  resetMatchForCareer,
   setGameMode as setGameModeAction,
   setBattingIntent as setBattingIntentAction,
   setBowlingIntent as setBowlingIntentAction,
@@ -44,6 +45,15 @@ import {
   setTossDecision as setTossDecisionAction,
   setTossWinner as setTossWinnerAction,
   toggleShowScoreboard,
+  setCareerTeam as setCareerTeamAction,
+  setCareerSeason as setCareerSeasonAction,
+  setCareerSeasonLength as setCareerSeasonLengthAction,
+  setCareerFormat as setCareerFormatAction,
+  setCareerMatchIndex as setCareerMatchIndexAction,
+  setCareerSchedule as setCareerScheduleAction,
+  setCareerStandings as setCareerStandingsAction,
+  setCareerPlayerStats as setCareerPlayerStatsAction,
+  setCareerSeasonHistory as setCareerSeasonHistoryAction,
 } from '../gameSlice';
 import {
   setPreferredVoice,
@@ -56,6 +66,7 @@ import {
 import {
   MODE_SERIES,
   MODE_TOURNAMENT,
+  MODE_CAREER,
   buildPlayingXI,
   normalizePlayingXIIds,
   pickDefaultRoles,
@@ -114,6 +125,15 @@ export function useCricketSimulatorController() {
     bowlingIntent,
     firstInnings,
     secondInnings,
+    careerTeam,
+    careerSeason,
+    careerSeasonLength,
+    careerFormat,
+    careerMatchIndex,
+    careerSchedule,
+    careerStandings,
+    careerPlayerStats,
+    careerSeasonHistory,
   } = game;
 
   const [availableVoices, setAvailableVoices] = useState([]);
@@ -126,6 +146,7 @@ export function useCricketSimulatorController() {
   const savedHistorySignatureRef = useRef('');
   const seriesResultCommitSignatureRef = useRef('');
   const tournamentResultCommitSignatureRef = useRef('');
+  const careerResultCommitSignatureRef = useRef('');
   const processDeliveryRef = useRef(null);
   const openInningsRef = useRef(null);
   const resolveStadiumConditionRef = useRef(null);
@@ -190,7 +211,7 @@ export function useCricketSimulatorController() {
     opponentSanitizedRoles.captainId !== opponentSanitizedRoles.viceCaptainId;
   const venueStadiums = stadiums[locationCountry] || [];
 
-  const userTeamName = gameMode === MODE_TOURNAMENT ? tournamentUserTeam : ownTeam;
+  const userTeamName = gameMode === MODE_TOURNAMENT ? tournamentUserTeam : gameMode === MODE_CAREER ? careerTeam : ownTeam;
   const isCurrentMatchUserInvolved =
     !!userTeamName && (ownTeam === userTeamName || opponentTeam === userTeamName);
   const isUserWinner = tossWinner === userTeamName;
@@ -201,7 +222,8 @@ export function useCricketSimulatorController() {
     stage === matchStatusEnum.TeamTwoBat ||
     stage === matchStatusEnum.TossResult ||
     stage === matchStatusEnum.ChooseOwnPlayingXI ||
-    stage === matchStatusEnum.ChooseOpponentPlayingXI;
+    stage === matchStatusEnum.ChooseOpponentPlayingXI ||
+    stage === matchStatusEnum.CareerSeasonSchedule;
 
   useControllerBootstrap({
     authUser,
@@ -294,6 +316,15 @@ export function useCricketSimulatorController() {
     setSeriesPlayerStatsAction,
     setSeriesLengthAction,
     setSaveMessage,
+    setCareerTeamAction,
+    setCareerSeasonAction,
+    setCareerSeasonLengthAction,
+    setCareerFormatAction,
+    setCareerMatchIndexAction,
+    setCareerScheduleAction,
+    setCareerStandingsAction,
+    setCareerPlayerStatsAction,
+    setCareerSeasonHistoryAction,
   });
 
   const openInnings = (firstSide = firstBattingSide) =>
@@ -413,6 +444,9 @@ export function useCricketSimulatorController() {
       isGameInProgress, locationCountry, tossWinner, openInnings, firstInningsView,
       secondInningsView, prepareTournamentMatch, pickDefaultRoles,
       sanitizeRoles,
+      careerTeam, careerSeason, careerSeasonLength, careerFormat, careerMatchIndex,
+      careerSchedule, careerStandings, careerPlayerStats, careerSeasonHistory,
+      countryList,
     },
     setters: { setSavedGames, setIsSavingGame, setIsGlobalSaving, setSaveMessage, setAutoSimMode },
     refs: {
@@ -423,9 +457,12 @@ export function useCricketSimulatorController() {
       openInningsRef,
       resolveStadiumConditionRef,
       savedHistorySignatureRef,
+      careerResultCommitSignatureRef,
     },
     actions: {
       resetMatchRuntime,
+      resetMatchForCareerAction: resetMatchForCareer,
+      resetMatchRuntimeAction: resetMatchRuntime,
       setBattingIntentAction, setBowlingIntentAction, setTossDecisionAction, setFirstBattingSideAction,
       setStageAction, setOwnPlayingXIAction, setOwnTeamRolesAction, setOpponentPlayingXIAction,
       setOpponentTeamRolesAction, setOwnCustomPlayersAction, setOpponentCustomPlayersAction,
@@ -433,6 +470,10 @@ export function useCricketSimulatorController() {
       setSeriesPlayerStatsAction, setTossWinnerAction, setTossCallAction, setMatchConditionAction,
       setFirstInningsAction, setSecondInningsAction, setShowScoreboardAction,
       setSeriesCurrentMatchAction, setTournamentChampionAction,
+      setOpponentTeamAction, setLocationCountryAction, setMatchTypeKeyAction,
+      setCareerTeamAction, setCareerSeasonAction, setCareerSeasonLengthAction,
+      setCareerFormatAction, setCareerMatchIndexAction, setCareerScheduleAction,
+      setCareerStandingsAction, setCareerPlayerStatsAction, setCareerSeasonHistoryAction,
     },
   });
 
@@ -452,6 +493,8 @@ export function useCricketSimulatorController() {
       ownXIReady, opponentXIReady, ownRolesReady, opponentRolesReady,
       processDelivery, handleSelectOpener, handleSelectNextBatter, handleSelectBowler,
       setPreferredVoice, speak,
+      careerTeam, careerSeason, careerSeasonLength, careerFormat, careerMatchIndex,
+      careerSchedule, careerStandings, careerPlayerStats, careerSeasonHistory,
     },
     navigation: {
       goToNextStage,

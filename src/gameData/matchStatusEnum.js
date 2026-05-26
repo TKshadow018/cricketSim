@@ -19,5 +19,9 @@ let matchStatusEnum =
     SeriesSummary: 16,
     SetupTournamentFixtures: 17,
     TournamentChampion: 18,
+    CareerSetup: 19,
+    CareerSeasonSchedule: 20,
+    CareerSeasonSummary: 21,
+    CareerHistory: 22,
 };
 export { matchStatusEnum };

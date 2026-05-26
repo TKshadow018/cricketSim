@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { speak } from '../../../../utils/speechUtils';
-import { MODE_SERIES } from '../../utils/controllerCommonUtils';
+import { MODE_SERIES, MODE_CAREER } from '../../utils/controllerCommonUtils';
 import { buildMomRecommendations } from '../../utils/controllerMomUtils';
 import { buildTopRunScorers, buildTopWicketTakers } from '../../utils/controllerCareerUtils';
 import { resolveSeriesStanding } from '../../utils/controllerCommonUtils';
@@ -26,6 +26,11 @@ export const useControllerStats = ({
   tournamentMatches,
   tournamentPlayerStats,
   tournamentChampion,
+  careerPlayerStats,
+  careerSeason,
+  careerMatchIndex,
+  careerSchedule,
+  careerSeasonHistory,
   stage,
   resultSummary,
 }) => {
@@ -99,6 +104,17 @@ export const useControllerStats = ({
       ? `Champion: ${tournamentChampion}`
       : 'Tournament in progress';
 
+  const careerPlayerStatsList = useMemo(
+    () => Object.values(careerPlayerStats || {}).filter((entry) => entry && entry.name),
+    [careerPlayerStats]
+  );
+  const careerTopRunScorers = useMemo(() => buildTopRunScorers(careerPlayerStatsList), [careerPlayerStatsList]);
+  const careerTopWicketTakers = useMemo(() => buildTopWicketTakers(careerPlayerStatsList), [careerPlayerStatsList]);
+  const careerProgressLabel =
+    gameMode === MODE_CAREER
+      ? `Season ${careerSeason || 1} — Match ${(careerMatchIndex || 0) + 1} of ${(careerSchedule || []).length}`
+      : '';
+
   const announceManOfTheMatch = (selected) => {
     if (!selected) {
       return;
@@ -161,6 +177,9 @@ export const useControllerStats = ({
     tournamentTopRunScorers,
     tournamentTopWicketTakers,
     tournamentProgressLabel,
+    careerTopRunScorers,
+    careerTopWicketTakers,
+    careerProgressLabel,
     announceManOfTheMatch,
   };
 };

@@ -1,6 +1,7 @@
 export const MODE_QUICK = 'quick';
 export const MODE_SERIES = 'series';
 export const MODE_TOURNAMENT = 'tournament';
+export const MODE_CAREER = 'career';
 
 export const buildScorecard = (inningsName, inningsState, inningsView, overText) => ({
   title: inningsName,
