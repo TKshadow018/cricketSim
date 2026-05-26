@@ -10,12 +10,7 @@ jest.mock('./authThunks', () => ({
   startAuthListener: { pending: { type: 'auth/startAuthListener/pending' }, fulfilled: { type: 'auth/startAuthListener/fulfilled' }, rejected: { type: 'auth/startAuthListener/rejected' } },
 }));
 
-const initialState = {
-  user: null,
-  isLoading: false,
-  isSessionLoading: true,
-  error: null,
-};
+const initialState = authReducer(undefined, { type: '@@INIT' });
 
 describe('authSlice', () => {
   describe('initial state', () => {
