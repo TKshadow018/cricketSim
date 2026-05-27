@@ -21,7 +21,7 @@ const autoSaveId = 'autosave';
 const minHistoryLimit = 1;
 const maxHistoryLimit = 25;
 const maxManualGameSaves = 5;
-// Query one extra save because the autosave document shares the same collection but is not counted as a manual save.
+// Query one extra save because the autosave entry shares the same collection but is not counted as a manual save.
 const gameSavesQueryLimit = maxManualGameSaves + 1;
 const debugStorageKey = 'cricket-sim-debug-storage';
 
@@ -76,10 +76,13 @@ const getDebugUserStore = (store, uid) => {
 
 const toDebugTimestamp = () => new Date().toISOString();
 
+const getUpdatedAtTime = (item) => {
+  const parsed = Date.parse(item?.updatedAt || '');
+  return Number.isNaN(parsed) ? 0 : parsed;
+};
+
 const sortByUpdatedAtDesc = (items) =>
-  [...items].sort(
-    (left, right) => new Date(right?.updatedAt || 0).getTime() - new Date(left?.updatedAt || 0).getTime()
-  );
+  [...items].sort((left, right) => getUpdatedAtTime(right) - getUpdatedAtTime(left));
 
 const createDebugId = (() => {
   let counter = 0;
