@@ -64,16 +64,14 @@ describe('authThunks', () => {
     expect(authService.loginWithEmail).not.toHaveBeenCalled();
   });
 
-  test('logoutUser keeps the debug user available in debug mode', async () => {
+  test('logoutUser skips firebase logout when debug mode is enabled', async () => {
     process.env.REACT_APP_DEBUG = 'true';
     const { logoutUser, authService } = loadModule();
 
     const action = await logoutUser()(jest.fn(), () => ({}), undefined);
 
     expect(action.type).toBe('auth/logoutUser/fulfilled');
-    expect(action.payload).toMatchObject({
-      uid: 'debug-local-user',
-    });
+    expect(action.payload).toBeNull();
     expect(authService.logout).not.toHaveBeenCalled();
   });
 

@@ -158,7 +158,7 @@ export const startAuthListener = createAsyncThunk(
 export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, { rejectWithValue }) => {
   try {
     if (isDebugMode) {
-      return debugAuthUser;
+      return null;
     }
 
     await logout();

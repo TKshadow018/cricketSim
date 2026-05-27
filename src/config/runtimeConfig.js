@@ -9,3 +9,5 @@ export const debugAuthUser = {
   email: 'debug@cricketsim.local',
   displayName: 'Debug Mode',
 };
+
+export const getEffectiveAuthUser = (user) => (isDebugMode ? debugAuthUser : user);
