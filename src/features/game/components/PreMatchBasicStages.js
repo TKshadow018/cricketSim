@@ -15,6 +15,8 @@ import {
   setCommentatorName,
   buildSaveSummary,
 } from './preMatchStageUtils';
+import CareerSetupStage from './CareerSetupStage';
+import CareerSeasonScheduleStage from './CareerSeasonScheduleStage';
 
 function PreMatchBasicStages(props) {
   const {
@@ -52,6 +54,19 @@ function PreMatchBasicStages(props) {
     handleUserTossDecision,
     commentatorDisplayName,
     isUserWinner,
+    beginCareer,
+    careerTeam,
+    careerSeason,
+    careerMatchIndex,
+    careerSchedule,
+    careerStandings,
+    careerPlayerProfile,
+    careerDomesticCountry,
+    careerDomesticTeams,
+    careerOffers,
+    careerRetired,
+    handleCareerStartNextMatch,
+    handleViewCareerHistory,
   } = props;
 
   return (
@@ -126,7 +141,7 @@ function PreMatchBasicStages(props) {
                     variant="secondary"
                     fullWidth={false}
                     onClick={async () => {
-                      await onDeleteSavedGame(saveToDelete.id);
+                      await onDeleteSavedGame(saveToDelete);
                       setSaveToDelete(null);
                     }}
                   />
@@ -174,6 +189,10 @@ function PreMatchBasicStages(props) {
             <button type="button" className={`sim-series-mode-card ${game.gameMode === 'tournament' ? 'active' : ''}`} onClick={() => selectGameMode('tournament')}>
               <h4>Tournament</h4>
               <p>4 / 8 / 16 team knockout.</p>
+            </button>
+            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'career' ? 'active' : ''}`} onClick={() => selectGameMode('career')}>
+              <h4>Career</h4>
+              <p>Manage a national team across seasons.</p>
             </button>
           </div>
         </StageShell>
@@ -379,6 +398,34 @@ function PreMatchBasicStages(props) {
             onUserDecision={handleUserTossDecision}
           />
         </StageShell>
+      )}
+
+      {stage === matchStatusEnum.CareerSetup && (
+        <CareerSetupStage
+          stageCommonProps={stageCommonProps}
+          countryList={countryList}
+          game={game}
+          beginCareer={beginCareer}
+        careerPlayerProfile={careerPlayerProfile}
+        careerDomesticCountry={careerDomesticCountry}
+        careerDomesticTeams={careerDomesticTeams}
+        careerOffers={careerOffers}
+        />
+      )}
+
+      {stage === matchStatusEnum.CareerSeasonSchedule && (
+        <CareerSeasonScheduleStage
+          stageCommonProps={stageCommonProps}
+          careerTeam={careerTeam}
+          careerSeason={careerSeason}
+          careerMatchIndex={careerMatchIndex}
+          careerSchedule={careerSchedule}
+          careerStandings={careerStandings}
+          careerPlayerProfile={careerPlayerProfile}
+          careerRetired={careerRetired}
+          handleCareerStartNextMatch={handleCareerStartNextMatch}
+          handleViewCareerHistory={handleViewCareerHistory}
+        />
       )}
     </>
   );

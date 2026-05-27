@@ -1,4 +1,6 @@
 describe('authThunks', () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+
   const loadModule = () => {
     const authService = {
       deleteRegisteredUser: jest.fn(),
@@ -29,11 +31,31 @@ describe('authThunks', () => {
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
+    process.env.NODE_ENV = originalNodeEnv;
     delete process.env.REACT_APP_DEBUG;
+    delete process.env.REACT_APP_DEBUG_MODE;
+  });
+
+  afterAll(() => {
+    process.env.NODE_ENV = originalNodeEnv;
   });
 
   test('startAuthListener returns the debug user without subscribing when debug mode is enabled', async () => {
     process.env.REACT_APP_DEBUG = 'true';
+    const { startAuthListener, authService } = loadModule();
+
+    const action = await startAuthListener()(jest.fn(), () => ({}), undefined);
+
+    expect(action.type).toBe('auth/startAuthListener/fulfilled');
+    expect(action.payload).toMatchObject({
+      uid: 'debug-local-user',
+      displayName: 'Debug Mode',
+    });
+    expect(authService.subscribeToAuth).not.toHaveBeenCalled();
+  });
+
+  test('startAuthListener returns the debug user when debug mode alias is enabled', async () => {
+    process.env.REACT_APP_DEBUG_MODE = 'true';
     const { startAuthListener, authService } = loadModule();
 
     const action = await startAuthListener()(jest.fn(), () => ({}), undefined);
@@ -100,6 +122,24 @@ describe('authThunks', () => {
       email: 'player@example.com',
       displayName: 'Profile Name',
     });
+    expect(authService.subscribeToAuth).toHaveBeenCalledTimes(1);
+    expect(unsubscribe).toHaveBeenCalledTimes(1);
+  });
+
+  test('startAuthListener does not bypass auth in production builds', async () => {
+    process.env.NODE_ENV = 'production';
+    process.env.REACT_APP_DEBUG = 'true';
+    const { startAuthListener, authService } = loadModule();
+    const unsubscribe = jest.fn();
+    authService.subscribeToAuth.mockImplementation((onChange) => {
+      Promise.resolve().then(() => onChange(null));
+      return unsubscribe;
+    });
+
+    const action = await startAuthListener()(jest.fn(), () => ({}), undefined);
+
+    expect(action.type).toBe('auth/startAuthListener/fulfilled');
+    expect(action.payload).toBeNull();
     expect(authService.subscribeToAuth).toHaveBeenCalledTimes(1);
     expect(unsubscribe).toHaveBeenCalledTimes(1);
   });

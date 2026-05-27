@@ -108,6 +108,30 @@ function CricketSimulator() {
     buildTeamTwoScorecard,
     resetMatch,
     oversDisplay,
+    careerTeam,
+    careerSeason,
+    careerSeasonLength,
+    careerFormat,
+    careerMatchIndex,
+    careerSchedule,
+    careerStandings,
+    careerPlayerStats,
+    careerSeasonHistory,
+    careerPlayerProfile,
+    careerDomesticCountry,
+    careerDomesticTeams,
+    careerOffers,
+    careerRetired,
+    careerTopRunScorers,
+    careerTopWicketTakers,
+    careerProgressLabel,
+    beginCareer,
+    handleCareerStartNextMatch,
+    handleStartNextCareerSeason,
+    handleEndCareer,
+    handleRetireCareer,
+    handleViewCareerHistory,
+    handleBackToCareerSchedule,
   } = controller;
 
   const stageIndex = stageOrder.indexOf(game.stage) + 1;
@@ -122,7 +146,10 @@ function CricketSimulator() {
     matchStatusEnum.MatchEnd,
     matchStatusEnum.SeriesSummary,
     matchStatusEnum.TournamentChampion,
+    matchStatusEnum.CareerSeasonSummary,
+    matchStatusEnum.CareerHistory,
   ].includes(game.stage);
+  const isCareerMode = gameMode === 'career';
 
   return (
     <div className="sim-shell">
@@ -137,7 +164,9 @@ function CricketSimulator() {
           <>
             <div className="sim-top-strip">
               <p>
-                {gameMode === 'series'
+                {isCareerMode
+                  ? `Career — ${matchType.nameKey.toUpperCase()}`
+                  : gameMode === 'series'
                   ? `${matchType.nameKey.toUpperCase()} Series`
                   : gameMode === 'tournament'
                     ? `${matchType.nameKey.toUpperCase()} Tournament`
@@ -146,7 +175,13 @@ function CricketSimulator() {
               <p>
                 <TeamNameWithFlag teamName={game.ownTeam} /> vs <TeamNameWithFlag teamName={game.opponentTeam} />
               </p>
-              <p>{gameMode === 'tournament' ? tournamentProgressLabel : seriesProgressLabel}</p>
+              <p>
+                {isCareerMode
+                  ? careerProgressLabel
+                  : gameMode === 'tournament'
+                  ? tournamentProgressLabel
+                  : seriesProgressLabel}
+              </p>
               <p>Venue: {game.selectedStadium || game.locationCountry}</p>
             </div>
             <LiveMatchStages
@@ -194,6 +229,28 @@ function CricketSimulator() {
               onSimulateMatch={simulateFullMatch}
               resetMatch={resetMatch}
               oversDisplay={oversDisplay}
+              careerTeam={careerTeam}
+              careerSeason={careerSeason}
+              careerSeasonLength={careerSeasonLength}
+              careerFormat={careerFormat}
+              careerMatchIndex={careerMatchIndex}
+              careerSchedule={careerSchedule}
+              careerStandings={careerStandings}
+              careerPlayerStats={careerPlayerStats}
+              careerSeasonHistory={careerSeasonHistory}
+              careerPlayerProfile={careerPlayerProfile}
+              careerDomesticCountry={careerDomesticCountry}
+              careerDomesticTeams={careerDomesticTeams}
+              careerOffers={careerOffers}
+              careerRetired={careerRetired}
+              careerTopRunScorers={careerTopRunScorers}
+              careerTopWicketTakers={careerTopWicketTakers}
+              careerProgressLabel={careerProgressLabel}
+              handleStartNextCareerSeason={handleStartNextCareerSeason}
+              handleEndCareer={handleEndCareer}
+              handleRetireCareer={handleRetireCareer}
+              handleViewCareerHistory={handleViewCareerHistory}
+              handleBackToCareerSchedule={handleBackToCareerSchedule}
             />
           </>
         ) : (
@@ -256,6 +313,19 @@ function CricketSimulator() {
             autoPickOwnXI={autoPickOwnXI}
             autoPickOpponentXI={autoPickOpponentXI}
             startMatchWithSelectedXI={startMatchWithSelectedXI}
+            beginCareer={beginCareer}
+            careerTeam={careerTeam}
+            careerSeason={careerSeason}
+            careerMatchIndex={careerMatchIndex}
+            careerSchedule={careerSchedule}
+            careerStandings={careerStandings}
+            careerPlayerProfile={careerPlayerProfile}
+            careerDomesticCountry={careerDomesticCountry}
+            careerDomesticTeams={careerDomesticTeams}
+            careerOffers={careerOffers}
+            careerRetired={careerRetired}
+            handleCareerStartNextMatch={handleCareerStartNextMatch}
+            handleViewCareerHistory={handleViewCareerHistory}
           />
         )}
       </AnimatePresence>

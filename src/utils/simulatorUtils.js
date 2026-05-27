@@ -22,6 +22,10 @@ export const stageOrder = [
   matchStatusEnum.MatchEnd,
   matchStatusEnum.SeriesSummary,
   matchStatusEnum.TournamentChampion,
+  matchStatusEnum.CareerSetup,
+  matchStatusEnum.CareerSeasonSchedule,
+  matchStatusEnum.CareerSeasonSummary,
+  matchStatusEnum.CareerHistory,
 ];
 
 export const battingActionList = [

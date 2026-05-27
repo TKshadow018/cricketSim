@@ -143,12 +143,13 @@ Set these in `.env`:
 - `REACT_APP_FIREBASE_MEASUREMENT_ID`
 - `REACT_APP_FIREBASE_ADMIN_EMAIL` (optional/admin-specific usage)
 - `REACT_APP_DEBUG` (`true` to bypass authentication locally; defaults to `false`)
+- `REACT_APP_DEBUG_MODE` (legacy alias for debug auth bypass)
 
 ### Debug Mode
 
-Set `REACT_APP_DEBUG=true` in `.env` to bypass login during local development. When enabled, protected routes open without sign-in and auth-backed save/history data is stored in the browser instead of requiring Firebase authentication.
+Set `REACT_APP_DEBUG=true` in `.env` to bypass login during local development. `REACT_APP_DEBUG_MODE=true` is also supported for compatibility. When enabled, protected routes open without sign-in and auth-backed save/history data is stored in the browser instead of requiring Firebase authentication.
 
-Leave `REACT_APP_DEBUG` unset or `false` for normal and production deployments.
+Leave debug flags unset or `false` for normal and production deployments.
 
 ## Firebase Setup
 
@@ -266,6 +267,11 @@ src/
 
 - Ensure you are logged in.
 - Verify Firebase config values in `.env` are correct.
+
+### Need to run without auth locally
+
+- Set `REACT_APP_DEBUG_MODE=true` in `.env`.
+- Restart the dev server after changing env values.
 
 ### Build issues
 

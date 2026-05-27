@@ -63,6 +63,19 @@ function PreMatchStages({
   autoPickOwnXI,
   autoPickOpponentXI,
   startMatchWithSelectedXI,
+  beginCareer,
+  careerTeam,
+  careerSeason,
+  careerMatchIndex,
+  careerSchedule,
+  careerStandings,
+  careerPlayerProfile,
+  careerDomesticCountry,
+  careerDomesticTeams,
+  careerOffers,
+  careerRetired,
+  handleCareerStartNextMatch,
+  handleViewCareerHistory,
 }) {
   const [saveToDelete, setSaveToDelete] = useState(null);
   const [dragPayload, setDragPayload] = useState(null);
@@ -246,6 +259,19 @@ function PreMatchStages({
         handleUserTossDecision={handleUserTossDecision}
         commentatorDisplayName={commentatorDisplayName}
         isUserWinner={isUserWinner}
+        beginCareer={beginCareer}
+        careerTeam={careerTeam}
+        careerSeason={careerSeason}
+        careerMatchIndex={careerMatchIndex}
+        careerSchedule={careerSchedule}
+        careerStandings={careerStandings}
+        careerPlayerProfile={careerPlayerProfile}
+        careerDomesticCountry={careerDomesticCountry}
+        careerDomesticTeams={careerDomesticTeams}
+        careerOffers={careerOffers}
+        careerRetired={careerRetired}
+        handleCareerStartNextMatch={handleCareerStartNextMatch}
+        handleViewCareerHistory={handleViewCareerHistory}
       />
 
       <PreMatchSelectionStages

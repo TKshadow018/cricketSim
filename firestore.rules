@@ -18,6 +18,24 @@ service cloud.firestore {
           && request.resource.data.gameState is map;
       }
 
+      match /careerSaves/{saveId} {
+        allow read, delete: if isOwner(userId);
+
+        allow create, update: if isOwner(userId)
+          && request.resource.data.keys().hasAll(['title', 'stage', 'gameState', 'updatedAt'])
+          && request.resource.data.title is string
+          && (request.resource.data.stage is string || request.resource.data.stage is int)
+          && request.resource.data.gameState is map;
+      }
+
+      match /careerSeasonHistory/{historyId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && request.resource.data.keys().hasAll(['season', 'careerTeam', 'createdAt'])
+          && request.resource.data.season is int
+          && request.resource.data.careerTeam is string;
+      }
+
       match /matchHistory/{historyId} {
         allow read, delete: if isOwner(userId);
 

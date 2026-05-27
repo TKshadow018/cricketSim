@@ -1,4 +1,6 @@
 describe('firestoreService debug mode', () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+
   const loadModule = () => {
     jest.doMock('./config', () => ({ db: {} }));
     jest.doMock('firebase/firestore', () => ({
@@ -21,11 +23,18 @@ describe('firestoreService debug mode', () => {
   beforeEach(() => {
     jest.resetModules();
     window.localStorage.clear();
+    process.env.NODE_ENV = originalNodeEnv;
     process.env.REACT_APP_DEBUG = 'true';
+    delete process.env.REACT_APP_DEBUG_MODE;
   });
 
   afterEach(() => {
     delete process.env.REACT_APP_DEBUG;
+    delete process.env.REACT_APP_DEBUG_MODE;
+  });
+
+  afterAll(() => {
+    process.env.NODE_ENV = originalNodeEnv;
   });
 
   test('stores manual saves and autosaves in local storage during debug mode', async () => {
@@ -53,6 +62,28 @@ describe('firestoreService debug mode', () => {
     expect(autoSave).toMatchObject({
       id: 'autosave',
       title: 'Auto save',
+      isAutoSave: true,
+    });
+  });
+
+  test('stores career autosaves in local storage with a unique saved-games id', async () => {
+    process.env.REACT_APP_DEBUG = '';
+    process.env.REACT_APP_DEBUG_MODE = 'true';
+    const service = loadModule();
+
+    await service.upsertCareerAutoSave('debug-local-user', {
+      title: 'Career auto save',
+      stage: 'career',
+      gameState: { season: 1 },
+    });
+
+    const careerAutoSave = await service.getCareerAutoSave('debug-local-user');
+
+    expect(careerAutoSave).toMatchObject({
+      id: 'career-autosave',
+      storageId: 'autosave',
+      sourceCollection: 'careerSaves',
+      title: 'Career auto save',
       isAutoSave: true,
     });
   });

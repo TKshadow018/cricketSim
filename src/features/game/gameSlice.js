@@ -61,6 +61,20 @@ const initialState = {
   tournamentCurrentMatchId: '',
   tournamentChampion: '',
   tournamentPlayerStats: {},
+  careerTeam: '',
+  careerPlayerProfile: null,
+  careerDomesticCountry: '',
+  careerDomesticTeams: [],
+  careerOffers: [],
+  careerRetired: false,
+  careerSeason: 0,
+  careerSeasonLength: 'standard',
+  careerFormat: 't20',
+  careerMatchIndex: 0,
+  careerSchedule: [],
+  careerStandings: {},
+  careerPlayerStats: {},
+  careerSeasonHistory: [],
   matchTypeKey: '',
   ownTeam: '',
   opponentTeam: '',
@@ -132,6 +146,48 @@ const gameSlice = createSlice({
     },
     setTournamentPlayerStats: (state, action) => {
       state.tournamentPlayerStats = action.payload && typeof action.payload === 'object' ? action.payload : {};
+    },
+    setCareerTeam: (state, action) => {
+      state.careerTeam = action.payload || '';
+    },
+    setCareerPlayerProfile: (state, action) => {
+      state.careerPlayerProfile = action.payload && typeof action.payload === 'object' ? action.payload : null;
+    },
+    setCareerDomesticCountry: (state, action) => {
+      state.careerDomesticCountry = action.payload || '';
+    },
+    setCareerDomesticTeams: (state, action) => {
+      state.careerDomesticTeams = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setCareerOffers: (state, action) => {
+      state.careerOffers = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setCareerRetired: (state, action) => {
+      state.careerRetired = !!action.payload;
+    },
+    setCareerSeason: (state, action) => {
+      state.careerSeason = Number(action.payload) || 0;
+    },
+    setCareerSeasonLength: (state, action) => {
+      state.careerSeasonLength = action.payload || 'standard';
+    },
+    setCareerFormat: (state, action) => {
+      state.careerFormat = action.payload || 't20';
+    },
+    setCareerMatchIndex: (state, action) => {
+      state.careerMatchIndex = Number(action.payload) || 0;
+    },
+    setCareerSchedule: (state, action) => {
+      state.careerSchedule = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setCareerStandings: (state, action) => {
+      state.careerStandings = action.payload && typeof action.payload === 'object' ? action.payload : {};
+    },
+    setCareerPlayerStats: (state, action) => {
+      state.careerPlayerStats = action.payload && typeof action.payload === 'object' ? action.payload : {};
+    },
+    setCareerSeasonHistory: (state, action) => {
+      state.careerSeasonHistory = Array.isArray(action.payload) ? action.payload : [];
     },
     setMatchTypeKey: (state, action) => {
       state.matchTypeKey = action.payload;
@@ -260,6 +316,33 @@ const gameSlice = createSlice({
           payload.tournamentPlayerStats && typeof payload.tournamentPlayerStats === 'object'
             ? payload.tournamentPlayerStats
             : state.tournamentPlayerStats,
+        careerTeam: payload.careerTeam || state.careerTeam,
+        careerPlayerProfile:
+          payload.careerPlayerProfile && typeof payload.careerPlayerProfile === 'object'
+            ? payload.careerPlayerProfile
+            : state.careerPlayerProfile,
+        careerDomesticCountry: payload.careerDomesticCountry || state.careerDomesticCountry,
+        careerDomesticTeams: Array.isArray(payload.careerDomesticTeams)
+          ? payload.careerDomesticTeams
+          : state.careerDomesticTeams,
+        careerOffers: Array.isArray(payload.careerOffers) ? payload.careerOffers : state.careerOffers,
+        careerRetired: typeof payload.careerRetired === 'boolean' ? payload.careerRetired : state.careerRetired,
+        careerSeason: Number(payload.careerSeason) >= 0 ? Number(payload.careerSeason) : state.careerSeason,
+        careerSeasonLength: payload.careerSeasonLength || state.careerSeasonLength,
+        careerFormat: payload.careerFormat || state.careerFormat,
+        careerMatchIndex: Number(payload.careerMatchIndex) >= 0 ? Number(payload.careerMatchIndex) : state.careerMatchIndex,
+        careerSchedule: Array.isArray(payload.careerSchedule) ? payload.careerSchedule : state.careerSchedule,
+        careerStandings:
+          payload.careerStandings && typeof payload.careerStandings === 'object'
+            ? payload.careerStandings
+            : state.careerStandings,
+        careerPlayerStats:
+          payload.careerPlayerStats && typeof payload.careerPlayerStats === 'object'
+            ? payload.careerPlayerStats
+            : state.careerPlayerStats,
+        careerSeasonHistory: Array.isArray(payload.careerSeasonHistory)
+          ? payload.careerSeasonHistory
+          : state.careerSeasonHistory,
         ownPlayingXI: Array.isArray(payload.ownPlayingXI) ? payload.ownPlayingXI : state.ownPlayingXI,
         opponentPlayingXI: Array.isArray(payload.opponentPlayingXI)
           ? payload.opponentPlayingXI
@@ -301,6 +384,51 @@ const gameSlice = createSlice({
       state.locationCountry = '';
       state.selectedStadium = '';
       state.commentator = '';
+      state.tossWinner = '';
+      state.tossDecision = '';
+      state.tossCall = '';
+      state.firstBattingSide = '';
+      state.ownPlayingXI = [];
+      state.opponentPlayingXI = [];
+      state.ownCustomPlayers = [];
+      state.opponentCustomPlayers = [];
+      state.ownTeamRoles = {
+        captainId: null,
+        viceCaptainId: null,
+        wicketKeeperId: null,
+      };
+      state.opponentTeamRoles = {
+        captainId: null,
+        viceCaptainId: null,
+        wicketKeeperId: null,
+      };
+      state.matchCondition = buildEmptyMatchCondition();
+      state.battingIntent = battingAction.normal;
+      state.bowlingIntent = bowlingAction.normal;
+      state.firstInnings = buildInitialInnings();
+      state.secondInnings = buildInitialInnings();
+      state.showScoreboard = false;
+      state.careerTeam = '';
+      state.careerPlayerProfile = null;
+      state.careerDomesticCountry = '';
+      state.careerDomesticTeams = [];
+      state.careerOffers = [];
+      state.careerRetired = false;
+      state.careerSeason = 0;
+      state.careerSeasonLength = 'standard';
+      state.careerFormat = 't20';
+      state.careerMatchIndex = 0;
+      state.careerSchedule = [];
+      state.careerStandings = {};
+      state.careerPlayerStats = {};
+      state.careerSeasonHistory = [];
+    },
+    resetMatchForCareer: (state) => {
+      state.matchTypeKey = '';
+      state.ownTeam = state.careerTeam;
+      state.opponentTeam = '';
+      state.locationCountry = '';
+      state.selectedStadium = '';
       state.tossWinner = '';
       state.tossDecision = '';
       state.tossCall = '';
@@ -367,6 +495,21 @@ export const {
   toggleShowScoreboard,
   hydrateGameState,
   resetMatchRuntime,
+  setCareerTeam,
+  setCareerPlayerProfile,
+  setCareerDomesticCountry,
+  setCareerDomesticTeams,
+  setCareerOffers,
+  setCareerRetired,
+  setCareerSeason,
+  setCareerSeasonLength,
+  setCareerFormat,
+  setCareerMatchIndex,
+  setCareerSchedule,
+  setCareerStandings,
+  setCareerPlayerStats,
+  setCareerSeasonHistory,
+  resetMatchForCareer,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;
