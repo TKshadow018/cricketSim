@@ -18,12 +18,16 @@ const usersCollection = 'users';
 const gameSavesCollection = 'gameSaves';
 const matchHistoryCollection = 'matchHistory';
 const autoSaveId = 'autosave';
+const minHistoryLimit = 1;
+const maxHistoryLimit = 25;
 const maxManualGameSaves = 5;
+// Query one extra save because the autosave document shares the same collection but is not counted as a manual save.
 const gameSavesQueryLimit = maxManualGameSaves + 1;
 const debugStorageKey = 'cricket-sim-debug-storage';
 
 const createEmptyDebugStore = () => ({ users: {} });
-const normalizeHistoryLimit = (maxEntries = 10) => Math.max(1, Math.min(25, Number(maxEntries) || 10));
+const normalizeHistoryLimit = (maxEntries = 10) =>
+  Math.max(minHistoryLimit, Math.min(maxHistoryLimit, Number(maxEntries) || 10));
 
 const canUseLocalStorage = () => typeof window !== 'undefined' && !!window.localStorage;
 
@@ -77,12 +81,14 @@ const sortByUpdatedAtDesc = (items) =>
     (left, right) => new Date(right?.updatedAt || 0).getTime() - new Date(left?.updatedAt || 0).getTime()
   );
 
-let debugIdCounter = 0;
+const createDebugId = (() => {
+  let counter = 0;
 
-const createDebugId = () => {
-  debugIdCounter += 1;
-  return `debug-${Date.now().toString(36)}-${debugIdCounter.toString(36)}`;
-};
+  return () => {
+    counter += 1;
+    return `debug-${Date.now().toString(36)}-${counter.toString(36)}`;
+  };
+})();
 
 export const getUserProfile = async (uid) => {
   if (isDebugMode) {
