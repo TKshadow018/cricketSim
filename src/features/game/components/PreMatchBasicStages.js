@@ -60,6 +60,11 @@ function PreMatchBasicStages(props) {
     careerMatchIndex,
     careerSchedule,
     careerStandings,
+    careerPlayerProfile,
+    careerDomesticCountry,
+    careerDomesticTeams,
+    careerOffers,
+    careerRetired,
     handleCareerStartNextMatch,
     handleViewCareerHistory,
   } = props;
@@ -401,6 +406,10 @@ function PreMatchBasicStages(props) {
           countryList={countryList}
           game={game}
           beginCareer={beginCareer}
+        careerPlayerProfile={careerPlayerProfile}
+        careerDomesticCountry={careerDomesticCountry}
+        careerDomesticTeams={careerDomesticTeams}
+        careerOffers={careerOffers}
         />
       )}
 
@@ -412,6 +421,8 @@ function PreMatchBasicStages(props) {
           careerMatchIndex={careerMatchIndex}
           careerSchedule={careerSchedule}
           careerStandings={careerStandings}
+          careerPlayerProfile={careerPlayerProfile}
+          careerRetired={careerRetired}
           handleCareerStartNextMatch={handleCareerStartNextMatch}
           handleViewCareerHistory={handleViewCareerHistory}
         />

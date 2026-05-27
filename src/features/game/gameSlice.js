@@ -62,6 +62,11 @@ const initialState = {
   tournamentChampion: '',
   tournamentPlayerStats: {},
   careerTeam: '',
+  careerPlayerProfile: null,
+  careerDomesticCountry: '',
+  careerDomesticTeams: [],
+  careerOffers: [],
+  careerRetired: false,
   careerSeason: 0,
   careerSeasonLength: 'standard',
   careerFormat: 't20',
@@ -144,6 +149,21 @@ const gameSlice = createSlice({
     },
     setCareerTeam: (state, action) => {
       state.careerTeam = action.payload || '';
+    },
+    setCareerPlayerProfile: (state, action) => {
+      state.careerPlayerProfile = action.payload && typeof action.payload === 'object' ? action.payload : null;
+    },
+    setCareerDomesticCountry: (state, action) => {
+      state.careerDomesticCountry = action.payload || '';
+    },
+    setCareerDomesticTeams: (state, action) => {
+      state.careerDomesticTeams = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setCareerOffers: (state, action) => {
+      state.careerOffers = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setCareerRetired: (state, action) => {
+      state.careerRetired = !!action.payload;
     },
     setCareerSeason: (state, action) => {
       state.careerSeason = Number(action.payload) || 0;
@@ -297,6 +317,16 @@ const gameSlice = createSlice({
             ? payload.tournamentPlayerStats
             : state.tournamentPlayerStats,
         careerTeam: payload.careerTeam || state.careerTeam,
+        careerPlayerProfile:
+          payload.careerPlayerProfile && typeof payload.careerPlayerProfile === 'object'
+            ? payload.careerPlayerProfile
+            : state.careerPlayerProfile,
+        careerDomesticCountry: payload.careerDomesticCountry || state.careerDomesticCountry,
+        careerDomesticTeams: Array.isArray(payload.careerDomesticTeams)
+          ? payload.careerDomesticTeams
+          : state.careerDomesticTeams,
+        careerOffers: Array.isArray(payload.careerOffers) ? payload.careerOffers : state.careerOffers,
+        careerRetired: typeof payload.careerRetired === 'boolean' ? payload.careerRetired : state.careerRetired,
         careerSeason: Number(payload.careerSeason) >= 0 ? Number(payload.careerSeason) : state.careerSeason,
         careerSeasonLength: payload.careerSeasonLength || state.careerSeasonLength,
         careerFormat: payload.careerFormat || state.careerFormat,
@@ -379,6 +409,11 @@ const gameSlice = createSlice({
       state.secondInnings = buildInitialInnings();
       state.showScoreboard = false;
       state.careerTeam = '';
+      state.careerPlayerProfile = null;
+      state.careerDomesticCountry = '';
+      state.careerDomesticTeams = [];
+      state.careerOffers = [];
+      state.careerRetired = false;
       state.careerSeason = 0;
       state.careerSeasonLength = 'standard';
       state.careerFormat = 't20';
@@ -461,6 +496,11 @@ export const {
   hydrateGameState,
   resetMatchRuntime,
   setCareerTeam,
+  setCareerPlayerProfile,
+  setCareerDomesticCountry,
+  setCareerDomesticTeams,
+  setCareerOffers,
+  setCareerRetired,
   setCareerSeason,
   setCareerSeasonLength,
   setCareerFormat,

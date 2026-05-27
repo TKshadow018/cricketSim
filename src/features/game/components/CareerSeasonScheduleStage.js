@@ -1,7 +1,7 @@
 import React from 'react';
 import StageShell from './StageShell';
 import AppButton from '../../../components/ui/AppButton';
-import { sortStandings } from '../utils/controllerCareerScheduleUtils';
+import { formatCareerMatchLabel, sortStandings } from '../utils/controllerCareerScheduleUtils';
 
 function CareerSeasonScheduleStage({
   stageCommonProps,
@@ -10,25 +10,30 @@ function CareerSeasonScheduleStage({
   careerMatchIndex,
   careerSchedule,
   careerStandings,
+  careerPlayerProfile,
+  careerRetired,
   handleCareerStartNextMatch,
   handleViewCareerHistory,
 }) {
   const completedMatches = (careerSchedule || []).filter((m) => m.isComplete);
   const nextMatch = (careerSchedule || []).find((m) => !m.isComplete);
   const standingsList = sortStandings(careerStandings || {});
+  const currentAge = (careerPlayerProfile?.age || 18) + Math.max((careerSeason || 1) - 1, 0);
 
   return (
     <StageShell
       {...stageCommonProps}
       title={`Season ${careerSeason} Schedule`}
-      subtitle={`${careerTeam} — ${completedMatches.length} of ${(careerSchedule || []).length} matches played`}
+      subtitle={`${careerPlayerProfile?.name || 'Career Player'} (${currentAge}) • ${careerTeam} • ${completedMatches.length} of ${(careerSchedule || []).length} fixtures completed`}
     >
       <div className="sim-scoreboard-panel">
         <h4 className="sim-section-title">Fixtures</h4>
         {(careerSchedule || []).map((match, index) => {
           const isCurrent = match === nextMatch;
           const resultText = match.isComplete && match.result
-            ? `${match.result.winner === careerTeam ? '✅ Won' : match.result.winner === 'Tie' ? '🤝 Tie' : '❌ Lost'} — ${match.result.summary}`
+            ? match.isUserMatch
+              ? `${match.result.winner === careerTeam ? '✅ Won' : match.result.winner === 'Tie' ? '🤝 Tie' : '❌ Lost'} — ${match.result.summary}`
+              : `🧮 Auto-simulated — ${match.result.summary}`
             : isCurrent
             ? '▶ Next match'
             : 'Upcoming';
@@ -40,8 +45,8 @@ function CareerSeasonScheduleStage({
               style={{ opacity: match.isComplete ? 0.7 : 1 }}
             >
               <div className="sim-saved-item-content">
-                <strong>Match {match.matchNumber}: vs {match.opponent}</strong>
-                <small>{match.locationCountry}</small>
+                <strong>Match {match.globalMatchNumber}: {match.teamA} vs {match.teamB}</strong>
+                <small>{formatCareerMatchLabel(match.format)}</small>
                 <small>{resultText}</small>
               </div>
             </div>
@@ -81,8 +86,9 @@ function CareerSeasonScheduleStage({
 
       <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
         {nextMatch && (
-          <AppButton text="Play Next Match" onClick={handleCareerStartNextMatch} fullWidth />
+          <AppButton text="Simulate Until Next Club Match" onClick={handleCareerStartNextMatch} fullWidth />
         )}
+        {careerRetired ? <AppButton text="Retired" disabled fullWidth={false} /> : null}
         <AppButton text="Career History" onClick={handleViewCareerHistory} variant="secondary" fullWidth={false} />
       </div>
     </StageShell>

@@ -117,6 +117,11 @@ function CricketSimulator() {
     careerStandings,
     careerPlayerStats,
     careerSeasonHistory,
+    careerPlayerProfile,
+    careerDomesticCountry,
+    careerDomesticTeams,
+    careerOffers,
+    careerRetired,
     careerTopRunScorers,
     careerTopWicketTakers,
     careerProgressLabel,
@@ -124,6 +129,7 @@ function CricketSimulator() {
     handleCareerStartNextMatch,
     handleStartNextCareerSeason,
     handleEndCareer,
+    handleRetireCareer,
     handleViewCareerHistory,
     handleBackToCareerSchedule,
   } = controller;
@@ -232,11 +238,17 @@ function CricketSimulator() {
               careerStandings={careerStandings}
               careerPlayerStats={careerPlayerStats}
               careerSeasonHistory={careerSeasonHistory}
+              careerPlayerProfile={careerPlayerProfile}
+              careerDomesticCountry={careerDomesticCountry}
+              careerDomesticTeams={careerDomesticTeams}
+              careerOffers={careerOffers}
+              careerRetired={careerRetired}
               careerTopRunScorers={careerTopRunScorers}
               careerTopWicketTakers={careerTopWicketTakers}
               careerProgressLabel={careerProgressLabel}
               handleStartNextCareerSeason={handleStartNextCareerSeason}
               handleEndCareer={handleEndCareer}
+              handleRetireCareer={handleRetireCareer}
               handleViewCareerHistory={handleViewCareerHistory}
               handleBackToCareerSchedule={handleBackToCareerSchedule}
             />
@@ -307,6 +319,11 @@ function CricketSimulator() {
             careerMatchIndex={careerMatchIndex}
             careerSchedule={careerSchedule}
             careerStandings={careerStandings}
+            careerPlayerProfile={careerPlayerProfile}
+            careerDomesticCountry={careerDomesticCountry}
+            careerDomesticTeams={careerDomesticTeams}
+            careerOffers={careerOffers}
+            careerRetired={careerRetired}
             handleCareerStartNextMatch={handleCareerStartNextMatch}
             handleViewCareerHistory={handleViewCareerHistory}
           />

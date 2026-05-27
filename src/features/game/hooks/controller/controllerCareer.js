@@ -1,34 +1,35 @@
 import { matchStatusEnum } from '../../../../gameData/matchStatusEnum';
 import { MODE_CAREER } from '../../utils/controllerCommonUtils';
-import { buildCareerSeasonSchedule, buildCareerStandings, resolveNextCareerMatch } from '../../utils/controllerCareerScheduleUtils';
-import { mergePlayerStatsForCurrentMatch } from '../../utils/controllerCareerUtils';
+import {
+  buildCareerSeasonSchedule,
+  buildCareerStandings,
+  resolveNextCareerMatch,
+  simulateCareerFixture,
+} from '../../utils/controllerCareerScheduleUtils';
 
 export const createCareerFlowHandlers = ({
   dispatch,
   gameMode,
   stage,
   careerTeam,
+  careerPlayerProfile,
+  careerDomesticCountry,
+  careerDomesticTeams,
+  careerOffers,
+  careerRetired,
   careerSeason,
   careerSeasonLength,
-  careerFormat,
   careerMatchIndex,
   careerSchedule,
   careerStandings,
   careerPlayerStats,
   careerSeasonHistory,
-  countryList,
-  careerResultCommitSignatureRef,
-  firstInnings,
-  secondInnings,
-  firstInningsTeamName,
-  secondInningsTeamName,
-  firstBattingSide,
-  ownPlayers,
-  opponentPlayers,
-  ownTeam,
-  opponentTeam,
-  resultSummary,
   setCareerTeamAction,
+  setCareerPlayerProfileAction,
+  setCareerDomesticCountryAction,
+  setCareerDomesticTeamsAction,
+  setCareerOffersAction,
+  setCareerRetiredAction,
   setCareerSeasonAction,
   setCareerSeasonLengthAction,
   setCareerFormatAction,
@@ -38,41 +39,24 @@ export const createCareerFlowHandlers = ({
   setCareerPlayerStatsAction,
   setCareerSeasonHistoryAction,
   setStageAction,
-  setOpponentTeamAction,
-  setLocationCountryAction,
-  setMatchTypeKeyAction,
-  resetMatchForCareerAction,
   resetMatchRuntimeAction,
   setAutoSimMode,
 }) => {
-  const buildCareerMatchPlayerStats = () =>
-    mergePlayerStatsForCurrentMatch({
-      existingStats: careerPlayerStats,
-      firstBattingSide,
-      ownPlayers,
-      opponentPlayers,
-      ownTeam,
-      opponentTeam,
-      firstInnings,
-      secondInnings,
-    });
+  const beginCareer = ({ team, seasonLength, playerProfile, domesticCountry, domesticTeams, offers }) => {
+    if (!team || !playerProfile?.name || !domesticCountry || !Array.isArray(domesticTeams) || domesticTeams.length < 2) return;
 
-  const resolveCareerMatchWinner = () => {
-    if (secondInnings.score > firstInnings.score) return secondInningsTeamName;
-    if (secondInnings.score < firstInnings.score) return firstInningsTeamName;
-    return 'Tie';
-  };
-
-  const beginCareer = ({ team, format, seasonLength }) => {
-    if (!team) return;
-
-    const schedule = buildCareerSeasonSchedule(team, countryList, seasonLength || 'standard');
-    const initialStandings = buildCareerStandings(team, []);
+    const schedule = buildCareerSeasonSchedule(team, domesticTeams, seasonLength || 'standard');
+    const initialStandings = buildCareerStandings(team, [], domesticTeams);
 
     dispatch(setCareerTeamAction(team));
+    dispatch(setCareerPlayerProfileAction(playerProfile));
+    dispatch(setCareerDomesticCountryAction(domesticCountry));
+    dispatch(setCareerDomesticTeamsAction(domesticTeams));
+    dispatch(setCareerOffersAction(Array.isArray(offers) ? offers : []));
+    dispatch(setCareerRetiredAction(false));
     dispatch(setCareerSeasonAction(1));
     dispatch(setCareerSeasonLengthAction(seasonLength || 'standard'));
-    dispatch(setCareerFormatAction(format || 't20'));
+    dispatch(setCareerFormatAction('t20'));
     dispatch(setCareerMatchIndexAction(0));
     dispatch(setCareerScheduleAction(schedule));
     dispatch(setCareerStandingsAction(initialStandings));
@@ -82,92 +66,77 @@ export const createCareerFlowHandlers = ({
   };
 
   const handleCareerStartNextMatch = () => {
-    const nextMatch = resolveNextCareerMatch(careerSchedule);
-    if (!nextMatch) return;
+    if (careerRetired) return;
+    const schedule = [...(careerSchedule || [])];
+    if (!schedule.length) return;
 
-    dispatch(resetMatchForCareerAction());
-    dispatch(setOpponentTeamAction(nextMatch.opponent));
-    dispatch(setLocationCountryAction(nextMatch.locationCountry));
-    dispatch(setMatchTypeKeyAction(careerFormat));
-    careerResultCommitSignatureRef.current = '';
-    setAutoSimMode(null);
-    dispatch(setStageAction(matchStatusEnum.TossTime));
-  };
-
-  const commitCareerMatchResult = () => {
-    if (gameMode !== MODE_CAREER || stage !== matchStatusEnum.MatchEnd) return;
-
-    const currentMatch = careerSchedule[careerMatchIndex];
-    if (!currentMatch || currentMatch.isComplete) return;
-
-    const signature = [
-      careerMatchIndex,
-      firstInnings.score,
-      firstInnings.wickets,
-      firstInnings.balls,
-      secondInnings.score,
-      secondInnings.wickets,
-      secondInnings.balls,
-      resultSummary,
-    ].join('|');
-
-    if (careerResultCommitSignatureRef.current === signature) return;
-    careerResultCommitSignatureRef.current = signature;
-
-    const winner = resolveCareerMatchWinner();
-
-    const updatedSchedule = careerSchedule.map((match, index) =>
-      index === careerMatchIndex
-        ? {
-            ...match,
-            isComplete: true,
-            result: {
-              winner,
-              summary: resultSummary,
-              ownScore: ownTeam === firstInningsTeamName ? firstInnings.score : secondInnings.score,
-              ownWickets: ownTeam === firstInningsTeamName ? firstInnings.wickets : secondInnings.wickets,
-              opponentScore: ownTeam === firstInningsTeamName ? secondInnings.score : firstInnings.score,
-              opponentWickets: ownTeam === firstInningsTeamName ? secondInnings.wickets : firstInnings.wickets,
-            },
-          }
-        : match
-    );
-
-    const updatedStandings = buildCareerStandings(careerTeam, updatedSchedule);
-    const updatedStats = buildCareerMatchPlayerStats();
-
-    dispatch(setCareerScheduleAction(updatedSchedule));
-    dispatch(setCareerStandingsAction(updatedStandings));
-    dispatch(setCareerPlayerStatsAction(updatedStats));
-    dispatch(setCareerMatchIndexAction(careerMatchIndex + 1));
-  };
-
-  const handleCareerMatchPrimaryAction = () => {
-    if (gameMode !== MODE_CAREER) return;
-
-    commitCareerMatchResult();
-
-    const completedCount = (careerSchedule || []).filter((m) => m.isComplete).length;
-    const totalMatches = (careerSchedule || []).length;
-
-    if (completedCount >= totalMatches) {
+    let index = schedule.findIndex((match) => !match.isComplete);
+    if (index < 0) {
       dispatch(setStageAction(matchStatusEnum.CareerSeasonSummary));
       return;
     }
 
+    let updatedStats = { ...(careerPlayerStats || {}) };
+    while (index < schedule.length) {
+      const match = schedule[index];
+      if (match.isComplete) {
+        index += 1;
+        continue;
+      }
+
+      const { result, updatedStats: statsAfterMatch } = simulateCareerFixture({
+        match,
+        careerTeam,
+        careerPlayerProfile,
+        existingStats: updatedStats,
+        seasonNumber: careerSeason,
+      });
+      updatedStats = statsAfterMatch;
+      schedule[index] = { ...match, isComplete: true, result };
+      index += 1;
+
+      if (match.isUserMatch) {
+        break;
+      }
+    }
+
+    const nextPendingIndex = schedule.findIndex((match) => !match.isComplete);
+    dispatch(setCareerScheduleAction(schedule));
+    dispatch(setCareerPlayerStatsAction(updatedStats));
+    dispatch(setCareerStandingsAction(buildCareerStandings(careerTeam, schedule, careerDomesticTeams)));
+    dispatch(setCareerMatchIndexAction(nextPendingIndex >= 0 ? nextPendingIndex : schedule.length));
+
+    if (nextPendingIndex < 0) {
+      dispatch(setStageAction(matchStatusEnum.CareerSeasonSummary));
+    }
+  };
+
+  const commitCareerMatchResult = () => {};
+
+  const handleCareerMatchPrimaryAction = () => {
+    if (gameMode !== MODE_CAREER || stage !== matchStatusEnum.MatchEnd) return;
     dispatch(setStageAction(matchStatusEnum.CareerSeasonSchedule));
   };
 
   const handleStartNextCareerSeason = () => {
+    if (careerRetired) return;
+    const currentAge = (careerPlayerProfile?.age || 18) + Math.max((careerSeason || 1) - 1, 0);
+    if (currentAge >= 40) {
+      dispatch(setCareerRetiredAction(true));
+      dispatch(setStageAction(matchStatusEnum.CareerHistory));
+      return;
+    }
+
     const seasonEntry = {
       season: careerSeason,
       careerTeam,
-      schedule: careerSchedule,
       standings: careerStandings,
+      schedule: careerSchedule,
+      playerAge: currentAge,
     };
     const updatedHistory = [...(careerSeasonHistory || []), seasonEntry];
-    const newSchedule = buildCareerSeasonSchedule(careerTeam, countryList, careerSeasonLength);
-    const newStandings = buildCareerStandings(careerTeam, []);
+    const newSchedule = buildCareerSeasonSchedule(careerTeam, careerDomesticTeams, careerSeasonLength);
+    const newStandings = buildCareerStandings(careerTeam, [], careerDomesticTeams);
 
     dispatch(setCareerSeasonHistoryAction(updatedHistory));
     dispatch(setCareerSeasonAction(careerSeason + 1));
@@ -176,6 +145,11 @@ export const createCareerFlowHandlers = ({
     dispatch(setCareerMatchIndexAction(0));
     dispatch(setCareerPlayerStatsAction({}));
     dispatch(setStageAction(matchStatusEnum.CareerSeasonSchedule));
+  };
+
+  const handleRetireCareer = () => {
+    dispatch(setCareerRetiredAction(true));
+    dispatch(setStageAction(matchStatusEnum.CareerHistory));
   };
 
   const handleEndCareer = () => {
@@ -188,6 +162,12 @@ export const createCareerFlowHandlers = ({
   };
 
   const handleBackToCareerSchedule = () => {
+    if (careerRetired) {
+      dispatch(setStageAction(matchStatusEnum.CareerHistory));
+      return;
+    }
+    const nextMatch = resolveNextCareerMatch(careerSchedule);
+    dispatch(setCareerMatchIndexAction(nextMatch ? careerSchedule.findIndex((match) => match.id === nextMatch.id) : careerSchedule.length));
     dispatch(setStageAction(matchStatusEnum.CareerSeasonSchedule));
   };
 
@@ -197,6 +177,7 @@ export const createCareerFlowHandlers = ({
     commitCareerMatchResult,
     handleCareerMatchPrimaryAction,
     handleStartNextCareerSeason,
+    handleRetireCareer,
     handleEndCareer,
     handleViewCareerHistory,
     handleBackToCareerSchedule,

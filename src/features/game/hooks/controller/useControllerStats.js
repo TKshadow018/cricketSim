@@ -112,7 +112,7 @@ export const useControllerStats = ({
   const careerTopWicketTakers = useMemo(() => buildTopWicketTakers(careerPlayerStatsList), [careerPlayerStatsList]);
   const careerProgressLabel =
     gameMode === MODE_CAREER
-      ? `Season ${careerSeason || 1} — Match ${(careerMatchIndex || 0) + 1} of ${(careerSchedule || []).length}`
+      ? `Season ${careerSeason || 1} — Match ${Math.min((careerMatchIndex || 0) + 1, (careerSchedule || []).length || 1)} of ${(careerSchedule || []).length}`
       : '';
 
   const announceManOfTheMatch = (selected) => {

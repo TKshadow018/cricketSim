@@ -13,14 +13,21 @@ function CareerSeasonSummaryStage({
   careerPlayerStats,
   careerTopRunScorers,
   careerTopWicketTakers,
+  careerPlayerProfile,
+  careerDomesticCountry,
+  careerDomesticTeams,
+  careerRetired,
   handleStartNextCareerSeason,
   handleEndCareer,
+  handleRetireCareer,
 }) {
   const standingsList = sortStandings(careerStandings || {});
   const topTeam = standingsList[0];
   const userStanding = standingsList.find((row) => row.team === careerTeam);
   const progressionNotes = buildSeasonProgressionNotes(careerPlayerStats);
   const userWon = topTeam?.team === careerTeam;
+  const currentAge = (careerPlayerProfile?.age || 18) + Math.max((careerSeason || 1) - 1, 0);
+  const canRetire = currentAge >= 30 && !careerRetired;
 
   return (
     <StageShell
@@ -28,6 +35,13 @@ function CareerSeasonSummaryStage({
       title={`Season ${careerSeason} Complete`}
       subtitle={userWon ? `🏆 ${careerTeam} tops the standings!` : `Season finished — ${topTeam?.team || ''} leads the table.`}
     >
+      <div className="sim-scoreboard-panel">
+        <h4 className="sim-section-title">{careerPlayerProfile?.name || 'Created Player'} Career Status</h4>
+        <p>Age: {currentAge} • Nationality: {careerPlayerProfile?.nationality || 'N/A'}</p>
+        <p>Domestic League: {careerDomesticCountry || 'N/A'} • Clubs: {(careerDomesticTeams || []).length}</p>
+        {careerRetired ? <p>🏁 Career ended by retirement.</p> : null}
+      </div>
+
       <div className="sim-scoreboard-panel">
         <h4 className="sim-section-title">Final Standings</h4>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9em' }}>
@@ -93,8 +107,12 @@ function CareerSeasonSummaryStage({
       )}
 
       <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-        <AppButton text="Start Next Season" onClick={handleStartNextCareerSeason} fullWidth />
-        <AppButton text="End Career" onClick={handleEndCareer} variant="secondary" fullWidth={false} />
+        <AppButton text="Start Next Season" onClick={handleStartNextCareerSeason} fullWidth disabled={careerRetired} />
+        {canRetire ? (
+          <AppButton text="Retire Now" onClick={handleRetireCareer} variant="secondary" fullWidth={false} />
+        ) : (
+          <AppButton text="End Career View" onClick={handleEndCareer} variant="secondary" fullWidth={false} />
+        )}
       </div>
     </StageShell>
   );

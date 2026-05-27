@@ -9,6 +9,9 @@ function CareerHistoryStage({
   careerTopRunScorers,
   careerTopWicketTakers,
   careerSeasonHistory,
+  careerPlayerProfile,
+  careerDomesticCountry,
+  careerRetired,
   handleBackToCareerSchedule,
 }) {
   const seasons = (careerSeasonHistory || []).slice().reverse();
@@ -17,8 +20,15 @@ function CareerHistoryStage({
     <StageShell
       {...stageCommonProps}
       title="Career History"
-      subtitle={`${careerTeam} — Career stats across ${careerSeason > 1 ? careerSeason - 1 : 0} completed season${careerSeason > 2 ? 's' : ''}`}
+      subtitle={`${careerPlayerProfile?.name || careerTeam} — ${careerRetired ? 'Retired' : 'Active'} career across ${careerSeason > 1 ? careerSeason - 1 : 0} completed season${careerSeason > 2 ? 's' : ''}`}
     >
+      <div className="sim-scoreboard-panel">
+        <h4 className="sim-section-title">Profile</h4>
+        <p>Name: {careerPlayerProfile?.name || 'N/A'}</p>
+        <p>Nationality: {careerPlayerProfile?.nationality || 'N/A'}</p>
+        <p>Domestic League Country: {careerDomesticCountry || 'N/A'}</p>
+      </div>
+
       {careerTopRunScorers?.length > 0 && (
         <div className="sim-scoreboard-panel">
           <h4 className="sim-section-title">All-Time Top Run Scorers</h4>

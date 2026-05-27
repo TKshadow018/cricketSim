@@ -23,6 +23,11 @@ export const createNavigationHandlers = ({
   setSeriesLengthAction,
   setSaveMessage,
   setCareerTeamAction,
+  setCareerPlayerProfileAction,
+  setCareerDomesticCountryAction,
+  setCareerDomesticTeamsAction,
+  setCareerOffersAction,
+  setCareerRetiredAction,
   setCareerSeasonAction,
   setCareerSeasonLengthAction,
   setCareerFormatAction,
@@ -152,6 +157,11 @@ export const createNavigationHandlers = ({
 
     if (mode !== MODE_CAREER) {
       dispatch(setCareerTeamAction(''));
+      dispatch(setCareerPlayerProfileAction(null));
+      dispatch(setCareerDomesticCountryAction(''));
+      dispatch(setCareerDomesticTeamsAction([]));
+      dispatch(setCareerOffersAction([]));
+      dispatch(setCareerRetiredAction(false));
       dispatch(setCareerSeasonAction(0));
       dispatch(setCareerSeasonLengthAction('standard'));
       dispatch(setCareerFormatAction('t20'));

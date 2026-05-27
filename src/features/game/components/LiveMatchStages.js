@@ -61,11 +61,16 @@ function LiveMatchStages({
   careerStandings,
   careerPlayerStats,
   careerSeasonHistory,
+  careerPlayerProfile,
+  careerDomesticCountry,
+  careerDomesticTeams,
+  careerRetired,
   careerTopRunScorers,
   careerTopWicketTakers,
   careerProgressLabel,
   handleStartNextCareerSeason,
   handleEndCareer,
+  handleRetireCareer,
   handleViewCareerHistory,
   handleBackToCareerSchedule,
 }) {
@@ -477,8 +482,13 @@ function LiveMatchStages({
           careerPlayerStats={careerPlayerStats}
           careerTopRunScorers={careerTopRunScorers}
           careerTopWicketTakers={careerTopWicketTakers}
+          careerPlayerProfile={careerPlayerProfile}
+          careerDomesticCountry={careerDomesticCountry}
+          careerDomesticTeams={careerDomesticTeams}
+          careerRetired={careerRetired}
           handleStartNextCareerSeason={handleStartNextCareerSeason}
           handleEndCareer={handleEndCareer}
+          handleRetireCareer={handleRetireCareer}
         />
       )}
 
@@ -490,6 +500,9 @@ function LiveMatchStages({
           careerTopRunScorers={careerTopRunScorers}
           careerTopWicketTakers={careerTopWicketTakers}
           careerSeasonHistory={careerSeasonHistory}
+          careerPlayerProfile={careerPlayerProfile}
+          careerDomesticCountry={careerDomesticCountry}
+          careerRetired={careerRetired}
           handleBackToCareerSchedule={handleBackToCareerSchedule}
         />
       )}
