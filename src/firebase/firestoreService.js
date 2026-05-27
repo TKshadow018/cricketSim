@@ -18,10 +18,12 @@ const usersCollection = 'users';
 const gameSavesCollection = 'gameSaves';
 const matchHistoryCollection = 'matchHistory';
 const autoSaveId = 'autosave';
+const maxManualGameSaves = 5;
+const gameSavesQueryLimit = maxManualGameSaves + 1;
 const debugStorageKey = 'cricket-sim-debug-storage';
 
 const createEmptyDebugStore = () => ({ users: {} });
-const clampHistoryLimit = (maxEntries = 10) => Math.max(1, Math.min(25, Number(maxEntries) || 10));
+const normalizeHistoryLimit = (maxEntries = 10) => Math.max(1, Math.min(25, Number(maxEntries) || 10));
 
 const canUseLocalStorage = () => typeof window !== 'undefined' && !!window.localStorage;
 
@@ -75,8 +77,12 @@ const sortByUpdatedAtDesc = (items) =>
     (left, right) => new Date(right?.updatedAt || 0).getTime() - new Date(left?.updatedAt || 0).getTime()
   );
 
-const createDebugId = () =>
-  `debug-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+let debugIdCounter = 0;
+
+const createDebugId = () => {
+  debugIdCounter += 1;
+  return `debug-${Date.now().toString(36)}-${debugIdCounter.toString(36)}`;
+};
 
 export const getUserProfile = async (uid) => {
   if (isDebugMode) {
@@ -128,13 +134,13 @@ export const listGameSaves = async (uid) => {
     const { userStore } = getDebugUserStore(readDebugStore(), uid);
     return sortByUpdatedAtDesc(Object.values(userStore?.[gameSavesCollection] || {}))
       .filter((save) => save.id !== autoSaveId)
-      .slice(0, 5);
+      .slice(0, maxManualGameSaves);
   }
 
   const savesRef = collection(db, usersCollection, uid, gameSavesCollection);
-  const savesQuery = query(savesRef, orderBy('updatedAt', 'desc'), limit(6));
+  const savesQuery = query(savesRef, orderBy('updatedAt', 'desc'), limit(gameSavesQueryLimit));
   const result = await getDocs(savesQuery);
-  return result.docs.map(mapSaveDoc).filter((save) => save.id !== autoSaveId).slice(0, 5);
+  return result.docs.map(mapSaveDoc).filter((save) => save.id !== autoSaveId).slice(0, maxManualGameSaves);
 };
 
 export const createGameSave = async (uid, payload) => {
@@ -256,7 +262,7 @@ export const createMatchHistoryEntry = async (uid, payload) => {
 };
 
 export const listRecentMatchHistory = async (uid, maxEntries = 10) => {
-  const safeLimit = clampHistoryLimit(maxEntries);
+  const safeLimit = normalizeHistoryLimit(maxEntries);
 
   if (isDebugMode) {
     const { userStore } = getDebugUserStore(readDebugStore(), uid);

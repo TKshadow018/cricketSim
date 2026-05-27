@@ -71,7 +71,7 @@ describe('authThunks', () => {
     const action = await logoutUser()(jest.fn(), () => ({}), undefined);
 
     expect(action.type).toBe('auth/logoutUser/fulfilled');
-    expect(action.payload).toBeNull();
+    expect(action.payload).toBe(true);
     expect(authService.logout).not.toHaveBeenCalled();
   });
 

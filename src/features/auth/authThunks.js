@@ -158,11 +158,11 @@ export const startAuthListener = createAsyncThunk(
 export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, { rejectWithValue }) => {
   try {
     if (isDebugMode) {
-      return null;
+      return true;
     }
 
     await logout();
-    return null;
+    return true;
   } catch (error) {
     return rejectWithValue(error.message || translateStatic('auth.errors.logoutFailed'));
   }
