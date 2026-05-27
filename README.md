@@ -123,7 +123,7 @@ The simulator progresses through these stages:
 	cp .env.example .env
 	```
 	(On Windows PowerShell: `Copy-Item .env.example .env`)
-3. Update `.env` values for your Firebase project.
+3. Update `.env` values for your Firebase project. For local auth bypass, set `REACT_APP_DEBUG=true`.
 4. Start development server:
 	```bash
 	npm start
@@ -142,7 +142,14 @@ Set these in `.env`:
 - `REACT_APP_FIREBASE_APP_ID`
 - `REACT_APP_FIREBASE_MEASUREMENT_ID`
 - `REACT_APP_FIREBASE_ADMIN_EMAIL` (optional/admin-specific usage)
-- `REACT_APP_DEBUG_MODE` (optional; set to `true` to bypass auth locally)
+- `REACT_APP_DEBUG` (`true` to bypass authentication locally; defaults to `false`)
+- `REACT_APP_DEBUG_MODE` (legacy alias for debug auth bypass)
+
+### Debug Mode
+
+Set `REACT_APP_DEBUG=true` in `.env` to bypass login during local development. `REACT_APP_DEBUG_MODE=true` is also supported for compatibility. When enabled, protected routes open without sign-in and auth-backed save/history data is stored in the browser instead of requiring Firebase authentication.
+
+Leave debug flags unset or `false` for normal and production deployments.
 
 ## Firebase Setup
 

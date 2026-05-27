@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import { getEffectiveAuthUser } from '../../../config/runtimeConfig';
 import { battingAction, bowlingAction } from '../../../gameData/actionType';
 import { countries } from '../../../gameData/countries';
 import { stadiums } from '../../../gameData/stadiums';
@@ -97,7 +98,7 @@ export function useCricketSimulatorController() {
   const dispatch = useDispatch();
   const location = useLocation();
   const game = useSelector((state) => state.game);
-  const authUser = useSelector((state) => state.auth.user);
+  const authUser = useSelector((state) => getEffectiveAuthUser(state.auth.user));
   const {
     stage,
     gameMode,

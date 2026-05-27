@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import DashboardPage from '../pages/DashboardPage';
+import { isDebugMode } from '../config/runtimeConfig';
 import { ProtectedRoute, PublicOnlyRoute } from './RouteGuards';
 import { startAuthListener } from '../features/auth/authThunks';
 import { isDebugAuthBypassEnabled } from '../utils/runtimeFlags';
@@ -86,7 +87,9 @@ function AppRoutes() {
 
       <Route
         path="*"
-        element={<Navigate to={isDebugAuthBypassEnabled ? '/dashboard' : '/login'} replace />}
+        element={
+          <Navigate to={isDebugMode || isDebugAuthBypassEnabled ? '/dashboard' : '/login'} replace />
+        }
       />
     </Routes>
   );
