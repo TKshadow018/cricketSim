@@ -55,7 +55,7 @@ function AppRoutes() {
   const location = useLocation();
 
   useEffect(() => {
-    if (!isDebugAuthBypassEnabled) {
+    if (!(isDebugMode || isDebugAuthBypassEnabled)) {
       dispatch(startAuthListener());
     }
   }, [dispatch]);
