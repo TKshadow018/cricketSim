@@ -38,7 +38,12 @@ const readDebugStore = () => {
 
   try {
     const parsed = JSON.parse(window.localStorage.getItem(debugStorageKey) || '{}');
-    return parsed && typeof parsed === 'object' && parsed.users ? parsed : createEmptyDebugStore();
+    return parsed &&
+      typeof parsed === 'object' &&
+      parsed.users &&
+      typeof parsed.users === 'object'
+      ? parsed
+      : createEmptyDebugStore();
   } catch {
     return createEmptyDebugStore();
   }
