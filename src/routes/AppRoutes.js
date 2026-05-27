@@ -6,6 +6,7 @@ import RegisterPage from '../pages/RegisterPage';
 import DashboardPage from '../pages/DashboardPage';
 import { ProtectedRoute, PublicOnlyRoute } from './RouteGuards';
 import { startAuthListener } from '../features/auth/authThunks';
+import { isDebugAuthBypassEnabled } from '../utils/runtimeFlags';
 
 const routeSeoMap = {
   '/login': {
@@ -53,7 +54,9 @@ function AppRoutes() {
   const location = useLocation();
 
   useEffect(() => {
-    dispatch(startAuthListener());
+    if (!isDebugAuthBypassEnabled) {
+      dispatch(startAuthListener());
+    }
   }, [dispatch]);
 
   useEffect(() => {
@@ -81,7 +84,10 @@ function AppRoutes() {
         <Route path="/dashboard" element={<DashboardPage />} />
       </Route>
 
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route
+        path="*"
+        element={<Navigate to={isDebugAuthBypassEnabled ? '/dashboard' : '/login'} replace />}
+      />
     </Routes>
   );
 }

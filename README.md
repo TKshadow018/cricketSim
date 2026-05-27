@@ -142,6 +142,7 @@ Set these in `.env`:
 - `REACT_APP_FIREBASE_APP_ID`
 - `REACT_APP_FIREBASE_MEASUREMENT_ID`
 - `REACT_APP_FIREBASE_ADMIN_EMAIL` (optional/admin-specific usage)
+- `REACT_APP_DEBUG_MODE` (optional; set to `true` to bypass auth locally)
 
 ## Firebase Setup
 
@@ -259,6 +260,11 @@ src/
 
 - Ensure you are logged in.
 - Verify Firebase config values in `.env` are correct.
+
+### Need to run without auth locally
+
+- Set `REACT_APP_DEBUG_MODE=true` in `.env`.
+- Restart the dev server after changing env values.
 
 ### Build issues
 
