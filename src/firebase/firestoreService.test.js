@@ -78,4 +78,17 @@ describe('firestoreService debug mode', () => {
       expect.arrayContaining(['India won by 5 wickets', 'England won by 12 runs'])
     );
   });
+
+  test('falls back to an empty debug store for malformed users payload', async () => {
+    window.localStorage.setItem('cricket-sim-debug-storage', JSON.stringify({ users: true }));
+    const service = loadModule();
+
+    await expect(
+      service.createGameSave('debug-local-user', {
+        title: 'Recovered save',
+        stage: 'intro',
+        gameState: { innings: 1 },
+      })
+    ).resolves.toMatchObject({ id: expect.any(String) });
+  });
 });

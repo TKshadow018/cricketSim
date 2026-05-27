@@ -41,7 +41,8 @@ const readDebugStore = () => {
     return parsed &&
       typeof parsed === 'object' &&
       parsed.users &&
-      typeof parsed.users === 'object'
+      typeof parsed.users === 'object' &&
+      !Array.isArray(parsed.users)
       ? parsed
       : createEmptyDebugStore();
   } catch {
@@ -58,7 +59,9 @@ const writeDebugStore = (store) => {
 };
 
 const getDebugUserStore = (store, uid) => {
-  const nextStore = store?.users ? store : createEmptyDebugStore();
+  const nextStore = store?.users && typeof store.users === 'object' && !Array.isArray(store.users)
+    ? store
+    : createEmptyDebugStore();
   const safeUid = String(uid || '').trim();
 
   if (!safeUid) {
