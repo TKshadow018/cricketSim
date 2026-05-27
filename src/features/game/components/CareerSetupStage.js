@@ -9,9 +9,9 @@ import {
 } from '../utils/controllerCareerScheduleUtils';
 
 const SEASON_LENGTH_OPTIONS = [
-  { key: 'short', label: 'Short', matches: CAREER_SEASON_LENGTHS.short, description: `${CAREER_SEASON_LENGTHS.short} matches` },
-  { key: 'standard', label: 'Standard', matches: CAREER_SEASON_LENGTHS.standard, description: `${CAREER_SEASON_LENGTHS.standard} matches` },
-  { key: 'full', label: 'Full', matches: CAREER_SEASON_LENGTHS.full, description: `${CAREER_SEASON_LENGTHS.full} matches` },
+  { key: 'short', label: 'Short', matches: CAREER_SEASON_LENGTHS.short, description: `${CAREER_SEASON_LENGTHS.short} format${CAREER_SEASON_LENGTHS.short === 1 ? '' : 's'}` },
+  { key: 'standard', label: 'Standard', matches: CAREER_SEASON_LENGTHS.standard, description: `${CAREER_SEASON_LENGTHS.standard} format${CAREER_SEASON_LENGTHS.standard === 1 ? '' : 's'}` },
+  { key: 'full', label: 'Full', matches: CAREER_SEASON_LENGTHS.full, description: `${CAREER_SEASON_LENGTHS.full} format${CAREER_SEASON_LENGTHS.full === 1 ? '' : 's'}` },
 ];
 
 function CareerSetupStage({

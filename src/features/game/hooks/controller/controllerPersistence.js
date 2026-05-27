@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import {
+  getCareerAutoSave,
   createGameSave,
   createMatchHistoryEntry,
   getAutoGameSave,
@@ -58,11 +59,14 @@ export const useControllerPersistence = ({
       return;
     }
 
-    const [manualSaves, autoSave] = await Promise.all([
+    const [manualSaves, autoSave, careerAutoSave] = await Promise.all([
       listGameSaves(authUser.uid),
       getAutoGameSave(authUser.uid),
+      getCareerAutoSave(authUser.uid),
     ]);
-    setSavedGames(autoSave ? [autoSave, ...manualSaves] : manualSaves);
+
+    const autoSaves = [careerAutoSave, autoSave].filter(Boolean);
+    setSavedGames(autoSaves.length > 0 ? [...autoSaves, ...manualSaves] : manualSaves);
   };
 
   const persistAutoSaveSnapshot = async (snapshot, uid) => {
