@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AppButton from '../components/ui/AppButton';
+import { getEffectiveAuthUser } from '../config/runtimeConfig';
 import { logoutUser } from '../features/auth/authThunks';
 import { useLocalization } from '../localization/LocalizationProvider';
 import CricketSimulator from '../features/game/CricketSimulator';
@@ -13,7 +14,8 @@ import { normalizeSelectedXIPlayers, buildComposition, buildAdminMatrix } from '
 
 function DashboardPage() {
   const dispatch = useDispatch();
-  const { user, isLoading } = useSelector((state) => state.auth);
+  const { user: authStateUser, isLoading } = useSelector((state) => state.auth);
+  const user = getEffectiveAuthUser(authStateUser);
   const game = useSelector((state) => state.game);
   const { t } = useLocalization();
   const [recentMatchHistory, setRecentMatchHistory] = React.useState([]);

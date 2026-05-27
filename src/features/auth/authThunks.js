@@ -8,6 +8,7 @@ import {
   logout,
 } from '../../firebase/authService';
 import { getUserProfile, upsertUserProfile } from '../../firebase/firestoreService';
+import { debugAuthUser, isDebugMode } from '../../config/runtimeConfig';
 import { translateStatic } from '../../localization';
 
 const toAuthUser = (user, profile) => ({
@@ -37,6 +38,10 @@ export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async ({ email, password }, { rejectWithValue }) => {
     try {
+      if (isDebugMode) {
+        return debugAuthUser;
+      }
+
       const user = await loginWithEmail(email, password);
       const profile = await safeGetUserProfile(user.uid);
 
@@ -50,6 +55,14 @@ export const loginUser = createAsyncThunk(
 export const registerUser = createAsyncThunk(
   'auth/registerUser',
   async ({ name, age, country, email, password }, { rejectWithValue }) => {
+    if (isDebugMode) {
+      return {
+        ...debugAuthUser,
+        email: email || debugAuthUser.email,
+        displayName: name || debugAuthUser.displayName,
+      };
+    }
+
     let user;
 
     try {
@@ -87,6 +100,10 @@ export const loginWithGoogleUser = createAsyncThunk(
   'auth/loginWithGoogleUser',
   async (_, { rejectWithValue }) => {
     try {
+      if (isDebugMode) {
+        return debugAuthUser;
+      }
+
       const user = await loginWithGoogle();
 
       try {
@@ -113,6 +130,10 @@ export const startAuthListener = createAsyncThunk(
   'auth/startAuthListener',
   async (_, { rejectWithValue }) => {
     try {
+      if (isDebugMode) {
+        return debugAuthUser;
+      }
+
       return await new Promise((resolve) => {
         const unsubscribe = subscribeToAuth(async (user) => {
           if (!user) {
@@ -136,6 +157,10 @@ export const startAuthListener = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, { rejectWithValue }) => {
   try {
+    if (isDebugMode) {
+      return true;
+    }
+
     await logout();
     return true;
   } catch (error) {
