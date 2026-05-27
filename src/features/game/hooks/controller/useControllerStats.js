@@ -58,12 +58,8 @@ export const useControllerStats = ({
     opponentTeam,
     firstInningsTeamName,
     secondInningsTeamName,
-    ownSanitizedRoles.captainId,
-    ownSanitizedRoles.viceCaptainId,
-    ownSanitizedRoles.wicketKeeperId,
-    opponentSanitizedRoles.captainId,
-    opponentSanitizedRoles.viceCaptainId,
-    opponentSanitizedRoles.wicketKeeperId,
+    ownSanitizedRoles,
+    opponentSanitizedRoles,
   ]);
 
   const seriesStanding = useMemo(() => resolveSeriesStanding(seriesResults, ownTeam, opponentTeam), [
@@ -110,9 +106,12 @@ export const useControllerStats = ({
   );
   const careerTopRunScorers = useMemo(() => buildTopRunScorers(careerPlayerStatsList), [careerPlayerStatsList]);
   const careerTopWicketTakers = useMemo(() => buildTopWicketTakers(careerPlayerStatsList), [careerPlayerStatsList]);
+  const careerFixtureCount = (careerSchedule || []).length;
   const careerProgressLabel =
     gameMode === MODE_CAREER
-      ? `Season ${careerSeason || 1} — Match ${Math.min((careerMatchIndex || 0) + 1, (careerSchedule || []).length || 1)} of ${(careerSchedule || []).length}`
+      ? careerFixtureCount > 0
+        ? `Season ${careerSeason || 1} — Match ${Math.min((careerMatchIndex || 0) + 1, careerFixtureCount)} of ${careerFixtureCount}`
+        : `Season ${careerSeason || 1} — No fixtures`
       : '';
 
   const announceManOfTheMatch = (selected) => {

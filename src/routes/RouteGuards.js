@@ -1,7 +1,6 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { isDebugMode } from '../config/runtimeConfig';
 import { useLocalization } from '../localization/LocalizationProvider';
 import { isDebugAuthBypassEnabled } from '../utils/runtimeFlags';
 
@@ -17,10 +16,6 @@ export function ProtectedRoute() {
     return <p className="route-loading">{t('common.checkingSession')}</p>;
   }
 
-  if (isDebugMode) {
-    return <Outlet />;
-  }
-
   return user ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
@@ -34,10 +29,6 @@ export function PublicOnlyRoute() {
 
   if (isSessionLoading) {
     return <p className="route-loading">{t('common.checkingSession')}</p>;
-  }
-
-  if (isDebugMode) {
-    return <Navigate to="/dashboard" replace />;
   }
 
   return user ? <Navigate to="/dashboard" replace /> : <Outlet />;

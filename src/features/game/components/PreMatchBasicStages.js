@@ -141,7 +141,7 @@ function PreMatchBasicStages(props) {
                     variant="secondary"
                     fullWidth={false}
                     onClick={async () => {
-                      await onDeleteSavedGame(saveToDelete.id);
+                      await onDeleteSavedGame(saveToDelete);
                       setSaveToDelete(null);
                     }}
                   />

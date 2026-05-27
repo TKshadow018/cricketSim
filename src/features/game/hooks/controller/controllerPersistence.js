@@ -5,6 +5,7 @@ import {
   createMatchHistoryEntry,
   getAutoGameSave,
   listGameSaves,
+  removeCareerSave,
   removeGameSave,
   upsertAutoGameSave,
   upsertCareerAutoSave,
@@ -147,13 +148,19 @@ export const useControllerPersistence = ({
     speak('Saved game loaded.');
   };
 
-  const handleDeleteSavedGame = async (saveId) => {
+  const handleDeleteSavedGame = async (saveItem) => {
+    const normalizedSaveItem = typeof saveItem === 'string' ? { id: saveItem } : saveItem;
+    const saveId = normalizedSaveItem?.storageId || normalizedSaveItem?.id;
     if (!authUser?.uid || !saveId) {
       return;
     }
 
     try {
-      await removeGameSave(authUser.uid, saveId);
+      if (normalizedSaveItem?.sourceCollection === 'careerSaves') {
+        await removeCareerSave(authUser.uid, saveId);
+      } else {
+        await removeGameSave(authUser.uid, saveId);
+      }
       await refreshSavedGames();
       setSaveMessage('Saved game deleted.');
     } catch (error) {

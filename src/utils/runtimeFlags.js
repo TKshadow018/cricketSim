@@ -1,5 +1,8 @@
-const truthyValues = new Set(['1', 'true', 'yes', 'on']);
-const isNonProduction = process.env.NODE_ENV !== 'production';
+import { isDebugMode } from '../config/runtimeConfig';
 
-export const isDebugAuthBypassEnabled =
-  isNonProduction && truthyValues.has((process.env.REACT_APP_DEBUG_MODE || '').trim().toLowerCase());
+const truthyValues = new Set(['1', 'true', 'yes', 'on']);
+const isDebugModeAliasEnabled =
+  process.env.NODE_ENV !== 'production' &&
+  truthyValues.has((process.env.REACT_APP_DEBUG_MODE || '').trim().toLowerCase());
+
+export const isDebugAuthBypassEnabled = isDebugMode || isDebugModeAliasEnabled;
