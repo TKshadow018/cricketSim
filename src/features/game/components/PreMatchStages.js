@@ -72,6 +72,7 @@ function PreMatchStages({
   careerPlayerProfile,
   careerDomesticCountry,
   careerDomesticTeams,
+  careerGlobalPlayerPool,
   careerOffers,
   careerRetired,
   handleCareerStartNextMatch,
@@ -268,6 +269,7 @@ function PreMatchStages({
         careerPlayerProfile={careerPlayerProfile}
         careerDomesticCountry={careerDomesticCountry}
         careerDomesticTeams={careerDomesticTeams}
+        careerGlobalPlayerPool={careerGlobalPlayerPool}
         careerOffers={careerOffers}
         careerRetired={careerRetired}
         handleCareerStartNextMatch={handleCareerStartNextMatch}

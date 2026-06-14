@@ -5,6 +5,393 @@
   text-align: center;
 }
 
+.sim-career-create-panel {
+  display: grid;
+  gap: 0.85rem;
+  border: 1px solid rgba(129, 176, 255, 0.35);
+  background:
+    radial-gradient(560px 160px at 0% 0%, rgba(86, 153, 255, 0.18), transparent 65%),
+    linear-gradient(170deg, rgba(20, 34, 62, 0.85), rgba(10, 18, 34, 0.84));
+}
+
+.sim-career-reveal {
+  animation: simCareerFadeIn 320ms ease-out both;
+}
+
+.sim-career-create-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 0.62rem;
+}
+
+.sim-career-create-grid label {
+  font-size: 0.81rem;
+  font-weight: 700;
+  color: #d8e8ff;
+}
+
+.sim-career-input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(151, 182, 255, 0.35);
+  background: rgba(7, 14, 28, 0.86);
+  color: #eef4ff;
+  padding: 0.52rem 0.6rem;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.sim-career-input:focus {
+  outline: none;
+  border-color: rgba(130, 198, 255, 0.88);
+  box-shadow: 0 0 0 2px rgba(130, 198, 255, 0.2);
+}
+
+.sim-career-create-hint {
+  margin: -0.25rem 0 0.15rem;
+  color: #b8c8ea;
+  font-size: 0.74rem;
+}
+
+.sim-career-create-hint.warning {
+  color: #ffd08a;
+}
+
+.sim-career-type-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.45rem;
+}
+
+.sim-career-type-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.38rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  color: #d8e6ff;
+  padding: 0.36rem 0.68rem;
+  font-size: 0.77rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.sim-career-type-pill:hover {
+  transform: translateY(-1px);
+  border-color: rgba(151, 207, 255, 0.7);
+}
+
+.sim-career-type-pill-badge {
+  border-radius: 999px;
+  padding: 0.16rem 0.36rem;
+  border: 1px solid rgba(154, 201, 255, 0.52);
+  background: rgba(94, 171, 255, 0.2);
+  color: #dff2ff;
+  font-size: 0.66rem;
+  line-height: 1;
+  letter-spacing: 0.05em;
+}
+
+.sim-career-type-pill-label {
+  white-space: nowrap;
+}
+
+.sim-career-type-pill.active {
+  border-color: rgba(121, 177, 255, 0.95);
+  background: rgba(121, 177, 255, 0.22);
+  color: #f5f9ff;
+}
+
+.sim-career-type-blurb {
+  grid-column: 1 / -1;
+  margin: 0.2rem 0 0;
+  color: #b7caec;
+  font-size: 0.78rem;
+}
+
+.sim-career-player-preview {
+  border-radius: 12px;
+  border: 1px solid rgba(138, 194, 255, 0.35);
+  background:
+    radial-gradient(420px 120px at 100% 100%, rgba(70, 206, 178, 0.2), transparent 60%),
+    rgba(255, 255, 255, 0.04);
+  padding: 0.75rem 0.8rem;
+}
+
+.sim-career-player-preview--batsman {
+  border-color: rgba(255, 190, 111, 0.45);
+  background:
+    radial-gradient(420px 120px at 100% 100%, rgba(255, 175, 92, 0.22), transparent 60%),
+    rgba(255, 255, 255, 0.04);
+}
+
+.sim-career-player-preview--bowler {
+  border-color: rgba(115, 206, 255, 0.45);
+  background:
+    radial-gradient(420px 120px at 100% 100%, rgba(95, 196, 255, 0.22), transparent 60%),
+    rgba(255, 255, 255, 0.04);
+}
+
+.sim-career-player-preview--wicketkeeper {
+  border-color: rgba(163, 222, 120, 0.45);
+  background:
+    radial-gradient(420px 120px at 100% 100%, rgba(148, 219, 106, 0.22), transparent 60%),
+    rgba(255, 255, 255, 0.04);
+}
+
+.sim-career-player-preview--pace-allrounder {
+  border-color: rgba(131, 182, 255, 0.5);
+  background:
+    radial-gradient(420px 120px at 100% 100%, rgba(120, 171, 255, 0.24), transparent 60%),
+    rgba(255, 255, 255, 0.04);
+}
+
+.sim-career-player-preview--spin-allrounder {
+  border-color: rgba(197, 146, 255, 0.5);
+  background:
+    radial-gradient(420px 120px at 100% 100%, rgba(184, 128, 255, 0.24), transparent 60%),
+    rgba(255, 255, 255, 0.04);
+}
+
+.sim-career-player-preview--pacer {
+  border-color: rgba(120, 240, 220, 0.5);
+  background:
+    radial-gradient(420px 120px at 100% 100%, rgba(96, 224, 204, 0.24), transparent 60%),
+    rgba(255, 255, 255, 0.04);
+}
+
+.sim-career-player-preview--spiner {
+  border-color: rgba(255, 155, 216, 0.5);
+  background:
+    radial-gradient(420px 120px at 100% 100%, rgba(255, 132, 205, 0.24), transparent 60%),
+    rgba(255, 255, 255, 0.04);
+}
+
+.sim-career-player-preview-kicker {
+  margin: 0;
+  color: #90afde;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sim-career-player-preview h4 {
+  margin: 0.2rem 0 0.35rem;
+  color: #f3f8ff;
+}
+
+.sim-career-player-preview p {
+  margin: 0.2rem 0;
+  color: #d2e0ff;
+}
+
+.sim-career-player-preview-status {
+  margin-top: 0.45rem !important;
+  color: #b5f0d4 !important;
+  font-size: 0.79rem;
+}
+
+.sim-career-create-footer-note {
+  margin: 0.55rem 0 0;
+  color: #c7d6f4;
+  font-size: 0.82rem;
+}
+
+@keyframes simCareerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sim-career-reveal,
+  .sim-career-type-pill {
+    animation: none;
+    transition: none;
+  }
+}
+
+.sim-career-tools {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.sim-career-stats-modal {
+  width: min(1120px, 96vw);
+  max-height: min(88vh, 900px);
+  overflow: hidden;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.sim-career-stats-scroll {
+  overflow-y: auto;
+  max-height: calc(min(88vh, 900px) - 32px);
+  display: grid;
+  gap: 0.55rem;
+  padding-right: 0.25rem;
+}
+
+.sim-career-format-tabs {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.sim-career-format-tab {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  color: #dfe8ff;
+  border-radius: 10px;
+  padding: 0.38rem 0.72rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sim-career-format-tab.active {
+  border-color: rgba(116, 166, 255, 0.85);
+  background: rgba(116, 166, 255, 0.25);
+  color: #f5f9ff;
+}
+
+.sim-player-link-btn {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sim-player-link-btn:hover {
+  filter: brightness(1.12);
+}
+
+.sim-player-link-btn:focus-visible {
+  outline: 2px solid rgba(122, 181, 255, 0.9);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.sim-career-player-modal {
+  width: min(960px, 96vw);
+  background:
+    radial-gradient(1200px 420px at 20% -8%, rgba(48, 105, 197, 0.32), transparent 56%),
+    radial-gradient(1000px 400px at 100% 110%, rgba(12, 177, 147, 0.2), transparent 58%),
+    linear-gradient(160deg, rgba(10, 19, 38, 0.98), rgba(6, 13, 26, 0.98));
+}
+
+.sim-career-player-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  border: 1px solid rgba(130, 188, 255, 0.28);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.8rem 0.95rem;
+}
+
+.sim-career-player-header h4 {
+  margin: 0;
+}
+
+.sim-career-player-subtitle {
+  margin: 0.3rem 0 0;
+  color: #dce9ff;
+}
+
+.sim-career-player-type-pill {
+  align-self: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 243, 188, 0.62);
+  background: rgba(255, 243, 188, 0.16);
+  color: #fff4c4;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.72rem;
+}
+
+.sim-career-player-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 0.65rem;
+}
+
+.sim-career-player-card {
+  border: 1px solid rgba(132, 164, 255, 0.25);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.75rem;
+}
+
+.sim-career-player-card h5 {
+  margin: 0 0 0.45rem;
+  color: #c8dcff;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sim-career-player-card p {
+  margin: 0.22rem 0;
+  color: #ebf2ff;
+  font-size: 0.88rem;
+}
+
+.sim-ability-list {
+  display: grid;
+  gap: 0.48rem;
+}
+
+.sim-ability-row {
+  display: grid;
+  gap: 0.28rem;
+}
+
+.sim-ability-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #e7efff;
+  font-size: 0.8rem;
+}
+
+.sim-ability-meta strong {
+  color: #ffffff;
+  font-size: 0.82rem;
+}
+
+.sim-ability-track {
+  height: 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(140, 174, 255, 0.32);
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.sim-ability-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #4cc5ff 0%, #77e5b1 100%);
+  box-shadow: 0 0 10px rgba(76, 197, 255, 0.42);
+}
+
 .sim-toss-panel p {
   margin: 0;
   color: var(--text-muted);
@@ -77,17 +464,30 @@
 }
 
 .sim-result-block {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(124, 154, 255, 0.18);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(17, 27, 49, 0.96), rgba(10, 16, 31, 0.94));
+  box-shadow: 0 18px 42px rgba(3, 8, 18, 0.24);
+  padding: 1.05rem;
   display: grid;
-  gap: 0.45rem;
+  gap: 0.55rem;
+}
+
+.sim-result-block::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(111, 145, 255, 0.95), rgba(86, 220, 185, 0.85));
 }
 
 .sim-choice-icons {
   display: flex;
   gap: 0.7rem;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .sim-choice-buttons button {
@@ -95,6 +495,7 @@
   border: 0;
   background: transparent;
   cursor: pointer;
+  transition: transform 0.16s ease, filter 0.16s ease;
 }
 
 .sim-choice-buttons button.selectable {
@@ -117,6 +518,13 @@
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.9);
   padding: 12px;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+}
+
+.sim-choice-buttons button:hover:not(:disabled) img,
+.sim-choice-buttons button:focus-visible:not(:disabled) img {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 0 2px rgba(102, 139, 255, 0.35), 0 10px 24px rgba(11, 22, 46, 0.35);
 }
 
 .sim-choice-icons img.faded {
@@ -132,6 +540,29 @@
 .sim-result-block h3,
 .sim-result-block p {
   margin: 0;
+}
+
+.sim-result-title {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.sim-result-lede {
+  color: #c8d6f8;
+  line-height: 1.45;
+}
+
+.sim-card-kicker {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 0.18rem 0.6rem;
+  background: rgba(111, 145, 255, 0.16);
+  border: 1px solid rgba(111, 145, 255, 0.28);
+  color: #dce6ff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .sim-result-block p {
@@ -189,6 +620,27 @@
   margin: 0;
   color: #c9d7ff;
   font-size: 0.86rem;
+}
+
+.sim-player-name-with-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.sim-player-type-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.88);
+  padding: 1px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.sim-player-name-text {
+  line-height: 1.2;
+  font-size: 1rem;
 }
 
 .sim-section-title {
@@ -267,6 +719,42 @@
   background: rgba(10, 16, 30, 0.8);
   color: #f0f5ff;
   padding: 0.45rem 0.5rem;
+}
+
+.sim-role-picker {
+  display: grid;
+  gap: 0.35rem;
+  color: #dce6ff;
+  font-size: 0.8rem;
+}
+
+.sim-role-option-list {
+  display: grid;
+  gap: 0.28rem;
+  max-height: 170px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.sim-role-option-btn {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e8efff;
+  padding: 0.35rem 0.45rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sim-role-option-btn.active {
+  border-color: #89acff;
+  background: rgba(137, 172, 255, 0.22);
+}
+
+.sim-role-option-btn.disabled,
+.sim-role-option-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .sim-custom-player-modal {
@@ -433,5 +921,19 @@
 
 .sim-scoreboard-table tr:last-child td {
   border-bottom: none;
+}
+
+@media (max-width: 900px) {
+  .sim-career-player-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sim-career-create-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sim-career-type-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 

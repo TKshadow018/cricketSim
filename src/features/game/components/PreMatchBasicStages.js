@@ -63,6 +63,7 @@ function PreMatchBasicStages(props) {
     careerPlayerProfile,
     careerDomesticCountry,
     careerDomesticTeams,
+    careerGlobalPlayerPool,
     careerOffers,
     careerRetired,
     handleCareerStartNextMatch,
@@ -127,6 +128,14 @@ function PreMatchBasicStages(props) {
           {saveToDelete ? (
             <div className="sim-confirm-overlay" role="dialog" aria-modal="true">
               <div className="sim-confirm-modal">
+                <button
+                  type="button"
+                  className="sim-modal-top-close"
+                  aria-label="Close"
+                  onClick={() => setSaveToDelete(null)}
+                >
+                  ×
+                </button>
                 <h4>Delete saved game?</h4>
                 <p>Are you sure you want to delete this save? This cannot be undone.</p>
                 <div className="sim-save-row-actions">
@@ -192,7 +201,7 @@ function PreMatchBasicStages(props) {
             </button>
             <button type="button" className={`sim-series-mode-card ${game.gameMode === 'career' ? 'active' : ''}`} onClick={() => selectGameMode('career')}>
               <h4>Career</h4>
-              <p>Manage a national team across seasons.</p>
+              <p>Create a player and play through domestic seasons.</p>
             </button>
           </div>
         </StageShell>
@@ -409,6 +418,7 @@ function PreMatchBasicStages(props) {
         careerPlayerProfile={careerPlayerProfile}
         careerDomesticCountry={careerDomesticCountry}
         careerDomesticTeams={careerDomesticTeams}
+        careerGlobalPlayerPool={careerGlobalPlayerPool}
         careerOffers={careerOffers}
         />
       )}

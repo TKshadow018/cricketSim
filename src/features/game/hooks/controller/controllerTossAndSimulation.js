@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { matchStatusEnum } from '../../../../gameData/matchStatusEnum';
 import { weather, pitchType, outfieldType } from '../../../../gameData/matchCondition';
-import { randomKey, MODE_TOURNAMENT } from '../../utils/controllerCommonUtils';
+import { randomKey, MODE_TOURNAMENT, MODE_CAREER } from '../../utils/controllerCommonUtils';
 import { getOpponentDecision, isInningsReadyForNextBall } from '../../../../utils/simulatorUtils';
 import { speak } from '../../../../utils/speechUtils';
 
@@ -32,6 +32,8 @@ export const useTossAndSimulationHandlers = ({
   autoSimMode,
   venueStadiums,
   matchCondition,
+  firstInningsView,
+  secondInningsView,
 }) => {
   const handleOpponentWonFlow = (decision, winner) => {
     if (!isCurrentMatchUserInvolved) {
@@ -195,12 +197,102 @@ export const useTossAndSimulationHandlers = ({
   ]);
 
   useEffect(() => {
+    if (gameMode !== MODE_CAREER || stage !== matchStatusEnumLocal.TossTime) {
+      return;
+    }
+
+    const nextCondition = resolveStadiumConditionRef.current(selectedStadium, randomKey(weather));
+    const winner = Math.random() > 0.5 ? ownTeam : opponentTeam;
+    const decision = getOpponentDecision(nextCondition);
+    const firstSide =
+      decision === 'bat'
+        ? winner === ownTeam
+          ? 'own'
+          : 'opponent'
+        : winner === ownTeam
+          ? 'opponent'
+          : 'own';
+
+    dispatch(setMatchConditionAction(nextCondition));
+    dispatch(setTossCallAction('auto'));
+    dispatch(setTossWinnerAction(winner));
+    dispatch(setTossDecisionAction(decision));
+    dispatch(setFirstBattingSideAction(firstSide));
+    dispatch(setStageAction(matchStatusEnumLocal.TossResult));
+  }, [
+    gameMode,
+    stage,
+    selectedStadium,
+    ownTeam,
+    opponentTeam,
+    dispatch,
+    resolveStadiumConditionRef,
+    setMatchConditionAction,
+    setTossCallAction,
+    setTossWinnerAction,
+    setTossDecisionAction,
+    setFirstBattingSideAction,
+    setStageAction,
+  ]);
+
+  useEffect(() => {
     if (gameMode !== MODE_TOURNAMENT || isCurrentMatchUserInvolved || stage !== matchStatusEnumLocal.TossResult) {
       return;
     }
 
     openInningsRef.current?.(firstBattingSide);
   }, [gameMode, isCurrentMatchUserInvolved, stage, firstBattingSide, openInningsRef]);
+
+  useEffect(() => {
+    if (gameMode !== MODE_CAREER || stage !== matchStatusEnumLocal.TossResult) {
+      return;
+    }
+
+    openInningsRef.current?.(firstBattingSide);
+  }, [gameMode, stage, firstBattingSide, openInningsRef]);
+
+  useEffect(() => {
+    if (gameMode !== MODE_CAREER || autoSimMode) {
+      return;
+    }
+
+    if (stage !== matchStatusEnumLocal.TeamOneBat && stage !== matchStatusEnumLocal.TeamTwoBat) {
+      return;
+    }
+
+    const isFirstInnings = stage === matchStatusEnumLocal.TeamOneBat;
+    const inningsState = isFirstInnings ? firstInnings : secondInnings;
+    const activeView = isFirstInnings ? firstInningsView : secondInningsView;
+
+    if (!inningsState || !activeView) {
+      return;
+    }
+
+    if (activeView.isUserBatting || activeView.isUserBowling) {
+      return;
+    }
+
+    if (!isInningsReadyForNextBall(inningsState, maxBalls)) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      processDeliveryRef.current?.(isFirstInnings);
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [
+    gameMode,
+    autoSimMode,
+    stage,
+    firstInnings,
+    secondInnings,
+    firstInningsView,
+    secondInningsView,
+    maxBalls,
+    processDeliveryRef,
+    matchStatusEnumLocal,
+  ]);
 
   return {
     handleSetSelectedStadium,

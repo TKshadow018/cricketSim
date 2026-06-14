@@ -1,18 +1,15 @@
 import {
   createBattingStats,
   createBowlingStats,
+  getEligibleBowlerIndices,
   getMaxOversPerBowler,
   getNextBatterIndex,
   getTopOpenerIndices,
-  isEligibleBowler,
 } from '../../../utils/simulatorUtils';
 import { buildInitialInnings } from '../gameSlice';
 
 export const getBestEligibleBowlerIndex = (players = [], excludeIndex = null) => {
-  const eligibleIndices = players
-    .map((player, index) => ({ player, index }))
-    .filter(({ player }) => isEligibleBowler(player))
-    .map(({ index }) => index);
+  const eligibleIndices = getEligibleBowlerIndices(players);
 
   if (!eligibleIndices.length) {
     return null;
@@ -32,10 +29,11 @@ export const selectComputerBowler = ({ inningState, bowlingSide, previousBowlerI
   const maxOversPerBowler = getMaxOversPerBowler(overs);
   const completedOverBowlerIndices = inningState.completedOverBowlerIndices || [];
   const nextOverNumber = completedOverBowlerIndices.length + 1;
+  const eligibleBowlerSet = new Set(getEligibleBowlerIndices(bowlingSide));
 
   const underLimitIndices = bowlingSide
     .map((player, index) => ({ player, index }))
-    .filter(({ player }) => isEligibleBowler(player))
+    .filter(({ index }) => eligibleBowlerSet.has(index))
     .filter(({ index }) => {
       const balls = inningState.bowlingStats[index]?.balls || 0;
       return balls < maxOversPerBowler * 6;
@@ -100,10 +98,7 @@ export const buildPreparedInnings = ({ battingSide, bowlingSide, isUserBatting, 
   const innings = buildInitialInnings();
   innings.battingStats = createBattingStats(battingSide);
   innings.bowlingStats = createBowlingStats(bowlingSide);
-  const eligibleBowlerIndices = bowlingSide
-    .map((player, index) => ({ player, index }))
-    .filter(({ player }) => isEligibleBowler(player))
-    .map(({ index }) => index);
+  const eligibleBowlerIndices = getEligibleBowlerIndices(bowlingSide);
 
   if (isUserBatting) {
     innings.needsOpeners = true;

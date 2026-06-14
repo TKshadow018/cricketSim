@@ -1,5 +1,81 @@
 import { formatOvers, runMilestoneBonus, wicketMilestoneBonus } from './controllerCommonUtils';
 
+const parseOversToBalls = (oversText = '0.0') => {
+  const [oversPart, ballsPart] = String(oversText).split('.');
+  const overs = Number(oversPart || 0);
+  const balls = Number(ballsPart || 0);
+  if (!Number.isFinite(overs) || !Number.isFinite(balls)) {
+    return 0;
+  }
+  return overs * 6 + balls;
+};
+
+export const buildMomShortlistFromScorecards = ({ cards = [] }) => {
+  const performanceMap = new Map();
+
+  const ensureEntry = (team, row) => {
+    const key = `${team}::${row?.playerId ?? ''}::${row?.name || ''}`;
+    if (!performanceMap.has(key)) {
+      performanceMap.set(key, {
+        key,
+        playerId: row?.playerId,
+        name: row?.name || 'Unknown',
+        team,
+        runs: 0,
+        balls: 0,
+        wickets: 0,
+        runsConceded: 0,
+        ballsBowled: 0,
+        notOut: false,
+        points: 0,
+      });
+    }
+    return performanceMap.get(key);
+  };
+
+  (cards || []).forEach(({ team, scorecard }) => {
+    (scorecard?.battingRows || []).forEach((row) => {
+      const entry = ensureEntry(team, row);
+      entry.runs += Number(row?.runs || 0);
+      entry.balls += Number(row?.balls || 0);
+      entry.notOut = entry.notOut || !!row?.isNotOut;
+    });
+
+    (scorecard?.bowlingRows || []).forEach((row) => {
+      const entry = ensureEntry(team, row);
+      entry.wickets += Number(row?.wickets || 0);
+      entry.runsConceded += Number(row?.runsConceded || 0);
+      entry.ballsBowled += parseOversToBalls(row?.overs || '0.0');
+    });
+  });
+
+  return Array.from(performanceMap.values())
+    .map((entry) => {
+      const economyBonus = entry.ballsBowled > 0 ? Math.max(0, 8 - entry.runsConceded / (entry.ballsBowled / 6)) : 0;
+      const points = entry.runs + entry.wickets * 25 + (entry.notOut ? 5 : 0) + economyBonus;
+      return {
+        ...entry,
+        points: Number(points.toFixed(2)),
+      };
+    })
+    .sort(
+      (left, right) =>
+        right.points - left.points ||
+        right.runs - left.runs ||
+        right.wickets - left.wickets ||
+        left.name.localeCompare(right.name)
+    )
+    .slice(0, 5)
+    .map((entry, index) => ({
+      rank: index + 1,
+      recommended: index === 0,
+      playerId: entry.playerId,
+      name: entry.name,
+      team: entry.team,
+      points: entry.points,
+    }));
+};
+
 export const buildMomRecommendations = ({
   firstBattingSide,
   ownPlayers,
@@ -37,6 +113,12 @@ export const buildMomRecommendations = ({
         playerId: player.id,
         name: player.name,
         team,
+        playerType: player.playerType || '',
+        isWicketKeeper: !!player.isWicketKeeper,
+        paceAbility: player.paceAbility || 0,
+        spinAbility: player.spinAbility || 0,
+        abilityToPlayPaceBall: player.abilityToPlayPaceBall || 0,
+        abilityToPlaySpinBall: player.abilityToPlaySpinBall || 0,
         runs: 0,
         balls: 0,
         wickets: 0,
@@ -215,8 +297,15 @@ export const buildMomRecommendations = ({
     .map((entry, index) => ({
       rank: index + 1,
       recommended: index === 0,
+      playerId: entry.playerId,
       name: entry.name,
       team: entry.team,
+      playerType: entry.playerType,
+      isWicketKeeper: entry.isWicketKeeper,
+      paceAbility: entry.paceAbility,
+      spinAbility: entry.spinAbility,
+      abilityToPlayPaceBall: entry.abilityToPlayPaceBall,
+      abilityToPlaySpinBall: entry.abilityToPlaySpinBall,
       points: entry.points,
       runs: entry.runs,
       balls: entry.balls,

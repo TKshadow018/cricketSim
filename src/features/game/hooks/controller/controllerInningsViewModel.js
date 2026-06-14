@@ -2,8 +2,8 @@ import {
   battingActionList,
   bowlingActionList,
   canSelectBowler,
+  getEligibleBowlerIndices,
   getMaxOversPerBowler,
-  isEligibleBowler,
   isInningsReadyForNextBall,
 } from '../../../../utils/simulatorUtils';
 import { battingAction, bowlingAction } from '../../../../gameData/actionType';
@@ -77,8 +77,13 @@ export const buildInningsViewModel = ({
 
     return { ...action, disabled: false, reason: '' };
   });
+  const eligibleBowlerSet = new Set(getEligibleBowlerIndices(bowlingSide));
 
-  const openerCandidates = battingSide.map((player, index) => ({ index, name: player.name }));
+  const openerCandidates = battingSide.map((player, index) => ({
+    index,
+    name: player.name,
+    player,
+  }));
 
   const nextBatterCandidates = battingSide.map((player, index) => {
     const isOut = inningState.outBatterIndices.includes(index);
@@ -88,6 +93,7 @@ export const buildInningsViewModel = ({
     return {
       index,
       name: player.name,
+      player,
       disabled,
       reason: isOut ? 'Already out' : isCurrent ? 'Currently batting' : '',
     };
@@ -102,7 +108,7 @@ export const buildInningsViewModel = ({
       balls: inningState.bowlingStats[index]?.balls || 0,
       wasLastOver: inningState.lastOverBowlerIndex === index,
     }))
-    .filter((player) => isEligibleBowler(player))
+    .filter(({ index }) => eligibleBowlerSet.has(index))
     .map(({ index, name, balls, wasLastOver }) => {
       const hitOverLimit = balls >= maxOversPerBowler * 6;
       const disabled = wasLastOver || hitOverLimit;
@@ -110,6 +116,7 @@ export const buildInningsViewModel = ({
       return {
         index,
         name,
+        player: bowlingSide[index],
         disabled,
         reason: wasLastOver ? 'Bowled last over' : hitOverLimit ? `Over limit reached (${maxOversPerBowler})` : '',
       };
@@ -143,6 +150,12 @@ export const buildInningsViewModel = ({
 
       return {
         name: player.name,
+        playerType: player.playerType || '',
+        isWicketKeeper: !!player.isWicketKeeper,
+        paceAbility: player.paceAbility || 0,
+        spinAbility: player.spinAbility || 0,
+        abilityToPlayPaceBall: player.abilityToPlayPaceBall || 0,
+        abilityToPlaySpinBall: player.abilityToPlaySpinBall || 0,
         runs: stat.runs,
         balls: stat.balls,
         strikeRate,
@@ -165,6 +178,12 @@ export const buildInningsViewModel = ({
 
       return {
         name: player.name,
+        playerType: player.playerType || '',
+        isWicketKeeper: !!player.isWicketKeeper,
+        paceAbility: player.paceAbility || 0,
+        spinAbility: player.spinAbility || 0,
+        abilityToPlayPaceBall: player.abilityToPlayPaceBall || 0,
+        abilityToPlaySpinBall: player.abilityToPlaySpinBall || 0,
         overs,
         runsConceded: stat.runsConceded,
         economy,
@@ -188,6 +207,9 @@ export const buildInningsViewModel = ({
     strikerName: inningState.strikerIndex === null ? '' : battingSide[inningState.strikerIndex]?.name || '',
     nonStrikerName: inningState.nonStrikerIndex === null ? '' : battingSide[inningState.nonStrikerIndex]?.name || '',
     currentBowlerName: inningState.currentBowlerIndex === null ? '' : bowlingSide[inningState.currentBowlerIndex]?.name || '',
+    strikerPlayer: striker,
+    nonStrikerPlayer: inningState.nonStrikerIndex === null ? null : battingSide[inningState.nonStrikerIndex] || null,
+    currentBowlerPlayer: currentBowler,
     canPlayNextBall: battingSide.length > 0 && bowlingSide.length > 0 && isInningsReadyForNextBall(inningState, maxBalls),
   };
 };

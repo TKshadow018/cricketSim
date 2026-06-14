@@ -1,6 +1,7 @@
 import { speak } from '../../../../utils/speechUtils';
 import { getNextBatterIndex, canSelectNextBatter, canSelectBowler, getMaxOversPerBowler } from '../../../../utils/simulatorUtils';
 import { buildPreparedInnings } from '../../utils/controllerInningsSetupUtils';
+import { MODE_CAREER } from '../../utils/controllerCommonUtils';
 
 export const getInningsContext = ({
   isFirstInnings,
@@ -12,19 +13,50 @@ export const getInningsContext = ({
   opponentTeam,
   isCurrentMatchUserInvolved,
   userTeamName,
+  gameMode,
+  careerPlayerProfile,
+  inningState,
 }) => {
   const resolvedFirstSide = firstSide || firstBattingSide;
   const isOwnBatting = isFirstInnings ? resolvedFirstSide === 'own' : resolvedFirstSide !== 'own';
   const battingSide = isOwnBatting ? ownPlayers : opponentPlayers;
   const bowlingSide = isOwnBatting ? opponentPlayers : ownPlayers;
   const battingTeamName = isOwnBatting ? ownTeam : opponentTeam;
+  const bowlingTeamName = isOwnBatting ? opponentTeam : ownTeam;
   const userPlayingThisMatch = isCurrentMatchUserInvolved;
-  const isUserBatting = userPlayingThisMatch && battingTeamName === userTeamName;
+  const isTeamUserBatting = userPlayingThisMatch && battingTeamName === userTeamName;
+  const isTeamUserBowling = userPlayingThisMatch && bowlingTeamName === userTeamName;
+
+  if (gameMode === MODE_CAREER && careerPlayerProfile?.name) {
+    const normalize = (value) => String(value || '').trim().toLowerCase();
+    const createdPlayerName = normalize(careerPlayerProfile.name);
+    const strikerName = normalize(
+      inningState?.strikerIndex === null || inningState?.strikerIndex === undefined
+        ? ''
+        : battingSide[inningState.strikerIndex]?.name
+    );
+    const bowlerName = normalize(
+      inningState?.currentBowlerIndex === null || inningState?.currentBowlerIndex === undefined
+        ? ''
+        : bowlingSide[inningState.currentBowlerIndex]?.name
+    );
+
+    const isUserBatting = isTeamUserBatting && strikerName && strikerName === createdPlayerName;
+    const isUserBowling = isTeamUserBowling && bowlerName && bowlerName === createdPlayerName;
+
+    return {
+      isOwnBatting,
+      isUserBatting,
+      isUserBowling,
+      battingSide,
+      bowlingSide,
+    };
+  }
 
   return {
     isOwnBatting,
-    isUserBatting,
-    isUserBowling: userPlayingThisMatch && !isUserBatting,
+    isUserBatting: isTeamUserBatting,
+    isUserBowling: isTeamUserBowling,
     battingSide,
     bowlingSide,
   };

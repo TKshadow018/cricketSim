@@ -1,5 +1,6 @@
 import React from 'react';
 import AppButton from '../../../components/ui/AppButton';
+import PlayerNameWithType from './PlayerNameWithType';
 
 const splitCommentaryLine = (line = '') => {
   const match = line.match(/^(\d+\.\d+)\s+(.*)$/);
@@ -21,6 +22,9 @@ function InningsStage({
   strikerName,
   nonStrikerName,
   currentBowlerName,
+  strikerPlayer,
+  nonStrikerPlayer,
+  currentBowlerPlayer,
   needsOpeners,
   openerSelections,
   openerCandidates,
@@ -75,7 +79,7 @@ function InningsStage({
             <tbody>
               {inningsData.battingRows.map((row) => (
                 <tr key={`${keyPrefix}-bat-${row.name}`} className={row.isNotOut ? 'sim-scoreboard-row-notout' : ''}>
-                  <td>{row.name}</td>
+                  <td><PlayerNameWithType player={row} /></td>
                   <td>{row.runs}</td>
                   <td>{row.balls}</td>
                   <td>{row.strikeRate}</td>
@@ -100,7 +104,7 @@ function InningsStage({
             <tbody>
               {inningsData.bowlingRows.map((row) => (
                 <tr key={`${keyPrefix}-bowl-${row.name}`} className={row.isCurrent ? 'sim-scoreboard-row-current' : ''}>
-                  <td>{row.name}</td>
+                  <td><PlayerNameWithType player={row} /></td>
                   <td>{row.overs}</td>
                   <td>{row.runsConceded}</td>
                   <td>{row.economy}</td>
@@ -138,9 +142,9 @@ function InningsStage({
 
           {strikerName || nonStrikerName || currentBowlerName ? (
             <div className="sim-player-strip">
-              {strikerName ? <p>Striker: {strikerName}</p> : null}
-              {nonStrikerName ? <p>Non-Striker: {nonStrikerName}</p> : null}
-              {currentBowlerName ? <p>Bowler: {currentBowlerName}</p> : null}
+              {strikerName ? <p>Striker: <PlayerNameWithType player={strikerPlayer} name={strikerName} /></p> : null}
+              {nonStrikerName ? <p>Non-Striker: <PlayerNameWithType player={nonStrikerPlayer} name={nonStrikerName} /></p> : null}
+              {currentBowlerName ? <p>Bowler: <PlayerNameWithType player={currentBowlerPlayer} name={currentBowlerName} /></p> : null}
             </div>
           ) : null}
 
@@ -194,7 +198,7 @@ function InningsStage({
                     className={`sim-player-pick-btn ${openerSelections.includes(player.index) ? 'active' : ''}`}
                     onClick={() => onSelectOpener(player.index)}
                   >
-                    {player.name}
+                    <PlayerNameWithType player={player.player} name={player.name} />
                   </button>
                 ))}
               </div>
@@ -213,7 +217,7 @@ function InningsStage({
                     disabled={player.disabled}
                     title={player.reason || ''}
                   >
-                    <span>{player.name}</span>
+                    <PlayerNameWithType player={player.player} name={player.name} />
                     {player.reason ? <small>{player.reason}</small> : null}
                   </button>
                 ))}
@@ -233,7 +237,7 @@ function InningsStage({
                     disabled={player.disabled}
                     title={player.reason || ''}
                   >
-                    <span>{player.name}</span>
+                    <PlayerNameWithType player={player.player} name={player.name} />
                     {player.reason ? <small>{player.reason}</small> : null}
                   </button>
                 ))}

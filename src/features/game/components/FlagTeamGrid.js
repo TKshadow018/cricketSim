@@ -6,16 +6,15 @@ const toPublicPath = (value = '') => value.replace('./', '/');
 function FlagTeamGrid({ teams, selectedName, onSelect, disabledName }) {
   return (
     <div className="sim-flag-grid">
-      {teams.map((team, idx) => {
+      {teams.map((team) => {
         const disabled = disabledName === team.name;
         return (
           <motion.button
             key={team.id}
             className={`sim-flag-card ${selectedName === team.name ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
             onClick={() => !disabled && onSelect(team)}
-            whileHover={disabled ? {} : { scale: 1.03 }}
-            transition={{ duration: 0.15 }}
-            style={{ animationDelay: `${idx * 25}ms` }}
+            whileHover={disabled ? {} : { opacity: 0.96 }}
+            transition={{ duration: 0.12 }}
           >
             <div className="sim-flag-holder">
               <img src={toPublicPath(team.image)} alt={team.name} />
