@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Wave } from 'react-animated-text';
 
 const stageVariant = {
@@ -19,6 +19,8 @@ function StageShell({
   children,
   dark = false,
 }) {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
     <motion.section
       className={`sim-stage-card ${dark ? 'sim-stage-dark' : ''} ${className}`.trim()}
@@ -26,6 +28,7 @@ function StageShell({
       initial="initial"
       animate="animate"
       exit="exit"
+      transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
     >
       <div className="sim-stage-header">
         <div>

@@ -78,9 +78,12 @@ function PreMatchBasicStages(props) {
           subtitle="Set up your battle, play ball by ball, and experience dynamic commentary."
           rightSlot={<motion.div className="sim-pulse-dot" animate={{ scale: [1, 1.25, 1] }} transition={{ repeat: Infinity, duration: 1.4 }} />}
         >
-          <div className="sim-intro-grid clickable" onClick={goToNextStage}>
+          <div className="sim-intro-grid">
             <p>Use match setup stages, then control batting and bowling actions during innings.</p>
-            <p className="sim-click-hint">Tap this panel to start setup</p>
+            <div className="sim-intro-actions">
+              <p className="sim-click-hint">Ready to set up your match?</p>
+              <AppButton text="Start Match Setup" onClick={goToNextStage} fullWidth={false} />
+            </div>
           </div>
 
           {isSavesLoading ? <p className="sim-section-title">Loading saved games...</p> : null}
@@ -125,10 +128,10 @@ function PreMatchBasicStages(props) {
           {saveMessage ? <p className="sim-section-title">{saveMessage}</p> : null}
 
           {saveToDelete ? (
-            <div className="sim-confirm-overlay" role="dialog" aria-modal="true">
+            <div className="sim-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="delete-save-title" aria-describedby="delete-save-description">
               <div className="sim-confirm-modal">
-                <h4>Delete saved game?</h4>
-                <p>Are you sure you want to delete this save? This cannot be undone.</p>
+                <h4 id="delete-save-title">Delete saved game?</h4>
+                <p id="delete-save-description">Are you sure you want to delete this save? This cannot be undone.</p>
                 <div className="sim-save-row-actions">
                   <AppButton
                     text="Cancel"

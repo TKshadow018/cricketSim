@@ -298,6 +298,142 @@
   opacity: 0.95;
 }
 
+.sim-intro-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.sim-intro-actions .sim-click-hint {
+  margin: 0;
+}
+
+.sim-match-action-layout {
+  height: auto;
+  min-height: 0;
+  max-height: min(72vh, 760px);
+}
+
+.sim-commentary-feed {
+  min-width: 0;
+  max-height: min(72vh, 760px);
+  overscroll-behavior: contain;
+}
+
+.sim-commentary-feed li {
+  min-width: 0;
+}
+
+.sim-commentary-text {
+  overflow-wrap: anywhere;
+}
+
+.sim-scoreboard-table-wrap {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.sim-scoreboard-panel {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.sim-scoreboard-table {
+  min-width: 520px;
+}
+
+.sim-player-pick-btn,
+.sim-intent-btn,
+.sim-series-mode-card,
+.sim-series-length-card,
+.sim-flag-card,
+.sim-choice-card {
+  min-height: 44px;
+}
+
+.sim-player-pick-btn.active,
+.sim-intent-btn.active,
+.sim-series-mode-card.active,
+.sim-series-length-card.active,
+.sim-flag-card.active,
+.sim-choice-card.active {
+  border-width: 2px;
+}
+
+.sim-delete-cross-btn {
+  min-width: 52px;
+  min-height: 52px;
+}
+
+:is(
+  .sim-stage-card,
+  .sim-scoreboard-panel,
+  .sim-xi-column,
+  .dashboard-sidebar
+) :is(button, a, input, select, textarea):focus-visible,
+.dashboard-navbar :is(button, a):focus-visible {
+  outline: 3px solid #b9d6ff;
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .sim-match-action-layout,
+  .sim-commentary-feed {
+    max-height: none;
+  }
+
+  .sim-scoreboard-table-wrap,
+  .sim-scoreboard-panel {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 600px) {
+  .sim-innings-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sim-scoreboard-table th,
+  .sim-scoreboard-table td {
+    padding: 0.4rem;
+    font-size: 0.76rem;
+  }
+
+  .sim-intro-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sim-intro-actions .app-button {
+    width: 100%;
+  }
+
+  .sim-player-pick-btn {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sim-saving-ball {
+    animation: none;
+  }
+
+  .sim-player-pick-btn,
+  .sim-intent-btn,
+  .sim-series-mode-card,
+  .sim-series-length-card,
+  .sim-flag-card,
+  .sim-choice-card,
+  .sim-mom-select-btn {
+    transition: none;
+  }
+}
+
 .sim-mom-select-btn {
   width: 30px;
   height: 30px;
