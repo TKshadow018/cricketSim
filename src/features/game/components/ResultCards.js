@@ -1,7 +1,8 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import AppButton from '../../../components/ui/AppButton';
 import TeamNameWithFlag from './TeamNameWithFlag';
+import PlayerNameWithType from './PlayerNameWithType';
 
 export function TossResultCard({
   winner,
@@ -15,14 +16,15 @@ export function TossResultCard({
 
   return (
     <div className="sim-result-block">
-      <h3>
+      <h3 className="sim-result-title">
+        <span className="sim-card-kicker">Toss Winner</span>
         <TeamNameWithFlag teamName={winner} /> won the toss
       </h3>
-      <p>Commentator: {commentator}</p>
+      <p className="sim-result-lede">Commentator: {commentator}</p>
 
       {isUserWinner ? (
         <>
-          <p>You won the toss. Choose what your team does first.</p>
+          <p className="sim-result-lede">You won the toss. Choose what your team does first.</p>
           <div className="sim-choice-icons sim-choice-buttons">
             <button onClick={() => onUserDecision('bat')} className={isBat ? 'active' : 'faded'}>
               <img src="/asset/img/icon/cricket-bat.png" alt="bat" />
@@ -34,7 +36,7 @@ export function TossResultCard({
         </>
       ) : (
         <>
-          <p>Waiting for opponent decision...</p>
+          <p className="sim-result-lede">Waiting for opponent decision...</p>
           <div className="sim-choice-icons sim-choice-buttons">
             <button
               disabled={isBat}
@@ -51,7 +53,7 @@ export function TossResultCard({
               <img src="/asset/img/icon/cricket-ball.png" alt="ball" />
             </button>
           </div>
-          <p>Opponent chose to {decision} first. Click your only available option to continue: {remainingForUser}.</p>
+          <p className="sim-result-lede">Opponent chose to {decision} first. Click your only available option to continue: {remainingForUser}.</p>
         </>
       )}
     </div>
@@ -76,7 +78,9 @@ export function MatchResultCard({
   primaryActionLabel = 'Play New Match',
   showScoreboard,
   scorecard,
+  autoSelectTopMomOnPrimaryAction = false,
 }) {
+  const prefersReducedMotion = useReducedMotion();
   const [isMomPanelHidden, setIsMomPanelHidden] = React.useState(false);
 
   React.useEffect(() => {
@@ -90,6 +94,14 @@ export function MatchResultCard({
 
     onSelectManOfTheMatch?.(player);
     setIsMomPanelHidden(true);
+  };
+
+  const handlePrimaryActionClick = () => {
+    if (autoSelectTopMomOnPrimaryAction && !isMomPanelHidden && Array.isArray(momRecommendations) && momRecommendations.length > 0) {
+      handleSelectMom(momRecommendations[0]);
+    }
+
+    onPrimaryAction?.();
   };
 
   const renderInningsScoreboard = (inningsData, keyPrefix) => {
@@ -117,7 +129,7 @@ export function MatchResultCard({
             <tbody>
               {inningsData.battingRows.map((row) => (
                 <tr key={`${keyPrefix}-bat-${row.name}`} className={row.isNotOut ? 'sim-scoreboard-row-notout' : ''}>
-                  <td>{row.name}</td>
+                  <td><PlayerNameWithType player={row} /></td>
                   <td>{row.runs}</td>
                   <td>{row.balls}</td>
                   <td>{row.strikeRate}</td>
@@ -142,7 +154,7 @@ export function MatchResultCard({
             <tbody>
               {inningsData.bowlingRows.map((row) => (
                 <tr key={`${keyPrefix}-bowl-${row.name}`} className={row.isCurrent ? 'sim-scoreboard-row-current' : ''}>
-                  <td>{row.name}</td>
+                  <td><PlayerNameWithType player={row} /></td>
                   <td>{row.overs}</td>
                   <td>{row.runsConceded}</td>
                   <td>{row.economy}</td>
@@ -160,6 +172,7 @@ export function MatchResultCard({
   return (
     <div className="sim-final-grid">
       <div className="sim-final-card">
+        <span className="sim-card-kicker">First Innings</span>
         <h4>
           {teamOneName ? <TeamNameWithFlag teamName={teamOneName} /> : null}{' '}
           {Number.isFinite(teamOneScore) && Number.isFinite(teamOneWickets)
@@ -169,6 +182,7 @@ export function MatchResultCard({
         <p>Overs: {teamOneOvers}</p>
       </div>
       <div className="sim-final-card">
+        <span className="sim-card-kicker">Second Innings</span>
         <h4>
           {teamTwoName ? <TeamNameWithFlag teamName={teamTwoName} /> : null}{' '}
           {Number.isFinite(teamTwoScore) && Number.isFinite(teamTwoWickets)
@@ -179,8 +193,8 @@ export function MatchResultCard({
       </div>
       <motion.h3
         className="sim-winner-line"
-        animate={{ scale: [1, 1.03, 1] }}
-        transition={{ duration: 1.2, repeat: Infinity }}
+        animate={prefersReducedMotion ? { scale: 1 } : { scale: [1, 1.03, 1] }}
+        transition={{ duration: prefersReducedMotion ? 0 : 1.2, repeat: prefersReducedMotion ? 0 : Infinity }}
       >
         {summary}
       </motion.h3>
@@ -192,7 +206,7 @@ export function MatchResultCard({
             {momRecommendations.map((player) => (
               <li key={`${player.rank}-${player.team}-${player.name}`} className={player.recommended ? 'sim-mom-item-recommended' : ''}>
                 <div className="sim-mom-head">
-                  <strong>#{player.rank} {player.name}</strong>
+                  <strong>#{player.rank} <PlayerNameWithType player={player} /></strong>
                   {player.recommended ? <span className="sim-mom-badge">Recommended</span> : null}
                   <button
                     type="button"
@@ -228,7 +242,7 @@ export function MatchResultCard({
           {scorecard?.previousInnings ? renderInningsScoreboard(scorecard.previousInnings, 'previous') : null}
         </div>
       ) : null}
-      <AppButton text={primaryActionLabel} onClick={onPrimaryAction} />
+      <AppButton text={primaryActionLabel} onClick={handlePrimaryActionClick} />
     </div>
   );
 }

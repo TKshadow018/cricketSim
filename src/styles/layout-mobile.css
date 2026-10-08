@@ -1,29 +1,90 @@
 @media (max-width: 1024px) {
-  .dashboard-navbar,
-  .dashboard-sidebar {
+  .dashboard-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(8, 13, 24, 0.92);
+  }
+
+  .dashboard-navbar .dashboard-title {
+    margin-top: 0.25rem;
+    font-size: 1rem;
+  }
+
+  .dashboard-sidebar-left {
     display: none;
   }
 
+  .dashboard-sidebar-right {
+    display: block;
+    margin-top: 1rem;
+    padding: 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    background: rgba(16, 26, 48, 0.82);
+    color: var(--text-muted);
+  }
+
   .dashboard-shell {
-    padding: 1.25rem;
+    padding: 0;
     align-items: stretch;
     place-items: stretch;
   }
 
   .dashboard-main-grid {
     display: block;
+    padding: 0.75rem;
   }
 
   .dashboard-center {
     width: 100%;
+    min-width: 0;
   }
 
   .dashboard-center .game-dashboard-card {
     width: 100%;
     margin: 0;
+    padding: 0.8rem;
   }
 
   .dashboard-mobile-logout {
-    display: block;
+    display: none;
   }
+
+  .dashboard-history-list {
+    max-height: 280px;
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-navbar {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .dashboard-navbar .dashboard-kicker {
+    font-size: 0.68rem;
+  }
+
+  .dashboard-navbar .dashboard-title {
+    font-size: 0.9rem;
+  }
+
+  .dashboard-navbar .app-button {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.82rem;
+  }
+
+  .dashboard-main-grid {
+    padding: 0.5rem;
+  }
+
+  .dashboard-center .game-dashboard-card {
+    padding: 0.55rem;
+    border-radius: 14px;
+  }
+
 }

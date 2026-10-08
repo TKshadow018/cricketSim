@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AppButton from '../components/ui/AppButton';
+import { getEffectiveAuthUser } from '../config/runtimeConfig';
 import { logoutUser } from '../features/auth/authThunks';
 import { useLocalization } from '../localization/LocalizationProvider';
 import CricketSimulator from '../features/game/CricketSimulator';
@@ -8,12 +9,19 @@ import { matchTypeList } from '../gameData/matchTypeList';
 import { getPlayersForNations } from '../gameData/playerListForNation';
 import { matchStatusEnum } from '../gameData/matchStatusEnum';
 import TeamNameWithFlag from '../features/game/components/TeamNameWithFlag';
+import PlayerNameWithType from '../features/game/components/PlayerNameWithType';
 import { listRecentMatchHistory } from '../firebase/firestoreService';
-import { normalizeSelectedXIPlayers, buildComposition, buildAdminMatrix } from './dashboardUtils';
+import {
+  normalizeSelectedXIPlayers,
+  buildComposition,
+  buildAdminMatrix,
+  buildBattingOrderPreview,
+} from './dashboardUtils';
 
 function DashboardPage() {
   const dispatch = useDispatch();
-  const { user, isLoading } = useSelector((state) => state.auth);
+  const { user: authStateUser, isLoading } = useSelector((state) => state.auth);
+  const user = getEffectiveAuthUser(authStateUser);
   const game = useSelector((state) => state.game);
   const { t } = useLocalization();
   const [recentMatchHistory, setRecentMatchHistory] = React.useState([]);
@@ -38,6 +46,14 @@ function DashboardPage() {
   const opponentSelectedPlayers = normalizeSelectedXIPlayers(opponentAllPlayers, game.opponentPlayingXI);
   const ownComposition = buildComposition(ownSelectedPlayers);
   const opponentComposition = buildComposition(opponentSelectedPlayers);
+  const ownBattingOrderPreview = React.useMemo(
+    () => (isAdmin ? buildBattingOrderPreview(ownSelectedPlayers) : []),
+    [isAdmin, ownSelectedPlayers]
+  );
+  const opponentBattingOrderPreview = React.useMemo(
+    () => (isAdmin ? buildBattingOrderPreview(opponentSelectedPlayers) : []),
+    [isAdmin, opponentSelectedPlayers]
+  );
 
   const loadRecentHistory = React.useCallback(async () => {
     if (!user?.uid) {
@@ -91,6 +107,27 @@ function DashboardPage() {
     dispatch(logoutUser());
   };
 
+  const renderAdminBattingOrder = (teamName, preview) => {
+    if (!isAdmin || !preview.length) {
+      return null;
+    }
+
+    return (
+      <div className="admin-matrix-table">
+        <div className="admin-matrix-row">
+          <span><TeamNameWithFlag teamName={teamName} /> batting order</span>
+          <strong>{preview.length}</strong>
+        </div>
+        {preview.map((entry) => (
+          <div key={`${teamName}-${entry.player?.id}-${entry.rank}`} className="admin-matrix-row">
+            <span>{entry.rank}. <PlayerNameWithType player={entry.player} /></span>
+            <strong>{entry.coeff}</strong>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <main className="dashboard-page game-dashboard-page dashboard-shell">
       <header className="dashboard-navbar">
@@ -115,8 +152,8 @@ function DashboardPage() {
             <>
               <h3>Admin Matrix</h3>
               <p>Role: {adminMatrix?.isOwnBatting ? 'User Batting' : 'User Bowling'}</p>
-              <p>Striker: {adminMatrix?.strikerName}</p>
-              <p>Bowler: {adminMatrix?.bowlerName}</p>
+              <p>Striker: <PlayerNameWithType player={adminMatrix?.strikerPlayer} name={adminMatrix?.strikerName} /></p>
+              <p>Bowler: <PlayerNameWithType player={adminMatrix?.bowlerPlayer} name={adminMatrix?.bowlerName} /></p>
               <p>Bat Intent: {adminMatrix?.battingIntentLabel}</p>
               <p>Bowl Intent: {adminMatrix?.bowlingIntentLabel}</p>
               <div className="admin-matrix-table">
@@ -252,6 +289,10 @@ function DashboardPage() {
                       <strong>{opponentComposition.none}</strong>
                     </div>
                   </div>
+
+                  <h3 className="admin-matrix-subhead">Batting Order Preview</h3>
+                  {renderAdminBattingOrder(game.ownTeam, ownBattingOrderPreview)}
+                  {renderAdminBattingOrder(game.opponentTeam, opponentBattingOrderPreview)}
                 </>
               ) : null}
             </>
@@ -289,6 +330,10 @@ function DashboardPage() {
                     <div className="admin-matrix-row"><span>Wicketkeeper</span><strong>{opponentComposition.wicketkeeper}</strong></div>
                     <div className="admin-matrix-row"><span>None</span><strong>{opponentComposition.none}</strong></div>
                   </div>
+
+                  <h3 className="admin-matrix-subhead">Batting Order Preview</h3>
+                  {renderAdminBattingOrder(game.ownTeam, ownBattingOrderPreview)}
+                  {renderAdminBattingOrder(game.opponentTeam, opponentBattingOrderPreview)}
                 </>
               ) : null}
             </>

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { getAutoGameSave, listGameSaves } from '../../../../firebase/firestoreService';
+import { getAutoGameSave, getCareerAutoSave, listGameSaves } from '../../../../firebase/firestoreService';
 import { getAvailableVoices, setPreferredVoice } from '../../../../utils/speechUtils';
 
 export const useControllerBootstrap = ({
@@ -57,12 +57,14 @@ export const useControllerBootstrap = ({
 
       setIsSavesLoading(true);
       try {
-        const [manualSaves, autoSave] = await Promise.all([
+        const [manualSaves, autoSave, careerAutoSave] = await Promise.all([
           listGameSaves(authUser.uid),
           getAutoGameSave(authUser.uid),
+          getCareerAutoSave(authUser.uid),
         ]);
 
-        const merged = autoSave ? [autoSave, ...manualSaves] : manualSaves;
+        const autoSaves = [careerAutoSave, autoSave].filter(Boolean);
+        const merged = autoSaves.length > 0 ? [...autoSaves, ...manualSaves] : manualSaves;
         setSavedGames(merged);
       } catch (error) {
         setSaveMessage(error?.message || 'Unable to load saved games.');

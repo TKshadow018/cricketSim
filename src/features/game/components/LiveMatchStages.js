@@ -5,6 +5,9 @@ import StageShell from './StageShell';
 import InningsStage from './InningsStage';
 import { MatchResultCard } from './ResultCards';
 import TeamNameWithFlag from './TeamNameWithFlag';
+import PlayerNameWithType from './PlayerNameWithType';
+import CareerSeasonSummaryStage from './CareerSeasonSummaryStage';
+import CareerHistoryStage from './CareerHistoryStage';
 
 function LiveMatchStages({
   stage,
@@ -50,9 +53,32 @@ function LiveMatchStages({
   onSimulateMatch,
   resetMatch,
   oversDisplay,
+  careerTeam,
+  careerSeason,
+  careerSeasonLength,
+  careerFormat,
+  careerMatchIndex,
+  careerSchedule,
+  careerStandings,
+  careerPlayerStats,
+  careerSeasonHistory,
+  careerPlayerProfile,
+  careerDomesticCountry,
+  careerDomesticTeams,
+  careerOffers,
+  careerRetired,
+  careerTopRunScorers,
+  careerTopWicketTakers,
+  careerProgressLabel,
+  handleStartNextCareerSeason,
+  handleEndCareer,
+  handleRetireCareer,
+  handleViewCareerHistory,
+  handleBackToCareerSchedule,
 }) {
   const isSeriesMode = gameMode === 'series';
   const isTournamentMode = gameMode === 'tournament';
+  const isCareerMode = gameMode === 'career';
   const isSeriesLastMatch = isSeriesMode && seriesCurrentMatch >= seriesLength;
 
   return (
@@ -93,6 +119,9 @@ function LiveMatchStages({
             strikerName={firstInningsView.strikerName}
             nonStrikerName={firstInningsView.nonStrikerName}
             currentBowlerName={firstInningsView.currentBowlerName}
+            strikerPlayer={firstInningsView.strikerPlayer}
+            nonStrikerPlayer={firstInningsView.nonStrikerPlayer}
+            currentBowlerPlayer={firstInningsView.currentBowlerPlayer}
             needsOpeners={game.firstInnings.needsOpeners}
             openerSelections={game.firstInnings.openerSelections}
             openerCandidates={firstInningsView.openerCandidates}
@@ -161,6 +190,9 @@ function LiveMatchStages({
             strikerName={secondInningsView.strikerName}
             nonStrikerName={secondInningsView.nonStrikerName}
             currentBowlerName={secondInningsView.currentBowlerName}
+            strikerPlayer={secondInningsView.strikerPlayer}
+            nonStrikerPlayer={secondInningsView.nonStrikerPlayer}
+            currentBowlerPlayer={secondInningsView.currentBowlerPlayer}
             needsOpeners={game.secondInnings.needsOpeners}
             openerSelections={game.secondInnings.openerSelections}
             openerCandidates={secondInningsView.openerCandidates}
@@ -223,12 +255,15 @@ function LiveMatchStages({
             showScoreboard={game.showScoreboard}
             scorecard={buildTeamTwoScorecard()}
             onPrimaryAction={onMatchPrimaryAction}
+            autoSelectTopMomOnPrimaryAction={isCareerMode}
             primaryActionLabel={
-              isSeriesMode
-                ? (isSeriesLastMatch ? 'View Series Summary' : `Start Match ${seriesCurrentMatch + 1}`)
-                : isTournamentMode
-                  ? 'Next Knockout Match'
-                  : 'Play New Match'
+              isCareerMode
+                ? 'Back to Schedule'
+                : isSeriesMode
+                  ? (isSeriesLastMatch ? 'View Series Summary' : `Start Match ${seriesCurrentMatch + 1}`)
+                  : isTournamentMode
+                    ? 'Next Knockout Match'
+                    : 'Play New Match'
             }
           />
         </StageShell>
@@ -290,7 +325,7 @@ function LiveMatchStages({
                   {seriesTopRunScorers.map((entry, index) => (
                     <tr key={`series-runs-${entry.key}`}>
                       <td>{index + 1}</td>
-                      <td>{entry.name}</td>
+                      <td><PlayerNameWithType player={entry} /></td>
                       <td>{entry.team}</td>
                       <td>{entry.runs}</td>
                       <td>{entry.balls}</td>
@@ -321,7 +356,7 @@ function LiveMatchStages({
                   {seriesTopWicketTakers.map((entry, index) => (
                     <tr key={`series-wickets-${entry.key}`}>
                       <td>{index + 1}</td>
-                      <td>{entry.name}</td>
+                      <td><PlayerNameWithType player={entry} /></td>
                       <td>{entry.team}</td>
                       <td>{entry.overs}</td>
                       <td>{entry.runsConceded}</td>
@@ -397,7 +432,7 @@ function LiveMatchStages({
                   {tournamentTopRunScorers.map((entry, index) => (
                     <tr key={`tour-runs-${entry.key}`}>
                       <td>{index + 1}</td>
-                      <td>{entry.name}</td>
+                      <td><PlayerNameWithType player={entry} /></td>
                       <td>{entry.team}</td>
                       <td>{entry.runs}</td>
                       <td>{entry.balls}</td>
@@ -428,7 +463,7 @@ function LiveMatchStages({
                   {tournamentTopWicketTakers.map((entry, index) => (
                     <tr key={`tour-wickets-${entry.key}`}>
                       <td>{index + 1}</td>
-                      <td>{entry.name}</td>
+                      <td><PlayerNameWithType player={entry} /></td>
                       <td>{entry.team}</td>
                       <td>{entry.overs}</td>
                       <td>{entry.runsConceded}</td>
@@ -444,6 +479,42 @@ function LiveMatchStages({
             <AppButton text="Start Fresh Match" onClick={resetMatch} />
           </div>
         </StageShell>
+      )}
+
+      {stage === matchStatusEnum.CareerSeasonSummary && (
+        <CareerSeasonSummaryStage
+          stageCommonProps={stageCommonProps}
+          careerTeam={careerTeam}
+          careerSeason={careerSeason}
+          careerSchedule={careerSchedule}
+          careerStandings={careerStandings}
+          careerPlayerStats={careerPlayerStats}
+          careerTopRunScorers={careerTopRunScorers}
+          careerTopWicketTakers={careerTopWicketTakers}
+          careerPlayerProfile={careerPlayerProfile}
+          careerDomesticCountry={careerDomesticCountry}
+          careerDomesticTeams={careerDomesticTeams}
+          careerOffers={careerOffers}
+          careerRetired={careerRetired}
+          handleStartNextCareerSeason={handleStartNextCareerSeason}
+          handleEndCareer={handleEndCareer}
+          handleRetireCareer={handleRetireCareer}
+        />
+      )}
+
+      {stage === matchStatusEnum.CareerHistory && (
+        <CareerHistoryStage
+          stageCommonProps={stageCommonProps}
+          careerTeam={careerTeam}
+          careerSeason={careerSeason}
+          careerTopRunScorers={careerTopRunScorers}
+          careerTopWicketTakers={careerTopWicketTakers}
+          careerSeasonHistory={careerSeasonHistory}
+          careerPlayerProfile={careerPlayerProfile}
+          careerDomesticCountry={careerDomesticCountry}
+          careerRetired={careerRetired}
+          handleBackToCareerSchedule={handleBackToCareerSchedule}
+        />
       )}
     </>
   );

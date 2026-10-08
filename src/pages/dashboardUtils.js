@@ -108,6 +108,21 @@ export const buildComposition = (selectedPlayers) => {
   return counts;
 };
 
+export const buildBattingOrderPreview = (selectedPlayers = []) =>
+  [...(selectedPlayers || [])]
+    .sort(
+      (left, right) =>
+        Number(right?.battingOrderCoeff || 0) - Number(left?.battingOrderCoeff || 0) ||
+        ((Number(right?.abilityToPlayPaceBall || 0) + Number(right?.abilityToPlaySpinBall || 0)) -
+          (Number(left?.abilityToPlayPaceBall || 0) + Number(left?.abilityToPlaySpinBall || 0))) ||
+        String(left?.name || '').localeCompare(String(right?.name || ''))
+    )
+    .map((player, index) => ({
+      rank: index + 1,
+      player,
+      coeff: Number(player?.battingOrderCoeff || 0),
+    }));
+
 export const buildAdminMatrix = (gameState) => {
   const matchType = matchTypeList[gameState.matchTypeKey] || matchTypeList.t20;
   const { ownPlayers: fullOwnPlayers, opponentPlayers: fullOpponentPlayers } = getPlayersForNations(
@@ -264,6 +279,8 @@ export const buildAdminMatrix = (gameState) => {
     isOwnBatting,
     strikerName: striker?.name || '-',
     bowlerName: bowler?.name || '-',
+    strikerPlayer: striker || null,
+    bowlerPlayer: bowler || null,
     battingAbility: Math.round(battingAbility),
     bowlingAbility: Math.round(bowlingAbility),
     abilityDifference: Math.round(abilityDifference),

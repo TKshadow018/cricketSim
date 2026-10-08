@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { speak } from '../../../../utils/speechUtils';
-import { MODE_SERIES } from '../../utils/controllerCommonUtils';
+import { MODE_SERIES, MODE_CAREER } from '../../utils/controllerCommonUtils';
 import { buildMomRecommendations } from '../../utils/controllerMomUtils';
 import { buildTopRunScorers, buildTopWicketTakers } from '../../utils/controllerCareerUtils';
 import { resolveSeriesStanding } from '../../utils/controllerCommonUtils';
@@ -26,6 +26,11 @@ export const useControllerStats = ({
   tournamentMatches,
   tournamentPlayerStats,
   tournamentChampion,
+  careerPlayerStats,
+  careerSeason,
+  careerMatchIndex,
+  careerSchedule,
+  careerSeasonHistory,
   stage,
   resultSummary,
 }) => {
@@ -53,12 +58,8 @@ export const useControllerStats = ({
     opponentTeam,
     firstInningsTeamName,
     secondInningsTeamName,
-    ownSanitizedRoles.captainId,
-    ownSanitizedRoles.viceCaptainId,
-    ownSanitizedRoles.wicketKeeperId,
-    opponentSanitizedRoles.captainId,
-    opponentSanitizedRoles.viceCaptainId,
-    opponentSanitizedRoles.wicketKeeperId,
+    ownSanitizedRoles,
+    opponentSanitizedRoles,
   ]);
 
   const seriesStanding = useMemo(() => resolveSeriesStanding(seriesResults, ownTeam, opponentTeam), [
@@ -98,6 +99,20 @@ export const useControllerStats = ({
     : tournamentChampion
       ? `Champion: ${tournamentChampion}`
       : 'Tournament in progress';
+
+  const careerPlayerStatsList = useMemo(
+    () => Object.values(careerPlayerStats || {}).filter((entry) => entry && entry.name),
+    [careerPlayerStats]
+  );
+  const careerTopRunScorers = useMemo(() => buildTopRunScorers(careerPlayerStatsList), [careerPlayerStatsList]);
+  const careerTopWicketTakers = useMemo(() => buildTopWicketTakers(careerPlayerStatsList), [careerPlayerStatsList]);
+  const careerFixtureCount = (careerSchedule || []).length;
+  const careerProgressLabel =
+    gameMode === MODE_CAREER
+      ? careerFixtureCount > 0
+        ? `Season ${careerSeason || 1} — Match ${Math.min((careerMatchIndex || 0) + 1, careerFixtureCount)} of ${careerFixtureCount}`
+        : `Season ${careerSeason || 1} — No fixtures`
+      : '';
 
   const announceManOfTheMatch = (selected) => {
     if (!selected) {
@@ -161,6 +176,9 @@ export const useControllerStats = ({
     tournamentTopRunScorers,
     tournamentTopWicketTakers,
     tournamentProgressLabel,
+    careerTopRunScorers,
+    careerTopWicketTakers,
+    careerProgressLabel,
     announceManOfTheMatch,
   };
 };

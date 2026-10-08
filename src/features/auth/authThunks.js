@@ -8,7 +8,9 @@ import {
   logout,
 } from '../../firebase/authService';
 import { getUserProfile, upsertUserProfile } from '../../firebase/firestoreService';
+import { debugAuthUser } from '../../config/runtimeConfig';
 import { translateStatic } from '../../localization';
+import { isDebugAuthBypassEnabled } from '../../utils/runtimeFlags';
 
 const toAuthUser = (user, profile) => ({
   uid: user.uid,
@@ -37,6 +39,10 @@ export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async ({ email, password }, { rejectWithValue }) => {
     try {
+      if (isDebugAuthBypassEnabled) {
+        return debugAuthUser;
+      }
+
       const user = await loginWithEmail(email, password);
       const profile = await safeGetUserProfile(user.uid);
 
@@ -50,6 +56,14 @@ export const loginUser = createAsyncThunk(
 export const registerUser = createAsyncThunk(
   'auth/registerUser',
   async ({ name, age, country, email, password }, { rejectWithValue }) => {
+    if (isDebugAuthBypassEnabled) {
+      return {
+        ...debugAuthUser,
+        email: email || debugAuthUser.email,
+        displayName: name || debugAuthUser.displayName,
+      };
+    }
+
     let user;
 
     try {
@@ -87,6 +101,10 @@ export const loginWithGoogleUser = createAsyncThunk(
   'auth/loginWithGoogleUser',
   async (_, { rejectWithValue }) => {
     try {
+      if (isDebugAuthBypassEnabled) {
+        return debugAuthUser;
+      }
+
       const user = await loginWithGoogle();
 
       try {
@@ -113,6 +131,10 @@ export const startAuthListener = createAsyncThunk(
   'auth/startAuthListener',
   async (_, { rejectWithValue }) => {
     try {
+      if (isDebugAuthBypassEnabled) {
+        return debugAuthUser;
+      }
+
       return await new Promise((resolve) => {
         const unsubscribe = subscribeToAuth(async (user) => {
           if (!user) {
@@ -136,6 +158,10 @@ export const startAuthListener = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, { rejectWithValue }) => {
   try {
+    if (isDebugAuthBypassEnabled) {
+      return true;
+    }
+
     await logout();
     return true;
   } catch (error) {

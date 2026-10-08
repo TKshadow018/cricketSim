@@ -28,10 +28,22 @@
 
   .dashboard-main-grid {
     display: grid;
-    grid-template-columns: 230px minmax(0, 1fr) 230px;
+    grid-template-columns: clamp(190px, 17vw, 230px) minmax(0, 1fr) clamp(190px, 17vw, 230px);
     gap: 1rem;
     padding: 1rem;
     min-height: 0;
+  }
+
+  @media (min-width: 1025px) and (max-width: 1250px) {
+    .dashboard-main-grid {
+      grid-template-columns: 190px minmax(0, 1fr) 190px;
+      gap: 0.7rem;
+      padding: 0.7rem;
+    }
+
+    .dashboard-sidebar {
+      padding: 0.75rem;
+    }
   }
 
   .dashboard-sidebar {

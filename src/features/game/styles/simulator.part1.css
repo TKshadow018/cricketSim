@@ -166,6 +166,9 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
   gap: 0.7rem;
+}
+
+.sim-card-grid {
   overflow-y: auto;
   padding-right: 0.3rem;
 }

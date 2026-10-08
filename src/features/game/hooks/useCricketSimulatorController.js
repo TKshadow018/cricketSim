@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import { getEffectiveAuthUser } from '../../../config/runtimeConfig';
 import { battingAction, bowlingAction } from '../../../gameData/actionType';
 import { countries } from '../../../gameData/countries';
 import { stadiums } from '../../../gameData/stadiums';
@@ -9,6 +10,7 @@ import { matchTypeList } from '../../../gameData/matchTypeList';
 import { matchStatusEnum } from '../../../gameData/matchStatusEnum';
 import {
   resetMatchRuntime,
+  resetMatchForCareer,
   setGameMode as setGameModeAction,
   setBattingIntent as setBattingIntentAction,
   setBowlingIntent as setBowlingIntentAction,
@@ -44,6 +46,22 @@ import {
   setTossDecision as setTossDecisionAction,
   setTossWinner as setTossWinnerAction,
   toggleShowScoreboard,
+  setCareerTeam as setCareerTeamAction,
+  setCareerPlayerProfile as setCareerPlayerProfileAction,
+  setCareerDomesticCountry as setCareerDomesticCountryAction,
+  setCareerDomesticTeams as setCareerDomesticTeamsAction,
+  setCareerGlobalPlayerPool as setCareerGlobalPlayerPoolAction,
+  setCareerAuctionSummary as setCareerAuctionSummaryAction,
+  setCareerOffers as setCareerOffersAction,
+  setCareerRetired as setCareerRetiredAction,
+  setCareerSeason as setCareerSeasonAction,
+  setCareerSeasonLength as setCareerSeasonLengthAction,
+  setCareerFormat as setCareerFormatAction,
+  setCareerMatchIndex as setCareerMatchIndexAction,
+  setCareerSchedule as setCareerScheduleAction,
+  setCareerStandings as setCareerStandingsAction,
+  setCareerPlayerStats as setCareerPlayerStatsAction,
+  setCareerSeasonHistory as setCareerSeasonHistoryAction,
 } from '../gameSlice';
 import {
   setPreferredVoice,
@@ -56,6 +74,7 @@ import {
 import {
   MODE_SERIES,
   MODE_TOURNAMENT,
+  MODE_CAREER,
   buildPlayingXI,
   normalizePlayingXIIds,
   pickDefaultRoles,
@@ -81,7 +100,7 @@ export function useCricketSimulatorController() {
   const dispatch = useDispatch();
   const location = useLocation();
   const game = useSelector((state) => state.game);
-  const authUser = useSelector((state) => state.auth.user);
+  const authUser = useSelector((state) => getEffectiveAuthUser(state.auth.user));
   const {
     stage,
     gameMode,
@@ -114,6 +133,22 @@ export function useCricketSimulatorController() {
     bowlingIntent,
     firstInnings,
     secondInnings,
+    careerTeam,
+    careerPlayerProfile,
+    careerDomesticCountry,
+    careerDomesticTeams,
+    careerGlobalPlayerPool,
+    careerAuctionSummary,
+    careerOffers,
+    careerRetired,
+    careerSeason,
+    careerSeasonLength,
+    careerFormat,
+    careerMatchIndex,
+    careerSchedule,
+    careerStandings,
+    careerPlayerStats,
+    careerSeasonHistory,
   } = game;
 
   const [availableVoices, setAvailableVoices] = useState([]);
@@ -126,6 +161,7 @@ export function useCricketSimulatorController() {
   const savedHistorySignatureRef = useRef('');
   const seriesResultCommitSignatureRef = useRef('');
   const tournamentResultCommitSignatureRef = useRef('');
+  const careerResultCommitSignatureRef = useRef('');
   const processDeliveryRef = useRef(null);
   const openInningsRef = useRef(null);
   const resolveStadiumConditionRef = useRef(null);
@@ -143,10 +179,23 @@ export function useCricketSimulatorController() {
   );
   const matchType = matchTypeList[matchTypeKey] || matchTypeList.t20;
   const maxBalls = matchType.over * 6;
-  const { ownPlayers: fullOwnPlayers, opponentPlayers: fullOpponentPlayers } = getPlayersForNations(
-    ownTeam,
-    opponentTeam
-  );
+  const careerDomesticRosterMap = useMemo(() => {
+    const map = {};
+    (careerDomesticTeams || []).forEach((team) => {
+      if (team?.name) {
+        map[team.name] = Array.isArray(team.players) ? team.players : [];
+      }
+    });
+    return map;
+  }, [careerDomesticTeams]);
+  const countryRoster = getPlayersForNations(ownTeam, opponentTeam);
+  const careerOwnPlayers = careerDomesticRosterMap[ownTeam] || [];
+  const careerOpponentPlayers = careerDomesticRosterMap[opponentTeam] || [];
+  const fullOwnPlayers = gameMode === MODE_CAREER && careerOwnPlayers.length > 0 ? careerOwnPlayers : countryRoster.ownPlayers;
+  const fullOpponentPlayers =
+    gameMode === MODE_CAREER && careerOpponentPlayers.length > 0
+      ? careerOpponentPlayers
+      : countryRoster.opponentPlayers;
 
   const availableOwnPlayers =
     fullOwnPlayers.length > 0
@@ -190,7 +239,7 @@ export function useCricketSimulatorController() {
     opponentSanitizedRoles.captainId !== opponentSanitizedRoles.viceCaptainId;
   const venueStadiums = stadiums[locationCountry] || [];
 
-  const userTeamName = gameMode === MODE_TOURNAMENT ? tournamentUserTeam : ownTeam;
+  const userTeamName = gameMode === MODE_TOURNAMENT ? tournamentUserTeam : gameMode === MODE_CAREER ? careerTeam : ownTeam;
   const isCurrentMatchUserInvolved =
     !!userTeamName && (ownTeam === userTeamName || opponentTeam === userTeamName);
   const isUserWinner = tossWinner === userTeamName;
@@ -201,7 +250,8 @@ export function useCricketSimulatorController() {
     stage === matchStatusEnum.TeamTwoBat ||
     stage === matchStatusEnum.TossResult ||
     stage === matchStatusEnum.ChooseOwnPlayingXI ||
-    stage === matchStatusEnum.ChooseOpponentPlayingXI;
+    stage === matchStatusEnum.ChooseOpponentPlayingXI ||
+    stage === matchStatusEnum.CareerSeasonSchedule;
 
   useControllerBootstrap({
     authUser,
@@ -219,7 +269,7 @@ export function useCricketSimulatorController() {
     setSaveMessage,
   });
 
-  const getInningsContext = (isFirstInnings, firstSide = firstBattingSide) =>
+  const getInningsContext = (isFirstInnings, firstSide = firstBattingSide, inningStateOverride = null) =>
     getInningsContextHelper({
       isFirstInnings,
       firstSide,
@@ -230,6 +280,9 @@ export function useCricketSimulatorController() {
       opponentTeam,
       isCurrentMatchUserInvolved,
       userTeamName,
+      gameMode,
+      careerPlayerProfile,
+      inningState: inningStateOverride || (isFirstInnings ? firstInnings : secondInnings),
     });
 
   const setFirstInnings = (value) => dispatch(setFirstInningsAction(value));
@@ -294,6 +347,22 @@ export function useCricketSimulatorController() {
     setSeriesPlayerStatsAction,
     setSeriesLengthAction,
     setSaveMessage,
+    setCareerTeamAction,
+    setCareerPlayerProfileAction,
+    setCareerDomesticCountryAction,
+    setCareerDomesticTeamsAction,
+    setCareerGlobalPlayerPoolAction,
+    setCareerAuctionSummaryAction,
+    setCareerOffersAction,
+    setCareerRetiredAction,
+    setCareerSeasonAction,
+    setCareerSeasonLengthAction,
+    setCareerFormatAction,
+    setCareerMatchIndexAction,
+    setCareerScheduleAction,
+    setCareerStandingsAction,
+    setCareerPlayerStatsAction,
+    setCareerSeasonHistoryAction,
   });
 
   const openInnings = (firstSide = firstBattingSide) =>
@@ -369,7 +438,8 @@ export function useCricketSimulatorController() {
     buildInningsViewModelHelper({
       isFirstInnings,
       inningState,
-      getContext: getInningsContext,
+      getContext: (inningsFlag, side, explicitInningsState) =>
+        getInningsContext(inningsFlag, side, explicitInningsState || inningState),
       matchType,
       maxBalls,
     });
@@ -413,6 +483,12 @@ export function useCricketSimulatorController() {
       isGameInProgress, locationCountry, tossWinner, openInnings, firstInningsView,
       secondInningsView, prepareTournamentMatch, pickDefaultRoles,
       sanitizeRoles,
+      careerTeam, careerSeason, careerSeasonLength, careerFormat, careerMatchIndex,
+      careerSchedule, careerStandings, careerPlayerStats, careerSeasonHistory,
+      careerPlayerProfile, careerDomesticCountry, careerDomesticTeams, careerOffers, careerRetired,
+      careerAuctionSummary,
+      careerGlobalPlayerPool,
+      countryList,
     },
     setters: { setSavedGames, setIsSavingGame, setIsGlobalSaving, setSaveMessage, setAutoSimMode },
     refs: {
@@ -423,9 +499,12 @@ export function useCricketSimulatorController() {
       openInningsRef,
       resolveStadiumConditionRef,
       savedHistorySignatureRef,
+      careerResultCommitSignatureRef,
     },
     actions: {
       resetMatchRuntime,
+      resetMatchForCareerAction: resetMatchForCareer,
+      resetMatchRuntimeAction: resetMatchRuntime,
       setBattingIntentAction, setBowlingIntentAction, setTossDecisionAction, setFirstBattingSideAction,
       setStageAction, setOwnPlayingXIAction, setOwnTeamRolesAction, setOpponentPlayingXIAction,
       setOpponentTeamRolesAction, setOwnCustomPlayersAction, setOpponentCustomPlayersAction,
@@ -433,6 +512,12 @@ export function useCricketSimulatorController() {
       setSeriesPlayerStatsAction, setTossWinnerAction, setTossCallAction, setMatchConditionAction,
       setFirstInningsAction, setSecondInningsAction, setShowScoreboardAction,
       setSeriesCurrentMatchAction, setTournamentChampionAction,
+      setOpponentTeamAction, setOwnTeamAction, setLocationCountryAction, setSelectedStadiumAction, setMatchTypeKeyAction,
+      setCareerTeamAction, setCareerPlayerProfileAction, setCareerDomesticCountryAction,
+      setCareerDomesticTeamsAction, setCareerGlobalPlayerPoolAction, setCareerOffersAction, setCareerRetiredAction, setCareerSeasonAction,
+      setCareerAuctionSummaryAction,
+      setCareerFormatAction, setCareerSeasonLengthAction, setCareerMatchIndexAction, setCareerScheduleAction,
+      setCareerStandingsAction, setCareerPlayerStatsAction, setCareerSeasonHistoryAction,
     },
   });
 
@@ -452,6 +537,11 @@ export function useCricketSimulatorController() {
       ownXIReady, opponentXIReady, ownRolesReady, opponentRolesReady,
       processDelivery, handleSelectOpener, handleSelectNextBatter, handleSelectBowler,
       setPreferredVoice, speak,
+      careerTeam, careerSeason, careerSeasonLength, careerFormat, careerMatchIndex,
+      careerSchedule, careerStandings, careerPlayerStats, careerSeasonHistory,
+      careerPlayerProfile, careerDomesticCountry, careerDomesticTeams, careerOffers, careerRetired,
+      careerAuctionSummary,
+      careerGlobalPlayerPool,
     },
     navigation: {
       goToNextStage,

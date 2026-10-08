@@ -1,7 +1,7 @@
 import { battingAction, bowlingAction } from '../../../../gameData/actionType';
 import { matchStatusEnum } from '../../../../gameData/matchStatusEnum';
 import { buildInitialInnings, buildRandomMatchCondition } from '../../gameSlice';
-import { MODE_QUICK, MODE_SERIES, MODE_TOURNAMENT } from '../../utils/controllerCommonUtils';
+import { MODE_QUICK, MODE_SERIES, MODE_TOURNAMENT, MODE_CAREER } from '../../utils/controllerCommonUtils';
 import { mergePlayerStatsForCurrentMatch } from '../../utils/controllerCareerUtils';
 import { ensureTournamentNextRound, resolveWinnerFromScores } from '../../utils/controllerTournamentUtils';
 
@@ -48,6 +48,7 @@ export const createCompetitionFlowHandlers = ({
   prepareTournamentMatch,
   setTournamentChampionAction,
   setAutoSimMode,
+  handleCareerMatchPrimaryAction,
 }) => {
   const buildTournamentPlayerStatsForCurrentMatch = () => {
     return mergePlayerStatsForCurrentMatch({
@@ -195,6 +196,13 @@ export const createCompetitionFlowHandlers = ({
   const handleMatchPrimaryAction = () => {
     if (gameMode === MODE_QUICK) {
       dispatch(resetMatchRuntime());
+      return;
+    }
+
+    if (gameMode === MODE_CAREER) {
+      if (typeof handleCareerMatchPrimaryAction === 'function') {
+        handleCareerMatchPrimaryAction();
+      }
       return;
     }
 

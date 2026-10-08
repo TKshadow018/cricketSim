@@ -22,6 +22,11 @@ export const stageOrder = [
   matchStatusEnum.MatchEnd,
   matchStatusEnum.SeriesSummary,
   matchStatusEnum.TournamentChampion,
+  matchStatusEnum.CareerSetup,
+  matchStatusEnum.CareerAuction,
+  matchStatusEnum.CareerSeasonSchedule,
+  matchStatusEnum.CareerSeasonSummary,
+  matchStatusEnum.CareerHistory,
 ];
 
 export const battingActionList = [
@@ -55,16 +60,21 @@ export const randomFrom = (arr = []) => arr[Math.floor(Math.random() * arr.lengt
 export const replaceName = (line, striker, partner) =>
   line.replaceAll('$$$$$', striker || 'Batsman').replaceAll('#####', partner || 'Runner');
 
+const getBattingOrderPriority = (player = {}) => ({
+  coeff: Number(player?.battingOrderCoeff || 0),
+  skill:
+    (Number(player?.battingAggresion || 0) +
+      Number(player?.abilityToPlayPaceBall || 0) +
+      Number(player?.abilityToPlaySpinBall || 0)),
+});
+
 export const getTopOpenerIndices = (players = []) => {
   const sorted = [...players]
     .map((player, index) => ({
       index,
-      score:
-        (player?.battingAggresion || 0) +
-        (player?.abilityToPlayPaceBall || 0) +
-        (player?.abilityToPlaySpinBall || 0),
+      ...getBattingOrderPriority(player),
     }))
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => b.coeff - a.coeff || b.skill - a.skill || a.index - b.index)
     .map((entry) => entry.index);
 
   if (sorted.length >= 2) {
@@ -82,10 +92,16 @@ export const getNextBatterIndex = (players = [], outIndices = [], occupied = [])
   const outSet = new Set(outIndices);
   const occupiedSet = new Set(occupied.filter((index) => index !== null && index !== undefined));
 
-  for (let index = 0; index < players.length; index += 1) {
-    if (!outSet.has(index) && !occupiedSet.has(index)) {
-      return index;
-    }
+  const candidates = players
+    .map((player, index) => ({
+      index,
+      ...getBattingOrderPriority(player),
+    }))
+    .filter(({ index }) => !outSet.has(index) && !occupiedSet.has(index))
+    .sort((a, b) => b.coeff - a.coeff || b.skill - a.skill || a.index - b.index);
+
+  if (candidates.length > 0) {
+    return candidates[0].index;
   }
 
   return -1;
@@ -114,8 +130,45 @@ export const getBestBowlerIndex = (players = [], excludeIndex = null) => {
   return sorted[0] ?? 0;
 };
 
-export const isEligibleBowler = (player) =>
-  !player?.isWicketKeeper && ((player?.paceAbility || 0) >= 30 || (player?.spinAbility || 0) >= 30);
+const DEFAULT_BOWLER_ABILITY_THRESHOLD = 30;
+const MIN_ELIGIBLE_BOWLERS = 6;
+
+const getBowlerAbility = (player) => Math.max(player?.paceAbility || 0, player?.spinAbility || 0);
+
+export const isEligibleBowler = (player, threshold = DEFAULT_BOWLER_ABILITY_THRESHOLD) =>
+  !player?.isWicketKeeper && getBowlerAbility(player) >= threshold;
+
+export const getEligibleBowlerIndices = (players = [], minimumEligibleBowlers = MIN_ELIGIBLE_BOWLERS) => {
+  const nonWicketKeeperCandidates = players
+    .map((player, index) => ({
+      index,
+      player,
+      bowlingAbility: getBowlerAbility(player),
+    }))
+    .filter(({ player }) => !player?.isWicketKeeper);
+
+  const thresholdEligibleIndices = nonWicketKeeperCandidates
+    .filter(({ player }) => isEligibleBowler(player))
+    .map(({ index }) => index);
+
+  if (
+    thresholdEligibleIndices.length >= minimumEligibleBowlers ||
+    nonWicketKeeperCandidates.length <= minimumEligibleBowlers
+  ) {
+    return thresholdEligibleIndices.length >= minimumEligibleBowlers
+      ? thresholdEligibleIndices
+      : nonWicketKeeperCandidates.map(({ index }) => index);
+  }
+
+  const expandedEligibleSet = new Set(
+    [...nonWicketKeeperCandidates]
+      .sort((left, right) => right.bowlingAbility - left.bowlingAbility)
+      .slice(0, minimumEligibleBowlers)
+      .map(({ index }) => index)
+  );
+
+  return players.map((_, index) => index).filter((index) => expandedEligibleSet.has(index));
+};
 
 export const getMaxOversPerBowler = (totalOvers) => Math.max(1, Math.floor(totalOvers / 5));
 

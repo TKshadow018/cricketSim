@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { isDebugMode } from '../config/runtimeConfig';
 
 const readConfig = (key, fallback = '') => (process.env[key] || '').trim() || fallback;
 
@@ -15,7 +16,7 @@ const firebaseConfig = {
   measurementId: readConfig('REACT_APP_FIREBASE_MEASUREMENT_ID', ''), // HIDDEN FOR SECURITY REASON
 };
 
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.appId) {
+if (!isDebugMode && (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.appId)) {
   console.error('Firebase config is incomplete. Check your .env values.');
 }
 
