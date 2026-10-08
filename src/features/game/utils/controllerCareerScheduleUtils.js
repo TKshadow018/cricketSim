@@ -34,6 +34,29 @@ const FAKER_USER_COUNTRY_MAP = {
   Zimbabwe: 'Zimbabwe',
 };
 
+const COUNTRY_STAT_MODIFIERS = {
+  India: 5,
+  Australia: 3,
+  'South Africa': 3,
+  England: 2,
+  Pakistan: 2,
+  'Sri Lanka': 2,
+  'New Zealand': 2,
+  'West Indies': 1,
+  Bangladesh: 3,
+  Afghanistan: -2,
+  Ireland: -3,
+  Scotland: -5,
+  Netherlands: -5,
+  Oman: -10,
+  UAE: -10,
+  Canada: -10,
+  Kenya: -7,
+  Namibia: -8,
+  Nepal: -5,
+  Zimbabwe: -4,
+};
+
 const resolveFakerUserCountry = (country = '') => {
   const normalized = String(country || '').trim();
   const fakerCountry = FAKER_USER_COUNTRY_MAP[normalized];
@@ -45,55 +68,57 @@ const buildFallbackPlayerName = (country) => {
   return `${randomFrom(pools.firstNames)} ${randomFrom(pools.lastNames)}`;
 };
 
-const buildFakerCustomAttributes = (playerType) => {
+const buildFakerCustomAttributes = (playerType, country = '') => {
   const getRange = (min, max) => ({ min, max });
+  const countryModifier = COUNTRY_STAT_MODIFIERS[country] || 0;
+  
   const stats = {
     batsman: {
-      abilityToPlayPaceBall: getRange(30, 80),
-      abilityToPlaySpinBall: getRange(30, 80),
-      battingAggresion: getRange(40, 90),
-      paceAbility: getRange(8, 15),
-      spinAbility: getRange(8, 15),
+      abilityToPlayPaceBall: getRange(30 + countryModifier, 80 + countryModifier),
+      abilityToPlaySpinBall: getRange(30 + countryModifier, 80 + countryModifier),
+      battingAggresion: getRange(40 + countryModifier, 90 + countryModifier),
+      paceAbility: getRange(8 + countryModifier, 15 + countryModifier),
+      spinAbility: getRange(8 + countryModifier, 15 + countryModifier),
       isWicketKeeper: false,
     },
     'bowler spinner': {
-      abilityToPlayPaceBall: getRange(8, 15),
-      abilityToPlaySpinBall: getRange(8, 15),
-      battingAggresion: getRange(10, 80),
-      paceAbility: getRange(8, 15),
-      spinAbility: getRange(30, 80),
+      abilityToPlayPaceBall: getRange(8 + countryModifier, 15 + countryModifier),
+      abilityToPlaySpinBall: getRange(8 + countryModifier, 15 + countryModifier),
+      battingAggresion: getRange(10 + countryModifier, 80 + countryModifier),
+      paceAbility: getRange(8 + countryModifier, 15 + countryModifier),
+      spinAbility: getRange(30 + countryModifier, 80 + countryModifier),
       isWicketKeeper: false,
     },
     'bowler pacer': {
-      abilityToPlayPaceBall: getRange(8, 15),
-      abilityToPlaySpinBall: getRange(8, 15),
-      battingAggresion: getRange(10, 80),
-      paceAbility: getRange(30, 80),
-      spinAbility: getRange(8, 15),
+      abilityToPlayPaceBall: getRange(8 + countryModifier, 15 + countryModifier),
+      abilityToPlaySpinBall: getRange(8 + countryModifier, 15 + countryModifier),
+      battingAggresion: getRange(10 + countryModifier, 80 + countryModifier),
+      paceAbility: getRange(30 + countryModifier, 80 + countryModifier),
+      spinAbility: getRange(8 + countryModifier, 15 + countryModifier),
       isWicketKeeper: false,
     },
     wicketkeeper: {
-      abilityToPlayPaceBall: getRange(35, 75),
-      abilityToPlaySpinBall: getRange(35, 75),
-      battingAggresion: getRange(40, 80),
-      paceAbility: getRange(8, 15),
-      spinAbility: getRange(8, 15),
+      abilityToPlayPaceBall: getRange(35 + countryModifier, 75 + countryModifier),
+      abilityToPlaySpinBall: getRange(35 + countryModifier, 75 + countryModifier),
+      battingAggresion: getRange(40 + countryModifier, 80 + countryModifier),
+      paceAbility: getRange(8 + countryModifier, 15 + countryModifier),
+      spinAbility: getRange(8 + countryModifier, 15 + countryModifier),
       isWicketKeeper: true,
     },
     'pace allrounder': {
-      abilityToPlayPaceBall: getRange(30, 70),
-      abilityToPlaySpinBall: getRange(30, 70),
-      battingAggresion: getRange(30, 80),
-      paceAbility: getRange(30, 75),
-      spinAbility: getRange(8, 15),
+      abilityToPlayPaceBall: getRange(30 + countryModifier, 70 + countryModifier),
+      abilityToPlaySpinBall: getRange(30 + countryModifier, 70 + countryModifier),
+      battingAggresion: getRange(30 + countryModifier, 80 + countryModifier),
+      paceAbility: getRange(30 + countryModifier, 75 + countryModifier),
+      spinAbility: getRange(8 + countryModifier, 15 + countryModifier),
       isWicketKeeper: false,
     },
     'spin allrounder': {
-      abilityToPlayPaceBall: getRange(30, 70),
-      abilityToPlaySpinBall: getRange(30, 70),
-      battingAggresion: getRange(30, 80),
-      paceAbility: getRange(8, 15),
-      spinAbility: getRange(30, 75),
+      abilityToPlayPaceBall: getRange(30 + countryModifier, 70 + countryModifier),
+      abilityToPlaySpinBall: getRange(30 + countryModifier, 70 + countryModifier),
+      battingAggresion: getRange(30 + countryModifier, 80 + countryModifier),
+      paceAbility: getRange(8 + countryModifier, 15 + countryModifier),
+      spinAbility: getRange(30 + countryModifier, 75 + countryModifier),
       isWicketKeeper: false,
     },
   };
@@ -115,7 +140,7 @@ const buildFakerCustomAttributes = (playerType) => {
 
 const buildFakerPlayerData = (country, playerType) => {
   const fakerCountry = resolveFakerUserCountry(country);
-  const custom = buildFakerCustomAttributes(playerType);
+  const custom = buildFakerCustomAttributes(playerType, country);
   const fallbackName = buildFallbackPlayerName(country);
 
   try {
@@ -966,32 +991,77 @@ const buildRoundRobinFixturesForFormat = (teamNames = [], format) => {
   return fixtures;
 };
 
-export const buildCareerSeasonSchedule = (careerTeam, domesticTeams, seasonLength = 'standard') => {
+const addDays = (date, days = 0) => {
+  const next = new Date(date);
+  next.setDate(next.getDate() + Number(days || 0));
+  return next;
+};
+
+const toIsoDate = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const formatDateLabel = (date) =>
+  date.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+
+export const buildCareerSeasonSchedule = (careerTeam, domesticTeams, seasonLength = 'standard', options = {}) => {
   const teamNames = (domesticTeams || []).map((team) => team.name).filter(Boolean);
   if (!careerTeam || teamNames.length < 2) {
     return [];
   }
 
+  const leagueCountry = options?.leagueCountry || '';
+  const parsedStartDate = options?.seasonStartDate ? new Date(options.seasonStartDate) : new Date();
+  const seasonStartDate = Number.isNaN(parsedStartDate.getTime()) ? new Date() : parsedStartDate;
+  seasonStartDate.setHours(12, 0, 0, 0);
+  const fixtureGapDaysByFormat = {
+    t20: 2,
+    odi: 3,
+    firstClass: 6,
+  };
+  const formatBreakDaysByFormat = {
+    t20: 3,
+    odi: 4,
+    firstClass: 5,
+  };
+
   const selectedFormats = [...CAREER_FORMATS];
   const seasonMultiplier = seasonLength === 'full' ? 2 : 1;
   let globalIndex = 1;
+  let nextFixtureDate = new Date(seasonStartDate);
   const allFixtures = Array.from({ length: seasonMultiplier }).flatMap((_, cycleIndex) =>
-    selectedFormats.flatMap((format) =>
-      buildRoundRobinFixturesForFormat(teamNames, format).map((fixture) => {
+    selectedFormats.flatMap((format) => {
+      const fixturesForFormat = buildRoundRobinFixturesForFormat(teamNames, format).map((fixture) => {
         const isUserMatch = fixture.teamA === careerTeam || fixture.teamB === careerTeam;
         const opponent = isUserMatch ? (fixture.teamA === careerTeam ? fixture.teamB : fixture.teamA) : '';
+        const scheduledDate = new Date(nextFixtureDate);
+
+        nextFixtureDate = addDays(nextFixtureDate, fixtureGapDaysByFormat[format] || 2);
         return {
           ...fixture,
           id: `${format}-S${cycleIndex + 1}-${globalIndex}`,
           tournament: format,
           seasonCycle: cycleIndex + 1,
           globalMatchNumber: globalIndex++,
+          leagueCountry,
+          scheduledDate: toIsoDate(scheduledDate),
+          scheduledDateLabel: formatDateLabel(scheduledDate),
           isUserMatch,
           opponent,
           locationCountry: opponent || fixture.teamA,
         };
-      })
-    )
+      });
+
+      nextFixtureDate = addDays(nextFixtureDate, formatBreakDaysByFormat[format] || 2);
+      return fixturesForFormat;
+    })
   );
 
   return allFixtures;

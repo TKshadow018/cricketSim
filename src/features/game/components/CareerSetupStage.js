@@ -103,9 +103,6 @@ function CareerSetupStage({
             value={playerAge}
             onChange={(event) => setPlayerAge(event.target.value)}
           />
-          <small className={`sim-career-create-hint ${ageValid ? '' : 'warning'}`}>
-            Career age must be between 16 and 40.
-          </small>
 
           <label htmlFor="career-player-nationality">Nationality</label>
           <select

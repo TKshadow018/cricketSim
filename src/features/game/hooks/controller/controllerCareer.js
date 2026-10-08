@@ -637,74 +637,61 @@ const toLeagueSlug = (value = '') =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
-const simulateBackgroundCountryLeagues = ({
+const buildAllCountryLeagueSchedules = ({
   allDomesticTeams = [],
-  excludedCountry = '',
+  userLeagueCountry = '',
   seasonLength = 'standard',
-  seasonNumber = 1,
   careerTeam,
-  careerPlayerProfile,
-  existingStats = {},
 }) => {
-  const countries = [...new Set((allDomesticTeams || []).map((team) => team?.country).filter(Boolean))]
-    .filter((country) => country !== excludedCountry);
+  const countries = [...new Set((allDomesticTeams || []).map((team) => team?.country).filter(Boolean))];
+  const baseDate = new Date();
+  baseDate.setHours(12, 0, 0, 0);
+  const fixtures = [];
 
-  let updatedStats = { ...(existingStats || {}) };
-  let updatedDomesticTeams = allDomesticTeams;
-  const simulatedFixtures = [];
-
-  countries.forEach((country) => {
+  countries.forEach((country, countryIndex) => {
     const countryTeams = filterDomesticTeamsForLeagueCountry({
-      teams: updatedDomesticTeams,
+      teams: allDomesticTeams,
       leagueCountry: country,
     });
     if (countryTeams.length < 2) {
       return;
     }
 
-    const seedTeam = countryTeams[0]?.name || careerTeam;
-    const countrySchedule = buildCareerSeasonSchedule(seedTeam, countryTeams, seasonLength).map((fixture, index) => ({
+    const seedTeam = country === userLeagueCountry
+      ? careerTeam
+      : countryTeams[0]?.name || careerTeam;
+    const leagueStartDate = new Date(baseDate);
+    leagueStartDate.setDate(baseDate.getDate() + countryIndex);
+    const countrySchedule = buildCareerSeasonSchedule(seedTeam, countryTeams, seasonLength, {
+      seasonStartDate: leagueStartDate,
+      leagueCountry: country,
+    }).map((fixture, index) => ({
       ...fixture,
       id: `${toLeagueSlug(country) || 'country'}-${index + 1}-${fixture.id}`,
-      isUserMatch: false,
-      opponent: '',
+      leagueCountry: country,
+      isUserMatch: country === userLeagueCountry ? fixture.isUserMatch : false,
+      opponent: country === userLeagueCountry ? fixture.opponent : '',
       locationCountry: country,
     }));
 
-    for (let index = 0; index < countrySchedule.length; index += 1) {
-      const match = countrySchedule[index];
-      const previousFixturesByTeam = {
-        [match.teamA]: getLatestCompletedFixtureForTeam(countrySchedule, match.teamA, index),
-        [match.teamB]: getLatestCompletedFixtureForTeam(countrySchedule, match.teamB, index),
-      };
-
-      const { result, updatedStats: statsAfterMatch, updatedDomesticTeams: teamsAfterMatch } = simulateCareerFixture({
-        match,
-        careerTeam,
-        careerPlayerProfile,
-        domesticTeams: updatedDomesticTeams,
-        existingStats: updatedStats,
-        seasonNumber,
-        previousFixturesByTeam,
-      });
-
-      updatedStats = statsAfterMatch;
-      updatedDomesticTeams = teamsAfterMatch;
-      countrySchedule[index] = {
-        ...match,
-        isComplete: true,
-        result,
-      };
-    }
-
-    simulatedFixtures.push(...countrySchedule);
+    fixtures.push(...countrySchedule);
   });
 
-  return {
-    simulatedFixtures,
-    updatedStats,
-    updatedDomesticTeams,
+  const compareByDate = (left, right) => {
+    const leftTime = new Date(left?.scheduledDate || 0).getTime();
+    const rightTime = new Date(right?.scheduledDate || 0).getTime();
+    if (leftTime !== rightTime) {
+      return leftTime - rightTime;
+    }
+    return Number(left?.globalMatchNumber || 0) - Number(right?.globalMatchNumber || 0);
   };
+
+  return fixtures
+    .sort(compareByDate)
+    .map((fixture, index) => ({
+      ...fixture,
+      globalMatchNumber: index + 1,
+    }));
 };
 
 const markContribution = (map, player, key) => {
@@ -1198,33 +1185,19 @@ export const createCareerFlowHandlers = ({
       }),
     };
 
-    const leagueTeams = filterDomesticTeamsForLeagueCountry({
-      teams: updatedTeams,
-      leagueCountry: domesticCountry,
-    });
-
-    const userLeagueSchedule = buildCareerSeasonSchedule(team, leagueTeams, seasonLength || 'standard');
-    const {
-      simulatedFixtures,
-      updatedStats: seededSeasonStats,
-      updatedDomesticTeams: teamsAfterBackgroundSim,
-    } = simulateBackgroundCountryLeagues({
+    const schedule = buildAllCountryLeagueSchedules({
       allDomesticTeams: updatedTeams,
-      excludedCountry: domesticCountry,
+      userLeagueCountry: domesticCountry,
       seasonLength: seasonLength || 'standard',
-      seasonNumber: 1,
       careerTeam: team,
-      careerPlayerProfile: nextPlayerProfile,
-      existingStats: {},
     });
-    const schedule = [...userLeagueSchedule, ...simulatedFixtures];
-    const initialStandings = buildCareerStandings(team, schedule, teamsAfterBackgroundSim);
+    const initialStandings = buildCareerStandings(team, schedule, updatedTeams);
     const firstPendingFixtureIndex = schedule.findIndex((fixture) => !fixture.isComplete);
 
     dispatch(setCareerTeamAction(team));
     dispatch(setCareerPlayerProfileAction(nextPlayerProfile));
     dispatch(setCareerDomesticCountryAction(domesticCountry));
-    dispatch(setCareerDomesticTeamsAction(teamsAfterBackgroundSim));
+    dispatch(setCareerDomesticTeamsAction(updatedTeams));
     dispatch(setCareerGlobalPlayerPoolAction(assignmentResult.globalPlayerPool || []));
     dispatch(setCareerOffersAction(Array.isArray(offers) ? offers : []));
     dispatch(setCareerRetiredAction(false));
@@ -1234,7 +1207,7 @@ export const createCareerFlowHandlers = ({
     dispatch(setCareerMatchIndexAction(firstPendingFixtureIndex >= 0 ? firstPendingFixtureIndex : 0));
     dispatch(setCareerScheduleAction(schedule));
     dispatch(setCareerStandingsAction(initialStandings));
-    dispatch(setCareerPlayerStatsAction(seededSeasonStats));
+    dispatch(setCareerPlayerStatsAction({}));
     dispatch(setCareerSeasonHistoryAction([]));
     dispatch(setStageAction(matchStatusEnum.CareerSeasonSchedule));
   };
@@ -1246,37 +1219,6 @@ export const createCareerFlowHandlers = ({
 
     let updatedStats = { ...(careerPlayerStats || {}) };
     let updatedDomesticTeams = careerDomesticTeams;
-
-    const hasOtherLeagueTeams = (updatedDomesticTeams || []).some(
-      (team) => team?.country && team.country !== careerDomesticCountry
-    );
-    if (hasOtherLeagueTeams) {
-      const teamCountryByName = new Map(
-        (updatedDomesticTeams || [])
-          .filter((team) => team?.name)
-          .map((team) => [team.name, team.country || ''])
-      );
-      const hasOtherLeagueFixtures = schedule.some((fixture) => {
-        const teamACountry = teamCountryByName.get(fixture.teamA) || '';
-        const teamBCountry = teamCountryByName.get(fixture.teamB) || '';
-        return teamACountry !== careerDomesticCountry || teamBCountry !== careerDomesticCountry;
-      });
-
-      if (!hasOtherLeagueFixtures) {
-        const backgroundResult = simulateBackgroundCountryLeagues({
-          allDomesticTeams: updatedDomesticTeams,
-          excludedCountry: careerDomesticCountry,
-          seasonLength: careerSeasonLength,
-          seasonNumber: careerSeason,
-          careerTeam,
-          careerPlayerProfile,
-          existingStats: updatedStats,
-        });
-        schedule = [...schedule, ...(backgroundResult.simulatedFixtures || [])];
-        updatedStats = backgroundResult.updatedStats;
-        updatedDomesticTeams = backgroundResult.updatedDomesticTeams;
-      }
-    }
 
     let index = schedule.findIndex((match) => !match.isComplete);
     if (index < 0) {
@@ -1630,47 +1572,26 @@ export const createCareerFlowHandlers = ({
       currentTeamPoints: resolveSeasonPointsForTeam(careerStandings, careerTeam),
     });
     const teamsAfterAssignment = assignmentResult.domesticTeams || movedCareerPlayer.teams;
-    const nextLeagueTeams = filterDomesticTeamsForLeagueCountry({
-      teams: teamsAfterAssignment,
-      leagueCountry: nextLeagueCountry,
-    });
-    const projectedNextProfile = syncCareerPlayerProfile({
-      teams: teamsAfterAssignment,
-      careerTeam: nextCareerTeamName,
-      careerPlayerProfile: {
-        ...careerPlayerProfile,
-        currentValue: nextValuation,
-      },
-    });
-    const userLeagueSchedule = buildCareerSeasonSchedule(nextCareerTeamName, nextLeagueTeams, careerSeasonLength);
-    const {
-      simulatedFixtures,
-      updatedStats: seededNextSeasonStats,
-      updatedDomesticTeams: teamsAfterBackgroundSim,
-    } = simulateBackgroundCountryLeagues({
+    const newSchedule = buildAllCountryLeagueSchedules({
       allDomesticTeams: teamsAfterAssignment,
-      excludedCountry: nextLeagueCountry,
+      userLeagueCountry: nextLeagueCountry,
       seasonLength: careerSeasonLength,
-      seasonNumber: careerSeason + 1,
       careerTeam: nextCareerTeamName,
-      careerPlayerProfile: projectedNextProfile,
-      existingStats: {},
     });
-    const newSchedule = [...userLeagueSchedule, ...simulatedFixtures];
-    const newStandings = buildCareerStandings(nextCareerTeamName, newSchedule, teamsAfterBackgroundSim);
+    const newStandings = buildCareerStandings(nextCareerTeamName, newSchedule, teamsAfterAssignment);
     const firstPendingFixtureIndex = newSchedule.findIndex((fixture) => !fixture.isComplete);
 
     dispatch(setCareerSeasonHistoryAction(updatedHistory));
     dispatch(setCareerSeasonAction(careerSeason + 1));
     dispatch(setCareerTeamAction(nextCareerTeamName));
     dispatch(setCareerDomesticCountryAction(nextLeagueCountry));
-    dispatch(setCareerDomesticTeamsAction(teamsAfterBackgroundSim));
+    dispatch(setCareerDomesticTeamsAction(teamsAfterAssignment));
     dispatch(setCareerGlobalPlayerPoolAction(assignmentResult.globalPlayerPool || careerGlobalPlayerPool || []));
     dispatch(setCareerOffersAction([]));
     dispatch(
       setCareerPlayerProfileAction(
         syncCareerPlayerProfile({
-          teams: teamsAfterBackgroundSim,
+          teams: teamsAfterAssignment,
           careerTeam: nextCareerTeamName,
           careerPlayerProfile: {
             ...careerPlayerProfile,
@@ -1682,7 +1603,7 @@ export const createCareerFlowHandlers = ({
     dispatch(setCareerScheduleAction(newSchedule));
     dispatch(setCareerStandingsAction(newStandings));
     dispatch(setCareerMatchIndexAction(firstPendingFixtureIndex >= 0 ? firstPendingFixtureIndex : 0));
-    dispatch(setCareerPlayerStatsAction(seededNextSeasonStats));
+    dispatch(setCareerPlayerStatsAction({}));
     dispatch(setStageAction(matchStatusEnum.CareerSeasonSchedule));
   };
 

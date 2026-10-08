@@ -431,6 +431,8 @@ function PreMatchBasicStages(props) {
           careerMatchIndex={careerMatchIndex}
           careerSchedule={careerSchedule}
           careerStandings={careerStandings}
+          careerDomesticCountry={careerDomesticCountry}
+          careerDomesticTeams={careerDomesticTeams}
           careerPlayerProfile={careerPlayerProfile}
           careerRetired={careerRetired}
           handleCareerStartNextMatch={handleCareerStartNextMatch}
