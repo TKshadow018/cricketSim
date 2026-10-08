@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import AppButton from '../../../components/ui/AppButton';
 import TeamNameWithFlag from './TeamNameWithFlag';
 import PlayerNameWithType from './PlayerNameWithType';
@@ -80,6 +80,7 @@ export function MatchResultCard({
   scorecard,
   autoSelectTopMomOnPrimaryAction = false,
 }) {
+  const prefersReducedMotion = useReducedMotion();
   const [isMomPanelHidden, setIsMomPanelHidden] = React.useState(false);
 
   React.useEffect(() => {
@@ -192,8 +193,8 @@ export function MatchResultCard({
       </div>
       <motion.h3
         className="sim-winner-line"
-        animate={{ scale: [1, 1.03, 1] }}
-        transition={{ duration: 1.2, repeat: Infinity }}
+        animate={prefersReducedMotion ? { scale: 1 } : { scale: [1, 1.03, 1] }}
+        transition={{ duration: prefersReducedMotion ? 0 : 1.2, repeat: prefersReducedMotion ? 0 : Infinity }}
       >
         {summary}
       </motion.h3>

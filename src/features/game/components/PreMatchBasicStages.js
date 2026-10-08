@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { matchStatusEnum } from '../../../gameData/matchStatusEnum';
 import { matchTypeList } from '../../../gameData/matchTypeList';
 import StageShell from './StageShell';
@@ -20,6 +20,7 @@ import CareerAuctionStage from './CareerAuctionStage';
 import CareerSeasonScheduleStage from './CareerSeasonScheduleStage';
 
 function PreMatchBasicStages(props) {
+  const prefersReducedMotion = useReducedMotion();
   const {
     stage,
     stageCommonProps,
@@ -80,11 +81,14 @@ function PreMatchBasicStages(props) {
           {...stageCommonProps}
           title="Cricket Simulation Arena"
           subtitle="Set up your battle, play ball by ball, and experience dynamic commentary."
-          rightSlot={<motion.div className="sim-pulse-dot" animate={{ scale: [1, 1.25, 1] }} transition={{ repeat: Infinity, duration: 1.4 }} />}
+          rightSlot={<motion.div className="sim-pulse-dot" animate={prefersReducedMotion ? { scale: 1 } : { scale: [1, 1.25, 1] }} transition={{ repeat: prefersReducedMotion ? 0 : Infinity, duration: prefersReducedMotion ? 0 : 1.4 }} />}
         >
-          <div className="sim-intro-grid clickable" onClick={goToNextStage}>
+          <div className="sim-intro-grid">
             <p>Use match setup stages, then control batting and bowling actions during innings.</p>
-            <p className="sim-click-hint">Tap this panel to start setup</p>
+            <div className="sim-intro-actions">
+              <p className="sim-click-hint">Ready to set up your match?</p>
+              <AppButton text="Start Match Setup" onClick={goToNextStage} fullWidth={false} />
+            </div>
           </div>
 
           {isSavesLoading ? <p className="sim-section-title">Loading saved games...</p> : null}
@@ -129,7 +133,7 @@ function PreMatchBasicStages(props) {
           {saveMessage ? <p className="sim-section-title">{saveMessage}</p> : null}
 
           {saveToDelete ? (
-            <div className="sim-confirm-overlay" role="dialog" aria-modal="true">
+            <div className="sim-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="delete-save-title" aria-describedby="delete-save-description">
               <div className="sim-confirm-modal">
                 <button
                   type="button"
@@ -139,8 +143,8 @@ function PreMatchBasicStages(props) {
                 >
                   ×
                 </button>
-                <h4>Delete saved game?</h4>
-                <p>Are you sure you want to delete this save? This cannot be undone.</p>
+                <h4 id="delete-save-title">Delete saved game?</h4>
+                <p id="delete-save-description">Are you sure you want to delete this save? This cannot be undone.</p>
                 <div className="sim-save-row-actions">
                   <AppButton
                     text="Cancel"
@@ -190,19 +194,19 @@ function PreMatchBasicStages(props) {
       {stage === matchStatusEnum.ChooseGameMode && (
         <StageShell {...stageCommonProps} title="Choose Game Mode" subtitle="Pick how you want to play.">
           <div className="sim-series-mode-grid">
-            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'quick' ? 'active' : ''}`} onClick={() => selectGameMode('quick')}>
+            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'quick' ? 'active' : ''}`} aria-pressed={game.gameMode === 'quick'} onClick={() => selectGameMode('quick')}>
               <h4>Quick Match</h4>
               <p>Single match experience.</p>
             </button>
-            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'series' ? 'active' : ''}`} onClick={() => selectGameMode('series')}>
+            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'series' ? 'active' : ''}`} aria-pressed={game.gameMode === 'series'} onClick={() => selectGameMode('series')}>
               <h4>Play Series</h4>
               <p>Multiple matches vs same opponent.</p>
             </button>
-            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'tournament' ? 'active' : ''}`} onClick={() => selectGameMode('tournament')}>
+            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'tournament' ? 'active' : ''}`} aria-pressed={game.gameMode === 'tournament'} onClick={() => selectGameMode('tournament')}>
               <h4>Tournament</h4>
               <p>4 / 8 / 16 team knockout.</p>
             </button>
-            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'career' ? 'active' : ''}`} onClick={() => selectGameMode('career')}>
+            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'career' ? 'active' : ''}`} aria-pressed={game.gameMode === 'career'} onClick={() => selectGameMode('career')}>
               <h4>Career</h4>
               <p>Create a player and play through domestic seasons.</p>
             </button>
@@ -223,6 +227,7 @@ function PreMatchBasicStages(props) {
                 key={`series-${value}`}
                 type="button"
                 className={`sim-series-length-card ${game.seriesLength === value ? 'active' : ''}`}
+                aria-pressed={game.seriesLength === value}
                 onClick={() => selectSeriesLength(value)}
               >
                 <span className="sim-series-length-number">{value}</span>
@@ -264,6 +269,7 @@ function PreMatchBasicStages(props) {
                         key={`tour-opp-${team.id}`}
                         type="button"
                         className={`sim-flag-card ${active ? 'active' : ''}`}
+                        aria-pressed={active}
                         onClick={() => toggleTournamentOpponent(team.name)}
                       >
                         <div className="sim-flag-holder">

@@ -1,7 +1,9 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 
 function SelectionGrid({ items, selectedKey, onSelect, renderTitle, renderMeta, renderDescription, keyOf }) {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
     <div className="sim-card-grid">
       {items.map((item, idx) => {
@@ -19,9 +21,10 @@ function SelectionGrid({ items, selectedKey, onSelect, renderTitle, renderMeta, 
           <motion.button
             key={key}
             className={`sim-choice-card ${active ? 'active' : ''}`}
+            aria-pressed={active}
             onClick={() => onSelect(item)}
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.15 }}
+            whileHover={prefersReducedMotion ? undefined : { y: -4 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.15 }}
             style={{ animationDelay: `${idx * 30}ms` }}
           >
             {visual ? <div className={visualClassName}>{visual}</div> : null}

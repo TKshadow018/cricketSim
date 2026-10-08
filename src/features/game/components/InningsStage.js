@@ -155,6 +155,8 @@ function InningsStage({
                 {battingActions.map((action) => (
                   <button
                     key={action.key}
+                    type="button"
+                    aria-pressed={battingIntent === action.key}
                     className={`sim-intent-btn ${battingIntent === action.key ? 'active' : ''} ${action.disabled ? 'disabled' : ''}`}
                     onClick={() => safeOnBattingIntent(action.key)}
                     disabled={action.disabled}
@@ -175,6 +177,8 @@ function InningsStage({
                 {bowlingActions.map((action) => (
                   <button
                     key={action.key}
+                    type="button"
+                    aria-pressed={bowlingIntent === action.key}
                     className={`sim-intent-btn ${bowlingIntent === action.key ? 'active' : ''} ${action.disabled ? 'disabled' : ''}`}
                     onClick={() => safeOnBowlingIntent(action.key)}
                     disabled={action.disabled}
@@ -195,7 +199,9 @@ function InningsStage({
                 {openerCandidates.map((player) => (
                   <button
                     key={player.index}
+                    type="button"
                     className={`sim-player-pick-btn ${openerSelections.includes(player.index) ? 'active' : ''}`}
+                    aria-pressed={openerSelections.includes(player.index)}
                     onClick={() => onSelectOpener(player.index)}
                   >
                     <PlayerNameWithType player={player.player} name={player.name} />
@@ -212,6 +218,7 @@ function InningsStage({
                 {nextBatterCandidates.map((player) => (
                   <button
                     key={player.index}
+                    type="button"
                     className={`sim-player-pick-btn ${player.disabled ? 'disabled' : ''}`}
                     onClick={() => onSelectNextBatter(player.index)}
                     disabled={player.disabled}
@@ -232,6 +239,7 @@ function InningsStage({
                 {bowlerCandidates.map((player) => (
                   <button
                     key={player.index}
+                    type="button"
                     className={`sim-player-pick-btn ${player.disabled ? 'disabled' : ''}`}
                     onClick={() => onSelectBowler(player.index)}
                     disabled={player.disabled}

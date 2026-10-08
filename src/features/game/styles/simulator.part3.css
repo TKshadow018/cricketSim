@@ -340,6 +340,126 @@
   opacity: 0.95;
 }
 
+.sim-intro-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.sim-intro-actions .sim-click-hint {
+  margin: 0;
+}
+
+.sim-match-action-layout {
+  height: auto;
+  min-height: 0;
+  max-height: min(72vh, 760px);
+}
+
+.sim-commentary-feed {
+  min-width: 0;
+  max-height: min(72vh, 760px);
+  overscroll-behavior: contain;
+}
+
+.sim-commentary-feed li {
+  min-width: 0;
+}
+
+.sim-commentary-text {
+  overflow-wrap: anywhere;
+}
+
+.sim-scoreboard-table-wrap {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.sim-scoreboard-panel {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.sim-scoreboard-table {
+  min-width: 520px;
+}
+
+.sim-player-pick-btn,
+.sim-intent-btn,
+.sim-series-mode-card,
+.sim-series-length-card,
+.sim-flag-card,
+.sim-choice-card {
+  min-height: 44px;
+}
+
+.sim-player-pick-btn.active,
+.sim-intent-btn.active,
+.sim-series-mode-card.active,
+.sim-series-length-card.active,
+.sim-flag-card.active,
+.sim-choice-card.active {
+  border-width: 2px;
+}
+
+.sim-delete-cross-btn {
+  min-width: 52px;
+  min-height: 52px;
+}
+
+:is(
+  .sim-stage-card,
+  .sim-scoreboard-panel,
+  .sim-xi-column,
+  .dashboard-sidebar
+) :is(button, a, input, select, textarea):focus-visible,
+.dashboard-navbar :is(button, a):focus-visible {
+  outline: 3px solid #b9d6ff;
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .sim-match-action-layout,
+  .sim-commentary-feed {
+    max-height: none;
+  }
+
+  .sim-scoreboard-table-wrap,
+  .sim-scoreboard-panel {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 600px) {
+  .sim-innings-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sim-scoreboard-table th,
+  .sim-scoreboard-table td {
+    padding: 0.4rem;
+    font-size: 0.76rem;
+  }
+
+  .sim-intro-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sim-intro-actions .app-button {
+    width: 100%;
+  }
+
+  .sim-player-pick-btn {
+    overflow-wrap: anywhere;
+  }
+}
+
 .sim-mom-select-btn {
   width: 30px;
   height: 30px;
@@ -415,6 +535,22 @@
   background: #000;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .sim-saving-ball {
+    animation: none;
+  }
+
+  .sim-player-pick-btn,
+  .sim-intent-btn,
+  .sim-series-mode-card,
+  .sim-series-length-card,
+  .sim-flag-card,
+  .sim-choice-card,
+  .sim-mom-select-btn {
+    transition: none;
+  }
+}
+
 @media (max-width: 900px) {
   .sim-condition-grid {
     grid-template-columns: 1fr;
@@ -431,5 +567,99 @@
 
   .sim-custom-form-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
+  .sim-top-strip {
+    margin-top: 0;
+    padding: 0.65rem;
+  }
+
+  .sim-stage-card {
+    padding: 0.8rem;
+  }
+
+  .sim-stage-header {
+    flex-wrap: wrap;
+  }
+
+  .sim-stage-header > div:first-child {
+    min-width: 0;
+  }
+
+  .sim-stage-header > :last-child {
+    margin-left: auto;
+  }
+
+  .sim-stage-content,
+  .sim-innings-layout,
+  .sim-xi-dnd-layout {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .sim-stage-card {
+    padding: 0.65rem;
+    border-radius: 14px;
+  }
+
+  .sim-wave-title div {
+    font-size: clamp(1.25rem, 7vw, 1.8rem);
+  }
+
+  .sim-series-mode-grid,
+  .sim-series-length-grid,
+  .sim-card-grid,
+  .sim-flag-grid,
+  .sim-player-pick-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sim-xi-role-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sim-save-row-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sim-save-row-actions .app-button {
+    width: 100%;
+  }
+
+  .sim-confirm-modal .sim-save-row-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sim-innings-action {
+    align-items: stretch;
+  }
+
+  .sim-innings-action .app-button {
+    width: 100%;
+  }
+
+  .sim-score-row {
+    align-items: flex-start;
+  }
+
+  .sim-score-pill {
+    white-space: nowrap;
+  }
+
+  .sim-commentary-feed {
+    max-height: 360px;
+  }
+
+  .sim-condition-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sim-toss-icons img {
+    width: min(28vw, 100px);
+    height: min(28vw, 100px);
   }
 }

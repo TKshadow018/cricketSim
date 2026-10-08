@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Wave } from 'react-animated-text';
 
 const weatherIcons = {
@@ -40,10 +40,12 @@ const formatConditionLabel = (value = '') =>
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
 function TossStage({ onChooseCall, matchCondition, selectedCall }) {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
     <div className="sim-toss-panel">
       <div className="sim-wave-title sim-toss-title">
-        <Wave text="TOSS TIME" effect="stretch" effectChange={1.2} effectDuration={0.7} />
+        {prefersReducedMotion ? 'TOSS TIME' : <Wave text="TOSS TIME" effect="stretch" effectChange={1.2} effectDuration={0.7} />}
       </div>
       <p>Select Crown or Dollar to perform toss.</p>
       <div className="sim-toss-icons sim-toss-buttons">
@@ -54,8 +56,8 @@ function TossStage({ onChooseCall, matchCondition, selectedCall }) {
           <motion.img
             src="/asset/img/icon/crown.png"
             alt="crown"
-            animate={{ y: [0, -8, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
+            animate={prefersReducedMotion ? { y: 0 } : { y: [0, -8, 0] }}
+            transition={{ repeat: prefersReducedMotion ? 0 : Infinity, duration: prefersReducedMotion ? 0 : 1.5 }}
           />
         </button>
         <button
@@ -65,8 +67,8 @@ function TossStage({ onChooseCall, matchCondition, selectedCall }) {
           <motion.img
             src="/asset/img/icon/money.png"
             alt="money"
-            animate={{ y: [0, -8, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5, delay: 0.3 }}
+            animate={prefersReducedMotion ? { y: 0 } : { y: [0, -8, 0] }}
+            transition={{ repeat: prefersReducedMotion ? 0 : Infinity, duration: prefersReducedMotion ? 0 : 1.5, delay: prefersReducedMotion ? 0 : 0.3 }}
           />
         </button>
       </div>

@@ -22,6 +22,7 @@ function PlayerCard({
       type="button"
       draggable={draggable}
       className={`sim-player-pick-btn ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}`.trim()}
+      aria-pressed={active}
       onDragStart={
         dragContext
           ? (event) => onDragStart(event, dragContext.teamKey, dragContext.sourceList, player.id)
@@ -68,7 +69,9 @@ function XIStage({
 }) {
   return (
     <StageShell {...stageCommonProps} title={title} subtitle={subtitle} rightSlot={setupBackSlot} dark>
-      <p className="sim-section-title">Selected: {selectedCount} / 11</p>
+      <p className="sim-section-title" role="status" aria-live="polite">
+        Selected: {selectedCount} / 11 · {selectedCount === 11 ? 'XI complete' : `${11 - selectedCount} more to select`}
+      </p>
       <div className="sim-xi-dnd-layout">
         <div
           className="sim-xi-column"
@@ -93,7 +96,7 @@ function XIStage({
                 onDragStart={onDragStart}
                 onDragEnd={onDragEnd}
                 onClick={() => movePlayer(player.id)}
-                hint="Drag to selected XI"
+                hint="Select to add to XI"
               />
             ))}
           </div>
@@ -122,7 +125,7 @@ function XIStage({
                 onDragStart={onDragStart}
                 onDragEnd={onDragEnd}
                 onClick={() => removePlayer(player.id)}
-                hint="Drag back to remove"
+                hint="Select to remove"
               />
             ))}
           </div>
