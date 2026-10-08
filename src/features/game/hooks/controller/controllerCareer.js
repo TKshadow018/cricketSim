@@ -10,6 +10,7 @@ import {
   buildCareerSeasonSchedule,
   buildCareerStandings,
   resolveNextCareerMatch,
+  runCareerAuction,
   simulateCareerFixture,
 } from '../../utils/controllerCareerScheduleUtils';
 
@@ -1059,6 +1060,7 @@ export const createCareerFlowHandlers = ({
   setCareerDomesticCountryAction,
   setCareerDomesticTeamsAction,
   setCareerGlobalPlayerPoolAction,
+  setCareerAuctionSummaryAction,
   setCareerOffersAction,
   setCareerRetiredAction,
   setCareerSeasonAction,
@@ -1145,25 +1147,24 @@ export const createCareerFlowHandlers = ({
     dispatch(setStageAction(matchStatusEnum.TossTime));
   };
 
-  const beginCareer = ({ team, seasonLength, playerProfile, domesticCountry, domesticTeams, globalPlayerPool, offers, countryList = [] }) => {
-    if (!team || !playerProfile?.name || !domesticCountry || !Array.isArray(domesticTeams) || domesticTeams.length < 2) return;
+  const beginCareer = ({ seasonLength, playerProfile, domesticCountry, domesticTeams, globalPlayerPool, offers, countryList = [] }) => {
+    if (!playerProfile?.name || !domesticCountry || !Array.isArray(domesticTeams) || domesticTeams.length < 2) return;
 
     const normalizedTeams = normalizeDomesticTeams(domesticTeams);
-    const assignmentResult = assignGlobalPoolPlayersToDomesticTeams({
+    const createdPlayer = buildCreatedCareerPlayer(playerProfile, domesticCountry);
+    const auctionResult = runCareerAuction({
       domesticTeams: normalizedTeams,
       globalPlayerPool,
       countryRows: countryList,
+      leagueCountry: domesticCountry,
+      careerPlayer: createdPlayer,
     });
-    const createdPlayer = buildCreatedCareerPlayer(playerProfile, domesticCountry);
-    const updatedTeams = (assignmentResult.domesticTeams || normalizedTeams).map((domesticTeam) => {
-      if (domesticTeam.name !== team) {
-        return domesticTeam;
-      }
-      return {
-        ...domesticTeam,
-        players: [createdPlayer, ...(domesticTeam.players || [])],
-      };
-    });
+    const resolvedCareerTeam = auctionResult.careerTeam || '';
+    if (!resolvedCareerTeam) {
+      return;
+    }
+
+    const updatedTeams = auctionResult.domesticTeams || normalizedTeams;
     const nextPlayerProfile = {
       ...playerProfile,
       playerId: createdPlayer.id,
@@ -1189,16 +1190,17 @@ export const createCareerFlowHandlers = ({
       allDomesticTeams: updatedTeams,
       userLeagueCountry: domesticCountry,
       seasonLength: seasonLength || 'standard',
-      careerTeam: team,
+      careerTeam: resolvedCareerTeam,
     });
-    const initialStandings = buildCareerStandings(team, schedule, updatedTeams);
+    const initialStandings = buildCareerStandings(resolvedCareerTeam, schedule, updatedTeams);
     const firstPendingFixtureIndex = schedule.findIndex((fixture) => !fixture.isComplete);
 
-    dispatch(setCareerTeamAction(team));
+    dispatch(setCareerTeamAction(resolvedCareerTeam));
     dispatch(setCareerPlayerProfileAction(nextPlayerProfile));
     dispatch(setCareerDomesticCountryAction(domesticCountry));
     dispatch(setCareerDomesticTeamsAction(updatedTeams));
-    dispatch(setCareerGlobalPlayerPoolAction(assignmentResult.globalPlayerPool || []));
+    dispatch(setCareerGlobalPlayerPoolAction(auctionResult.globalPlayerPool || []));
+    dispatch(setCareerAuctionSummaryAction(auctionResult.auctionSummary || null));
     dispatch(setCareerOffersAction(Array.isArray(offers) ? offers : []));
     dispatch(setCareerRetiredAction(false));
     dispatch(setCareerSeasonAction(1));
@@ -1209,6 +1211,16 @@ export const createCareerFlowHandlers = ({
     dispatch(setCareerStandingsAction(initialStandings));
     dispatch(setCareerPlayerStatsAction({}));
     dispatch(setCareerSeasonHistoryAction([]));
+    dispatch(setStageAction(matchStatusEnum.CareerAuction));
+  };
+
+  const handleCareerContinueAfterAuction = () => {
+    if (!careerTeam || !careerPlayerProfile?.name || !Array.isArray(careerSchedule) || !careerSchedule.length) {
+      return;
+    }
+
+    const nextMatch = resolveNextCareerMatch(careerSchedule);
+    dispatch(setCareerMatchIndexAction(nextMatch ? careerSchedule.findIndex((match) => match.id === nextMatch.id) : 0));
     dispatch(setStageAction(matchStatusEnum.CareerSeasonSchedule));
   };
 
@@ -1587,6 +1599,7 @@ export const createCareerFlowHandlers = ({
     dispatch(setCareerDomesticCountryAction(nextLeagueCountry));
     dispatch(setCareerDomesticTeamsAction(teamsAfterAssignment));
     dispatch(setCareerGlobalPlayerPoolAction(assignmentResult.globalPlayerPool || careerGlobalPlayerPool || []));
+    dispatch(setCareerAuctionSummaryAction(null));
     dispatch(setCareerOffersAction([]));
     dispatch(
       setCareerPlayerProfileAction(
@@ -1636,6 +1649,7 @@ export const createCareerFlowHandlers = ({
 
   return {
     beginCareer,
+    handleCareerContinueAfterAuction,
     handleCareerStartNextMatch,
     commitCareerMatchResult,
     handleCareerMatchPrimaryAction,

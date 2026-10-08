@@ -4,7 +4,6 @@ import FlagTeamGrid from './FlagTeamGrid';
 import AppButton from '../../../components/ui/AppButton';
 import {
   CAREER_SEASON_LENGTHS,
-  buildCareerOffers,
   createDomesticTeamsForAllCountries,
   createGlobalCareerPlayerPool,
 } from '../utils/controllerCareerScheduleUtils';
@@ -34,7 +33,6 @@ function CareerSetupStage({
   careerDomesticCountry,
   careerDomesticTeams,
   careerGlobalPlayerPool,
-  careerOffers,
 }) {
   const [playerName, setPlayerName] = React.useState(careerPlayerProfile?.name || '');
   const [playerAge, setPlayerAge] = React.useState(careerPlayerProfile?.age || 18);
@@ -43,8 +41,6 @@ function CareerSetupStage({
   const [selectedCountry, setSelectedCountry] = React.useState(careerDomesticCountry || '');
   const [domesticTeams, setDomesticTeams] = React.useState(careerDomesticTeams || []);
   const [globalPlayerPool, setGlobalPlayerPool] = React.useState(careerGlobalPlayerPool || []);
-  const [offers, setOffers] = React.useState(careerOffers || []);
-  const [selectedTeam, setSelectedTeam] = React.useState(game.careerTeam || '');
   const [selectedSeasonLength, setSelectedSeasonLength] = React.useState(game.careerSeasonLength || 'standard');
   const trimmedPlayerName = (playerName || '').trim();
   const numericAge = Number(playerAge);
@@ -52,17 +48,12 @@ function CareerSetupStage({
   const ageValid = Number.isFinite(numericAge) && numericAge >= 16 && numericAge <= 40;
   const canGenerateOffers = !!selectedCountry;
   const canStart =
-    !!selectedTeam &&
     trimmedPlayerName &&
     ageValid &&
     !!normalizedNationality &&
     !!playerType &&
     domesticTeams.length > 0 &&
     globalPlayerPool.length > 0;
-  const selectedOffer = offers.find((offer) => {
-    const teamName = typeof offer === 'string' ? offer : offer.team;
-    return teamName === selectedTeam;
-  });
   const selectedPlayerType = PLAYER_TYPE_OPTIONS.find((option) => option.key === playerType) || PLAYER_TYPE_OPTIONS[0];
   const selectedPlayerTypeThemeClass = `sim-career-player-preview--${String(selectedPlayerType.key || 'batsman').replace(/\s+/g, '-')}`;
 
@@ -70,12 +61,8 @@ function CareerSetupStage({
     if (!countryName) return;
     const createdTeams = createDomesticTeamsForAllCountries(countryList);
     const createdPool = createGlobalCareerPlayerPool(countryList);
-    const selectedCountryTeams = createdTeams.filter((team) => team.country === countryName);
-    const createdOffers = buildCareerOffers(selectedCountryTeams, 3);
     setDomesticTeams(createdTeams);
     setGlobalPlayerPool(createdPool);
-    setOffers(createdOffers);
-    setSelectedTeam(createdOffers[0]?.team || '');
   };
 
   return (
@@ -159,8 +146,6 @@ function CareerSetupStage({
           setSelectedCountry(team.name);
           setDomesticTeams([]);
           setGlobalPlayerPool([]);
-          setOffers([]);
-          setSelectedTeam('');
         }}
       />
 
@@ -172,32 +157,6 @@ function CareerSetupStage({
           fullWidth
         />
       </div>
-
-      {offers.length > 0 && (
-        <>
-          <h4 className="sim-section-title">Choose from 3 Club Offers</h4>
-          <div className="sim-series-mode-grid">
-            {offers.map((offer) => {
-              const teamName = typeof offer === 'string' ? offer : offer.team;
-              const amountLabel = typeof offer === 'string' ? '' : offer.amountLabel;
-              const locationLabel = typeof offer === 'string' ? '' : [offer.location, offer.country].filter(Boolean).join(', ');
-              return (
-                <button
-                  key={teamName}
-                  type="button"
-                  className={`sim-series-mode-card ${selectedTeam === teamName ? 'active' : ''}`}
-                  onClick={() => setSelectedTeam(teamName)}
-                >
-                  <h4>{teamName}</h4>
-                  <p>{selectedCountry} Domestic League</p>
-                  {locationLabel ? <small>{locationLabel}</small> : null}
-                  {amountLabel ? <small>Offer: {amountLabel}</small> : null}
-                </button>
-              );
-            })}
-          </div>
-        </>
-      )}
 
       <h4 className="sim-section-title">Season Length</h4>
       <div className="sim-series-length-grid">
@@ -215,10 +174,9 @@ function CareerSetupStage({
       </div>
 
       <AppButton
-        text={selectedTeam ? `Begin Career with ${selectedTeam}` : 'Begin Career'}
+        text="Begin Career and Run Auction"
         onClick={() =>
           beginCareer({
-            team: selectedTeam,
             seasonLength: selectedSeasonLength,
             playerProfile: {
               name: trimmedPlayerName,
@@ -230,18 +188,13 @@ function CareerSetupStage({
             domesticTeams,
             globalPlayerPool,
             countryList,
-            offers,
+            offers: [],
           })
         }
         disabled={!canStart}
         fullWidth
       />
-      {selectedOffer && typeof selectedOffer === 'object' ? (
-        <p className="sim-career-create-footer-note">
-          Selected offer: {selectedOffer.team}
-          {selectedOffer.amountLabel ? ` (${selectedOffer.amountLabel})` : ''}
-        </p>
-      ) : null}
+      <p className="sim-career-create-footer-note">All domestic clubs will bid in an auction and your club will be assigned by market demand.</p>
     </StageShell>
   );
 }

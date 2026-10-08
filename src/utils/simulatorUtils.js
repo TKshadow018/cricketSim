@@ -23,6 +23,7 @@ export const stageOrder = [
   matchStatusEnum.SeriesSummary,
   matchStatusEnum.TournamentChampion,
   matchStatusEnum.CareerSetup,
+  matchStatusEnum.CareerAuction,
   matchStatusEnum.CareerSeasonSchedule,
   matchStatusEnum.CareerSeasonSummary,
   matchStatusEnum.CareerHistory,

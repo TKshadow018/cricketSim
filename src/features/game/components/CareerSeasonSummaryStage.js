@@ -10,6 +10,7 @@ import {
 } from '../utils/controllerCareerScheduleUtils';
 import { buildSeasonProgressionNotes } from '../utils/controllerCareerPlayerUtils';
 import PlayerNameWithType from './PlayerNameWithType';
+import TeamNameWithLogo from './TeamNameWithLogo';
 
 const formatMoney = (amount) => `$${Number(amount || 0).toLocaleString('en-US')}`;
 
@@ -414,7 +415,7 @@ function CareerSeasonSummaryStage({
                     style={{ background: row.team === careerTeam ? 'rgba(255,255,255,0.08)' : 'transparent' }}
                   >
                     <td style={{ padding: '4px 8px' }}>{i + 1}</td>
-                    <td style={{ padding: '4px 8px' }}>{row.team}</td>
+                    <td style={{ padding: '4px 8px' }}><TeamNameWithLogo teamName={row.team} size={18} /></td>
                     <td style={{ textAlign: 'center', padding: '4px' }}>{row.played}</td>
                     <td style={{ textAlign: 'center', padding: '4px' }}>{row.wins}</td>
                     <td style={{ textAlign: 'center', padding: '4px' }}>{row.losses}</td>
@@ -464,7 +465,7 @@ function CareerSeasonSummaryStage({
                     {abilityChangePreview.slice(0, 20).map((row) => (
                       <tr key={`ability-${row.team}-${row.player.id}`}>
                         <td><PlayerNameWithType player={row.player} /></td>
-                        <td>{row.team}</td>
+                        <td><TeamNameWithLogo teamName={row.team} size={18} /></td>
                         <td>{row.before.abilityToPlayPaceBall} → {row.after.abilityToPlayPaceBall}</td>
                         <td>{row.before.abilityToPlaySpinBall} → {row.after.abilityToPlaySpinBall}</td>
                         <td>{row.before.battingAggresion} → {row.after.battingAggresion}</td>

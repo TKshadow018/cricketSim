@@ -354,6 +354,241 @@
   font-size: 0.88rem;
 }
 
+.sim-team-logo-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  vertical-align: middle;
+}
+
+.sim-team-logo-mark {
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.28), 0 3px 10px rgba(0, 0, 0, 0.28);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.sim-table-scroll-shell {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sim-table-scroll-shell table {
+  margin-bottom: 0;
+}
+
+.sim-auction-bid-row {
+  animation: simBidRowReveal 200ms ease-out both;
+}
+
+.sim-auction-bid-row td {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sim-auction-bid-row--winner {
+  animation: simWinnerFlash 900ms ease-out both;
+}
+
+.sim-auction-bid-row--winner td {
+  background: linear-gradient(90deg, rgba(255, 223, 124, 0.16), rgba(255, 255, 255, 0.02));
+}
+
+.sim-auctioneer-lane {
+  border-radius: 12px;
+  border: 1px solid rgba(153, 201, 255, 0.34);
+  padding: 0.6rem 0.75rem;
+  color: #f0f7ff;
+  background: linear-gradient(90deg, rgba(10, 24, 43, 0.96), rgba(24, 47, 74, 0.9));
+  font-size: 0.85rem;
+  animation: simAuctioneerPulse 1.5s ease-in-out infinite;
+}
+
+.sim-auction-momentum-grid {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.sim-auction-momentum-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) 1.6fr auto;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.sim-auction-momentum-label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sim-auction-momentum-bar {
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(145, 184, 255, 0.32);
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.sim-auction-momentum-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #4cd6ff 0%, #7effb8 52%, #ffd36e 100%);
+}
+
+.sim-auction-broadcast-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0.65rem 0 0.85rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 14px;
+  border: 1px solid rgba(113, 176, 255, 0.26);
+  background: linear-gradient(90deg, rgba(12, 22, 44, 0.9), rgba(21, 46, 73, 0.92));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.sim-auction-broadcast-bar--sold {
+  border-color: rgba(255, 194, 79, 0.45);
+  background: linear-gradient(90deg, rgba(63, 38, 4, 0.95), rgba(91, 49, 0, 0.95));
+}
+
+.sim-auction-broadcast-bar--going-once,
+.sim-auction-broadcast-bar--going-twice {
+  animation: simBroadcastPulse 1.4s ease-in-out infinite;
+}
+
+.sim-auction-broadcast-label {
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  min-width: 88px;
+}
+
+.sim-auction-broadcast-score {
+  color: #d8ebff;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.sim-auction-broadcast-meter {
+  position: relative;
+  flex: 1;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(132, 175, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sim-auction-broadcast-meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #59d8ff 0%, #4effb0 55%, #ffdc73 100%);
+  box-shadow: 0 0 16px rgba(97, 216, 255, 0.4);
+  animation: simMeterShimmer 1.6s linear infinite;
+}
+
+.sim-auction-ticker {
+  display: flex;
+  gap: 0.4rem;
+  overflow: hidden;
+  padding: 0.45rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 0.65rem;
+  background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+}
+
+.sim-auction-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+  color: #edf5ff;
+  font-size: 0.76rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(18, 29, 52, 0.82);
+  border: 1px solid rgba(132, 175, 255, 0.18);
+  animation: simTickerSlide 7s linear infinite;
+}
+
+@keyframes simBroadcastPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(89, 216, 255, 0.28);
+  }
+}
+
+@keyframes simMeterShimmer {
+  from {
+    filter: brightness(0.95);
+  }
+  to {
+    filter: brightness(1.08);
+  }
+}
+
+@keyframes simTickerSlide {
+  0% {
+    transform: translateX(10px);
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 0.95;
+  }
+}
+
+@keyframes simBidRowReveal {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes simWinnerFlash {
+  0% {
+    filter: brightness(1);
+  }
+  45% {
+    filter: brightness(1.2);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+@keyframes simAuctioneerPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(124, 198, 255, 0);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(124, 198, 255, 0.2);
+  }
+}
+
 .sim-ability-list {
   display: grid;
   gap: 0.48rem;

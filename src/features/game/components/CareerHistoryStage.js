@@ -8,6 +8,7 @@ import {
   sortStandings,
 } from '../utils/controllerCareerScheduleUtils';
 import PlayerNameWithType from './PlayerNameWithType';
+import TeamNameWithLogo from './TeamNameWithLogo';
 
 function CareerHistoryStage({
   stageCommonProps,
@@ -148,7 +149,7 @@ function CareerHistoryStage({
                               {season.seasonReport.abilityChangePreview.slice(0, 12).map((row) => (
                                 <tr key={`history-ability-${season.season}-${row.team}-${row.player.id}`}>
                                   <td><PlayerNameWithType player={row.player} /></td>
-                                  <td>{row.team}</td>
+                                  <td><TeamNameWithLogo teamName={row.team} size={18} /></td>
                                   <td><strong>{row.delta >= 0 ? `+${row.delta}` : row.delta}</strong></td>
                                 </tr>
                               ))}

@@ -66,6 +66,7 @@ const initialState = {
   careerDomesticCountry: '',
   careerDomesticTeams: [],
   careerGlobalPlayerPool: [],
+  careerAuctionSummary: null,
   careerOffers: [],
   careerRetired: false,
   careerSeason: 0,
@@ -162,6 +163,9 @@ const gameSlice = createSlice({
     },
     setCareerGlobalPlayerPool: (state, action) => {
       state.careerGlobalPlayerPool = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setCareerAuctionSummary: (state, action) => {
+      state.careerAuctionSummary = action.payload && typeof action.payload === 'object' ? action.payload : null;
     },
     setCareerOffers: (state, action) => {
       state.careerOffers = Array.isArray(action.payload) ? action.payload : [];
@@ -332,6 +336,10 @@ const gameSlice = createSlice({
         careerGlobalPlayerPool: Array.isArray(payload.careerGlobalPlayerPool)
           ? payload.careerGlobalPlayerPool
           : state.careerGlobalPlayerPool,
+        careerAuctionSummary:
+          payload.careerAuctionSummary && typeof payload.careerAuctionSummary === 'object'
+            ? payload.careerAuctionSummary
+            : state.careerAuctionSummary,
         careerOffers: Array.isArray(payload.careerOffers) ? payload.careerOffers : state.careerOffers,
         careerRetired: typeof payload.careerRetired === 'boolean' ? payload.careerRetired : state.careerRetired,
         careerSeason: Number(payload.careerSeason) >= 0 ? Number(payload.careerSeason) : state.careerSeason,
@@ -420,6 +428,7 @@ const gameSlice = createSlice({
       state.careerDomesticCountry = '';
       state.careerDomesticTeams = [];
       state.careerGlobalPlayerPool = [];
+      state.careerAuctionSummary = null;
       state.careerOffers = [];
       state.careerRetired = false;
       state.careerSeason = 0;
@@ -508,6 +517,7 @@ export const {
   setCareerDomesticCountry,
   setCareerDomesticTeams,
   setCareerGlobalPlayerPool,
+  setCareerAuctionSummary,
   setCareerOffers,
   setCareerRetired,
   setCareerSeason,

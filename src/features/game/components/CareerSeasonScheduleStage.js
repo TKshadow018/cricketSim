@@ -9,6 +9,7 @@ import {
   sortStandings,
 } from '../utils/controllerCareerScheduleUtils';
 import PlayerNameWithType from './PlayerNameWithType';
+import TeamNameWithLogo from './TeamNameWithLogo';
 
 function CareerSeasonScheduleStage({
   stageCommonProps,
@@ -91,7 +92,7 @@ function CareerSeasonScheduleStage({
         <>
           <PlayerNameWithType player={careerPlayerProfile} name={careerPlayerProfile?.name || 'Career Player'} /> ({currentAge})
           {' • '}
-          {careerTeam} • {completedMatches.length} of {leagueFixtures.length} fixtures completed
+          <TeamNameWithLogo teamName={careerTeam} size={18} /> • {completedMatches.length} of {leagueFixtures.length} fixtures completed
         </>
       }
     >
@@ -140,7 +141,10 @@ function CareerSeasonScheduleStage({
               }
             >
               <div className="sim-saved-item-content">
-                <strong>Match {match.matchNumber || 'N/A'}: {match.teamA} vs {match.teamB}</strong>
+                <strong>
+                  Match {match.matchNumber || 'N/A'}:{' '}
+                  <TeamNameWithLogo teamName={match.teamA} size={17} /> vs <TeamNameWithLogo teamName={match.teamB} size={17} />
+                </strong>
                 <small>{formatCareerMatchLabel(match.format)}</small>
                 <small>{match.scheduledDateLabel || match.scheduledDate || 'TBD'}</small>
                 <small>{resultText}</small>
@@ -222,7 +226,7 @@ function CareerSeasonScheduleStage({
                 <tbody>
                   {standingsList.map((row) => (
                     <tr key={`${format}-${row.team}`} style={{ background: row.team === careerTeam ? 'rgba(255,255,255,0.08)' : 'transparent' }}>
-                      <td style={{ padding: '4px 8px' }}>{row.team}</td>
+                      <td style={{ padding: '4px 8px' }}><TeamNameWithLogo teamName={row.team} size={18} /></td>
                       <td style={{ textAlign: 'center', padding: '4px' }}>{row.played}</td>
                       <td style={{ textAlign: 'center', padding: '4px' }}>{row.wins}</td>
                       <td style={{ textAlign: 'center', padding: '4px' }}>{row.losses}</td>

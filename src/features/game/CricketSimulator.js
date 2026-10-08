@@ -153,12 +153,14 @@ function CricketSimulator() {
     careerDomesticCountry,
     careerDomesticTeams,
     careerGlobalPlayerPool,
+    careerAuctionSummary,
     careerOffers,
     careerRetired,
     careerTopRunScorers,
     careerTopWicketTakers,
     careerProgressLabel,
     beginCareer,
+    handleCareerContinueAfterAuction,
     handleCareerStartNextMatch,
     handleStartNextCareerSeason,
     handleEndCareer,
@@ -1338,8 +1340,10 @@ function CricketSimulator() {
             careerDomesticCountry={careerDomesticCountry}
             careerDomesticTeams={careerDomesticTeams}
             careerGlobalPlayerPool={careerGlobalPlayerPool}
+            careerAuctionSummary={careerAuctionSummary}
             careerOffers={careerOffers}
             careerRetired={careerRetired}
+            handleCareerContinueAfterAuction={handleCareerContinueAfterAuction}
             handleCareerStartNextMatch={handleCareerStartNextMatch}
             handleViewCareerHistory={handleViewCareerHistory}
           />

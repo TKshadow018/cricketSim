@@ -16,6 +16,7 @@ import {
   buildSaveSummary,
 } from './preMatchStageUtils';
 import CareerSetupStage from './CareerSetupStage';
+import CareerAuctionStage from './CareerAuctionStage';
 import CareerSeasonScheduleStage from './CareerSeasonScheduleStage';
 
 function PreMatchBasicStages(props) {
@@ -64,8 +65,10 @@ function PreMatchBasicStages(props) {
     careerDomesticCountry,
     careerDomesticTeams,
     careerGlobalPlayerPool,
+    careerAuctionSummary,
     careerOffers,
     careerRetired,
+    handleCareerContinueAfterAuction,
     handleCareerStartNextMatch,
     handleViewCareerHistory,
   } = props;
@@ -420,6 +423,18 @@ function PreMatchBasicStages(props) {
         careerDomesticTeams={careerDomesticTeams}
         careerGlobalPlayerPool={careerGlobalPlayerPool}
         careerOffers={careerOffers}
+        />
+      )}
+
+      {stage === matchStatusEnum.CareerAuction && (
+        <CareerAuctionStage
+          stageCommonProps={stageCommonProps}
+          careerSeason={careerSeason}
+          careerPlayerProfile={careerPlayerProfile}
+          careerDomesticCountry={careerDomesticCountry}
+          careerTeam={careerTeam}
+          careerAuctionSummary={careerAuctionSummary}
+          handleCareerContinueAfterAuction={handleCareerContinueAfterAuction}
         />
       )}
 
