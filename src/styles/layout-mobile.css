@@ -54,33 +54,6 @@
     display: none;
   }
 
-  .sim-top-strip {
-    margin-top: 0;
-    padding: 0.65rem;
-  }
-
-  .sim-stage-card {
-    padding: 0.8rem;
-  }
-
-  .sim-stage-header {
-    flex-wrap: wrap;
-  }
-
-  .sim-stage-header > div:first-child {
-    min-width: 0;
-  }
-
-  .sim-stage-header > :last-child {
-    margin-left: auto;
-  }
-
-  .sim-stage-content,
-  .sim-innings-layout,
-  .sim-xi-dnd-layout {
-    min-width: 0;
-  }
-
   .dashboard-history-list {
     max-height: 280px;
     overflow-y: auto;
@@ -114,66 +87,4 @@
     border-radius: 14px;
   }
 
-  .sim-stage-card {
-    padding: 0.65rem;
-    border-radius: 14px;
-  }
-
-  .sim-wave-title div {
-    font-size: clamp(1.25rem, 7vw, 1.8rem);
-  }
-
-  .sim-series-mode-grid,
-  .sim-series-length-grid,
-  .sim-card-grid,
-  .sim-flag-grid,
-  .sim-player-pick-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .sim-xi-role-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .sim-save-row-actions {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .sim-save-row-actions .app-button {
-    width: 100%;
-  }
-
-  .sim-innings-action {
-    align-items: stretch;
-  }
-
-  .sim-innings-action .app-button {
-    width: 100%;
-  }
-
-  .sim-score-row {
-    align-items: flex-start;
-  }
-
-  .sim-score-pill {
-    white-space: nowrap;
-  }
-
-  .sim-commentary-feed {
-    max-height: 360px;
-  }
-
-  .sim-condition-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .sim-toss-icons img {
-    width: min(28vw, 100px);
-    height: min(28vw, 100px);
-  }
-
-  .sim-confirm-modal .sim-save-row-actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
