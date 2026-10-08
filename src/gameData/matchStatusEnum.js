@@ -20,8 +20,9 @@ let matchStatusEnum =
     SetupTournamentFixtures: 17,
     TournamentChampion: 18,
     CareerSetup: 19,
-    CareerSeasonSchedule: 20,
-    CareerSeasonSummary: 21,
-    CareerHistory: 22,
+    CareerAuction: 20,
+    CareerSeasonSchedule: 21,
+    CareerSeasonSummary: 22,
+    CareerHistory: 23,
 };
 export { matchStatusEnum };
