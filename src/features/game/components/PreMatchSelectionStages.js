@@ -2,6 +2,7 @@ import React from 'react';
 import { matchStatusEnum } from '../../../gameData/matchStatusEnum';
 import StageShell from './StageShell';
 import AppButton from '../../../components/ui/AppButton';
+import PlayerNameWithType from './PlayerNameWithType';
 
 function PlayerCard({
   player,
@@ -31,7 +32,7 @@ function PlayerCard({
       onClick={onClick}
       disabled={disabled}
     >
-      <strong>{player.name}</strong>
+      <strong><PlayerNameWithType player={player} /></strong>
       <div className="sim-player-stat-row">
         <span className="sim-player-stat-pill sim-player-stat-batpace">BP {player.abilityToPlayPaceBall || 0}</span>
         <span className="sim-player-stat-pill sim-player-stat-batspin">BS {player.abilityToPlaySpinBall || 0}</span>
@@ -132,41 +133,66 @@ function XIStage({
       </div>
 
       <div className="sim-xi-role-grid">
-        <label>
-          Captain
-          <select value={roles?.captainId ?? ''} onChange={(event) => setRole('captainId', Number(event.target.value) || null)}>
-            <option value="">Select captain</option>
-            {selectedPlayers.map((player) => (
-              <option key={`cap-${teamKey}-${player.id}`} value={player.id} disabled={roles?.viceCaptainId === player.id}>
-                {player.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Vice Captain
-          <select value={roles?.viceCaptainId ?? ''} onChange={(event) => setRole('viceCaptainId', Number(event.target.value) || null)}>
-            <option value="">Select vice captain</option>
-            {selectedPlayers.map((player) => (
-              <option key={`vcap-${teamKey}-${player.id}`} value={player.id} disabled={roles?.captainId === player.id}>
-                {player.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Wicketkeeper
-          <select value={roles?.wicketKeeperId ?? ''} onChange={(event) => setRole('wicketKeeperId', Number(event.target.value) || null)}>
-            <option value="">Select wicketkeeper</option>
+        <div className="sim-role-picker">
+          <span>Captain</span>
+          <div className="sim-role-option-list">
+            {selectedPlayers.map((player) => {
+              const isSelected = roles?.captainId === player.id;
+              const disabled = roles?.viceCaptainId === player.id;
+              return (
+                <button
+                  key={`cap-${teamKey}-${player.id}`}
+                  type="button"
+                  className={`sim-role-option-btn ${isSelected ? 'active' : ''} ${disabled ? 'disabled' : ''}`.trim()}
+                  onClick={() => setRole('captainId', player.id)}
+                  disabled={disabled}
+                >
+                  <PlayerNameWithType player={player} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="sim-role-picker">
+          <span>Vice Captain</span>
+          <div className="sim-role-option-list">
+            {selectedPlayers.map((player) => {
+              const isSelected = roles?.viceCaptainId === player.id;
+              const disabled = roles?.captainId === player.id;
+              return (
+                <button
+                  key={`vcap-${teamKey}-${player.id}`}
+                  type="button"
+                  className={`sim-role-option-btn ${isSelected ? 'active' : ''} ${disabled ? 'disabled' : ''}`.trim()}
+                  onClick={() => setRole('viceCaptainId', player.id)}
+                  disabled={disabled}
+                >
+                  <PlayerNameWithType player={player} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="sim-role-picker">
+          <span>Wicketkeeper</span>
+          <div className="sim-role-option-list">
             {selectedPlayers
               .filter((player) => player.isWicketKeeper)
-              .map((player) => (
-                <option key={`wk-${teamKey}-${player.id}`} value={player.id}>
-                  {player.name}
-                </option>
-              ))}
-          </select>
-        </label>
+              .map((player) => {
+                const isSelected = roles?.wicketKeeperId === player.id;
+                return (
+                  <button
+                    key={`wk-${teamKey}-${player.id}`}
+                    type="button"
+                    className={`sim-role-option-btn ${isSelected ? 'active' : ''}`.trim()}
+                    onClick={() => setRole('wicketKeeperId', player.id)}
+                  >
+                    <PlayerNameWithType player={player} />
+                  </button>
+                );
+              })}
+          </div>
+        </div>
       </div>
 
       <div className="sim-save-row-actions">
@@ -331,6 +357,14 @@ function PreMatchSelectionStages(props) {
       {customPlayerModal.open ? (
         <div className="sim-confirm-overlay" role="dialog" aria-modal="true">
           <div className="sim-confirm-modal sim-custom-player-modal">
+            <button
+              type="button"
+              className="sim-modal-top-close"
+              aria-label="Close"
+              onClick={closeCustomModal}
+            >
+              ×
+            </button>
             <h4>Create Custom Player</h4>
             <div className="sim-custom-form-grid">
               <label>

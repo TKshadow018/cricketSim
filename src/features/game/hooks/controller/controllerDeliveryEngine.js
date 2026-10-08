@@ -8,9 +8,9 @@ import {
 } from '../../../../utils/speechUtils';
 import {
   formatBallProgress,
+  getEligibleBowlerIndices,
   getMaxOversPerBowler,
   getNextBatterIndex,
-  isEligibleBowler,
   randomFrom,
   replaceName,
 } from '../../../../utils/simulatorUtils';
@@ -42,7 +42,11 @@ export const processDelivery = ({
   setStageAction,
 }) => {
   const inningState = isFirstInnings ? firstInnings : secondInnings;
-  const { isOwnBatting, isUserBatting, isUserBowling, battingSide, bowlingSide } = getContext(isFirstInnings);
+  const { isOwnBatting, isUserBatting, isUserBowling, battingSide, bowlingSide } = getContext(
+    isFirstInnings,
+    undefined,
+    inningState
+  );
 
   if (!battingSide.length || !bowlingSide.length) {
     return;
@@ -348,7 +352,7 @@ export const processDelivery = ({
     nextSpecialBallUsedInOver = 0;
 
     if (isUserBowling) {
-      const hasEligibleBowler = bowlingSide.some(isEligibleBowler);
+      const hasEligibleBowler = getEligibleBowlerIndices(bowlingSide).length > 0;
       if (hasEligibleBowler) {
         nextWaitingForNextBowler = true;
         nextCurrentBowlerIndex = null;

@@ -8,7 +8,7 @@ function FlagTeamGrid({ teams, selectedName, onSelect, disabledName }) {
 
   return (
     <div className="sim-flag-grid">
-      {teams.map((team, idx) => {
+      {teams.map((team) => {
         const disabled = disabledName === team.name;
         return (
           <motion.button
@@ -17,9 +17,8 @@ function FlagTeamGrid({ teams, selectedName, onSelect, disabledName }) {
             className={`sim-flag-card ${selectedName === team.name ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
             aria-pressed={selectedName === team.name}
             onClick={() => !disabled && onSelect(team)}
-            whileHover={disabled || prefersReducedMotion ? undefined : { scale: 1.03 }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.15 }}
-            style={{ animationDelay: `${idx * 25}ms` }}
+            whileHover={disabled || prefersReducedMotion ? undefined : { opacity: 0.96 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.12 }}
           >
             <div className="sim-flag-holder">
               <img src={toPublicPath(team.image)} alt={team.name} />

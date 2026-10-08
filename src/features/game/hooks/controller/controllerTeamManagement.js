@@ -1,5 +1,6 @@
 import { announceTeamChoice, speak } from '../../../../utils/speechUtils';
 import { matchStatusEnum } from '../../../../gameData/matchStatusEnum';
+import { selectAIPlayingXI } from '../../utils/controllerCommonUtils';
 
 export const createTeamManagementHandlers = ({
   dispatch,
@@ -208,7 +209,7 @@ export const createTeamManagementHandlers = ({
   };
 
   const autoPickOpponentXI = () => {
-    const nextIds = availableOpponentPlayers.slice(0, 11).map((player) => player.id);
+    const nextIds = selectAIPlayingXI({ roster: availableOpponentPlayers });
     dispatch(setOpponentPlayingXIAction(nextIds));
     dispatch(setOpponentTeamRolesAction(pickDefaultRoles(availableOpponentPlayers, nextIds)));
   };

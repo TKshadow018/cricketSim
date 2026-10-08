@@ -72,8 +72,11 @@ function PreMatchStages({
   careerPlayerProfile,
   careerDomesticCountry,
   careerDomesticTeams,
+  careerGlobalPlayerPool,
+  careerAuctionSummary,
   careerOffers,
   careerRetired,
+  handleCareerContinueAfterAuction,
   handleCareerStartNextMatch,
   handleViewCareerHistory,
 }) {
@@ -268,8 +271,11 @@ function PreMatchStages({
         careerPlayerProfile={careerPlayerProfile}
         careerDomesticCountry={careerDomesticCountry}
         careerDomesticTeams={careerDomesticTeams}
+        careerGlobalPlayerPool={careerGlobalPlayerPool}
+        careerAuctionSummary={careerAuctionSummary}
         careerOffers={careerOffers}
         careerRetired={careerRetired}
+        handleCareerContinueAfterAuction={handleCareerContinueAfterAuction}
         handleCareerStartNextMatch={handleCareerStartNextMatch}
         handleViewCareerHistory={handleViewCareerHistory}
       />

@@ -1,7 +1,15 @@
 import { battingAction, bowlingAction } from '../../../../gameData/actionType';
 import { buildInitialInnings, buildRandomMatchCondition, resetMatchRuntime } from '../../gameSlice';
 import { announceTeamChoice, speak } from '../../../../utils/speechUtils';
-import { randomKey, MODE_QUICK, MODE_SERIES, MODE_TOURNAMENT } from '../../utils/controllerCommonUtils';
+import {
+  buildRandomBattingOrderCoeff,
+  ensurePlayerMeta,
+  randomKey,
+  MODE_QUICK,
+  MODE_SERIES,
+  MODE_TOURNAMENT,
+  selectAIPlayingXI,
+} from '../../utils/controllerCommonUtils';
 import { weather } from '../../../../gameData/matchCondition';
 import { getOpponentDecision } from '../../../../utils/simulatorUtils';
 import { matchStatusEnum } from '../../../../gameData/matchStatusEnum';
@@ -213,20 +221,24 @@ export const createCompetitionHandlers = ({
         b_ball: 0,
         b_wkt: 0,
       },
+      fitness: 100,
+      morale: 50,
+      battingOrderCoeff: buildRandomBattingOrderCoeff(payload),
     };
+    const normalizedCustomPlayer = ensurePlayerMeta(customPlayer);
 
     if (teamKey === 'own') {
-      const nextCustom = [...(ownCustomPlayers || []), customPlayer];
+      const nextCustom = [...(ownCustomPlayers || []), normalizedCustomPlayer];
       dispatch(setOwnCustomPlayersAction(nextCustom));
-      dispatch(setOwnPlayingXIAction([...ownSelectedXIIds, customPlayer.id].slice(0, 11)));
-      speak(`${customPlayer.name} created and added to ${ownTeam}.`);
+      dispatch(setOwnPlayingXIAction([...ownSelectedXIIds, normalizedCustomPlayer.id].slice(0, 11)));
+      speak(`${normalizedCustomPlayer.name} created and added to ${ownTeam}.`);
       return;
     }
 
-    const nextCustom = [...(opponentCustomPlayers || []), customPlayer];
+    const nextCustom = [...(opponentCustomPlayers || []), normalizedCustomPlayer];
     dispatch(setOpponentCustomPlayersAction(nextCustom));
-    dispatch(setOpponentPlayingXIAction([...opponentSelectedXIIds, customPlayer.id].slice(0, 11)));
-    speak(`${customPlayer.name} created and added to ${opponentTeam}.`);
+    dispatch(setOpponentPlayingXIAction([...opponentSelectedXIIds, normalizedCustomPlayer.id].slice(0, 11)));
+    speak(`${normalizedCustomPlayer.name} created and added to ${opponentTeam}.`);
   };
 
   const autoPickOwnXI = () => {
@@ -236,7 +248,7 @@ export const createCompetitionHandlers = ({
   };
 
   const autoPickOpponentXI = () => {
-    const nextIds = availableOpponentPlayers.slice(0, 11).map((player) => player.id);
+    const nextIds = selectAIPlayingXI({ roster: availableOpponentPlayers });
     dispatch(setOpponentPlayingXIAction(nextIds));
     dispatch(setOpponentTeamRolesAction(pickDefaultRoles(availableOpponentPlayers, nextIds)));
   };

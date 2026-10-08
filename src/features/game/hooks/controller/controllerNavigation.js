@@ -26,6 +26,8 @@ export const createNavigationHandlers = ({
   setCareerPlayerProfileAction,
   setCareerDomesticCountryAction,
   setCareerDomesticTeamsAction,
+  setCareerGlobalPlayerPoolAction,
+  setCareerAuctionSummaryAction,
   setCareerOffersAction,
   setCareerRetiredAction,
   setCareerSeasonAction,
@@ -160,6 +162,8 @@ export const createNavigationHandlers = ({
       dispatch(setCareerPlayerProfileAction(null));
       dispatch(setCareerDomesticCountryAction(''));
       dispatch(setCareerDomesticTeamsAction([]));
+      dispatch(setCareerGlobalPlayerPoolAction([]));
+      dispatch(setCareerAuctionSummaryAction(null));
       dispatch(setCareerOffersAction([]));
       dispatch(setCareerRetiredAction(false));
       dispatch(setCareerSeasonAction(0));

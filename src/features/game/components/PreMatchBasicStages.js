@@ -16,6 +16,7 @@ import {
   buildSaveSummary,
 } from './preMatchStageUtils';
 import CareerSetupStage from './CareerSetupStage';
+import CareerAuctionStage from './CareerAuctionStage';
 import CareerSeasonScheduleStage from './CareerSeasonScheduleStage';
 
 function PreMatchBasicStages(props) {
@@ -64,8 +65,11 @@ function PreMatchBasicStages(props) {
     careerPlayerProfile,
     careerDomesticCountry,
     careerDomesticTeams,
+    careerGlobalPlayerPool,
+    careerAuctionSummary,
     careerOffers,
     careerRetired,
+    handleCareerContinueAfterAuction,
     handleCareerStartNextMatch,
     handleViewCareerHistory,
   } = props;
@@ -131,6 +135,14 @@ function PreMatchBasicStages(props) {
           {saveToDelete ? (
             <div className="sim-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="delete-save-title" aria-describedby="delete-save-description">
               <div className="sim-confirm-modal">
+                <button
+                  type="button"
+                  className="sim-modal-top-close"
+                  aria-label="Close"
+                  onClick={() => setSaveToDelete(null)}
+                >
+                  ×
+                </button>
                 <h4 id="delete-save-title">Delete saved game?</h4>
                 <p id="delete-save-description">Are you sure you want to delete this save? This cannot be undone.</p>
                 <div className="sim-save-row-actions">
@@ -196,7 +208,7 @@ function PreMatchBasicStages(props) {
             </button>
             <button type="button" className={`sim-series-mode-card ${game.gameMode === 'career' ? 'active' : ''}`} aria-pressed={game.gameMode === 'career'} onClick={() => selectGameMode('career')}>
               <h4>Career</h4>
-              <p>Manage a national team across seasons.</p>
+              <p>Create a player and play through domestic seasons.</p>
             </button>
           </div>
         </StageShell>
@@ -415,7 +427,20 @@ function PreMatchBasicStages(props) {
         careerPlayerProfile={careerPlayerProfile}
         careerDomesticCountry={careerDomesticCountry}
         careerDomesticTeams={careerDomesticTeams}
+        careerGlobalPlayerPool={careerGlobalPlayerPool}
         careerOffers={careerOffers}
+        />
+      )}
+
+      {stage === matchStatusEnum.CareerAuction && (
+        <CareerAuctionStage
+          stageCommonProps={stageCommonProps}
+          careerSeason={careerSeason}
+          careerPlayerProfile={careerPlayerProfile}
+          careerDomesticCountry={careerDomesticCountry}
+          careerTeam={careerTeam}
+          careerAuctionSummary={careerAuctionSummary}
+          handleCareerContinueAfterAuction={handleCareerContinueAfterAuction}
         />
       )}
 
@@ -427,6 +452,8 @@ function PreMatchBasicStages(props) {
           careerMatchIndex={careerMatchIndex}
           careerSchedule={careerSchedule}
           careerStandings={careerStandings}
+          careerDomesticCountry={careerDomesticCountry}
+          careerDomesticTeams={careerDomesticTeams}
           careerPlayerProfile={careerPlayerProfile}
           careerRetired={careerRetired}
           handleCareerStartNextMatch={handleCareerStartNextMatch}

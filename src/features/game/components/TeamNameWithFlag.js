@@ -1,5 +1,6 @@
 import React from 'react';
 import { countries } from '../../../gameData/countries';
+import TeamNameWithLogo from './TeamNameWithLogo';
 
 const normalize = (value = '') => String(value).toLowerCase().replace(/[^a-z0-9]/g, '');
 const toPublicPath = (value = '') => String(value).replace('./', '/');
@@ -26,14 +27,7 @@ function TeamNameWithFlag({ teamName, className = '', showDashForEmpty = false }
     return showDashForEmpty ? <span className={className}>-</span> : null;
   }
 
-  const flagPath = getTeamFlagPath(teamName);
-
-  return (
-    <span className={`sim-team-with-flag ${className}`.trim()}>
-      {flagPath ? <img src={flagPath} alt={`${teamName} flag`} className="sim-team-with-flag-icon" /> : null}
-      <span>{teamName}</span>
-    </span>
-  );
+  return <TeamNameWithLogo teamName={teamName} className={className} />;
 }
 
 export default TeamNameWithFlag;
