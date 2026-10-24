@@ -55,10 +55,9 @@ function CareerSetupStage({
     domesticTeams.length > 0 &&
     globalPlayerPool.length > 0;
   const selectedPlayerType = PLAYER_TYPE_OPTIONS.find((option) => option.key === playerType) || PLAYER_TYPE_OPTIONS[0];
-  const selectedPlayerTypeThemeClass = `sim-career-player-preview--${String(selectedPlayerType.key || 'batsman').replace(/\s+/g, '-')}`;
+  const selectedPlayerTypeThemeClass = `sim-career-player-preview--${String(selectedPlayerType.key).replace(/\s+/g, '-')}`;
 
-  const generateDomesticLeagueAndOffers = (countryName) => {
-    if (!countryName) return;
+  const generateDomesticLeagueAndOffers = () => {
     const createdTeams = createDomesticTeamsForAllCountries(countryList);
     const createdPool = createGlobalCareerPlayerPool(countryList);
     setDomesticTeams(createdTeams);
@@ -152,7 +151,7 @@ function CareerSetupStage({
       <div style={{ marginTop: '10px' }}>
         <AppButton
           text="Generate Global Clubs & Player Pool"
-          onClick={() => generateDomesticLeagueAndOffers(selectedCountry)}
+          onClick={generateDomesticLeagueAndOffers}
           disabled={!canGenerateOffers}
           fullWidth
         />

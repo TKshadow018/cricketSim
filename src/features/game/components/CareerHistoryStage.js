@@ -24,8 +24,8 @@ function CareerHistoryStage({
 }) {
   const seasons = (careerSeasonHistory || []).slice().reverse();
 
-  const buildCompactAwardsSummary = (awards = []) => {
-    if (!Array.isArray(awards) || !awards.length) {
+  const buildCompactAwardsSummary = (awards) => {
+    if (!Array.isArray(awards)) {
       return '';
     }
 

@@ -7,7 +7,7 @@ import PlayerNameWithType from './PlayerNameWithType';
 function PlayerCard({
   player,
   cardKey,
-  draggable = false,
+  draggable,
   active = false,
   disabled = false,
   dragContext,
@@ -23,11 +23,7 @@ function PlayerCard({
       draggable={draggable}
       className={`sim-player-pick-btn ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}`.trim()}
       aria-pressed={active}
-      onDragStart={
-        dragContext
-          ? (event) => onDragStart(event, dragContext.teamKey, dragContext.sourceList, player.id)
-          : undefined
-      }
+      onDragStart={(event) => onDragStart(event, dragContext.teamKey, dragContext.sourceList, player.id)}
       onDragEnd={onDragEnd}
       onClick={onClick}
       disabled={disabled}

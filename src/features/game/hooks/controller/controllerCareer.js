@@ -191,10 +191,6 @@ const buildCareerTransferOffers = ({
 };
 
 const buildRandomDerangement = (size) => {
-  if (size <= 1) {
-    return Array.from({ length: size }, (_, index) => index);
-  }
-
   const base = Array.from({ length: size }, (_, index) => index);
   for (let attempt = 0; attempt < 60; attempt += 1) {
     const candidate = shuffleArray(base);
@@ -298,9 +294,6 @@ const applyOffseasonTransferMarket = ({ domesticTeams = [], careerPlayerProfile,
     teamNames.forEach((sourceTeam, sourceIndex) => {
       const destinationTeam = teamNames[destinationIndexes[sourceIndex]];
       const player = outgoingByTeam[sourceTeam]?.[round];
-      if (!player || !destinationTeam) {
-        return;
-      }
 
       incomingByTeam[destinationTeam].push(player);
       moves.push({
@@ -532,10 +525,6 @@ const resolveCareerLeagueCountry = ({ teams = [], careerTeam = '', fallbackCount
 };
 
 const filterDomesticTeamsForLeagueCountry = ({ teams = [], leagueCountry = '' }) => {
-  if (!leagueCountry) {
-    return Array.isArray(teams) ? teams : [];
-  }
-
   return (teams || []).filter((team) => team?.country === leagueCountry);
 };
 
@@ -619,11 +608,7 @@ const buildLastMatchContext = (fixture, teamName) => {
 const getLatestCompletedFixtureForTeam = (schedule = [], teamName, beforeIndex = schedule.length) => {
   for (let index = Math.min(beforeIndex, schedule.length) - 1; index >= 0; index -= 1) {
     const fixture = schedule[index];
-    if (!fixture?.isComplete) {
-      continue;
-    }
-
-    if (fixture.teamA === teamName || fixture.teamB === teamName) {
+    if (fixture?.isComplete && (fixture.teamA === teamName || fixture.teamB === teamName)) {
       return fixture;
     }
   }
@@ -696,10 +681,6 @@ const buildAllCountryLeagueSchedules = ({
 };
 
 const markContribution = (map, player, key) => {
-  if (!player) {
-    return;
-  }
-
   if (player.id !== undefined && player.id !== null) {
     const idKey = String(player.id);
     map[idKey] = {
@@ -1092,7 +1073,6 @@ export const createCareerFlowHandlers = ({
   setAutoSimMode,
 }) => {
   const launchCareerFixture = (match, nextSchedule, nextStats, nextDomesticTeams = careerDomesticTeams) => {
-    if (!match) return;
     const formatKey = resolveMatchTypeKeyForFormat(match.format);
     const domesticByName = (nextDomesticTeams || []).reduce((acc, team) => {
       if (team?.name) {

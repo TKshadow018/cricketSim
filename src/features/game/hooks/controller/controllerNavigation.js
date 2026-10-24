@@ -242,7 +242,7 @@ export const createNavigationHandlers = ({
       return;
     }
 
-    const teams = [tournamentUserTeam, ...(tournamentOpponentTeams || [])].filter(Boolean);
+    const teams = [tournamentUserTeam, ...tournamentOpponentTeams].filter(Boolean);
     const fixtures = buildRoundOneFixtures(teams);
     dispatch(setTournamentMatchesAction(fixtures));
     dispatch(setStageAction(matchStatusEnum.SetupTournamentFixtures));

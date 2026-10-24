@@ -68,7 +68,7 @@ const clampPlayerMetric = (value, min = 0, max = 100) => {
 };
 
 const hashSeed = (value) => {
-  const text = String(value || 'player');
+  const text = String(value);
   let hash = 0;
   for (let index = 0; index < text.length; index += 1) {
     hash = (hash * 31 + text.charCodeAt(index)) >>> 0;
@@ -76,7 +76,7 @@ const hashSeed = (value) => {
   return hash;
 };
 
-const inferPlayerBucket = (player = {}) => {
+const inferPlayerBucket = (player) => {
   const normalizedType = String(player?.playerType || '').trim().toLowerCase();
   const battingSkill = Number(player?.abilityToPlayPaceBall || 0) + Number(player?.abilityToPlaySpinBall || 0);
   const bowlingSkill = Math.max(Number(player?.paceAbility || 0), Number(player?.spinAbility || 0));
@@ -128,7 +128,7 @@ export const buildRandomBattingOrderCoeff = (player = {}) => {
   return min + Math.floor(Math.random() * (max - min + 1));
 };
 
-const buildDeterministicBattingOrderCoeff = (player = {}) => {
+const buildDeterministicBattingOrderCoeff = (player) => {
   const [min, max] = getBattingOrderCoeffRange(player);
   const seed = `${player?.id || ''}|${player?.name || ''}|${player?.team || ''}|${player?.country || ''}|${player?.playerType || ''}`;
   return min + (hashSeed(seed) % (max - min + 1));
@@ -226,7 +226,7 @@ export const shuffleArray = (input = []) => {
   return arr;
 };
 
-const addDaysToIsoDate = (baseDate, dayOffset = 0) => {
+const addDaysToIsoDate = (baseDate, dayOffset) => {
   const date = new Date(baseDate);
   date.setDate(date.getDate() + dayOffset);
   return date.toISOString().slice(0, 10);
@@ -242,8 +242,8 @@ export const buildRoundOneFixtures = (teams = [], startDate = new Date().toISOSt
       id: `R1-M${index + 1}`,
       round: 1,
       matchNumber: index + 1,
-      teamA: normalized[index * 2] || '',
-      teamB: normalized[index * 2 + 1] || '',
+      teamA: normalized[index * 2],
+      teamB: normalized[index * 2 + 1],
       date: addDaysToIsoDate(startDate, index),
       winnerTeam: '',
       summary: '',
@@ -310,11 +310,11 @@ export const buildPlayingXI = (allPlayers, selectedIds) => {
   return sortPlayersByBattingOrder(finalIds.map((id) => byId.get(id)).filter(Boolean));
 };
 
-const normalizeRoleType = (player = {}) => String(player?.playerType || '').trim().toLowerCase();
+const normalizeRoleType = (player) => String(player?.playerType || '').trim().toLowerCase();
 
-const isKeeper = (player = {}) => !!player?.isWicketKeeper || normalizeRoleType(player).includes('wicketkeeper');
+const isKeeper = (player) => !!player?.isWicketKeeper || normalizeRoleType(player).includes('wicketkeeper');
 
-const inferPrimaryRole = (player = {}) => {
+const inferPrimaryRole = (player) => {
   if (isKeeper(player)) {
     return 'wicketkeeper';
   }
@@ -339,7 +339,7 @@ const inferPrimaryRole = (player = {}) => {
   return 'batsman';
 };
 
-const inferBowlingStyle = (player = {}) => {
+const inferBowlingStyle = (player) => {
   const type = normalizeRoleType(player);
   if (type.includes('pace') || type.includes('pacer')) {
     return 'pace';
@@ -351,16 +351,16 @@ const inferBowlingStyle = (player = {}) => {
   return Number(player?.paceAbility || 0) >= Number(player?.spinAbility || 0) ? 'pace' : 'spin';
 };
 
-const isBowlerOrAllrounder = (player = {}) => {
+const isBowlerOrAllrounder = (player) => {
   const role = inferPrimaryRole(player);
   return role === 'bowler' || role === 'allrounder';
 };
 
-const battingScore = (player = {}) => Number(player?.abilityToPlayPaceBall || 0) + Number(player?.abilityToPlaySpinBall || 0);
-const bowlingScore = (player = {}) => Math.max(Number(player?.paceAbility || 0), Number(player?.spinAbility || 0));
-const isUnavailableForSelection = (player = {}) => Number(player?.fitness ?? 100) < 30 || Number(player?.morale ?? 50) < 10;
+const battingScore = (player) => Number(player?.abilityToPlayPaceBall || 0) + Number(player?.abilityToPlaySpinBall || 0);
+const bowlingScore = (player) => Math.max(Number(player?.paceAbility || 0), Number(player?.spinAbility || 0));
+const isUnavailableForSelection = (player) => Number(player.fitness) < 30 || Number(player.morale) < 10;
 
-const getPerformanceForPlayer = ({ player, byId = {}, byName = {} }) => {
+const getPerformanceForPlayer = ({ player, byId, byName }) => {
   const byIdEntry = byId[String(player?.id ?? '')];
   if (byIdEntry) {
     return byIdEntry;
@@ -406,9 +406,6 @@ export const selectAIPlayingXI = ({
     const maxBowlerAllrounders = 7;
 
     let targetBatsmen = Math.min(maxBatsmen, battingCandidates.length);
-    if (targetBatsmen < minBatsmen && battingCandidates.length >= minBatsmen) {
-      targetBatsmen = minBatsmen;
-    }
     if (targetBatsmen < minBatsmen && bowlerAllrounderCandidates.length >= maxBowlerAllrounders) {
       targetBatsmen = Math.min(targetBatsmen, minBatsmen);
     }
@@ -453,7 +450,7 @@ export const selectAIPlayingXI = ({
   }
 
   const selected = previousXIIds.map((id) => byId.get(String(id))).filter(Boolean).slice(0, 11);
-  const previousXIIdSet = new Set((previousXIIds || []).map((id) => String(id)));
+  const previousXIIdSet = new Set(previousXIIds.map((id) => String(id)));
   const selectedSet = new Set(selected.map((player) => String(player.id)));
 
   const getBench = () => players.filter((player) => !selectedSet.has(String(player.id)));
@@ -519,26 +516,22 @@ export const selectAIPlayingXI = ({
       return popBestBench((entry) => inferPrimaryRole(entry) === 'bowler', replacementSorterByBowling);
     }
 
-    if (role === 'allrounder') {
-      const counts = selectedRoleCounts();
-      if (counts.batsman < 4) {
-        const batsmanReplacement = popBestBench((entry) => inferPrimaryRole(entry) === 'batsman', replacementSorterByBatting);
-        if (batsmanReplacement) {
-          return batsmanReplacement;
-        }
+    const counts = selectedRoleCounts();
+    if (counts.batsman < 4) {
+      const batsmanReplacement = popBestBench((entry) => inferPrimaryRole(entry) === 'batsman', replacementSorterByBatting);
+      if (batsmanReplacement) {
+        return batsmanReplacement;
       }
-
-      if (counts.paceBowler + counts.spinBowler < 3) {
-        const bowlerReplacement = popBestBench((entry) => inferPrimaryRole(entry) === 'bowler', replacementSorterByBowling);
-        if (bowlerReplacement) {
-          return bowlerReplacement;
-        }
-      }
-
-      return popBestBench((entry) => inferPrimaryRole(entry) === 'allrounder', replacementSorterByBowling);
     }
 
-    return null;
+    if (counts.paceBowler + counts.spinBowler < 3) {
+      const bowlerReplacement = popBestBench((entry) => inferPrimaryRole(entry) === 'bowler', replacementSorterByBowling);
+      if (bowlerReplacement) {
+        return bowlerReplacement;
+      }
+    }
+
+    return popBestBench((entry) => inferPrimaryRole(entry) === 'allrounder', replacementSorterByBowling);
   };
 
   selected.forEach((player, index) => {

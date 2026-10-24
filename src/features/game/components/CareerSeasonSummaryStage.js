@@ -39,10 +39,10 @@ const buildSeasonPlayerIndex = ({ careerDomesticTeams, careerPlayerStats, career
         rosterByTeamAndName.get(`${entry.team}::${entry.name}`) ||
         null;
 
-      const battingAverage = Number(entry.outs || 0) > 0 ? Number(entry.runs || 0) / Number(entry.outs || 1) : Number(entry.runs || 0);
-      const strikeRate = Number(entry.balls || 0) > 0 ? (Number(entry.runs || 0) * 100) / Number(entry.balls || 1) : 0;
-      const bowlingAverage = Number(entry.wickets || 0) > 0 ? Number(entry.runsConceded || 0) / Number(entry.wickets || 1) : 999;
-      const economy = Number(entry.ballsBowled || 0) > 0 ? (Number(entry.runsConceded || 0) * 6) / Number(entry.ballsBowled || 1) : 99;
+      const battingAverage = Number(entry.outs || 0) > 0 ? Number(entry.runs || 0) / Number(entry.outs) : Number(entry.runs || 0);
+      const strikeRate = Number(entry.balls || 0) > 0 ? (Number(entry.runs || 0) * 100) / Number(entry.balls) : 0;
+      const bowlingAverage = Number(entry.wickets || 0) > 0 ? Number(entry.runsConceded || 0) / Number(entry.wickets) : 999;
+      const economy = Number(entry.ballsBowled || 0) > 0 ? (Number(entry.runsConceded || 0) * 6) / Number(entry.ballsBowled) : 99;
       const resolvedAge =
         careerPlayerProfile?.playerId !== undefined &&
         careerPlayerProfile?.playerId !== null &&
@@ -93,7 +93,7 @@ const buildMomAwardsMap = (careerSchedule = []) => {
   return counts;
 };
 
-const resolveSeasonAwards = (players = [], momAwardsMap = new Map()) => {
+const resolveSeasonAwards = (players, momAwardsMap) => {
   const withMomCounts = players.map((entry) => {
     const momKey = `${entry.team}::${entry.playerId ?? ''}::${entry.name}`;
     const momAwards = Number(momAwardsMap.get(momKey)?.count || 0);
@@ -115,7 +115,7 @@ const resolveSeasonAwards = (players = [], momAwardsMap = new Map()) => {
       Number(right.runs || 0) - Number(left.runs || 0) ||
       right.battingAverage - left.battingAverage ||
       right.strikeRate - left.strikeRate ||
-      String(left.name || '').localeCompare(String(right.name || ''))
+      String(left.name).localeCompare(String(right.name))
   )[0] || null;
 
   const bestBowler = [...withMomCounts].sort(
@@ -123,11 +123,11 @@ const resolveSeasonAwards = (players = [], momAwardsMap = new Map()) => {
       Number(right.wickets || 0) - Number(left.wickets || 0) ||
       left.bowlingAverage - right.bowlingAverage ||
       left.economy - right.economy ||
-      String(left.name || '').localeCompare(String(right.name || ''))
+      String(left.name).localeCompare(String(right.name))
   )[0] || null;
 
   const youngPlayer = [...withMomCounts]
-    .filter((entry) => Number(entry.age || 99) < 23)
+    .filter((entry) => Number(entry.age) < 23)
     .sort(
       (left, right) =>
         right.allRoundScore - left.allRoundScore ||
@@ -204,7 +204,7 @@ function CareerSeasonSummaryStage({
     format,
     rows: sortStandings(getCareerFormatStandings(careerStandings || {}, format)),
   }));
-  const t20Standings = standingsByFormat.find((entry) => entry.format === 't20')?.rows || [];
+  const t20Standings = standingsByFormat.find((entry) => entry.format === 't20')?.rows;
   const topTeam = t20Standings[0];
   const userStanding = t20Standings.find((row) => row.team === careerTeam);
   const progressionNotes = buildSeasonProgressionNotes(careerPlayerStats);

@@ -91,7 +91,7 @@ export const resolveOutcome = ({
   const pitchProfile = pitchType[matchCondition.pitch] || pitchType.sporting;
   const outfieldProfile = outfieldType[matchCondition.outfield] || outfieldType.lushGreen;
   const isPaceBowler = (bowler?.paceAbility || 0) >= (bowler?.spinAbility || 0);
-  const bowlingAbility = isPaceBowler ? bowler?.paceAbility || 0 : bowler?.spinAbility || 0;
+  const bowlingAbility = isPaceBowler ? bowler?.paceAbility || 0 : bowler.spinAbility;
   const appliedBattingIntent = isUserBatting && inningState.freeHitArmed ? battingAction.freeHit : battingIntent;
   const appliedBowlingIntent = bowlingIntent;
 
@@ -101,15 +101,15 @@ export const resolveOutcome = ({
     }
 
     Object.entries(delta).forEach(([key, value]) => {
-      weights[key] = (weights[key] || 0) + value;
+      weights[key] += value;
     });
   };
 
   const toPercentAdjusted = (value, percent) => value + value * percent;
-  const abilityForPaceBase = (striker?.abilityToPlayPaceBall || 50) + (pitchProfile.goodForBatting || 0);
-  const abilityForSpinBase = (striker?.abilityToPlaySpinBall || 50) + (pitchProfile.goodForBatting || 0);
-  const bowlerPaceBase = (bowler?.paceAbility || 40) + (pitchProfile.goodForPaceBowling || 0);
-  const bowlerSpinBase = (bowler?.spinAbility || 35) + (pitchProfile.goodForSpinBowling || 0);
+  const abilityForPaceBase = (striker?.abilityToPlayPaceBall || 50) + pitchProfile.goodForBatting;
+  const abilityForSpinBase = (striker?.abilityToPlaySpinBall || 50) + pitchProfile.goodForBatting;
+  const bowlerPaceBase = (bowler?.paceAbility || 40) + pitchProfile.goodForPaceBowling;
+  const bowlerSpinBase = (bowler?.spinAbility || 35) + pitchProfile.goodForSpinBowling;
 
   let battingPaceAbility = abilityForPaceBase;
   let battingSpinAbility = abilityForSpinBase;
@@ -151,10 +151,10 @@ export const resolveOutcome = ({
       return order[currentIndex - 1];
     }
 
-    return order[currentIndex] || 't20';
+    return order[currentIndex];
   })();
 
-  const weights = { ...(baseMatchWeights[activeMatchTypeKey] || baseMatchWeights.t20) };
+  const weights = { ...baseMatchWeights[activeMatchTypeKey] };
 
   if (outfieldProfile.boundaryScoring < 4) {
     weights['6'] -= 1;
@@ -207,9 +207,6 @@ export const resolveOutcome = ({
   normalized['0'] = Math.max(0, 100 - nonDotTotal);
 
   const total = outcomes.reduce((sum, outcome) => sum + normalized[outcome], 0);
-  if (total < 100) {
-    normalized['0'] += 100 - total;
-  }
   if (total > 100) {
     normalized['0'] = Math.max(0, normalized['0'] - (total - 100));
   }
@@ -221,9 +218,6 @@ export const resolveOutcome = ({
     }
   });
 
-  while (outcomePossibilityArray.length < 100) {
-    outcomePossibilityArray.push('0');
-  }
   if (outcomePossibilityArray.length > 100) {
     outcomePossibilityArray.length = 100;
   }

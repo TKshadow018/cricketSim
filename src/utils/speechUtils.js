@@ -158,21 +158,18 @@ class SpeechHandler {
   }
 
   announceTeamChoice(teamName, action) {
-    const currentLang = getSavedLanguage();
-    const message = `${teamName} ${getLocalizedText('speech.choseToFirst', currentLang)} ${action} ${getLocalizedText('toss.first', currentLang)}`;
+    const message = `${teamName} ${getLocalizedText('speech.choseToFirst')} ${action} ${getLocalizedText('toss.first')}`;
     this.speechHandler(message);
   }
 
   announceTarget(teamName, runs) {
-    const currentLang = getSavedLanguage();
-    const message = `${teamName} ${getLocalizedText('speech.mustScore', currentLang)} ${runs + 1} ${getLocalizedText('speech.toWin', currentLang)}`;
+    const message = `${teamName} ${getLocalizedText('speech.mustScore')} ${runs + 1} ${getLocalizedText('speech.toWin')}`;
     this.speechHandler(message);
   }
 
   announceMatchResult(teamName, margin, type = "runs") {
-    const currentLang = getSavedLanguage();
-    const runsText = getLocalizedText('gamePlay.runs', currentLang);
-    const message = `${teamName} ${getLocalizedText('speech.lostMatchBy', currentLang)} ${margin} ${runsText}`;
+    const runsText = getLocalizedText('gamePlay.runs');
+    const message = `${teamName} ${getLocalizedText('speech.lostMatchBy')} ${margin} ${runsText}`;
     this.speechHandler(message);
   }
 

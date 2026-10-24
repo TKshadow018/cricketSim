@@ -479,10 +479,6 @@ const secondaryBowlingField = (player = {}) =>
 
 const distributePointsByWeights = (totalPoints, weightedFields = []) => {
   const roundedTotal = Math.round(Number(totalPoints || 0));
-  if (!roundedTotal || !weightedFields.length) {
-    return {};
-  }
-
   const sign = roundedTotal >= 0 ? 1 : -1;
   const absoluteTotal = Math.abs(roundedTotal);
   const positiveWeights = weightedFields.map((entry) => ({
@@ -663,7 +659,6 @@ const pickWeightedAiPlayerType = () => {
       return AI_PLAYER_TYPE_DISTRIBUTION[i].key;
     }
   }
-  return 'batsman';
 };
 
 export const createGeneratedDomesticPlayer = ({ id, country, playerType: forcedPlayerType }) => {
@@ -673,7 +668,7 @@ export const createGeneratedDomesticPlayer = ({ id, country, playerType: forcedP
   return ensurePlayerMeta({
     ...personData,
     id,
-    country,
+    country: country || personData.country || '',
     playerType,
   });
 };
@@ -858,10 +853,6 @@ export const assignGlobalPoolPlayersToDomesticTeams = ({
     }
 
     const toAssign = Math.min(normalizedStep, targetPerTeam - currentCount);
-    if (!toAssign) {
-      return;
-    }
-
     const currentLocal = currentPlayers.filter((player) => player.country === team.country).length;
     const minLocalAfterAssign = Math.ceil((currentCount + toAssign) * minimumLocalRatio);
     const requiredLocalAdds = Math.max(0, minLocalAfterAssign - currentLocal);
@@ -974,19 +965,10 @@ const countOpenAuctionDeficitTypes = (team) => {
 };
 
 const canTeamSpendOnAuctionPlayer = (team, player) => {
-  const remainingSlots = Math.max(0, Number(team?.squadTarget || 0) - Number(team?.players?.length || 0));
   const openDeficitTypes = countOpenAuctionDeficitTypes(team);
 
-  if (openDeficitTypes <= 0) {
-    return true;
-  }
-
-  if (!playerHelpsAuctionDeficit(team, player)) {
-    return false;
-  }
-
-  if (remainingSlots <= openDeficitTypes) {
-    return true;
+  if (openDeficitTypes > 0) {
+    return playerHelpsAuctionDeficit(team, player);
   }
 
   return true;
@@ -1029,14 +1011,6 @@ const resolveUniqueBidAmount = ({ amount, minBid, maxBid, usedAmounts = new Set(
       return candidate;
     }
   }
-
-  for (let fallback = safeMin; fallback <= safeMax; fallback += 100) {
-    if (!usedAmounts.has(fallback)) {
-      return fallback;
-    }
-  }
-
-  return startingPoint;
 };
 
 export const runCareerAuction = ({
@@ -1141,9 +1115,7 @@ export const runCareerAuction = ({
   let auctionPool = shuffleArray([...selectedDomestic, ...selectedForeign]);
   if (careerPlayer?.id) {
     const careerEntry = poolWithMeta.find((player) => String(player.id) === String(careerPlayer.id));
-    if (careerEntry) {
-      auctionPool = [careerEntry, ...auctionPool];
-    }
+    auctionPool = [careerEntry, ...auctionPool];
   }
 
   const auctionTimeline = [];
@@ -1239,13 +1211,7 @@ export const runCareerAuction = ({
           }
           return team.foreignCount < team.foreignTarget;
         })
-        .sort((left, right) => {
-          const needGap = resolveAuctionNeedScore({ team: right, player }) - resolveAuctionNeedScore({ team: left, player });
-          if (needGap !== 0) {
-            return needGap;
-          }
-          return Number(right.budget || 0) - Number(left.budget || 0);
-        })[0] || null;
+        .sort((left, right) => Number(right.budget || 0) - Number(left.budget || 0))[0] || null;
 
       if (forcedTeam) {
         interestedBids = [{
@@ -1499,10 +1465,6 @@ export const buildCareerOffers = (domesticTeams = [], count = 3) => {
 
 const buildRoundRobinFixturesForFormat = (teamNames = [], format) => {
   const baseTeams = shuffleArray((teamNames || []).filter(Boolean));
-  if (baseTeams.length < 2) {
-    return [];
-  }
-
   const hasOddCount = baseTeams.length % 2 !== 0;
   const rotation = hasOddCount ? [...baseTeams, null] : [...baseTeams];
   const totalTeams = rotation.length;
@@ -1738,12 +1700,12 @@ const buildCreatedPlayerMatchContribution = (format) => {
 };
 
 const allocateTotals = (total, count, weights = []) => {
-  if (!count || total <= 0) {
-    return Array.from({ length: count }, () => 0);
+  if (!count) {
+    return [];
   }
 
-  const safeWeights = Array.from({ length: count }, (_, index) => Math.max(1, Number(weights[index] || 1)));
-  const weightSum = safeWeights.reduce((sum, weight) => sum + weight, 0) || count;
+  const safeWeights = Array.from({ length: count }, (_, index) => Math.max(1, Number(weights[index])));
+  const weightSum = safeWeights.reduce((sum, weight) => sum + weight, 0);
   const values = safeWeights.map((weight) => Math.max(0, Math.floor((total * weight) / weightSum)));
   let remainder = total - values.reduce((sum, value) => sum + value, 0);
 

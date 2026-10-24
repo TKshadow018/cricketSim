@@ -104,10 +104,10 @@ function CareerAuctionStage({
 
   const liveBudgetRows = React.useMemo(() => {
     if (isAtFinalAuctionState) {
-      return budgetRows || [];
+      return budgetRows;
     }
 
-    const baseByTeam = (budgetRows || []).reduce((acc, row) => {
+    const baseByTeam = budgetRows.reduce((acc, row) => {
       acc[row.team] = {
         ...row,
         signings: 0,
@@ -159,7 +159,7 @@ function CareerAuctionStage({
   }, [budgetRows, timeline, currentIndex, isAtFinalAuctionState]);
 
   const quotaSummary = React.useMemo(() => {
-    const rows = liveBudgetRows || [];
+    const rows = liveBudgetRows;
     const total = rows.length;
     const passingAll = rows.filter((row) => {
       const wkPass = Number(row.roleCounts?.wicketkeepers || 0) >= Number(minimumRoleLimits.wicketkeepers || 2);
@@ -179,7 +179,7 @@ function CareerAuctionStage({
 
   const teamMomentumRows = React.useMemo(() => {
     if (isAtFinalAuctionState) {
-      const rows = (budgetRows || []).map((row) => ({
+      const rows = budgetRows.map((row) => ({
         team: row.team,
         country: row.country,
         signings: Number(row.signings || 0),
@@ -195,7 +195,7 @@ function CareerAuctionStage({
         .slice(0, 8);
     }
 
-    const teamMap = (budgetRows || []).reduce((acc, row) => {
+    const teamMap = budgetRows.reduce((acc, row) => {
       acc[row.team] = {
         team: row.team,
         country: row.country,
@@ -322,7 +322,7 @@ function CareerAuctionStage({
             max={1800}
             step={50}
             value={playbackMs}
-            onChange={(event) => setPlaybackMs(Number(event.target.value) || 900)}
+            onChange={(event) => setPlaybackMs(Number(event.target.value))}
             style={{ width: '180px' }}
           />
         </div>
