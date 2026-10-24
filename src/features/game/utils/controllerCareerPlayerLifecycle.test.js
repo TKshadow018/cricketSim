@@ -1,6 +1,10 @@
 import { applyDomesticMatchPlayerUpdates, applyEndOfSeasonPlayerAbilityUpdates } from './controllerCareerScheduleUtils';
 import { buildPlayingXI, ensurePlayerMeta, getBattingOrderCoeffRange, selectAIPlayingXI } from './controllerCommonUtils';
 
+jest.mock('faker-user', () => ({
+  createPerson: jest.fn(() => ({ name: 'Test Player' })),
+}));
+
 describe('player lifecycle metadata', () => {
   test('assigns default fitness, morale, form, confidence, and batting-order coefficient within type range', () => {
     const player = ensurePlayerMeta({

@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { isDebugMode } from '../config/runtimeConfig';
+import { isDebugAuthBypassEnabled } from '../utils/runtimeFlags';
 
 const readConfig = (key, fallback = '') => (process.env[key] || '').trim() || fallback;
 
@@ -16,15 +16,20 @@ const firebaseConfig = {
   measurementId: readConfig('REACT_APP_FIREBASE_MEASUREMENT_ID', ''), // HIDDEN FOR SECURITY REASON
 };
 
-if (!isDebugMode && (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.appId)) {
-  console.error('Firebase config is incomplete. Check your .env values.');
+const missingFirebaseConfig = ['apiKey', 'projectId', 'appId'].filter((key) => !firebaseConfig[key]);
+
+if (!isDebugAuthBypassEnabled && missingFirebaseConfig.length > 0) {
+  throw new Error(
+    `Firebase configuration is missing ${missingFirebaseConfig.join(', ')}. ` +
+    'Set the corresponding REACT_APP_FIREBASE_* values in .env, or enable REACT_APP_DEBUG=true for local development.'
+  );
 }
 
-const app = initializeApp(firebaseConfig);
+const app = isDebugAuthBypassEnabled ? null : initializeApp(firebaseConfig);
 
 let analytics = null;
 
-if (typeof window !== 'undefined') {
+if (app && typeof window !== 'undefined') {
   isSupported().then((supported) => {
     if (supported) {
       analytics = getAnalytics(app);
@@ -32,6 +37,6 @@ if (typeof window !== 'undefined') {
   });
 }
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const auth = app ? getAuth(app) : null;
+export const db = app ? getFirestore(app) : null;
 export { analytics };
