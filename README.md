@@ -64,10 +64,10 @@ The simulator progresses through these stages:
 	Winner decides bat/bowl. If opponent wins, follow prompted continuation choice.
 
 10. **Select Your XI**  
-	 Choose exactly 11 players, assign captain/vice-captain/wicketkeeper.
+	 Choose exactly 11 players, assign a captain, a different vice-captain, and a wicketkeeper. At least 5 players must be pace all-rounders, spin all-rounders, pacers, or spinners.
 
 11. **Select Opponent XI**  
-	 Choose opponent XI and roles (or auto-pick).
+	 Choose opponent XI and roles (or auto-pick); the same XI and role requirements apply.
 
 12. **Team One Bat**  
 	 Ball-by-ball first innings.

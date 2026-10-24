@@ -1,4 +1,5 @@
 import React from 'react';
+import { getPlayerType, PLAYER_TYPES } from '../../../gameData/playerTypes';
 
 const PLAYER_TYPE_ICONS = {
   batsman: '/asset/img/icon/playerType/batsman.png',
@@ -9,72 +10,32 @@ const PLAYER_TYPE_ICONS = {
   spinAllrounder: '/asset/img/icon/playerType/allrounder spin.png',
 };
 
-const normalizeText = (value) => String(value || '').trim().toLowerCase();
-
-const inferTypeFromText = (playerTypeText) => {
-  const normalized = normalizeText(playerTypeText);
-  if (!normalized) {
-    return '';
-  }
-
-  if (normalized.includes('wicketkeeper')) {
+export const resolvePlayerTypeKey = (input = {}) => {
+  const type = getPlayerType(input);
+  if (type === PLAYER_TYPES.WICKETKEEPER) {
     return 'wicketkeeper';
   }
-  if (normalized.includes('pace allrounder')) {
+  if (type === PLAYER_TYPES.PACE_ALLROUNDER) {
     return 'paceAllrounder';
   }
-  if (normalized.includes('spin allrounder')) {
+  if (type === PLAYER_TYPES.SPIN_ALLROUNDER) {
     return 'spinAllrounder';
   }
-  if (normalized.includes('pacer') || normalized.includes('bowler pacer')) {
+  if (type === PLAYER_TYPES.PACER) {
     return 'pacer';
   }
-  if (normalized.includes('spinner') || normalized.includes('spiner') || normalized.includes('bowler spinner')) {
+  if (type === PLAYER_TYPES.SPINER) {
     return 'spinner';
   }
-  if (normalized.includes('allrounder')) {
-    return normalized.includes('spin') ? 'spinAllrounder' : 'paceAllrounder';
+  if (type === 'spinner') {
+    return 'spinner';
   }
-  if (normalized.includes('batsman') || normalized.includes('bowler')) {
-    return normalized.includes('bowler') ? 'pacer' : 'batsman';
-  }
-
-  return '';
-};
-
-export const resolvePlayerTypeKey = (input = {}) => {
-  const {
-    playerType,
-    isWicketKeeper,
-    paceAbility = 0,
-    spinAbility = 0,
-    abilityToPlayPaceBall = 0,
-    abilityToPlaySpinBall = 0,
-  } = input;
-
-  if (isWicketKeeper) {
-    return 'wicketkeeper';
-  }
-
-  const fromText = inferTypeFromText(playerType);
-  if (fromText) {
-    return fromText;
-  }
-
-  const battingTotal = Number(abilityToPlayPaceBall || 0) + Number(abilityToPlaySpinBall || 0);
-  const pace = Number(paceAbility || 0);
-  const spin = Number(spinAbility || 0);
-
-  if (battingTotal >= 120 && (pace >= 55 || spin >= 55)) {
-    return pace >= spin ? 'paceAllrounder' : 'spinAllrounder';
-  }
-  if (pace >= 55 && pace >= spin) {
+  if (type === 'bowler' || type === 'bowler pacer') {
     return 'pacer';
   }
-  if (spin >= 55 && spin > pace) {
-    return 'spinner';
+  if (type === 'allrounder') {
+    return 'paceAllrounder';
   }
-
   return 'batsman';
 };
 

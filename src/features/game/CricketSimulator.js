@@ -118,6 +118,8 @@ function CricketSimulator() {
     opponentAvailablePool,
     ownSelectedXIIds,
     opponentSelectedXIIds,
+    ownBattingOrderIds,
+    opponentBattingOrderIds,
     ownSelectedXIPlayers,
     opponentSelectedXIPlayers,
     ownTeamRoles,
@@ -135,6 +137,8 @@ function CricketSimulator() {
     createCustomPlayer,
     autoPickOwnXI,
     autoPickOpponentXI,
+    autoPositionOwnXI,
+    autoPositionOpponentXI,
     startMatchWithSelectedXI,
     buildTeamOneScorecard,
     buildTeamTwoScorecard,
@@ -1312,6 +1316,8 @@ function CricketSimulator() {
             opponentAvailablePool={opponentAvailablePool}
             ownSelectedXIIds={ownSelectedXIIds}
             opponentSelectedXIIds={opponentSelectedXIIds}
+            ownBattingOrderIds={ownBattingOrderIds}
+            opponentBattingOrderIds={opponentBattingOrderIds}
             ownSelectedXIPlayers={ownSelectedXIPlayers}
             opponentSelectedXIPlayers={opponentSelectedXIPlayers}
             ownTeamRoles={ownTeamRoles}
@@ -1329,6 +1335,8 @@ function CricketSimulator() {
             createCustomPlayer={createCustomPlayer}
             autoPickOwnXI={autoPickOwnXI}
             autoPickOpponentXI={autoPickOpponentXI}
+            autoPositionOwnXI={autoPositionOwnXI}
+            autoPositionOpponentXI={autoPositionOpponentXI}
             startMatchWithSelectedXI={startMatchWithSelectedXI}
             beginCareer={beginCareer}
             careerTeam={careerTeam}

@@ -3,6 +3,7 @@ import { matchStatusEnum } from '../../../gameData/matchStatusEnum';
 import StageShell from './StageShell';
 import AppButton from '../../../components/ui/AppButton';
 import PlayerNameWithType from './PlayerNameWithType';
+import { countBowlingRolePlayers } from '../../../gameData/playerTypes';
 
 function PlayerCard({
   player,
@@ -48,6 +49,7 @@ function XIStage({
   title,
   subtitle,
   selectedCount,
+  battingOrderIds,
   availablePool,
   selectedPlayers,
   teamKey,
@@ -56,10 +58,14 @@ function XIStage({
   movePlayer,
   removePlayer,
   autoPick,
+  autoPosition,
+  autoPositionError,
   openCustomModal,
   primaryActionText,
   primaryAction,
   primaryDisabled,
+  xiReady,
+  requireBowlingQuota,
   stageCommonProps,
   setupBackSlot,
   onDropToAvailable,
@@ -67,6 +73,36 @@ function XIStage({
   onDragStart,
   onDragEnd,
 }) {
+  const bowlingRoleCount = countBowlingRolePlayers(selectedPlayers);
+  const missingRequirements = [];
+  if (selectedCount !== 11 || !xiReady) {
+    missingRequirements.push(`Select exactly 11 players (${selectedCount}/11 selected).`);
+  } else {
+    if (!roles?.captainId) {
+      missingRequirements.push('Choose a captain.');
+    }
+    if (!roles?.viceCaptainId || roles.viceCaptainId === roles.captainId) {
+      missingRequirements.push('Choose a different vice captain.');
+    }
+    if (
+      !roles?.wicketKeeperId ||
+      !selectedPlayers.some(
+        (player) => player.id === roles.wicketKeeperId && player.isWicketKeeper
+      )
+    ) {
+      missingRequirements.push(
+        selectedPlayers.some((player) => player.isWicketKeeper)
+          ? 'Choose a wicketkeeper.'
+          : 'Select a wicketkeeper for the XI.'
+      );
+    }
+  }
+  if (requireBowlingQuota && bowlingRoleCount < 5) {
+    missingRequirements.push(
+      `Select at least 5 bowling-role players (${bowlingRoleCount}/5 selected).`
+    );
+  }
+
   return (
     <StageShell {...stageCommonProps} title={title} subtitle={subtitle} rightSlot={setupBackSlot} dark>
       <p className="sim-section-title" role="status" aria-live="polite">
@@ -125,7 +161,7 @@ function XIStage({
                 onDragStart={onDragStart}
                 onDragEnd={onDragEnd}
                 onClick={() => removePlayer(player.id)}
-                hint="Select to remove"
+                hint={`Select to remove${battingOrderIds?.includes(player.id) ? ` · Batting position ${battingOrderIds.indexOf(player.id) + 1}` : ''}`}
               />
             ))}
           </div>
@@ -198,8 +234,23 @@ function XIStage({
       <div className="sim-save-row-actions">
         <AppButton text="Auto Pick 11" variant="secondary" fullWidth={false} onClick={autoPick} />
         <AppButton text="Create Custom Player" variant="secondary" fullWidth={false} onClick={() => openCustomModal(teamKey)} />
-        <AppButton text={primaryActionText} fullWidth={false} onClick={primaryAction} disabled={primaryDisabled} />
+        <AppButton
+          text="Auto Select Batting Order"
+          variant="secondary"
+          fullWidth={false}
+          onClick={autoPosition}
+          disabled={selectedCount !== 11}
+        />
+        <div className="sim-primary-action-group">
+          <AppButton text={primaryActionText} fullWidth={false} onClick={primaryAction} disabled={primaryDisabled} />
+          {primaryDisabled && missingRequirements.length > 0 ? (
+            <p className="sim-disabled-action-reason" role="status" aria-live="polite">
+              {missingRequirements.join(' ')}
+            </p>
+          ) : null}
+        </div>
       </div>
+      {autoPositionError ? <p role="alert" className="sim-inline-error">{autoPositionError}</p> : null}
     </StageShell>
   );
 }
@@ -207,6 +258,7 @@ function XIStage({
 function PreMatchSelectionStages(props) {
   const {
     stage,
+    requireBowlingQuota,
     stageCommonProps,
     setupBackSlot,
     tournamentMatches,
@@ -217,6 +269,8 @@ function PreMatchSelectionStages(props) {
     updateTournamentFixture,
     ownSelectedXIIds,
     opponentSelectedXIIds,
+    ownBattingOrderIds,
+    opponentBattingOrderIds,
     ownAvailablePool,
     opponentAvailablePool,
     ownSelectedXIPlayers,
@@ -235,6 +289,9 @@ function PreMatchSelectionStages(props) {
     removeOpponentPlayerFromXI,
     autoPickOwnXI,
     autoPickOpponentXI,
+    autoPositionOwnXI,
+    autoPositionOpponentXI,
+    autoPositionError,
     openCustomModal,
     startMatchWithSelectedXI,
     goToNextStage,
@@ -307,6 +364,7 @@ function PreMatchSelectionStages(props) {
           title="Select Your Team"
           subtitle="Choose exactly 11 players for your playing XI."
           selectedCount={ownSelectedXIIds.length}
+          battingOrderIds={ownBattingOrderIds}
           availablePool={ownAvailablePool}
           selectedPlayers={ownSelectedXIPlayers}
           teamKey="own"
@@ -315,10 +373,18 @@ function PreMatchSelectionStages(props) {
           movePlayer={moveOwnPlayerToXI}
           removePlayer={removeOwnPlayerFromXI}
           autoPick={autoPickOwnXI}
+          autoPosition={autoPositionOwnXI}
+          autoPositionError={autoPositionError}
           openCustomModal={openCustomModal}
           primaryActionText="Continue"
           primaryAction={goToNextStage}
-          primaryDisabled={!ownXIReady || !ownRolesReady}
+          primaryDisabled={
+            !ownXIReady ||
+            !ownRolesReady ||
+            (requireBowlingQuota && countBowlingRolePlayers(ownSelectedXIPlayers) < 5)
+          }
+          xiReady={ownXIReady}
+          requireBowlingQuota={requireBowlingQuota}
           stageCommonProps={stageCommonProps}
           setupBackSlot={setupBackSlot}
           onDropToAvailable={onDropToAvailable}
@@ -333,6 +399,7 @@ function PreMatchSelectionStages(props) {
           title="Select Opponent Team"
           subtitle="Choose exactly 11 players for opponent playing XI."
           selectedCount={opponentSelectedXIIds.length}
+          battingOrderIds={opponentBattingOrderIds}
           availablePool={opponentAvailablePool}
           selectedPlayers={opponentSelectedXIPlayers}
           teamKey="opponent"
@@ -341,10 +408,18 @@ function PreMatchSelectionStages(props) {
           movePlayer={moveOpponentPlayerToXI}
           removePlayer={removeOpponentPlayerFromXI}
           autoPick={autoPickOpponentXI}
+          autoPosition={autoPositionOpponentXI}
+          autoPositionError={autoPositionError}
           openCustomModal={openCustomModal}
           primaryActionText="Start Match"
           primaryAction={startMatchWithSelectedXI}
-          primaryDisabled={!opponentXIReady || !opponentRolesReady}
+          primaryDisabled={
+            !opponentXIReady ||
+            !opponentRolesReady ||
+            (requireBowlingQuota && countBowlingRolePlayers(opponentSelectedXIPlayers) < 5)
+          }
+          xiReady={opponentXIReady}
+          requireBowlingQuota={requireBowlingQuota}
           stageCommonProps={stageCommonProps}
           setupBackSlot={setupBackSlot}
           onDropToAvailable={onDropToAvailable}

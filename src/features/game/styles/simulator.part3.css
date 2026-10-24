@@ -24,6 +24,27 @@
   flex-wrap: wrap;
 }
 
+.sim-primary-action-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.sim-disabled-action-reason {
+  max-width: 24rem;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.sim-inline-error {
+  margin: 0.5rem 0 0;
+  color: var(--danger);
+  font-size: 0.83rem;
+}
+
 .sim-saved-item {
   display: flex;
   align-items: stretch;

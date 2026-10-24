@@ -1,3 +1,9 @@
+import {
+  countBowlingRolePlayers,
+  isBowlingQuotaPlayer,
+  PLAYER_TYPES,
+} from '../../../gameData/playerTypes';
+
 export const MODE_QUICK = 'quick';
 export const MODE_SERIES = 'series';
 export const MODE_TOURNAMENT = 'tournament';
@@ -301,11 +307,23 @@ export const pickDefaultRoles = (players = [], selectedIds = []) => {
   };
 };
 
-export const buildPlayingXI = (allPlayers, selectedIds) => {
+export const buildPlayingXI = (allPlayers, selectedIds, battingOrderIds = []) => {
   const normalizedIds = normalizePlayingXIIds(allPlayers, selectedIds);
   const fallbackIds = allPlayers.slice(0, 11).map((player) => player.id);
   const finalIds = normalizedIds.length === 11 ? normalizedIds : fallbackIds;
   const byId = new Map(allPlayers.map((player) => [player.id, player]));
+  const normalizedBattingOrderIds = normalizePlayingXIIds(allPlayers, battingOrderIds);
+  const hasCompleteBattingOrder =
+    normalizedBattingOrderIds.length === 11 &&
+    finalIds.length === 11 &&
+    normalizedBattingOrderIds.every((id) => finalIds.includes(id));
+
+  if (hasCompleteBattingOrder) {
+    return normalizedBattingOrderIds
+      .map((id) => byId.get(id))
+      .filter(Boolean)
+      .map((player) => ensurePlayerMeta(player));
+  }
 
   return sortPlayersByBattingOrder(finalIds.map((id) => byId.get(id)).filter(Boolean));
 };
@@ -315,25 +333,38 @@ const normalizeRoleType = (player = {}) => String(player?.playerType || '').trim
 const isKeeper = (player = {}) => !!player?.isWicketKeeper || normalizeRoleType(player).includes('wicketkeeper');
 
 const inferPrimaryRole = (player = {}) => {
-  if (isKeeper(player)) {
+  const type = normalizeRoleType(player);
+  if (isKeeper(player) || type === PLAYER_TYPES.WICKETKEEPER) {
     return 'wicketkeeper';
   }
 
-  const type = normalizeRoleType(player);
   if (type.includes('allrounder')) {
     return 'allrounder';
   }
-  if (type.includes('bowler') || type.includes('pacer') || type.includes('spinner') || type.includes('spiner')) {
+  if (
+    type === PLAYER_TYPES.BOWLER ||
+    type === PLAYER_TYPES.PACER ||
+    type === PLAYER_TYPES.SPINER ||
+    type.includes('bowler') ||
+    type.includes('spinner') ||
+    type.includes('spiner')
+  ) {
     return 'bowler';
   }
 
-  const bat = Number(player?.abilityToPlayPaceBall || 0) + Number(player?.abilityToPlaySpinBall || 0);
-  const bowl = Math.max(Number(player?.paceAbility || 0), Number(player?.spinAbility || 0));
-  if (bowl >= 30 && bat >= 70) {
-    return 'allrounder';
-  }
-  if (bowl >= 30) {
-    return 'bowler';
+  if (!type) {
+    const battingTotal =
+      Number(player?.abilityToPlayPaceBall || 0) + Number(player?.abilityToPlaySpinBall || 0);
+    const bowlingScore = Math.max(
+      Number(player?.paceAbility || 0),
+      Number(player?.spinAbility || 0)
+    );
+    if (bowlingScore >= 30 && battingTotal >= 70) {
+      return 'allrounder';
+    }
+    if (bowlingScore >= 30) {
+      return 'bowler';
+    }
   }
 
   return 'batsman';
@@ -341,10 +372,19 @@ const inferPrimaryRole = (player = {}) => {
 
 const inferBowlingStyle = (player = {}) => {
   const type = normalizeRoleType(player);
-  if (type.includes('pace') || type.includes('pacer')) {
+  if (!type) {
+    return Number(player?.paceAbility || 0) >= Number(player?.spinAbility || 0) ? 'pace' : 'spin';
+  }
+  if (type === PLAYER_TYPES.PACER || type === PLAYER_TYPES.PACE_ALLROUNDER || type.includes('pace')) {
     return 'pace';
   }
-  if (type.includes('spin') || type.includes('spinner') || type.includes('spiner')) {
+  if (
+    type === PLAYER_TYPES.SPINER ||
+    type === PLAYER_TYPES.SPIN_ALLROUNDER ||
+    type.includes('spinner') ||
+    type.includes('spiner') ||
+    type.includes('spin')
+  ) {
     return 'spin';
   }
 
@@ -374,6 +414,7 @@ export const selectAIPlayingXI = ({
   previousXIIds = [],
   lastMatchPerformanceById = {},
   lastMatchPerformanceByName = {},
+  requireBowlingQuota = false,
 }) => {
   const players = (roster || []).map((player) => ensurePlayerMeta(player));
   const byId = new Map(players.map((player) => [String(player.id), player]));
@@ -445,6 +486,9 @@ export const selectAIPlayingXI = ({
 
     remainingCandidates.forEach(pick);
 
+    if (requireBowlingQuota) {
+      enforceMinimumBowlingRoles(selected, players);
+    }
     return selected.slice(0, 11).map((player) => player.id);
   };
 
@@ -618,5 +662,40 @@ export const selectAIPlayingXI = ({
     selectedSet.add(String(fallback.id));
   }
 
+  if (requireBowlingQuota) {
+    enforceMinimumBowlingRoles(selected, players, { selectedSet, replaceAt });
+  }
   return selected.slice(0, 11).map((player) => player.id);
+};
+
+const enforceMinimumBowlingRoles = (selected, roster, selection = {}) => {
+  const selectedSet = selection.selectedSet || new Set(selected.map((player) => String(player.id)));
+  const replaceAt =
+    selection.replaceAt ||
+    ((index, replacement) => {
+      selectedSet.delete(String(selected[index].id));
+      selected[index] = replacement;
+      selectedSet.add(String(replacement.id));
+    });
+
+  while (countBowlingRolePlayers(selected) < 5) {
+    const replacement = roster
+      .filter(
+        (player) =>
+          !selectedSet.has(String(player.id)) &&
+          !isUnavailableForSelection(player) &&
+          isBowlingQuotaPlayer(player)
+      )
+      .sort((left, right) => bowlingScore(right) - bowlingScore(left))[0];
+    const replaceableIndex = selected
+      .map((player, index) => ({ player, index }))
+      .filter(({ player }) => !isKeeper(player) && !isBowlingQuotaPlayer(player))
+      .sort((left, right) => battingScore(left.player) - battingScore(right.player))[0]?.index;
+
+    if (!replacement || replaceableIndex === undefined) {
+      return;
+    }
+
+    replaceAt(replaceableIndex, replacement);
+  }
 };
