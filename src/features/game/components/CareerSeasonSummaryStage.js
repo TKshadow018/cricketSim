@@ -166,7 +166,7 @@ function CareerSeasonSummaryStage({
       title={`Season ${careerSeason} Complete`}
       subtitle={
         userWon
-          ? `🏆 ${careerTeam} topped at least one format table.`
+          ? `${careerTeam} topped at least one format table.`
           : `Season finished${topTeam?.team ? ` - ${topTeam.team} leads T20 table.` : '.'}`
       }
     >
@@ -175,7 +175,7 @@ function CareerSeasonSummaryStage({
         <p>Age: {currentAge} • Nationality: {careerPlayerProfile?.nationality || 'N/A'}</p>
         <p>Domestic League: {careerDomesticCountry || 'N/A'} • Clubs: {(careerDomesticTeams || []).length}</p>
         <p>Estimated Value: {formatMoney(careerPlayerProfile?.currentValue || 0)}</p>
-        {careerRetired ? <p>🏁 Career ended by retirement.</p> : null}
+        {careerRetired ? <p>Career ended by retirement.</p> : null}
       </div>
 
       <div className="sim-scoreboard-panel">

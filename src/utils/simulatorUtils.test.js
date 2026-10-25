@@ -97,7 +97,16 @@ describe('match and innings helpers', () => {
       'Save Run',
       'Special Bowl',
     ]);
-    expect(matchVisual).toMatchObject({ micro: expect.any(String), test: expect.any(String) });
+    expect(matchVisual).toEqual({
+      micro: 'MICRO',
+      mini: 'MINI',
+      t10: 'T10',
+      t20: 'T20',
+      ODI: 'ODI',
+      test: 'TEST',
+      practiceTestMicro: 'P-MIC',
+      practiceTestMini: 'P-MIN',
+    });
   });
 
   test('selects random items and substitutes player names with safe fallbacks', () => {

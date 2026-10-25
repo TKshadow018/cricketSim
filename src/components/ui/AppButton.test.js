@@ -24,6 +24,7 @@ describe('AppButton', () => {
     );
     const loadingButton = screen.getByRole('button', { name: 'Please wait...' });
     expect(loadingButton).toBeDisabled();
+    expect(loadingButton).toHaveAttribute('aria-busy', 'true');
     expect(loadingButton).toHaveClass('app-button-secondary', 'extra');
     expect(loadingButton).not.toHaveClass('app-button-full');
 

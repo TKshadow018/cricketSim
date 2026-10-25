@@ -19,6 +19,7 @@ function AppButton({
       className={`app-button app-button-${variant} ${fullWidth ? 'app-button-full' : ''} ${className}`.trim()}
       onClick={onClick}
       disabled={disabled || isLoading}
+      aria-busy={isLoading ? 'true' : undefined}
     >
       {isLoading ? t('common.loading') : text}
     </button>

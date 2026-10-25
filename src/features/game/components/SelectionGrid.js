@@ -41,7 +41,7 @@ function SelectionGrid({
               transition={{ duration: prefersReducedMotion ? 0 : 0.15 }}
               style={{ animationDelay: `${idx * 30}ms` }}
             >
-              {visual ? <div className={visualClassName}>{visual}</div> : null}
+              {visual ? <div className={visualClassName} aria-hidden="true">{visual}</div> : null}
               <h4>{renderTitle(item)}</h4>
               {typeof meta === 'string' ? <p>{meta}</p> : meta}
               {typeof description === 'string' ? <small>{description}</small> : description}

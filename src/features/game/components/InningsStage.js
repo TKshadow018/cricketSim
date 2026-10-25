@@ -157,6 +157,7 @@ function InningsStage({
                     key={action.key}
                     type="button"
                     aria-pressed={battingIntent === action.key}
+                    aria-label={action.reason ? `${action.label}. ${action.reason}` : undefined}
                     className={`sim-intent-btn ${battingIntent === action.key ? 'active' : ''} ${action.disabled ? 'disabled' : ''}`}
                     onClick={() => safeOnBattingIntent(action.key)}
                     disabled={action.disabled}
@@ -179,6 +180,7 @@ function InningsStage({
                     key={action.key}
                     type="button"
                     aria-pressed={bowlingIntent === action.key}
+                    aria-label={action.reason ? `${action.label}. ${action.reason}` : undefined}
                     className={`sim-intent-btn ${bowlingIntent === action.key ? 'active' : ''} ${action.disabled ? 'disabled' : ''}`}
                     onClick={() => safeOnBowlingIntent(action.key)}
                     disabled={action.disabled}
@@ -289,8 +291,12 @@ function InningsStage({
           </div>
         </div>
 
-        <ul className="sim-commentary-feed">
-          {commentary.map((line, index) => {
+        <ul className="sim-commentary-feed" aria-label="Match commentary" aria-live="polite">
+          {!commentary.length ? (
+            <li className="sim-commentary-empty">
+              Commentary will appear after the first delivery.
+            </li>
+          ) : commentary.map((line, index) => {
             const item = splitCommentaryLine(line);
             return (
               <li key={`${line}-${index}`}>

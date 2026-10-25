@@ -103,7 +103,7 @@ function LoginPage() {
             name="password"
           />
 
-          {error ? <p className="auth-server-error">{error}</p> : null}
+          {error ? <p className="auth-server-error" role="alert">{error}</p> : null}
 
           <AppButton
             type="submit"

@@ -233,9 +233,10 @@ describe('CareerSeasonScheduleStage', () => {
     expect(document.body.textContent).toContain('Career Player (18)');
     expect(screen.getByText('No upcoming match scheduled.')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Show Full Schedule' }));
-    expect(screen.getByText(/🤝 Tie — The match was tied/)).toBeInTheDocument();
-    expect(screen.getByText(/❌ Lost — Lost by 5 wickets/)).toBeInTheDocument();
-    expect(screen.getByText(/🧮 Auto-simulated — Auto result/)).toBeInTheDocument();
+    expect(screen.getByText(/Tie — The match was tied/)).toBeInTheDocument();
+    expect(screen.getByText(/Lost — Lost by 5 wickets/)).toBeInTheDocument();
+    expect(screen.getByText(/Auto-simulated — Auto result/)).toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/[🤝❌🧮]/);
     expect(screen.getByText(/Match N\/A:/)).toBeInTheDocument();
     expect(screen.getAllByText('TBD')).toHaveLength(3);
 

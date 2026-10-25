@@ -122,7 +122,9 @@ function PreMatchBasicStages(props) {
                       title="Delete save"
                       aria-label="Delete save"
                     >
-                      ✕
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m6 6 12 12M18 6 6 18" />
+                      </svg>
                     </button>
                   </div>
                 );
@@ -175,7 +177,7 @@ function PreMatchBasicStages(props) {
               key,
               ...value,
               badge: ['t10', 't20', 'ODI'].includes(key) ? 'Popular' : '',
-              renderVisual: () => <span>{matchVisual[key] || '🏏'}</span>,
+              renderVisual: () => <span>{matchVisual[key] || 'FORMAT'}</span>,
             }))}
             selectedKey={game.matchTypeKey}
             onSelect={(item) => {
@@ -184,7 +186,7 @@ function PreMatchBasicStages(props) {
               goToNextStage();
             }}
             keyOf={(item) => item.key}
-            renderTitle={(item) => item.nameKey.toUpperCase()}
+            renderTitle={(item) => String(item.nameKey || item.key || '').replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase()}
             renderMeta={(item) => `${item.over} overs • ${item.innings} innings`}
             renderDescription={(item) => `${item.day} day format`}
           />
@@ -355,7 +357,12 @@ function PreMatchBasicStages(props) {
             <SelectionGrid
               items={availableVoices.map((voice) => ({
                 ...voice,
-                renderVisual: () => <span>🎙️</span>,
+                renderVisual: () => (
+                  <svg viewBox="0 0 24 24" className="sim-voice-icon" aria-hidden="true">
+                    <path d="M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" />
+                    <path d="M6.5 10.5v.5a5.5 5.5 0 0 0 11 0v-.5M12 16.5V21m-3 0h6" />
+                  </svg>
+                ),
                 badge: voice.default ? 'Default' : '',
               }))}
               selectedKey={game.commentator}
@@ -382,7 +389,10 @@ function PreMatchBasicStages(props) {
                       speak(`Hi I am ${setCommentatorName(voice)}`);
                     }}
                   >
-                    🔊
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 10v4h4l5 4V6l-5 4H4Z" />
+                      <path d="M16 9a4 4 0 0 1 0 6m2-8a7 7 0 0 1 0 10" />
+                    </svg>
                   </button>
               )}
             />

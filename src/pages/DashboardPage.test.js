@@ -105,7 +105,8 @@ afterEach(() => {
 test('shows the dashboard and empty history for a regular user and dispatches logout', async () => {
   renderPage();
 
-  expect(screen.getByText('Welcome, Player 👋')).toBeInTheDocument();
+  expect(screen.getByText('Welcome, Player')).toBeInTheDocument();
+  expect(document.body.textContent).not.toContain('👋');
   expect(screen.getByTestId('simulator')).toBeInTheDocument();
   expect(screen.getByText('Format: T20')).toBeInTheDocument();
   expect(screen.getByText(/Location Country: England/)).toBeInTheDocument();
@@ -116,6 +117,25 @@ test('shows the dashboard and empty history for a regular user and dispatches lo
 
   fireEvent.click(screen.getByRole('button', { name: 'Logout' }));
   expect(dispatch).toHaveBeenCalledTimes(1);
+});
+
+test('provides guidance when match notes have no selections yet', () => {
+  state.game = {
+    ...initialGameState,
+    stage: matchStatusEnum.ChooseGameMode,
+    matchTypeKey: 'unknown-format',
+    ownTeam: '',
+    opponentTeam: '',
+    locationCountry: '',
+    selectedStadium: '',
+    matchCondition: null,
+    tossWinner: '',
+    tossDecision: '',
+  };
+
+  renderPage();
+
+  expect(screen.getByText('Choose a format, teams, and venue to build your match notes.')).toBeInTheDocument();
 });
 
 test('renders saved match summaries, formats dates and displays empty-value fallbacks', async () => {
@@ -172,7 +192,7 @@ test('clears history when there is no user and ignores non-array history data', 
   listRecentMatchHistory.mockResolvedValueOnce({ items: [] });
 
   const { rerender } = renderPage();
-  expect(screen.getByText('Welcome, Coach 👋')).toBeInTheDocument();
+  expect(screen.getByText('Welcome, Coach')).toBeInTheDocument();
   await waitFor(() => expect(screen.getByText('No completed matches saved yet.')).toBeInTheDocument());
   expect(listRecentMatchHistory).not.toHaveBeenCalled();
 
@@ -183,7 +203,7 @@ test('clears history when there is no user and ignores non-array history data', 
     </LocalizationProvider>
   );
   await waitFor(() => expect(listRecentMatchHistory).toHaveBeenCalledWith('user-2', 10));
-  expect(screen.getByText('Welcome, Coach 👋')).toBeInTheDocument();
+  expect(screen.getByText('Welcome, Coach')).toBeInTheDocument();
   await waitFor(() => expect(screen.getByText('No completed matches saved yet.')).toBeInTheDocument());
 });
 

@@ -1,0 +1,282 @@
+.sim-condition-card {
+  text-align: center;
+}
+
+.sim-intro-actions {
+  gap: 0.75rem;
+}
+
+.sim-disabled-action-reason {
+  color: var(--text-muted);
+}
+
+.sim-inline-error {
+  color: var(--danger);
+}
+
+.sim-saved-item {
+  border-radius: 12px;
+}
+
+.sim-delete-cross-btn {
+  min-width: 52px;
+  min-height: 52px;
+  border-left-color: var(--border);
+  color: #ffe5e0;
+  background: #703c36;
+}
+
+.sim-delete-cross-btn:hover {
+  background: #8e4b43;
+}
+
+.sim-pulse-dot {
+  flex: 0 0 auto;
+  background: var(--brand-primary);
+  box-shadow: 0 0 0 5px rgba(199, 243, 107, 0.12);
+}
+
+.score-chip {
+  color: var(--brand-primary);
+  background: rgba(199, 243, 107, 0.09);
+  border-color: rgba(199, 243, 107, 0.32);
+  font-variant-numeric: tabular-nums;
+}
+
+.choice-grid {
+  max-height: none;
+}
+
+.choice-card.active {
+  border-color: var(--brand-primary);
+  background: rgba(199, 243, 107, 0.1);
+}
+
+@keyframes design-system-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1200px) {
+  .dashboard-main-grid {
+    grid-template-columns: minmax(0, 2.5fr) minmax(215px, 0.9fr);
+  }
+
+  .dashboard-sidebar-left {
+    display: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-navbar {
+    position: relative;
+  }
+
+  .dashboard-main-grid {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .dashboard-center,
+  .dashboard-sidebar-right {
+    width: 100%;
+  }
+
+  .dashboard-center {
+    order: 1;
+  }
+
+  .dashboard-sidebar-right {
+    order: 2;
+  }
+
+  .dashboard-sidebar-left {
+    display: none;
+  }
+}
+
+@media (max-width: 960px) {
+  .auth-layout {
+    width: min(100%, 680px);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .auth-brand-panel {
+    min-height: 210px;
+  }
+
+  .auth-brand-title {
+    max-width: 18ch;
+    font-size: clamp(2rem, 7vw, 3rem);
+  }
+
+  .auth-content-panel {
+    max-width: none;
+  }
+
+  .sim-innings-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sim-xi-dnd-layout,
+  .sim-xi-role-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .auth-layout {
+    min-height: 100dvh;
+    padding: max(0.75rem, env(safe-area-inset-top)) 0.75rem max(0.75rem, env(safe-area-inset-bottom));
+    align-content: center;
+  }
+
+  .auth-brand-panel {
+    min-height: 170px;
+    padding: 1.25rem;
+    border-radius: 18px;
+  }
+
+  .auth-brand-copy {
+    font-size: 0.95rem;
+  }
+
+  .auth-card {
+    padding: 1.2rem;
+    border-radius: 18px;
+  }
+
+  .dashboard-navbar {
+    min-height: 72px;
+    padding-right: 0.85rem;
+    padding-left: 0.85rem;
+  }
+
+  .dashboard-navbar .app-button {
+    min-height: 44px;
+    padding-inline: 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .dashboard-main-grid {
+    gap: 0.85rem;
+    padding: 0.75rem;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .sim-stage-card,
+  .sim-stage-card.sim-stage-dark {
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  .sim-stage-header {
+    flex-wrap: wrap;
+  }
+
+  .sim-stage-header > :last-child {
+    margin-left: auto;
+  }
+
+  .sim-series-mode-grid,
+  .sim-series-length-grid,
+  .sim-card-grid,
+  .sim-flag-grid,
+  .sim-player-pick-grid,
+  .sim-condition-grid,
+  .sim-custom-form-grid,
+  .sim-career-create-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sim-condition-card {
+    display: grid;
+    grid-template-columns: 3.75rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0 0.8rem;
+    text-align: left;
+  }
+
+  .sim-condition-icon {
+    grid-row: span 2;
+    width: 3.5rem;
+    height: 3.5rem;
+    margin: 0;
+  }
+
+  .sim-condition-card h4,
+  .sim-condition-card p {
+    margin: 0;
+  }
+
+  .sim-toss-icons {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .sim-toss-buttons button {
+    width: min(7rem, 42vw);
+    min-height: min(7rem, 42vw);
+  }
+
+  .sim-toss-icons img {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+
+  .sim-score-row {
+    align-items: flex-start;
+  }
+
+  .sim-commentary-feed {
+    max-height: 24rem;
+  }
+
+  .sim-career-player-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sim-career-tools,
+  .sim-save-row-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sim-career-tools .app-button,
+  .sim-save-row-actions .app-button,
+  .sim-innings-action .app-button {
+    width: 100%;
+  }
+
+  .sim-confirm-modal .sim-save-row-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sim-final-card,
+  .sim-mom-panel,
+  .sim-scoreboard-panel {
+    padding: 0.8rem;
+  }
+
+  .dashboard-sidebar {
+    padding: 0.85rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

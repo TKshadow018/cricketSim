@@ -97,7 +97,7 @@ function RegisterPage() {
   }
 
   return (
-    <AuthLayout>
+    <AuthLayout className="auth-layout-register">
       <AuthCard title={t('auth.register.title')} subtitle={t('auth.register.subtitle')}>
         <form className="auth-form" onSubmit={onSubmit} noValidate>
           <AppInput
@@ -181,7 +181,7 @@ function RegisterPage() {
             name="confirmPassword"
           />
 
-          {error ? <p className="auth-server-error">{error}</p> : null}
+          {error ? <p className="auth-server-error" role="alert">{error}</p> : null}
 
           <AppButton
             type="submit"

@@ -35,7 +35,7 @@ jest.mock('./StageShell', () => ({
 
 jest.mock('./SelectionGrid', () => ({
   __esModule: true,
-  default: ({ items, onSelect, keyOf, renderTitle, renderMeta, renderDescription }) => (
+  default: ({ items, onSelect, keyOf, renderTitle, renderMeta, renderDescription, renderAction }) => (
     <div>
       {items.map((item) => (
         <div key={keyOf ? keyOf(item) : item.key || item.name} onClick={() => onSelect(item)}>
@@ -44,6 +44,7 @@ jest.mock('./SelectionGrid', () => ({
             {renderTitle(item)} {renderMeta ? renderMeta(item) : null}
           </button>
           {renderDescription ? renderDescription(item) : null}
+          {renderAction ? renderAction(item) : null}
         </div>
       ))}
     </div>
@@ -197,6 +198,7 @@ describe('PreMatchBasicStages', () => {
   test('chooses match type, mode, series length, team, opponent, and location', () => {
     const matchType = makeProps({ stage: matchStatusEnum.ChooseMatchType });
     const { rerender } = render(<PreMatchBasicStages {...matchType} />);
+    expect(screen.getByRole('button', { name: /PRACTICE TEST MICRO/ })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /T20/ }));
     expect(matchType.setMatchTypeKey).toHaveBeenCalledWith('t20');
     expect(matchType.goToNextStage).toHaveBeenCalled();

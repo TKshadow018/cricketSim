@@ -223,8 +223,8 @@ function MatchSummaryStages(props) {
               <h4>Grand Congratulations</h4>
               <p className="sim-winner-line">
                 {tournamentChampion === game.tournamentUserTeam
-                  ? `🏆 Congratulations! ${tournamentChampion} wins the tournament!`
-                  : `🏆 ${tournamentChampion} wins the tournament.`}
+                  ? `Congratulations! ${tournamentChampion} wins the tournament!`
+                  : `${tournamentChampion} wins the tournament.`}
               </p>
             </div>
 

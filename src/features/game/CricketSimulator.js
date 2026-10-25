@@ -181,7 +181,7 @@ function CricketSimulator() {
 
       {isGlobalSaving ? (
         <div className="sim-saving-overlay" role="status" aria-live="polite">
-          <div className="sim-saving-ball">🏏</div>
+          <span className="sim-saving-ball" aria-hidden="true" />
           <p>Saving match...</p>
         </div>
       ) : null}

@@ -57,6 +57,7 @@ describe('pre-match selection and team presentation components', () => {
     );
 
     expect(screen.getByText('Team badge').parentElement).toHaveClass('sim-choice-visual', 'custom-visual');
+    expect(screen.getByRole('button', { name: 'visual New' })).toBeInTheDocument();
     expect(screen.getByText('New')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'plain' })).toHaveAttribute('aria-pressed', 'false');
     motionHook.mockRestore();
@@ -183,6 +184,15 @@ describe('match presentation components', () => {
       </StageShell>
     );
     expect(screen.getByText('Stage 2 / 5')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Select Match', level: 2 })).toBeInTheDocument();
+    expect(screen.getByRole('progressbar', { name: 'Game progress' })).toHaveAttribute(
+      'aria-valuetext',
+      'Stage 2 of 5'
+    );
+    expect(screen.getByRole('progressbar', { name: 'Game progress' })).toHaveAttribute(
+      'aria-valuenow',
+      '2'
+    );
     expect(document.querySelector('.sim-wave-title')).toHaveTextContent('Select Match');
     expect(screen.getByText('Stage content')).toBeInTheDocument();
     expect(document.querySelector('.sim-stage-dark.custom')).toBeInTheDocument();
@@ -249,15 +259,18 @@ describe('match presentation components', () => {
     expect(onUserDecision).toHaveBeenLastCalledWith('bowl');
   });
 
-  test('uses static toss motion and empty labels when conditions are missing', () => {
-    const motionHook = jest.spyOn(require('framer-motion'), 'useReducedMotion').mockReturnValue(true);
+  test('shows accessible toss choices and fallback condition labels', () => {
     render(<TossStage onChooseCall={jest.fn()} matchCondition={{}} selectedCall="dollar" />);
 
-    expect(document.querySelector('.sim-toss-title')).toHaveTextContent('TOSS TIME');
+    expect(screen.getByText('Select Crown or Dollar to perform toss.')).toBeInTheDocument();
     expect(screen.getByAltText('weather')).toHaveAttribute('src', '/asset/img/icon/conditions/weather-512.svg');
-    expect(screen.getByAltText('crown').closest('button')).not.toHaveClass('active');
-    expect(screen.getByAltText('money').closest('button')).toHaveClass('active');
-    motionHook.mockRestore();
+    expect(screen.getByAltText('crown').closest('button')).toHaveAttribute('aria-label', 'Call crown');
+    expect(screen.getByAltText('crown').closest('button')).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByAltText('money').closest('button')).toHaveAttribute('aria-label', 'Call dollar');
+    expect(screen.getByAltText('money').closest('button')).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('heading', { name: 'Weather', level: 4 })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Pitch', level: 4 })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Outfield', level: 4 })).toBeInTheDocument();
   });
 
   test('renders scorecards, MOM recommendations, and result actions', () => {

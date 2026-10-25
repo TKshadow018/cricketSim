@@ -36,6 +36,14 @@ function DashboardPage() {
   ].includes(game.stage);
   const adminMatrix = React.useMemo(() => (isAdmin ? buildAdminMatrix(game) : null), [game, isAdmin]);
   const selectedMatchType = matchTypeList[game.matchTypeKey];
+  const hasMatchNotes = [
+    selectedMatchType?.nameKey,
+    game.ownTeam,
+    game.opponentTeam,
+    game.locationCountry,
+    game.selectedStadium,
+    game.tossWinner,
+  ].some(Boolean);
   const { ownPlayers: ownNationPlayers, opponentPlayers: opponentNationPlayers } = getPlayersForNations(
     game.ownTeam,
     game.opponentTeam
@@ -385,6 +393,11 @@ function DashboardPage() {
 
         <aside className="dashboard-sidebar dashboard-sidebar-right">
           <h3>Match Notes</h3>
+          {!hasMatchNotes && game.stage !== matchStatusEnum.intro ? (
+            <p className="dashboard-sidebar-empty">
+              Choose a format, teams, and venue to build your match notes.
+            </p>
+          ) : null}
           {selectedMatchType?.nameKey ? <p>Format: {selectedMatchType.nameKey.toUpperCase()}</p> : null}
           {game.ownTeam || game.opponentTeam ? (
             <p>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import InningsStage from './InningsStage';
 
 jest.mock('../../../components/ui/AppButton', () => ({
@@ -92,6 +92,7 @@ describe('InningsStage', () => {
     expect(screen.getByText('Bowler:')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Normal' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: /Aggressive/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Aggressive. No balls left' })).toBeDisabled();
     expect(screen.getByText('12.3')).toHaveClass('sim-ball-tag');
     expect(screen.getByText('The crowd applauds')).toBeInTheDocument();
     expect(screen.getByText('Full Scoreboard')).toBeInTheDocument();
@@ -108,6 +109,16 @@ describe('InningsStage', () => {
     expect(props.onSimulateOver).toHaveBeenCalled();
     expect(props.onSimulateMatch).toHaveBeenCalled();
     expect(props.onSaveGame).toHaveBeenCalled();
+  });
+
+  test('announces an empty commentary state before the first delivery', () => {
+    render(<InningsStage {...makeProps({ commentary: [] })} />);
+
+    const commentary = screen.getByRole('list', { name: 'Match commentary' });
+    expect(commentary).toHaveAttribute('aria-live', 'polite');
+    expect(
+      within(commentary).getByText('Commentary will appear after the first delivery.')
+    ).toBeInTheDocument();
   });
 
   test('shows opener, next batter, and next bowler choices with disabled candidates', () => {

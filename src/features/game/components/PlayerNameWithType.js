@@ -11,26 +11,45 @@ const PLAYER_TYPE_ICONS = {
 };
 
 export const resolvePlayerTypeKey = (input = {}) => {
-  const type = getPlayerType(input);
-  if (type === PLAYER_TYPES.WICKETKEEPER) {
+  if (input && typeof input === 'object' && Object.keys(input).length === 0) {
+    return 'batsman';
+  }
+
+  const type = String(getPlayerType(input) || '').trim().toLowerCase();
+  if (type === PLAYER_TYPES.WICKETKEEPER || type.includes('wicketkeeper')) {
     return 'wicketkeeper';
   }
-  if (type === PLAYER_TYPES.PACE_ALLROUNDER) {
+  if (type === PLAYER_TYPES.PACE_ALLROUNDER || type.includes('allrounder pace')) {
     return 'paceAllrounder';
   }
-  if (type === PLAYER_TYPES.SPIN_ALLROUNDER) {
+  if (type === PLAYER_TYPES.SPIN_ALLROUNDER || type.includes('allrounder spin')) {
     return 'spinAllrounder';
   }
-  if (type === PLAYER_TYPES.PACER) {
+  if (!input.playerType && type === PLAYER_TYPES.BOWLER) {
+    const paceAbility = Number(input.paceAbility) || 0;
+    const spinAbility = Number(input.spinAbility) || 0;
+    const battingAbility =
+      (Number(input.abilityToPlayPaceBall) || 0) +
+      (Number(input.abilityToPlaySpinBall) || 0);
+
+    if (battingAbility >= 100 && Math.max(paceAbility, spinAbility) >= 50) {
+      return paceAbility >= spinAbility ? 'paceAllrounder' : 'spinAllrounder';
+    }
+    if (battingAbility >= 100) {
+      return 'batsman';
+    }
+    if (paceAbility >= 50 || spinAbility >= 50) {
+      return paceAbility >= spinAbility ? 'pacer' : 'spinner';
+    }
+    return 'batsman';
+  }
+  if (type === PLAYER_TYPES.PACER || type.includes('pacer')) {
     return 'pacer';
   }
-  if (type === PLAYER_TYPES.SPINER) {
+  if (type === PLAYER_TYPES.SPINER || type.includes('spinner') || type.includes('spiner')) {
     return 'spinner';
   }
-  if (type === 'spinner') {
-    return 'spinner';
-  }
-  if (type === 'bowler' || type === 'bowler pacer') {
+  if (type === 'bowler') {
     return 'pacer';
   }
   if (type === 'allrounder') {

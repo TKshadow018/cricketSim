@@ -6,6 +6,7 @@ You set up match conditions (teams, stadium, commentator, toss, XI), then contro
 ## Table of Contents
 
 - [What You Can Do](#what-you-can-do)
+- [Interface Design](#interface-design)
 - [How to Play (Full Match Flow)](#how-to-play-full-match-flow)
 - [Gameplay Controls](#gameplay-controls)
 - [Man of the Match (MoM)](#man-of-the-match-mom)
@@ -31,6 +32,14 @@ You set up match conditions (teams, stadium, commentator, toss, XI), then contro
 - Save/load match states (manual + autosave when applicable).
 - View full scoreboard tables for batting and bowling.
 - Get top-5 MoM suggestions and select winner with announcement.
+
+## Interface Design
+
+The auth screens, dashboard, match setup, live innings, results, and career views share the
+stadium-inspired theme in `src/styles/design-system.css`. Its semantic CSS variables define the
+ink-green surfaces, high-contrast text, and lime primary action color. Keep page-specific styles
+on those tokens, maintain visible keyboard focus and 44px+ controls, and preserve the responsive
+single-column layouts and reduced-motion support when adding new screens.
 
 ## How to Play (Full Match Flow)
 

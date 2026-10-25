@@ -215,7 +215,9 @@ export function MatchResultCard({
                     aria-label={`Select ${player.name} as Man of the Match`}
                     title="Select as Man of the Match"
                   >
-                    ✓
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="m5 12.5 4.5 4.5L19 7" />
+                    </svg>
                   </button>
                 </div>
                 <div className="sim-mom-lines">

@@ -115,8 +115,8 @@ function CareerSeasonScheduleStage({
           const isCompleted = !!match.isComplete;
           const resultText = match.isComplete && match.result
             ? match.isUserMatch
-              ? `${match.result.winner === careerTeam ? '✅ Won' : match.result.winner === 'Tie' ? '🤝 Tie' : '❌ Lost'} — ${match.result.summary}`
-              : `🧮 Auto-simulated — ${match.result.summary}`
+                ? `${match.result.winner === careerTeam ? 'Won' : match.result.winner === 'Tie' ? 'Tie' : 'Lost'} — ${match.result.summary}`
+                : `Auto-simulated — ${match.result.summary}`
             : isCurrent
             ? '▶ Your next match'
             : match === nextScheduledMatch
