@@ -132,12 +132,6 @@ export const buildFakerPlayerData = (country, playerType) => {
   };
 };
 
-export const CAREER_SEASON_LENGTHS = {
-  short: 1,
-  standard: 2,
-  full: 3,
-};
-
 export const CAREER_FORMATS = ['t20', 'odi', 'firstClass'];
 
 export const DOMESTIC_TEAM_COUNT = 12;

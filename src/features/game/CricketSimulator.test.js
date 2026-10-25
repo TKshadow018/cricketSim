@@ -6,6 +6,17 @@ import CricketSimulator from "./CricketSimulator";
 describe("CricketSimulator analytics", () => {
   beforeEach(prepareSimulatorTest);
 
+  test('resets the simulator scroll position when moving to another stage', () => {
+    const { container, rerender } = render(<CricketSimulator />);
+    const shell = container.querySelector('.sim-shell');
+
+    shell.scrollTop = 180;
+    setMockController(makeController({ game: { stage: 20 } }));
+    rerender(<CricketSimulator />);
+
+    expect(shell.scrollTop).toBe(0);
+  });
+
 test('opens domestic stats, player profiles, league tables, and league player rankings', () => {
     const { rerender } = render(<CricketSimulator />);
 

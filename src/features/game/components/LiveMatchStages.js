@@ -104,6 +104,7 @@ function LiveMatchStages(props) {
             showScoreboard={game.showScoreboard}
             scorecard={buildTeamOneScorecard()}
             commentary={game.firstInnings.commentary}
+            onCloseScoreboard={toggleScoreboard}
           />
         </StageShell>
       )}
@@ -174,6 +175,7 @@ function LiveMatchStages(props) {
             showScoreboard={game.showScoreboard}
             scorecard={buildTeamTwoScorecard()}
             commentary={game.secondInnings.commentary}
+            onCloseScoreboard={toggleScoreboard}
           />
         </StageShell>
       )}

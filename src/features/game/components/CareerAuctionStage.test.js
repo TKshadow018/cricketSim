@@ -142,6 +142,10 @@ describe('CareerAuctionStage', () => {
     const props = makeProps();
     render(<CareerAuctionStage {...props} />);
     expect(screen.getByRole('heading', { name: 'Season 2 Auction' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Live auction room' })).toBeInTheDocument();
+    expect(screen.getByText('Auctioneer')).toBeInTheDocument();
+    expect(screen.getByRole('list', { name: 'Bidding teams' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Falcons bid board, lowered' })).toBeInTheDocument();
     expect(screen.getByText('Player pool: 80% domestic, 20% foreign')).toBeInTheDocument();
     expect(screen.getByText(/Team size: 1-3 domestic, 0-2 foreign/)).toBeInTheDocument();
     expect(screen.getByText('Live Quota Summary')).toBeInTheDocument();
@@ -167,6 +171,8 @@ describe('CareerAuctionStage', () => {
     act(() => {
       jest.advanceTimersByTime(340);
     });
+    expect(screen.getByRole('img', { name: 'Falcons bid board, raised' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Ravens bid board, raised' })).toBeInTheDocument();
     expect(screen.getByText('$200,000')).toBeInTheDocument();
     expect(screen.getByText('$250,000')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Resume Auto Play' }));

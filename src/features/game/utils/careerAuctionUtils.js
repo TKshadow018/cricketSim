@@ -28,21 +28,35 @@ export const runCareerAuction = ({
     const domesticTarget = randomInt(AUCTION_MIN_DOMESTIC_PER_TEAM, AUCTION_MAX_DOMESTIC_PER_TEAM);
     const foreignTarget = randomInt(AUCTION_MIN_FOREIGN_PER_TEAM, AUCTION_MAX_FOREIGN_PER_TEAM);
     const squadTarget = domesticTarget + foreignTarget;
+    const nationalPlayers = (team.players || [])
+      .filter((player) => player?.isNationalTeamPlayer)
+      .map((player) =>
+        ensurePlayerMeta({
+          ...player,
+          assignedTeamId: team.id,
+          assignedTeamName: team.name,
+        })
+      );
+    const roleCounts = {
+      wicketkeepers: 0,
+      bowling: 0,
+      batting: 0,
+    };
+    const initialTeamState = { roleCounts };
+    nationalPlayers.forEach((player) => updateAuctionRoleCounts(initialTeamState, player));
+    const domesticCount = nationalPlayers.filter((player) => player.country === team.country).length;
+    const foreignCount = nationalPlayers.length - domesticCount;
 
     return {
       ...team,
-      players: [],
+      players: nationalPlayers,
       countryRank: Number(rankingByCountry[team.country] || team.countryRank || 999),
       domesticTarget,
       foreignTarget,
       squadTarget,
-      domesticCount: 0,
-      foreignCount: 0,
-      roleCounts: {
-        wicketkeepers: 0,
-        bowling: 0,
-        batting: 0,
-      },
+      domesticCount,
+      foreignCount,
+      roleCounts,
       budgetStart: AUCTION_EQUAL_TEAM_BUDGET,
       budget: AUCTION_EQUAL_TEAM_BUDGET,
       spent: 0,

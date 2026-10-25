@@ -37,9 +37,20 @@ You set up match conditions (teams, stadium, commentator, toss, XI), then contro
 
 The auth screens, dashboard, match setup, live innings, results, and career views share the
 stadium-inspired theme in `src/styles/design-system.css`. Its semantic CSS variables define the
-ink-green surfaces, high-contrast text, and lime primary action color. Keep page-specific styles
-on those tokens, maintain visible keyboard focus and 44px+ controls, and preserve the responsive
-single-column layouts and reduced-motion support when adding new screens.
+ink-green surfaces, high-contrast text, and lime primary action color. Desktop uses a full-height
+workbench with a primary stage between context panels. Phones use a focused main view with
+Panel/Play/Notes bottom tabs. Long stages scroll inside the main stage viewport, and stage changes
+return that viewport to its top. Career analytics actions and player-type choices wrap inside
+their panels rather than extending the page width. Keep page-specific styles on the shared tokens,
+maintain visible keyboard focus and 44px+ controls, and keep detailed scorecards in dismissible
+dialogs. Styles are grouped by area in `src/styles/design-system/`: foundation/auth,
+dashboard/choices, gameplay surfaces/data, match states/breakpoints, interaction/accessibility,
+viewport layout/overflow, and scoreboard modal.
+
+Career creation is a four-step flow: Player Details, Playing Style, Domestic League, and Review
+& Start. The club pool must be generated before continuing. National players are randomly
+distributed among their country's clubs, with at least one per club; squad limits are preserved
+and career seasons use one cycle.
 
 ## How to Play (Full Match Flow)
 

@@ -1,5 +1,7 @@
-@import './design-system/part-01.css';
-@import './design-system/part-02.css';
-@import './design-system/part-03.css';
-@import './design-system/part-04.css';
-@import './design-system/part-05.css';
+@import './design-system/foundation-and-auth.css';
+@import './design-system/dashboard-and-choices.css';
+@import './design-system/gameplay-surfaces-and-data.css';
+@import './design-system/match-states-and-breakpoints.css';
+@import './design-system/interaction-and-accessibility.css';
+@import './design-system/viewport-layout-and-overflow.css';
+@import './design-system/scoreboard-modal.css';

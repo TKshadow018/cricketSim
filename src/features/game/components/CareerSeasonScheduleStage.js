@@ -185,6 +185,7 @@ function CareerSeasonScheduleStage({
                   onPrimaryAction={() => setSelectedCompletedMatch(null)}
                   primaryActionLabel="Close Scoreboard"
                   showScoreboard
+                  scoreboardInParentDialog
                   scorecard={selectedCompletedMatch.result.scorecard}
                 />
               </div>

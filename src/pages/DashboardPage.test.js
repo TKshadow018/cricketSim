@@ -138,6 +138,20 @@ test('provides guidance when match notes have no selections yet', () => {
   expect(screen.getByText('Choose a format, teams, and venue to build your match notes.')).toBeInTheDocument();
 });
 
+test('switches mobile dashboard views from the bottom navigation', () => {
+  renderPage();
+
+  const mainGrid = document.querySelector('.dashboard-main-grid');
+  expect(screen.getByRole('navigation', { name: 'Dashboard views' })).toBeInTheDocument();
+  expect(mainGrid).toHaveAttribute('data-mobile-view', 'play');
+
+  fireEvent.click(screen.getByRole('button', { name: 'Panel' }));
+  expect(mainGrid).toHaveAttribute('data-mobile-view', 'panel');
+
+  fireEvent.click(screen.getByRole('button', { name: 'Notes' }));
+  expect(mainGrid).toHaveAttribute('data-mobile-view', 'notes');
+});
+
 test('renders saved match summaries, formats dates and displays empty-value fallbacks', async () => {
   listRecentMatchHistory.mockResolvedValue([
     {

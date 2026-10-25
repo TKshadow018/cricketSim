@@ -17,6 +17,7 @@ import "./simulator.css";
 
 function CricketSimulator() {
   const controller = useCricketSimulatorController();
+  const simShellRef = React.useRef(null);
 
   const {
     game,
@@ -122,7 +123,6 @@ function CricketSimulator() {
     oversDisplay,
     careerTeam,
     careerSeason,
-    careerSeasonLength,
     careerFormat,
     careerMatchIndex,
     careerSchedule,
@@ -149,6 +149,12 @@ function CricketSimulator() {
     handleBackToCareerSchedule,
   } = controller;
 
+  React.useLayoutEffect(() => {
+    if (simShellRef.current) {
+      simShellRef.current.scrollTop = 0;
+    }
+  }, [game.stage]);
+
   const stageIndex = stageOrder.indexOf(game.stage) + 1;
   const stageCommonProps = {
     stageIndex,
@@ -167,7 +173,7 @@ function CricketSimulator() {
   const isCareerMode = gameMode === 'career';
 
   return (
-    <div className="sim-shell">
+    <div className="sim-shell" ref={simShellRef}>
       <CareerAnalyticsDashboard
       isCareerMode={isCareerMode}
       careerTeam={careerTeam}
@@ -257,7 +263,6 @@ function CricketSimulator() {
               oversDisplay={oversDisplay}
               careerTeam={careerTeam}
               careerSeason={careerSeason}
-              careerSeasonLength={careerSeasonLength}
               careerFormat={careerFormat}
               careerMatchIndex={careerMatchIndex}
               careerSchedule={careerSchedule}

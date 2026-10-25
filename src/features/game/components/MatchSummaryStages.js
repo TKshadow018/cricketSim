@@ -92,6 +92,7 @@ function MatchSummaryStages(props) {
             summary={resultSummary}
             momRecommendations={momRecommendations}
             onSelectManOfTheMatch={onSelectManOfTheMatch}
+            onCloseScoreboard={toggleScoreboard}
             showScoreboard={game.showScoreboard}
             scorecard={buildTeamTwoScorecard()}
             onPrimaryAction={onMatchPrimaryAction}

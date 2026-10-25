@@ -39,18 +39,25 @@ afterEach(() => {
     jest.restoreAllMocks();
   });
 
-test('builds full and short season schedules with stable dates and opposing teams', () => {
+test('builds a single season cycle regardless of the legacy season-length value', () => {
     const domesticTeams = [{ name: 'Team A' }, { name: 'Team B' }, { name: 'Team C' }];
     const shortSchedule = buildCareerSeasonSchedule('Team A', domesticTeams, 'short', {
       leagueCountry: 'India',
       seasonStartDate: '2024-01-01',
     });
+    const standardSchedule = buildCareerSeasonSchedule('Team A', domesticTeams, 'standard', {
+      seasonStartDate: '2024-01-01',
+    });
+    const defaultSchedule = buildCareerSeasonSchedule('Team A', domesticTeams);
     const fullSchedule = buildCareerSeasonSchedule('Team A', domesticTeams, 'full', {
       seasonStartDate: '2024-01-01',
     });
 
     expect(shortSchedule).toHaveLength(9);
-    expect(fullSchedule).toHaveLength(18);
+    expect(standardSchedule).toHaveLength(9);
+    expect(defaultSchedule).toHaveLength(9);
+    expect(fullSchedule).toHaveLength(9);
+    expect(new Set(fullSchedule.map((match) => match.seasonCycle))).toEqual(new Set([1]));
     expect(shortSchedule.every((match) => match.leagueCountry === 'India')).toBe(true);
     expect(shortSchedule.some((match) => !match.isUserMatch)).toBe(true);
     expect(shortSchedule.filter((match) => match.isUserMatch).every((match) => Boolean(match.opponent))).toBe(true);

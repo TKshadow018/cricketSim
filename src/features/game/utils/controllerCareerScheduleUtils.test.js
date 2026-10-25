@@ -1,4 +1,7 @@
 import { createPerson } from 'faker-user';
+import BangladeshPlayers from '../../../gameData/players/Bangladesh';
+import IndiaPlayers from '../../../gameData/players/India';
+import { resolveDomesticTargetPerTeam } from './careerPlayerProgressionUtils';
 import {
   assignGlobalPoolPlayersToDomesticTeams,
   buildCareerOffers,
@@ -41,7 +44,13 @@ afterEach(() => {
 
 test('handles default and empty inputs across career utility entry points', () => {
     expect(createDomesticTeamsForCountry('India')).toHaveLength(12);
-    expect(createDomesticTeamsForAllCountries().length).toBeGreaterThan(0);
+    const domesticTeams = createDomesticTeamsForAllCountries();
+    expect(domesticTeams.length).toBeGreaterThan(0);
+    expect(domesticTeams.every((team) => team.players.some((player) => player.isNationalTeamPlayer))).toBe(true);
+    const nationalPlayers = domesticTeams.flatMap((team) =>
+      team.players.filter((player) => player.isNationalTeamPlayer)
+    );
+    expect(new Set(nationalPlayers.map((player) => player.id)).size).toBe(nationalPlayers.length);
     expect(createGlobalCareerPlayerPool().length).toBeGreaterThan(0);
     expect(assignGlobalPoolPlayersToDomesticTeams({})).toEqual({ domesticTeams: [], globalPlayerPool: [] });
     expect(runCareerAuction({})).toMatchObject({ careerTeam: '', domesticTeams: [], globalPlayerPool: [] });
@@ -227,6 +236,48 @@ test('builds ranked domestic clubs and a country-scaled global player pool', () 
     expect(pool.filter((player) => player.country === 'Top-ranked Country')).toHaveLength(35 * 12);
     expect(pool.filter((player) => player.country === 'Lower-ranked Country')).toHaveLength(25 * 12);
     expect(pool.every((player) => player.baseMarketPrice > 0 && Number.isFinite(player.abilityScore))).toBe(true);
+  });
+
+test('distributes every national roster across its domestic clubs with unique career ids', () => {
+    const countryRows = [
+      { name: 'Bangladesh', current_ranking: 9 },
+      { name: 'India', current_ranking: 1 },
+    ];
+    const teams = createDomesticTeamsForAllCountries(countryRows);
+    const nationalPlayers = teams.flatMap((team) =>
+      team.players.filter((player) => player.isNationalTeamPlayer)
+    );
+
+    expect(teams).toHaveLength(24);
+    expect(teams.every((team) => team.players.some((player) => player.isNationalTeamPlayer))).toBe(true);
+    expect(nationalPlayers).toHaveLength(BangladeshPlayers.length + IndiaPlayers.length);
+    expect(new Set(nationalPlayers.map((player) => player.id)).size).toBe(nationalPlayers.length);
+    expect(nationalPlayers.filter((player) => player.country === 'Bangladesh').map((player) => player.name).sort())
+      .toEqual(BangladeshPlayers.map((player) => player.name).sort());
+    expect(nationalPlayers.filter((player) => player.country === 'India').map((player) => player.name).sort())
+      .toEqual(IndiaPlayers.map((player) => player.name).sort());
+  });
+
+test('keeps national players while filling domestic clubs to their roster limit', () => {
+    const countryRows = [{ name: 'Bangladesh', current_ranking: 9 }];
+    const teams = createDomesticTeamsForAllCountries(countryRows);
+    const playerPool = Array.from({ length: 420 }, (_, index) => ({
+      id: `career-pool-${index}`,
+      name: `Career Pool Player ${index}`,
+      country: 'Bangladesh',
+      playerType: 'pace allrounder',
+    }));
+    const result = assignGlobalPoolPlayersToDomesticTeams({
+      domesticTeams: teams,
+      globalPlayerPool: playerPool,
+      countryRows,
+      stepPerTeam: 100,
+    });
+    const rosterLimit = resolveDomesticTargetPerTeam(9);
+
+    expect(result.domesticTeams.every((team) => team.players.length === rosterLimit)).toBe(true);
+    expect(result.domesticTeams.every((team) => team.players.some((player) => player.isNationalTeamPlayer))).toBe(true);
+    expect(result.domesticTeams.every((team) => team.players.length <= rosterLimit)).toBe(true);
   });
 
 test('estimates fallback market prices across player age bands', () => {

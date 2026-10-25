@@ -1,4 +1,5 @@
 import { createPerson } from 'faker-user';
+import BangladeshPlayers from '../../../gameData/players/Bangladesh';
 import {
   assignGlobalPoolPlayersToDomesticTeams,
   buildCareerOffers,
@@ -97,6 +98,47 @@ test('completes squad auction targets and preserves role minimums', () => {
     expect(team.players.filter((player) => player.playerType.includes('allrounder')).length).toBeGreaterThanOrEqual(10);
     expect(result.auctionSummary.auctionTimeline.length).toBeGreaterThanOrEqual(28);
     expect(result.auctionSummary.auctionTimeline.some((event) => event.isSold)).toBe(true);
+  });
+
+test('keeps assigned national players in each auction squad within the squad-size limit', () => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.99);
+    const countryRows = [{ name: 'Bangladesh', current_ranking: 9 }];
+    const seededTeam = createDomesticTeamsForAllCountries(countryRows)[0];
+    const seededNationalPlayers = seededTeam.players.filter((player) => player.isNationalTeamPlayer);
+    const createPool = (country, prefix, count) =>
+      Array.from({ length: count }, (_, index) => ({
+        id: `${prefix}-${index}`,
+        name: `${prefix} Player ${index}`,
+        country,
+        playerType: index < 4 ? 'wicketkeeper' : 'pace allrounder',
+        isWicketKeeper: index < 4,
+        abilityScore: 340,
+        baseMarketPrice: 200000,
+        abilityToPlayPaceBall: 70,
+        abilityToPlaySpinBall: 70,
+        battingAggresion: 70,
+        paceAbility: 70,
+        spinAbility: 40,
+      }));
+    const result = runCareerAuction({
+      domesticTeams: [seededTeam],
+      globalPlayerPool: [
+        ...createPool('Bangladesh', 'local', 40),
+        ...createPool('India', 'foreign', 16),
+      ],
+      countryRows,
+      leagueCountry: 'Bangladesh',
+    });
+    const team = result.domesticTeams[0];
+    const auctionNationalPlayers = team.players.filter((player) => player.isNationalTeamPlayer);
+
+    expect(BangladeshPlayers.some((player) => seededNationalPlayers.some((seeded) => seeded.name === player.name))).toBe(true);
+    expect(auctionNationalPlayers.map((player) => player.id)).toEqual(
+      expect.arrayContaining(seededNationalPlayers.map((player) => player.id))
+    );
+    expect(auctionNationalPlayers).toHaveLength(seededNationalPlayers.length);
+    expect(team.players).toHaveLength(team.squadTarget);
+    expect(team.players.length).toBeLessThanOrEqual(28);
   });
 
 test('covers auction demand tiers, unsold players, and forced career-player placement', () => {

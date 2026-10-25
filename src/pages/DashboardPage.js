@@ -11,6 +11,7 @@ import { matchStatusEnum } from '../gameData/matchStatusEnum';
 import TeamNameWithFlag from '../features/game/components/TeamNameWithFlag';
 import PlayerNameWithType from '../features/game/components/PlayerNameWithType';
 import { listRecentMatchHistory } from '../firebase/firestoreService';
+import DashboardMobileNav from '../components/layout/DashboardMobileNav';
 import {
   normalizeSelectedXIPlayers,
   buildComposition,
@@ -26,6 +27,7 @@ function DashboardPage() {
   const { t } = useLocalization();
   const [recentMatchHistory, setRecentMatchHistory] = React.useState([]);
   const [isHistoryLoading, setIsHistoryLoading] = React.useState(false);
+  const [mobileView, setMobileView] = React.useState('play');
 
   const adminEmail = (process.env.REACT_APP_FIREBASE_ADMIN_EMAIL || '').trim().toLowerCase();
   const isAdmin = !!adminEmail && (user?.email || '').toLowerCase() === adminEmail;
@@ -154,7 +156,7 @@ function DashboardPage() {
         />
       </header>
 
-      <div className="dashboard-main-grid">
+      <div className="dashboard-main-grid" data-mobile-view={mobileView}>
         <aside className="dashboard-sidebar dashboard-sidebar-left">
           {isAdmin && isMatrixStage ? (
             <>
@@ -449,6 +451,7 @@ function DashboardPage() {
           ) : null}
         </aside>
       </div>
+      <DashboardMobileNav activeView={mobileView} onChange={setMobileView} />
     </main>
   );
 }

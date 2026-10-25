@@ -11,10 +11,21 @@ describe('national player type classification', () => {
     [{ abilityToPlayPaceBall: 30, abilityToPlaySpinBall: 30, paceAbility: 71 }, 'pacer'],
     [{ abilityToPlayPaceBall: 30, abilityToPlaySpinBall: 30, spinAbility: 71 }, 'spiner'],
     [{ abilityToPlayPaceBall: 40, abilityToPlaySpinBall: 40, paceAbility: 61, spinAbility: 61 }, 'pace allrounder'],
-    [{ abilityToPlayPaceBall: 30, abilityToPlaySpinBall: 30, paceAbility: 70, spinAbility: 70 }, 'bowler'],
+    [{ abilityToPlayPaceBall: 30, abilityToPlaySpinBall: 30, paceAbility: 70, spinAbility: 70 }, 'pacer'],
     [{ abilityToPlayPaceBall: 70, abilityToPlaySpinBall: 70 }, 'batsman'],
   ])('classifies %o as %s according to priority and thresholds', (player, expectedType) => {
     expect(classifyPlayerType(player)).toBe(expectedType);
+  });
+
+  test('lowers the thresholds by ten and retries until a player type matches', () => {
+    expect(classifyPlayerType({ paceAbility: 50 })).toBe('pacer');
+  });
+
+  test('retries the batting-total rule instead of assigning a generic bowler type', () => {
+    expect(classifyPlayerType({
+      abilityToPlayPaceBall: 60,
+      abilityToPlaySpinBall: 60,
+    })).toBe('batsman');
   });
 
   test('counts only pace/spin allrounders and pacers/spinners toward the five-player quota', () => {

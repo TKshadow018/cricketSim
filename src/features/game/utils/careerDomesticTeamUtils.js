@@ -1,6 +1,7 @@
 import { ensurePlayerMeta, shuffleArray } from "./controllerCommonUtils";
 
 import { getDomesticLocationsForCountry } from "../../../gameData/domesticClubLocations";
+import { playerListForNation } from "../../../gameData/playerListForNation";
 
 import { randomInt, AI_PLAYER_TYPE_DISTRIBUTION, buildFakerPlayerData, CLUB_PREFIXES, CLUB_SUFFIXES, DOMESTIC_TEAM_PLAYER_TYPE_COUNTS, DOMESTIC_TEAM_COUNT, toSlug, DEFAULT_GLOBAL_ASSIGN_STEP_PER_TEAM, MIN_LOCAL_PLAYER_RATIO } from "./careerPlayerDataUtils";
 
@@ -100,17 +101,50 @@ export const createDomesticTeamsForCountry = (country, options = {}) => {
   });
 };
 
+const assignNationalPlayersToDomesticTeams = (teams, country) => {
+  const nationalRoster = Array.isArray(playerListForNation[country]) ? playerListForNation[country] : [];
+  if (!teams.length || !nationalRoster.length) {
+    return teams;
+  }
+
+  const shuffledRoster = shuffleArray([...nationalRoster]);
+  const playersByTeam = teams.map(() => []);
+
+  shuffledRoster.forEach((player, playerIndex) => {
+    const teamIndex = playerIndex % teams.length;
+    const team = teams[teamIndex];
+    playersByTeam[teamIndex].push(
+      ensurePlayerMeta({
+        ...player,
+        id: `national-${toSlug(country)}-${player.id ?? playerIndex + 1}`,
+        country,
+        sourceCountry: country,
+        isNationalTeamPlayer: true,
+        assignedTeamId: team.id,
+        assignedTeamName: team.name,
+      })
+    );
+  });
+
+  return teams.map((team, teamIndex) => ({
+    ...team,
+    players: [...(team.players || []), ...playersByTeam[teamIndex]],
+  }));
+};
+
 export const createDomesticTeamsForAllCountries = (countryRows = []) => {
   const normalizedCountries = normalizeCountryRows(countryRows);
 
-  return normalizedCountries.flatMap((country, countryIndex) =>
-    createDomesticTeamsForCountry(country.name, { withPlayers: false }).map((team, teamIndex) => ({
+  return normalizedCountries.flatMap((country, countryIndex) => {
+    const teams = createDomesticTeamsForCountry(country.name, { withPlayers: false }).map((team, teamIndex) => ({
       ...team,
       id: `club-${toSlug(country.name)}-${countryIndex + 1}-${teamIndex + 1}`,
       countryRank: Number(country.current_ranking || 999),
       players: [],
-    }))
-  );
+    }));
+
+    return assignNationalPlayersToDomesticTeams(teams, country.name);
+  });
 };
 
 export const createGlobalCareerPlayerPool = (countryRows = []) => {

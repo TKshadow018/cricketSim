@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import AppButton from '../../../components/ui/AppButton';
 import TeamNameWithFlag from './TeamNameWithFlag';
 import PlayerNameWithType from './PlayerNameWithType';
+import ScoreboardModal from './ScoreboardModal';
 
 export function TossResultCard({
   winner,
@@ -78,6 +79,8 @@ export function MatchResultCard({
   primaryActionLabel = 'Play New Match',
   showScoreboard,
   scorecard,
+  onCloseScoreboard,
+  scoreboardInParentDialog = false,
   autoSelectTopMomOnPrimaryAction = false,
 }) {
   const prefersReducedMotion = useReducedMotion();
@@ -169,6 +172,13 @@ export function MatchResultCard({
     );
   };
 
+  const scoreboardTables = (
+    <>
+      {renderInningsScoreboard(scorecard?.currentInnings, 'current')}
+      {scorecard?.previousInnings ? renderInningsScoreboard(scorecard.previousInnings, 'previous') : null}
+    </>
+  );
+
   return (
     <div className="sim-final-grid">
       <div className="sim-final-card">
@@ -237,12 +247,14 @@ export function MatchResultCard({
           </ol>
         </div>
       ) : null}
-      {showScoreboard ? (
+      {showScoreboard && scoreboardInParentDialog ? (
         <div className="sim-scoreboard-panel">
           <h4>Full Scoreboard</h4>
-          {renderInningsScoreboard(scorecard?.currentInnings, 'current')}
-          {scorecard?.previousInnings ? renderInningsScoreboard(scorecard.previousInnings, 'previous') : null}
+          {scoreboardTables}
         </div>
+      ) : null}
+      {showScoreboard && !scoreboardInParentDialog ? (
+        <ScoreboardModal onClose={onCloseScoreboard}>{scoreboardTables}</ScoreboardModal>
       ) : null}
       <AppButton text={primaryActionLabel} onClick={handlePrimaryActionClick} />
     </div>

@@ -1,17 +1,29 @@
 import React from 'react';
 import StageShell from './StageShell';
-import FlagTeamGrid from './FlagTeamGrid';
 import AppButton from '../../../components/ui/AppButton';
 import {
-  CAREER_SEASON_LENGTHS,
   createDomesticTeamsForAllCountries,
   createGlobalCareerPlayerPool,
 } from '../utils/controllerCareerScheduleUtils';
+import '../styles/career-setup-wizard.css';
 
-const SEASON_LENGTH_OPTIONS = [
-  { key: 'short', label: 'Short', matches: CAREER_SEASON_LENGTHS.short, description: `${CAREER_SEASON_LENGTHS.short} format${CAREER_SEASON_LENGTHS.short === 1 ? '' : 's'}` },
-  { key: 'standard', label: 'Standard', matches: CAREER_SEASON_LENGTHS.standard, description: `${CAREER_SEASON_LENGTHS.standard} format${CAREER_SEASON_LENGTHS.standard === 1 ? '' : 's'}` },
-  { key: 'full', label: 'Full', matches: CAREER_SEASON_LENGTHS.full, description: `${CAREER_SEASON_LENGTHS.full} format${CAREER_SEASON_LENGTHS.full === 1 ? '' : 's'}` },
+const CAREER_SETUP_STEPS = [
+  {
+    title: 'Player Details',
+    subtitle: 'Create the player who will lead your career.',
+  },
+  {
+    title: 'Playing Style',
+    subtitle: 'Choose a role that fits the player you want to build.',
+  },
+  {
+    title: 'Domestic League',
+    subtitle: 'Choose a country and prepare its clubs and player pool.',
+  },
+  {
+    title: 'Review & Start',
+    subtitle: 'Confirm your player and career plan before the auction.',
+  },
 ];
 
 const PLAYER_TYPE_OPTIONS = [
@@ -27,85 +39,154 @@ const PLAYER_TYPE_OPTIONS = [
 function CareerSetupStage({
   stageCommonProps,
   countryList,
-  game,
   beginCareer,
   careerPlayerProfile,
   careerDomesticCountry,
   careerDomesticTeams,
   careerGlobalPlayerPool,
 }) {
+  const availableCountries = Array.isArray(countryList) ? countryList : [];
+  const [step, setStep] = React.useState(1);
+  const progressRef = React.useRef(null);
   const [playerName, setPlayerName] = React.useState(careerPlayerProfile?.name || '');
   const [playerAge, setPlayerAge] = React.useState(careerPlayerProfile?.age || 18);
-  const [playerNationality, setPlayerNationality] = React.useState(careerPlayerProfile?.nationality || '');
-  const [playerType, setPlayerType] = React.useState(careerPlayerProfile?.playerType || 'batsman');
+  const [playerNationality, setPlayerNationality] = React.useState(
+    careerPlayerProfile?.nationality || careerDomesticCountry || ''
+  );
+  const [playerType, setPlayerType] = React.useState(() =>
+    PLAYER_TYPE_OPTIONS.find((option) => option.key === careerPlayerProfile?.playerType)?.key || 'batsman'
+  );
   const [selectedCountry, setSelectedCountry] = React.useState(careerDomesticCountry || '');
-  const [domesticTeams, setDomesticTeams] = React.useState(careerDomesticTeams || []);
-  const [globalPlayerPool, setGlobalPlayerPool] = React.useState(careerGlobalPlayerPool || []);
-  const [selectedSeasonLength, setSelectedSeasonLength] = React.useState(game.careerSeasonLength || 'standard');
-  const trimmedPlayerName = (playerName || '').trim();
+  const [domesticTeams, setDomesticTeams] = React.useState(
+    Array.isArray(careerDomesticTeams) ? careerDomesticTeams : []
+  );
+  const [globalPlayerPool, setGlobalPlayerPool] = React.useState(
+    Array.isArray(careerGlobalPlayerPool) ? careerGlobalPlayerPool : []
+  );
+
+  const trimmedPlayerName = String(playerName || '').trim();
   const numericAge = Number(playerAge);
-  const normalizedNationality = (playerNationality || selectedCountry || '').trim();
+  const normalizedNationality = String(playerNationality || selectedCountry || '').trim();
   const ageValid = Number.isFinite(numericAge) && numericAge >= 16 && numericAge <= 40;
-  const canGenerateOffers = !!selectedCountry;
-  const canStart =
-    trimmedPlayerName &&
-    ageValid &&
-    !!normalizedNationality &&
-    !!playerType &&
-    domesticTeams.length > 0 &&
-    globalPlayerPool.length > 0;
+  const playerDetailsReady = !!trimmedPlayerName && ageValid && !!normalizedNationality;
+  const hasGeneratedCareerData = domesticTeams.length > 0 && globalPlayerPool.length > 0;
+  const canContinueToSeason = !!selectedCountry && hasGeneratedCareerData;
+  const canStart = playerDetailsReady && !!playerType && canContinueToSeason;
   const selectedPlayerType = PLAYER_TYPE_OPTIONS.find((option) => option.key === playerType) || PLAYER_TYPE_OPTIONS[0];
   const selectedPlayerTypeThemeClass = `sim-career-player-preview--${String(selectedPlayerType.key).replace(/\s+/g, '-')}`;
+  const stepContent = CAREER_SETUP_STEPS[step - 1];
+
+  React.useLayoutEffect(() => {
+    const scrollContainer = progressRef.current?.closest('.sim-shell');
+    if (scrollContainer) {
+      scrollContainer.scrollTop = 0;
+    }
+  }, [step]);
 
   const generateDomesticLeagueAndOffers = () => {
-    const createdTeams = createDomesticTeamsForAllCountries(countryList);
-    const createdPool = createGlobalCareerPlayerPool(countryList);
-    setDomesticTeams(createdTeams);
-    setGlobalPlayerPool(createdPool);
+    const createdTeams = createDomesticTeamsForAllCountries(availableCountries);
+    const createdPool = createGlobalCareerPlayerPool(availableCountries);
+    setDomesticTeams(Array.isArray(createdTeams) ? createdTeams : []);
+    setGlobalPlayerPool(Array.isArray(createdPool) ? createdPool : []);
+  };
+
+  const handleBeginCareer = () => {
+    if (!canStart) {
+      return;
+    }
+
+    beginCareer({
+      playerProfile: {
+        name: trimmedPlayerName,
+        age: numericAge,
+        nationality: normalizedNationality,
+        playerType,
+      },
+      domesticCountry: selectedCountry,
+      domesticTeams,
+      globalPlayerPool,
+      countryList: availableCountries,
+      offers: [],
+    });
   };
 
   return (
-    <StageShell {...stageCommonProps} title="Career Mode Setup" subtitle="Create your player and begin a full player career journey.">
-      <h4 className="sim-section-title">Create Your Player</h4>
-      <div className="sim-scoreboard-panel sim-career-create-panel sim-career-reveal">
-        <div className="sim-career-create-grid">
-          <label htmlFor="career-player-name">Player Name</label>
-          <input
-            id="career-player-name"
-            className="sim-career-input"
-            type="text"
-            value={playerName}
-            onChange={(event) => setPlayerName(event.target.value)}
-            placeholder="Enter player name"
-          />
+    <StageShell
+      {...stageCommonProps}
+      title={stepContent.title}
+      subtitle={stepContent.subtitle}
+    >
+      <div className="sim-career-setup-progress" ref={progressRef}>
+        <div className="sim-career-setup-progress-labels">
+          <span>CAREER SETUP</span>
+          <span>Step {step} of {CAREER_SETUP_STEPS.length}</span>
+        </div>
+        <div
+          className="sim-career-setup-progress-track"
+          role="progressbar"
+          aria-label="Career setup progress"
+          aria-valuemin={1}
+          aria-valuemax={CAREER_SETUP_STEPS.length}
+          aria-valuenow={step}
+          aria-valuetext={`Step ${step} of ${CAREER_SETUP_STEPS.length}`}
+        >
+          <span style={{ width: `${(step / CAREER_SETUP_STEPS.length) * 100}%` }} />
+        </div>
+      </div>
 
-          <label htmlFor="career-player-age">Age</label>
-          <input
-            id="career-player-age"
-            className="sim-career-input"
-            type="number"
-            min={16}
-            max={40}
-            value={playerAge}
-            onChange={(event) => setPlayerAge(event.target.value)}
-          />
+      {step === 1 ? (
+        <section className="sim-career-create-panel sim-career-reveal" aria-labelledby="career-player-details-title">
+          <h3 id="career-player-details-title" className="sim-section-title">Player identity</h3>
+          <div className="sim-career-create-grid">
+            <label htmlFor="career-player-name">Player Name</label>
+            <input
+              id="career-player-name"
+              className="sim-career-input"
+              type="text"
+              autoComplete="name"
+              value={playerName}
+              onChange={(event) => setPlayerName(event.target.value)}
+              placeholder="Enter player name"
+            />
 
-          <label htmlFor="career-player-nationality">Nationality</label>
-          <select
-            id="career-player-nationality"
-            className="sim-career-input"
-            value={playerNationality}
-            onChange={(event) => setPlayerNationality(event.target.value)}
-          >
-            <option value="">Select nationality</option>
-            {countryList.map((country) => (
-              <option key={`nat-${country.id}`} value={country.name}>
-                {country.name}
-              </option>
-            ))}
-          </select>
+            <label htmlFor="career-player-age">Age</label>
+            <input
+              id="career-player-age"
+              className="sim-career-input"
+              type="number"
+              min={16}
+              max={40}
+              inputMode="numeric"
+              value={playerAge}
+              onChange={(event) => setPlayerAge(event.target.value)}
+            />
 
-          <label>Player Type</label>
+            <label htmlFor="career-player-nationality">Nationality</label>
+            <select
+              id="career-player-nationality"
+              className="sim-career-input"
+              value={playerNationality}
+              onChange={(event) => setPlayerNationality(event.target.value)}
+            >
+              <option value="">Select nationality</option>
+              {availableCountries.map((country) => (
+                <option key={`nat-${country.id}`} value={country.name}>
+                  {country.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          {!playerDetailsReady ? (
+            <p className="sim-career-create-hint" role="status" aria-live="polite">
+              Enter a name, an age from 16 to 40, and a nationality to continue.
+            </p>
+          ) : null}
+        </section>
+      ) : null}
+
+      {step === 2 ? (
+        <section className="sim-career-create-panel sim-career-reveal" aria-labelledby="career-player-style-title">
+          <h3 id="career-player-style-title" className="sim-section-title">Choose a player role</h3>
           <div className="sim-career-type-grid" role="radiogroup" aria-label="Player type">
             {PLAYER_TYPE_OPTIONS.map((option) => (
               <button
@@ -122,78 +203,126 @@ function CareerSetupStage({
             ))}
           </div>
           <p className="sim-career-type-blurb">{selectedPlayerType.blurb}</p>
-        </div>
+          <div className={`sim-career-player-preview ${selectedPlayerTypeThemeClass}`} aria-live="polite">
+            <p className="sim-career-player-preview-kicker">Player Preview</p>
+            <h4>{trimmedPlayerName || 'Unnamed Prospect'}</h4>
+            <p>Age: {Number.isFinite(numericAge) ? numericAge : 'N/A'}</p>
+            <p>Nationality: {normalizedNationality || 'Choose nationality'}</p>
+            <p>Role: {selectedPlayerType.label}</p>
+            <p>Style Tag: {selectedPlayerType.badge}</p>
+          </div>
+        </section>
+      ) : null}
 
-        <div className={`sim-career-player-preview sim-career-reveal ${selectedPlayerTypeThemeClass}`} aria-live="polite">
-          <p className="sim-career-player-preview-kicker">Player Preview</p>
-          <h4>{trimmedPlayerName || 'Unnamed Prospect'}</h4>
-          <p>Age: {Number.isFinite(numericAge) ? numericAge : 'N/A'}</p>
-          <p>Nationality: {normalizedNationality || 'Choose nationality'}</p>
-          <p>Role: {selectedPlayerType.label}</p>
-          <p>Style Tag: {selectedPlayerType.badge}</p>
-          <p className="sim-career-player-preview-status">
-            {canStart ? 'Ready to begin career.' : 'Complete all required fields to start career.'}
-          </p>
-        </div>
-      </div>
-
-      <h4 className="sim-section-title">Select Domestic League Country</h4>
-      <FlagTeamGrid
-        teams={countryList}
-        selectedName={selectedCountry}
-        onSelect={(team) => {
-          setSelectedCountry(team.name);
-          setDomesticTeams([]);
-          setGlobalPlayerPool([]);
-        }}
-      />
-
-      <div style={{ marginTop: '10px' }}>
-        <AppButton
-          text="Generate Global Clubs & Player Pool"
-          onClick={generateDomesticLeagueAndOffers}
-          disabled={!canGenerateOffers}
-          fullWidth
-        />
-      </div>
-
-      <h4 className="sim-section-title">Season Length</h4>
-      <div className="sim-series-length-grid">
-        {SEASON_LENGTH_OPTIONS.map((option) => (
-          <button
-            key={option.key}
-            type="button"
-            className={`sim-series-length-card ${selectedSeasonLength === option.key ? 'active' : ''}`}
-            onClick={() => setSelectedSeasonLength(option.key)}
+      {step === 3 ? (
+        <section className="sim-career-create-panel sim-career-reveal" aria-labelledby="career-league-title">
+          <h3 id="career-league-title" className="sim-section-title">Select your domestic league</h3>
+          <label htmlFor="career-domestic-country">League Country</label>
+          <select
+            id="career-domestic-country"
+            className="sim-career-input"
+            value={selectedCountry}
+            onChange={(event) => {
+              setSelectedCountry(event.target.value);
+              setDomesticTeams([]);
+              setGlobalPlayerPool([]);
+            }}
           >
-            <span className="sim-series-length-number">{option.label}</span>
-            <small>{option.description}</small>
-          </button>
-        ))}
-      </div>
+            <option value="">Select a country</option>
+            {availableCountries.map((country) => (
+              <option key={`league-${country.id}`} value={country.name}>
+                {country.name}
+              </option>
+            ))}
+          </select>
 
-      <AppButton
-        text="Begin Career and Run Auction"
-        onClick={() =>
-          beginCareer({
-            seasonLength: selectedSeasonLength,
-            playerProfile: {
-              name: trimmedPlayerName,
-              age: numericAge,
-              nationality: normalizedNationality,
-              playerType,
-            },
-            domesticCountry: selectedCountry,
-            domesticTeams,
-            globalPlayerPool,
-            countryList,
-            offers: [],
-          })
-        }
-        disabled={!canStart}
-        fullWidth
-      />
-      <p className="sim-career-create-footer-note">All domestic clubs will bid in an auction and your club will be assigned by market demand.</p>
+          <div className="sim-career-setup-generation">
+            <p>
+              {hasGeneratedCareerData
+                ? `${domesticTeams.length} clubs and ${globalPlayerPool.length} player${globalPlayerPool.length === 1 ? '' : 's'} are ready.`
+                : 'Create the clubs and player pool before continuing.'}
+            </p>
+            <AppButton
+              text={hasGeneratedCareerData ? 'Regenerate Clubs & Player Pool' : 'Generate Clubs & Player Pool'}
+              onClick={generateDomesticLeagueAndOffers}
+              disabled={!selectedCountry}
+              fullWidth={false}
+              variant="secondary"
+            />
+          </div>
+          <p className="sim-career-create-hint" role="status" aria-live="polite">
+            {canContinueToSeason
+              ? 'League setup is ready.'
+              : 'Choose a league country and generate its clubs to continue.'}
+          </p>
+        </section>
+      ) : null}
+
+      {step === 4 ? (
+        <>
+          <section className="sim-career-setup-review" aria-labelledby="career-review-title">
+            <h3 id="career-review-title" className="sim-section-title">Career overview</h3>
+            <dl>
+              <div>
+                <dt>Player</dt>
+                <dd>{trimmedPlayerName}</dd>
+                <small>Age {numericAge} · {normalizedNationality}</small>
+              </div>
+              <div><dt>Role</dt><dd>{selectedPlayerType.label}</dd></div>
+              <div><dt>League</dt><dd>{selectedCountry}</dd></div>
+              <div><dt>Season</dt><dd>1 cycle</dd></div>
+              <div>
+                <dt>Club pool</dt>
+                <dd>
+                  {domesticTeams.length} clubs · {globalPlayerPool.length} player{globalPlayerPool.length === 1 ? '' : 's'}
+                </dd>
+              </div>
+            </dl>
+          </section>
+        </>
+      ) : null}
+
+      <div className="sim-career-setup-actions">
+        {step > 1 ? (
+          <AppButton
+            text={`Back to ${CAREER_SETUP_STEPS[step - 2].title}`}
+            onClick={() => setStep((currentStep) => currentStep - 1)}
+            variant="secondary"
+            fullWidth={false}
+          />
+        ) : null}
+        {step === 1 ? (
+          <AppButton
+            text="Continue to Playing Style"
+            onClick={() => setStep(2)}
+            disabled={!playerDetailsReady}
+            fullWidth={false}
+          />
+        ) : null}
+        {step === 2 ? (
+          <AppButton
+            text="Continue to Domestic League"
+            onClick={() => setStep(3)}
+            fullWidth={false}
+          />
+        ) : null}
+        {step === 3 ? (
+          <AppButton
+            text="Continue to Career Review"
+            onClick={() => setStep(4)}
+            disabled={!canContinueToSeason}
+            fullWidth={false}
+          />
+        ) : null}
+        {step === 4 ? (
+          <AppButton
+            text="Begin Career and Run Auction"
+            onClick={handleBeginCareer}
+            disabled={!canStart}
+            fullWidth={false}
+          />
+        ) : null}
+      </div>
     </StageShell>
   );
 }

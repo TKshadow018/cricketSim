@@ -28,6 +28,9 @@ jest.mock('./InningsStage', () => ({
       <button onClick={() => props.onSelectOpener(3)}>Select opener</button>
       <button onClick={() => props.onSelectNextBatter(4)}>Select next batter</button>
       <button onClick={() => props.onSelectBowler(5)}>Select bowler</button>
+      {props.showScoreboard ? (
+        <button onClick={props.onCloseScoreboard}>Close Scoreboard</button>
+      ) : null}
       <span>{props.title}</span>
       <span>{props.subtitle}</span>
     </div>
@@ -192,6 +195,8 @@ describe('LiveMatchStages', () => {
 
     rerender(<LiveMatchStages {...first} game={{ ...first.game, showScoreboard: true }} />);
     expect(screen.getByRole('button', { name: 'Hide Scoreboard' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Close Scoreboard' }));
+    expect(first.toggleScoreboard).toHaveBeenCalled();
 
     const second = makeProps({
       stage: matchStatusEnum.TeamTwoBat,

@@ -1,6 +1,5 @@
 export const PLAYER_TYPES = {
   BATSMAN: 'batsman',
-  BOWLER: 'bowler',
   WICKETKEEPER: 'wicketkeeper',
   PACE_ALLROUNDER: 'pace allrounder',
   SPIN_ALLROUNDER: 'spin allrounder',
@@ -21,23 +20,34 @@ export const classifyPlayerType = (player = {}) => {
   const paceBowling = metric(player.paceAbility);
   const spinBowling = metric(player.spinAbility);
 
-  if (battingTotal > 70 && paceBowling > 60) {
-    return PLAYER_TYPES.PACE_ALLROUNDER;
-  }
-  if (battingTotal > 70 && spinBowling > 60) {
-    return PLAYER_TYPES.SPIN_ALLROUNDER;
-  }
-  if (paceBatting > 70 || spinBatting > 70 || battingTotal > 120) {
-    return PLAYER_TYPES.BATSMAN;
-  }
-  if (paceBowling > 70) {
-    return PLAYER_TYPES.PACER;
-  }
-  if (spinBowling > 70) {
-    return PLAYER_TYPES.SPINER;
+  const classifyAtThreshold = (threshold) => {
+    if (battingTotal > threshold && paceBowling > threshold - 10) {
+      return PLAYER_TYPES.PACE_ALLROUNDER;
+    }
+    if (battingTotal > threshold && spinBowling > threshold - 10) {
+      return PLAYER_TYPES.SPIN_ALLROUNDER;
+    }
+    if (paceBatting > threshold || spinBatting > threshold || battingTotal > threshold + 50) {
+      return PLAYER_TYPES.BATSMAN;
+    }
+    if (paceBowling > threshold) {
+      return PLAYER_TYPES.PACER;
+    }
+    if (spinBowling > threshold) {
+      return PLAYER_TYPES.SPINER;
+    }
+
+    return null;
+  };
+
+  let threshold = 70;
+  let playerType = classifyAtThreshold(threshold);
+  while (!playerType) {
+    threshold -= 10;
+    playerType = classifyAtThreshold(threshold);
   }
 
-  return PLAYER_TYPES.BOWLER;
+  return playerType;
 };
 
 export const getPlayerType = (player = {}) =>

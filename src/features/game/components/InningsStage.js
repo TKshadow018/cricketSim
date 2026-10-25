@@ -1,6 +1,7 @@
 import React from 'react';
 import AppButton from '../../../components/ui/AppButton';
 import PlayerNameWithType from './PlayerNameWithType';
+import ScoreboardModal from './ScoreboardModal';
 
 const splitCommentaryLine = (line = '') => {
   const match = line.match(/^(\d+\.\d+)\s+(.*)$/);
@@ -53,6 +54,7 @@ function InningsStage({
   showScoreboard,
   scorecard,
   commentary,
+  onCloseScoreboard,
 }) {
   const renderInningsScoreboard = (inningsData, keyPrefix) => {
     if (!inningsData) {
@@ -125,12 +127,11 @@ function InningsStage({
   return (
     <>
       {showScoreboard ? (
-            <div className="sim-scoreboard-panel">
-              <h4>Full Scoreboard</h4>
-              {renderInningsScoreboard(scorecard.currentInnings, 'current')}
-              {scorecard.previousInnings ? renderInningsScoreboard(scorecard.previousInnings, 'previous') : null}
-            </div>
-          ) : null}
+        <ScoreboardModal onClose={onCloseScoreboard}>
+          {renderInningsScoreboard(scorecard.currentInnings, 'current')}
+          {scorecard.previousInnings ? renderInningsScoreboard(scorecard.previousInnings, 'previous') : null}
+        </ScoreboardModal>
+      ) : null}
       <div className="sim-score-row">
         <h3>{title}</h3>
         <div className="sim-score-pill">{score}/{wickets}</div>

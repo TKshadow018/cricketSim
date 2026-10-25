@@ -1,10 +1,10 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import CareerSetupStage from './CareerSetupStage';
 
 jest.mock('../../../components/ui/AppButton', () => ({
   __esModule: true,
-  default: ({ text, disabled }) => <button disabled={disabled}>{text}</button>,
+  default: ({ text, onClick, disabled }) => <button onClick={onClick} disabled={disabled}>{text}</button>,
 }));
 
 jest.mock('./StageShell', () => ({
@@ -18,24 +18,28 @@ jest.mock('./FlagTeamGrid', () => ({
 }));
 
 jest.mock('../utils/controllerCareerScheduleUtils', () => ({
-  CAREER_SEASON_LENGTHS: { short: 1, standard: 1, full: 1 },
   createDomesticTeamsForAllCountries: jest.fn(),
   createGlobalCareerPlayerPool: jest.fn(),
 }));
 
-test('uses singular match labels for one-match season lengths', () => {
+test('uses a single season cycle without offering a season length choice', () => {
   render(
     <CareerSetupStage
       stageCommonProps={{}}
       countryList={[]}
-      game={{}}
       beginCareer={jest.fn()}
-      careerPlayerProfile={{}}
-      careerDomesticCountry=""
-      careerDomesticTeams={[]}
-      careerGlobalPlayerPool={[]}
+      careerPlayerProfile={{ name: 'Player', age: 20, nationality: 'India', playerType: 'batsman' }}
+      careerDomesticCountry="India"
+      careerDomesticTeams={[{ name: 'India Club' }]}
+      careerGlobalPlayerPool={[{ id: 'player' }]}
     />
   );
 
-  expect(screen.getAllByText('1 format')).toHaveLength(3);
+  fireEvent.click(screen.getByRole('button', { name: 'Continue to Playing Style' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Continue to Domestic League' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Continue to Career Review' }));
+
+  expect(screen.getByRole('heading', { name: 'Review & Start' })).toBeInTheDocument();
+  expect(screen.getByText('Season').parentElement).toHaveTextContent('1 cycle');
+  expect(screen.queryByRole('button', { name: /Short|Standard|Full/ })).not.toBeInTheDocument();
 });

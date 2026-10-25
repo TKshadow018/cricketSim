@@ -96,7 +96,8 @@ export const buildCareerSeasonSchedule = (careerTeam, domesticTeams, seasonLengt
   };
 
   const selectedFormats = [...CAREER_FORMATS];
-  const seasonMultiplier = seasonLength === 'full' ? 2 : 1;
+  // Ignore legacy length values so each career season has one cycle.
+  const seasonMultiplier = 1;
   let globalIndex = 1;
   let nextFixtureDate = new Date(seasonStartDate);
   const allFixtures = Array.from({ length: seasonMultiplier }).flatMap((_, cycleIndex) =>

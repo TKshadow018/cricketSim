@@ -1,0 +1,70 @@
+.sim-scoreboard-modal {
+  display: grid;
+  width: min(1120px, 100%);
+  max-height: min(88dvh, 920px);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  overflow: hidden;
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.sim-scoreboard-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.sim-scoreboard-modal-header h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.5vw, 1.8rem);
+}
+
+.sim-scoreboard-modal-header .sim-card-kicker {
+  margin: 0 0 0.3rem;
+}
+
+.sim-scoreboard-modal-header .sim-modal-top-close {
+  position: static;
+  flex: 0 0 auto;
+}
+
+.sim-scoreboard-modal-header .sim-modal-top-close svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.sim-scoreboard-scroll-hint {
+  display: none;
+}
+
+.sim-scoreboard-modal-content {
+  min-height: 0;
+  overflow: auto;
+  padding-right: 0.25rem;
+  overscroll-behavior: contain;
+}
+
+.sim-scoreboard-modal-content > .sim-scoreboard-block {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 767px) {
+  .sim-scoreboard-modal {
+    width: 100%;
+    max-height: 90dvh;
+    border-radius: 16px;
+  }
+
+  .sim-scoreboard-scroll-hint {
+    display: block;
+    margin: 0 0 0.65rem;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+  }
+}

@@ -430,7 +430,6 @@ function PreMatchBasicStages(props) {
         <CareerSetupStage
           stageCommonProps={stageCommonProps}
           countryList={countryList}
-          game={game}
           beginCareer={beginCareer}
         careerPlayerProfile={careerPlayerProfile}
         careerDomesticCountry={careerDomesticCountry}

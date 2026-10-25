@@ -72,9 +72,11 @@ const makeProps = (overrides = {}) => ({
 
 describe('InningsStage', () => {
   test('renders batting controls, simulation actions, commentary, and scoreboard rows', () => {
+    const onCloseScoreboard = jest.fn();
     const previousInnings = inningsCard('Ravens');
     const props = makeProps({
       showScoreboard: true,
+      onCloseScoreboard,
       scorecard: {
         currentInnings: inningsCard('Falcons'),
         previousInnings: {
@@ -98,6 +100,9 @@ describe('InningsStage', () => {
     expect(screen.getByText('Full Scoreboard')).toBeInTheDocument();
     expect(screen.getByText('Ravens')).toBeInTheDocument();
     expect(screen.getAllByText('Bowling')).toHaveLength(2);
+    const scoreboard = screen.getByRole('dialog', { name: 'Full Scoreboard' });
+    fireEvent.click(within(scoreboard).getByRole('button', { name: 'Close Scoreboard' }));
+    expect(onCloseScoreboard).toHaveBeenCalled();
 
     fireEvent.click(screen.getByRole('button', { name: 'Normal' }));
     fireEvent.click(screen.getByRole('button', { name: 'Play Next Ball' }));

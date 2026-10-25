@@ -1,6 +1,7 @@
 import React from 'react';
 import StageShell from './StageShell';
 import AppButton from '../../../components/ui/AppButton';
+import CareerAuctionRoom from './CareerAuctionRoom';
 import PlayerNameWithType from './PlayerNameWithType';
 import TeamNameWithLogo from './TeamNameWithLogo';
 import {
@@ -116,6 +117,16 @@ function CareerAuctionStage({
     () => buildLiveBudgetRows({ budgetRows, timeline, currentIndex, isAtFinalAuctionState }),
     [budgetRows, timeline, currentIndex, isAtFinalAuctionState]
   );
+  const liveBudgetByTeam = new Map(liveBudgetRows.map((row) => [row.team, row]));
+  const bidderRows = budgetRows.map((row) => liveBudgetByTeam.get(row.team) || row);
+  const revealedBidsByTeam = Array.isArray(currentEvent?.bids)
+    ? currentEvent.bids.slice(0, revealedBidCount).reduce((acc, bid) => {
+        if (bid?.team) {
+          acc[bid.team] = bid;
+        }
+        return acc;
+      }, {})
+    : EMPTY_OBJECT;
   const quotaSummary = React.useMemo(
     () => buildQuotaSummary({ rows: liveBudgetRows, minimumRoleLimits, domesticRange, foreignRange }),
     [liveBudgetRows, minimumRoleLimits, domesticRange, foreignRange]
@@ -148,15 +159,24 @@ function CareerAuctionStage({
   return (
     <StageShell
       {...stageCommonProps}
+      className="sim-stage-career-auction"
       title={`Season ${careerSeason || 1} Auction`}
       subtitle={
         <>
           <PlayerNameWithType player={careerPlayerProfile} name={profileName} />
           {' • '}
-          {careerDomesticCountry || 'Domestic League'} Auction Complete
+          {careerDomesticCountry || 'Domestic League'} · Career player auction
         </>
       }
     >
+      <CareerAuctionRoom
+        currentEvent={currentEvent}
+        auctioneerLine={auctioneerLine}
+        progressLabel={progressLabel}
+        bidderRows={bidderRows}
+        revealedBidsByTeam={revealedBidsByTeam}
+      />
+
       <div className="sim-scoreboard-panel" style={{ marginBottom: '12px' }}>
         <h4 className="sim-section-title" style={{ marginTop: 0 }}>Auction Rules</h4>
         <small>Player pool: {domesticRatioPercent}% domestic, {foreignRatioPercent}% foreign</small>
@@ -182,11 +202,6 @@ function CareerAuctionStage({
         </small>
         <br />
         <small>Clubs still outside at least one rule: {quotaSummary.failing}</small>
-      </div>
-
-      <div className="sim-scoreboard-panel" style={{ marginBottom: '12px' }}>
-        <h4 className="sim-section-title" style={{ marginTop: 0 }}>Auctioneer Lane</h4>
-        <div className="sim-auctioneer-lane">{auctioneerLine}</div>
       </div>
 
       <div className="sim-scoreboard-panel" style={{ marginBottom: '12px' }}>

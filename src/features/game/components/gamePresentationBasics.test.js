@@ -276,6 +276,7 @@ describe('match presentation components', () => {
   test('renders scorecards, MOM recommendations, and result actions', () => {
     const onSelectManOfTheMatch = jest.fn();
     const onPrimaryAction = jest.fn();
+    const onCloseScoreboard = jest.fn();
     const recommendations = [
       { rank: 1, team: 'India', name: 'Top Player', playerType: 'batsman', runs: 50, balls: 30, strikeRate: 166, oversBowled: '2.0', runsConceded: 10, wickets: 2, points: 100, recommended: true, notOut: true, notes: ['Match-winning innings'] },
       { rank: 2, team: 'England', name: 'Second Player', runs: 20, balls: 20, strikeRate: 100, oversBowled: '1.0', runsConceded: 12, wickets: 1, points: 50, notes: [] },
@@ -301,6 +302,7 @@ describe('match presentation components', () => {
         momRecommendations={recommendations}
         onSelectManOfTheMatch={onSelectManOfTheMatch}
         onPrimaryAction={onPrimaryAction}
+        onCloseScoreboard={onCloseScoreboard}
         showScoreboard
         scorecard={{ currentInnings: innings, previousInnings: { ...innings, title: 'England Innings' } }}
       />
@@ -308,6 +310,10 @@ describe('match presentation components', () => {
     expect(screen.getByText('150/4')).toBeInTheDocument();
     expect(screen.getByText('Man of the Match Suggestions')).toBeInTheDocument();
     expect(screen.getByText('Full Scoreboard')).toBeInTheDocument();
+    const scoreboard = screen.getByRole('dialog', { name: 'Full Scoreboard' });
+    expect(scoreboard).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Close Scoreboard' }));
+    expect(onCloseScoreboard).toHaveBeenCalled();
     expect(screen.getAllByText('India Innings')).toHaveLength(1);
     expect(screen.getByText('England Innings')).toBeInTheDocument();
     expect(screen.getByText('Recommended')).toBeInTheDocument();
