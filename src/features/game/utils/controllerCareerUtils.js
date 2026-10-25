@@ -218,9 +218,7 @@ export const buildCareerMatchScorecard = ({
   const secondBattingPlayers = firstBattingSide === 'own' ? opponentPlayers : ownPlayers;
   const secondBowlingPlayers = firstBattingSide === 'own' ? ownPlayers : opponentPlayers;
   const firstBattingTeam = firstBattingSide === 'own' ? ownTeam : opponentTeam;
-  const firstBowlingTeam = firstBattingSide === 'own' ? opponentTeam : ownTeam;
   const secondBattingTeam = firstBattingSide === 'own' ? opponentTeam : ownTeam;
-  const secondBowlingTeam = firstBattingSide === 'own' ? ownTeam : opponentTeam;
 
   const firstRows = buildCareerInningsRows({
     inningsState: firstInnings,

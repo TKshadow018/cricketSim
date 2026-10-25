@@ -9,6 +9,11 @@ import {
   buildTeamMomentumRows,
 } from './careerAuctionViewModel';
 
+const EMPTY_ARRAY = [];
+const EMPTY_OBJECT = {};
+const DEFAULT_DOMESTIC_RANGE = [15, 20];
+const DEFAULT_FOREIGN_RANGE = [5, 8];
+
 function CareerAuctionStage({
   stageCommonProps,
   careerSeason,
@@ -18,10 +23,10 @@ function CareerAuctionStage({
   careerAuctionSummary,
   handleCareerContinueAfterAuction,
 }) {
-  const summary = careerAuctionSummary || {};
-  const budgetRows = Array.isArray(summary.budgetTable) ? summary.budgetTable : [];
+  const summary = careerAuctionSummary || EMPTY_OBJECT;
+  const budgetRows = Array.isArray(summary.budgetTable) ? summary.budgetTable : EMPTY_ARRAY;
   const marqueeRows = Array.isArray(summary.marqueeBids) ? summary.marqueeBids.slice(0, 28) : [];
-  const timeline = Array.isArray(summary.auctionTimeline) ? summary.auctionTimeline : [];
+  const timeline = Array.isArray(summary.auctionTimeline) ? summary.auctionTimeline : EMPTY_ARRAY;
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isAutoPlay, setIsAutoPlay] = React.useState(true);
   const [playbackMs, setPlaybackMs] = React.useState(900);
@@ -79,9 +84,9 @@ function CareerAuctionStage({
   const domesticRatioPercent = Math.round(Number(summary.playerPoolComposition?.domesticRatio || 0.85) * 100);
   const foreignRatioPercent = Math.round(Number(summary.playerPoolComposition?.foreignRatio || 0.15) * 100);
   const teamRules = summary.teamRules || {};
-  const domesticRange = teamRules.domesticPerTeam || [15, 20];
-  const foreignRange = teamRules.foreignPerTeam || [5, 8];
-  const minimumRoleLimits = teamRules.minimumRoleLimits || {};
+  const domesticRange = teamRules.domesticPerTeam || DEFAULT_DOMESTIC_RANGE;
+  const foreignRange = teamRules.foreignPerTeam || DEFAULT_FOREIGN_RANGE;
+  const minimumRoleLimits = teamRules.minimumRoleLimits || EMPTY_OBJECT;
   const progressLabel = timeline.length ? `${Math.min(currentIndex + 1, timeline.length)} / ${timeline.length}` : '0 / 0';
   const currentEventBidCount = Array.isArray(currentEvent?.bids) ? currentEvent.bids.length : 0;
   const phaseLabel = !currentEvent

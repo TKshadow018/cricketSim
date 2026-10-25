@@ -11,7 +11,7 @@
 - Do not commit secrets or local environment files.
 - Keep every authored code file, including tests and stylesheets, at 500 lines or fewer. Split larger files into focused modules or utility files, reuse common helpers where appropriate, and preserve behavior with tests.
 - Follow consistent naming conventions for files, components, and functions to improve code clarity and maintainability.
-- 
+- Check prettier and ESLint formatting with `npm run format` and `npm run lint` before committing.
 
 ## Validation
 - Run `npm test` for relevant tests and `npm run build` to verify production builds.

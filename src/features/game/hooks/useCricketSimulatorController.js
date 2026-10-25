@@ -1,6 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
 import { getEffectiveAuthUser } from '../../../config/runtimeConfig';
 
 
@@ -70,10 +69,7 @@ import {
   setPreferredVoice,
   speak,
 } from '../../../utils/speechUtils';
-import {
-  resolveResultSummary,
-  stageOrder,
-} from '../../../utils/simulatorUtils';
+import { resolveResultSummary } from '../../../utils/simulatorUtils';
 import { pickDefaultRoles, sanitizeRoles } from '../utils/controllerCommonUtils';
 import { createNavigationHandlers } from './controller/controllerNavigation';
 import { useControllerRuntimeFromContext } from './controller/useControllerRuntimeFromContext';
@@ -90,7 +86,6 @@ import { prepareTournamentMatchState } from './controller/controllerTournamentMa
 
 export function useCricketSimulatorController() {
   const dispatch = useDispatch();
-  const location = useLocation();
   const game = useSelector((state) => state.game);
   const authUser = useSelector((state) => getEffectiveAuthUser(state.auth.user));
   const {
@@ -153,7 +148,6 @@ export function useCricketSimulatorController() {
   const [saveMessage, setSaveMessage] = useState('');
   const inProgressRef = useRef(false);
   const savedHistorySignatureRef = useRef('');
-  const seriesResultCommitSignatureRef = useRef('');
   const tournamentResultCommitSignatureRef = useRef('');
   const careerResultCommitSignatureRef = useRef('');
   const processDeliveryRef = useRef(null);
@@ -165,15 +159,8 @@ export function useCricketSimulatorController() {
 
   const {
   countryList,
-  fallbackPlayers,
   matchType,
   maxBalls,
-  careerDomesticRosterMap,
-  countryRoster,
-  careerOwnPlayers,
-  careerOpponentPlayers,
-  fullOwnPlayers,
-  fullOpponentPlayers,
   availableOwnPlayers,
   availableOpponentPlayers,
   ownPlayers,
@@ -355,8 +342,8 @@ processDeliveryRef.current = processDelivery;
         secondInningsTeamName,
       }),
     [
-
       firstInningsTeamName,
+      firstInnings.score,
       secondInnings.score,
       secondInnings.wickets,
       secondInningsTeamName,

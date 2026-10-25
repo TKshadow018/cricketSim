@@ -154,7 +154,18 @@ export const useTossAndSimulationHandlers = ({
     }, 0);
 
     return () => clearTimeout(timer);
-  }, [autoSimMode, stage, firstInnings, secondInnings, maxBalls, setAutoSimMode, processDeliveryRef]);
+  }, [
+    autoSimMode,
+    stage,
+    matchStatusEnumLocal.MatchEnd,
+    matchStatusEnumLocal.TeamOneBat,
+    matchStatusEnumLocal.TeamTwoBat,
+    firstInnings,
+    secondInnings,
+    maxBalls,
+    setAutoSimMode,
+    processDeliveryRef,
+  ]);
 
   useEffect(() => {
     if (gameMode !== MODE_TOURNAMENT || isCurrentMatchUserInvolved || stage !== matchStatusEnumLocal.TossTime) {
@@ -183,6 +194,8 @@ export const useTossAndSimulationHandlers = ({
     gameMode,
     isCurrentMatchUserInvolved,
     stage,
+    matchStatusEnumLocal.TossTime,
+    matchStatusEnumLocal.TossResult,
     selectedStadium,
     ownTeam,
     opponentTeam,
@@ -222,6 +235,8 @@ export const useTossAndSimulationHandlers = ({
   }, [
     gameMode,
     stage,
+    matchStatusEnumLocal.TossTime,
+    matchStatusEnumLocal.TossResult,
     selectedStadium,
     ownTeam,
     opponentTeam,
@@ -241,7 +256,14 @@ export const useTossAndSimulationHandlers = ({
     }
 
     openInningsRef.current?.(firstBattingSide);
-  }, [gameMode, isCurrentMatchUserInvolved, stage, firstBattingSide, openInningsRef]);
+  }, [
+    gameMode,
+    isCurrentMatchUserInvolved,
+    stage,
+    matchStatusEnumLocal.TossResult,
+    firstBattingSide,
+    openInningsRef,
+  ]);
 
   useEffect(() => {
     if (gameMode !== MODE_CAREER || stage !== matchStatusEnumLocal.TossResult) {
@@ -249,7 +271,7 @@ export const useTossAndSimulationHandlers = ({
     }
 
     openInningsRef.current?.(firstBattingSide);
-  }, [gameMode, stage, firstBattingSide, openInningsRef]);
+  }, [gameMode, stage, matchStatusEnumLocal.TossResult, firstBattingSide, openInningsRef]);
 
   useEffect(() => {
     if (gameMode !== MODE_CAREER || autoSimMode) {

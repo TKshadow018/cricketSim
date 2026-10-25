@@ -188,6 +188,7 @@ React.useEffect(() => {
     runsRange,
     runsPerMatchRange,
     wicketsRange,
+    setGlobalSearchPage,
   ]);
 
 const totalFilteredPlayers = filteredGlobalPlayers.length;
@@ -200,7 +201,7 @@ React.useEffect(() => {
     if (globalSearchPage !== normalizedGlobalSearchPage) {
       setGlobalSearchPage(normalizedGlobalSearchPage);
     }
-  }, [globalSearchPage, normalizedGlobalSearchPage]);
+  }, [globalSearchPage, normalizedGlobalSearchPage, setGlobalSearchPage]);
 
 const paginatedGlobalPlayers = React.useMemo(() => {
     const start = (normalizedGlobalSearchPage - 1) * 25;

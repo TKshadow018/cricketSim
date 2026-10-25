@@ -11,6 +11,8 @@ import {
 import PlayerNameWithType from './PlayerNameWithType';
 import TeamNameWithLogo from './TeamNameWithLogo';
 
+const EMPTY_FIXTURES = [];
+
 function CareerSeasonScheduleStage({
   stageCommonProps,
   careerTeam,
@@ -25,7 +27,7 @@ function CareerSeasonScheduleStage({
   handleCareerStartNextMatch,
   handleViewCareerHistory,
 }) {
-  const allFixtures = careerSchedule || [];
+  const allFixtures = careerSchedule || EMPTY_FIXTURES;
   const leagueTeamNames = React.useMemo(() => {
     const teams = (careerDomesticTeams || []).filter((team) => !careerDomesticCountry || team.country === careerDomesticCountry);
     return new Set(teams.map((team) => team.name).filter(Boolean));

@@ -115,7 +115,7 @@ React.useEffect(() => {
     if (!hasCurrentTeam) {
       setDomesticStatsTeamTab(domesticTeamsForSelectedFormat[0].teamName);
     }
-  }, [domesticTeamsForSelectedFormat, domesticStatsTeamTab]);
+  }, [domesticTeamsForSelectedFormat, domesticStatsTeamTab, setDomesticStatsTeamTab]);
 
 const currentUserSeasonStats = React.useMemo(() => {
     if (!careerPlayerProfile?.name) {
@@ -197,7 +197,7 @@ const openCareerPlayerProfile = React.useCallback((player, teamNameHint, title =
       title,
       player: profile,
     });
-  }, [buildCareerPlayerProfileData]);
+  }, [buildCareerPlayerProfileData, setCareerPlayerModal]);
 
 const leagueTableStandingsForSelectedFormat = React.useMemo(
     () => getCareerFormatStandings(careerStandings || {}, leagueTableFormatTab),
@@ -302,7 +302,12 @@ React.useEffect(() => {
         : availableLeagueCountries[0];
       setSelectedLeagueCountry(preferred);
     }
-  }, [availableLeagueCountries, selectedLeagueCountry, careerDomesticCountry]);
+  }, [
+    availableLeagueCountries,
+    selectedLeagueCountry,
+    careerDomesticCountry,
+    setSelectedLeagueCountry,
+  ]);
 
   return {
     normalizedCareerStats,
