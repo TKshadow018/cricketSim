@@ -2,13 +2,13 @@ import { useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { getEffectiveAuthUser } from '../../../config/runtimeConfig';
-import { battingAction, bowlingAction } from '../../../gameData/actionType';
-import { countries } from '../../../gameData/countries';
-import { countBowlingRolePlayers } from '../../../gameData/playerTypes';
-import { stadiums } from '../../../gameData/stadiums';
-import { getPlayersForNations, playerListForNation } from '../../../gameData/playerListForNation';
-import { matchTypeList } from '../../../gameData/matchTypeList';
-import { matchStatusEnum } from '../../../gameData/matchStatusEnum';
+
+
+
+
+
+
+
 import {
   resetMatchRuntime,
   resetMatchForCareer,
@@ -74,47 +74,19 @@ import {
   resolveResultSummary,
   stageOrder,
 } from '../../../utils/simulatorUtils';
-import {
-  MODE_SERIES,
-  MODE_TOURNAMENT,
-  MODE_CAREER,
-  buildPlayingXI,
-  normalizePlayingXIIds,
-  pickDefaultRoles,
-  sanitizeRoles,
-} from '../utils/controllerCommonUtils';
+import { pickDefaultRoles, sanitizeRoles } from '../utils/controllerCommonUtils';
 import { createNavigationHandlers } from './controller/controllerNavigation';
 import { useControllerRuntimeFromContext } from './controller/useControllerRuntimeFromContext';
 import { buildMainControllerApi } from './controller/buildMainControllerApi';
+import { useControllerDerivedState } from './controller/useControllerDerivedState';
+import { buildControllerInningsActions } from './controller/controllerInningsActions';
 import { useControllerBootstrap } from './controller/useControllerBootstrap';
 import { prepareTournamentMatchState } from './controller/controllerTournamentMatchPrep';
-import {
-  getInningsContext as getInningsContextHelper,
-  handleSelectBowler as handleSelectBowlerHelper,
-  handleSelectNextBatter as handleSelectNextBatterHelper,
-  handleSelectOpener as handleSelectOpenerHelper,
-  openInnings as openInningsHelper,
-  updateInningsState as updateInningsStateHelper,
-} from './controller/controllerInningsCore';
-import { processDelivery as processDeliveryHelper } from './controller/controllerDeliveryEngine';
-import { buildInningsViewModel as buildInningsViewModelHelper } from './controller/controllerInningsViewModel';
 
-const getSelectedXIPlayers = (availablePlayers, selectedIds, battingOrderIds) => {
-  const selectedSet = new Set(selectedIds);
-  const hasCompleteBattingOrder =
-    selectedIds.length === 11 &&
-    Array.isArray(battingOrderIds) &&
-    battingOrderIds.length === 11 &&
-    new Set(battingOrderIds).size === 11 &&
-    battingOrderIds.every((id) => selectedSet.has(id));
 
-  if (hasCompleteBattingOrder) {
-    const playersById = new Map(availablePlayers.map((player) => [player.id, player]));
-    return battingOrderIds.map((id) => playersById.get(id)).filter(Boolean);
-  }
 
-  return availablePlayers.filter((player) => selectedSet.has(player.id));
-};
+
+
 
 export function useCricketSimulatorController() {
   const dispatch = useDispatch();
@@ -191,103 +163,63 @@ export function useCricketSimulatorController() {
   const authUidRef = useRef(authUser?.uid || '');
   const [autoSimMode, setAutoSimMode] = useState(null);
 
-  const countryList = useMemo(
-    () => Object.values(countries).sort((a, b) => a.current_ranking - b.current_ranking),
-    []
-  );
-  const fallbackPlayers = useMemo(
-    () => Object.values(playerListForNation).find((players) => Array.isArray(players) && players.length > 0) || [],
-    []
-  );
-  const matchType = matchTypeList[matchTypeKey] || matchTypeList.t20;
-  const maxBalls = matchType.over * 6;
-  const careerDomesticRosterMap = useMemo(() => {
-    const map = {};
-    (careerDomesticTeams || []).forEach((team) => {
-      if (team?.name) {
-        map[team.name] = Array.isArray(team.players) ? team.players : [];
-      }
-    });
-    return map;
-  }, [careerDomesticTeams]);
-  const countryRoster = getPlayersForNations(ownTeam, opponentTeam);
-  const careerOwnPlayers = careerDomesticRosterMap[ownTeam] || [];
-  const careerOpponentPlayers = careerDomesticRosterMap[opponentTeam] || [];
-  const fullOwnPlayers = gameMode === MODE_CAREER && careerOwnPlayers.length > 0 ? careerOwnPlayers : countryRoster.ownPlayers;
-  const fullOpponentPlayers =
-    gameMode === MODE_CAREER && careerOpponentPlayers.length > 0
-      ? careerOpponentPlayers
-      : countryRoster.opponentPlayers;
-
-  const availableOwnPlayers =
-    fullOwnPlayers.length > 0
-      ? [...fullOwnPlayers, ...(Array.isArray(ownCustomPlayers) ? ownCustomPlayers : [])]
-      : fallbackPlayers;
-  const availableOpponentPlayers =
-    fullOpponentPlayers.length > 0
-      ? [...fullOpponentPlayers, ...(Array.isArray(opponentCustomPlayers) ? opponentCustomPlayers : [])]
-      : fallbackPlayers;
-
-  const ownPlayers = buildPlayingXI(availableOwnPlayers, ownPlayingXI, ownBattingOrderIds);
-  const opponentPlayers = buildPlayingXI(availableOpponentPlayers, opponentPlayingXI, opponentBattingOrderIds);
-
-  const ownSelectedXIIds = normalizePlayingXIIds(availableOwnPlayers, ownPlayingXI);
-  const opponentSelectedXIIds = normalizePlayingXIIds(availableOpponentPlayers, opponentPlayingXI);
-
-  const ownSelectedXIPlayers = getSelectedXIPlayers(
-    availableOwnPlayers,
-    ownSelectedXIIds,
-    ownBattingOrderIds
-  );
-  const opponentSelectedXIPlayers = getSelectedXIPlayers(
-    availableOpponentPlayers,
-    opponentSelectedXIIds,
-    opponentBattingOrderIds
-  );
-
-  const ownAvailablePool = availableOwnPlayers.filter((player) => !ownSelectedXIIds.includes(player.id));
-  const opponentAvailablePool = availableOpponentPlayers.filter(
-    (player) => !opponentSelectedXIIds.includes(player.id)
-  );
-
-  const ownSanitizedRoles = sanitizeRoles(ownTeamRoles, ownSelectedXIIds);
-  const opponentSanitizedRoles = sanitizeRoles(opponentTeamRoles, opponentSelectedXIIds);
-
-  const ownXIReady = ownSelectedXIIds.length === 11;
-  const opponentXIReady = opponentSelectedXIIds.length === 11;
-  const ownBowlingRolesReady =
-    gameMode === MODE_CAREER || countBowlingRolePlayers(ownSelectedXIPlayers) >= 5;
-  const opponentBowlingRolesReady =
-    gameMode === MODE_CAREER || countBowlingRolePlayers(opponentSelectedXIPlayers) >= 5;
-  const ownRolesReady =
-    !!ownSanitizedRoles.captainId &&
-    !!ownSanitizedRoles.viceCaptainId &&
-    ownSanitizedRoles.captainId !== ownSanitizedRoles.viceCaptainId &&
-    ownSelectedXIPlayers.some(
-      (player) => player.id === ownSanitizedRoles.wicketKeeperId && player.isWicketKeeper
-    );
-  const opponentRolesReady =
-    !!opponentSanitizedRoles.captainId &&
-    !!opponentSanitizedRoles.viceCaptainId &&
-    opponentSanitizedRoles.captainId !== opponentSanitizedRoles.viceCaptainId &&
-    opponentSelectedXIPlayers.some(
-      (player) => player.id === opponentSanitizedRoles.wicketKeeperId && player.isWicketKeeper
-    );
-  const venueStadiums = stadiums[locationCountry] || [];
-
-  const userTeamName = gameMode === MODE_TOURNAMENT ? tournamentUserTeam : gameMode === MODE_CAREER ? careerTeam : ownTeam;
-  const isCurrentMatchUserInvolved =
-    !!userTeamName && (ownTeam === userTeamName || opponentTeam === userTeamName);
-  const isUserWinner = tossWinner === userTeamName;
-  const firstInningsTeamName = firstBattingSide === 'own' ? ownTeam : opponentTeam;
-  const secondInningsTeamName = firstBattingSide === 'own' ? opponentTeam : ownTeam;
-  const isGameInProgress =
-    stage === matchStatusEnum.TeamOneBat ||
-    stage === matchStatusEnum.TeamTwoBat ||
-    stage === matchStatusEnum.TossResult ||
-    stage === matchStatusEnum.ChooseOwnPlayingXI ||
-    stage === matchStatusEnum.ChooseOpponentPlayingXI ||
-    stage === matchStatusEnum.CareerSeasonSchedule;
+  const {
+  countryList,
+  fallbackPlayers,
+  matchType,
+  maxBalls,
+  careerDomesticRosterMap,
+  countryRoster,
+  careerOwnPlayers,
+  careerOpponentPlayers,
+  fullOwnPlayers,
+  fullOpponentPlayers,
+  availableOwnPlayers,
+  availableOpponentPlayers,
+  ownPlayers,
+  opponentPlayers,
+  ownSelectedXIIds,
+  opponentSelectedXIIds,
+  ownSelectedXIPlayers,
+  opponentSelectedXIPlayers,
+  ownAvailablePool,
+  opponentAvailablePool,
+  ownSanitizedRoles,
+  opponentSanitizedRoles,
+  ownXIReady,
+  opponentXIReady,
+  ownBowlingRolesReady,
+  opponentBowlingRolesReady,
+  ownRolesReady,
+  opponentRolesReady,
+  venueStadiums,
+  userTeamName,
+  isCurrentMatchUserInvolved,
+  isUserWinner,
+  firstInningsTeamName,
+  secondInningsTeamName,
+  isGameInProgress,
+} = useControllerDerivedState({
+  stage,
+  gameMode,
+  tournamentUserTeam,
+  matchTypeKey,
+  ownTeam,
+  opponentTeam,
+  ownPlayingXI,
+  opponentPlayingXI,
+  ownBattingOrderIds,
+  opponentBattingOrderIds,
+  ownCustomPlayers,
+  opponentCustomPlayers,
+  ownTeamRoles,
+  opponentTeamRoles,
+  locationCountry,
+  tossWinner,
+  firstBattingSide,
+  careerTeam,
+  careerDomesticTeams,
+});
 
   useControllerBootstrap({
     authUser,
@@ -305,34 +237,46 @@ export function useCricketSimulatorController() {
     setSaveMessage,
   });
 
-  const getInningsContext = (isFirstInnings, firstSide = firstBattingSide, inningStateOverride = null) =>
-    getInningsContextHelper({
-      isFirstInnings,
-      firstSide,
-      firstBattingSide,
-      ownPlayers,
-      opponentPlayers,
-      ownTeam,
-      opponentTeam,
-      isCurrentMatchUserInvolved,
-      userTeamName,
-      gameMode,
-      careerPlayerProfile,
-      inningState: inningStateOverride || (isFirstInnings ? firstInnings : secondInnings),
-    });
-
-  const setFirstInnings = (value) => dispatch(setFirstInningsAction(value));
-  const setSecondInnings = (value) => dispatch(setSecondInningsAction(value));
-
-  const updateInningsState = (isFirstInnings, updater) =>
-    updateInningsStateHelper({
-      isFirstInnings,
-      firstInnings,
-      secondInnings,
-      setFirstInnings,
-      setSecondInnings,
-      updater,
-    });
+  const {
+  openInnings,
+  handleSelectOpener,
+  handleSelectNextBatter,
+  handleSelectBowler,
+  processDelivery,
+  firstInningsView,
+  secondInningsView,
+} = buildControllerInningsActions({
+  firstBattingSide,
+  ownPlayers,
+  opponentPlayers,
+  ownTeam,
+  opponentTeam,
+  isCurrentMatchUserInvolved,
+  userTeamName,
+  gameMode,
+  careerPlayerProfile,
+  firstInnings,
+  secondInnings,
+  dispatch,
+  setFirstInningsAction,
+  setSecondInningsAction,
+  matchType,
+  setShowScoreboardAction,
+  firstInningsTeamName,
+  setStageAction,
+  maxBalls,
+  battingIntent,
+  bowlingIntent,
+  ownSanitizedRoles,
+  opponentSanitizedRoles,
+  matchCondition,
+  matchTypeKey,
+  locationCountry,
+  setBattingIntentAction,
+  setBowlingIntentAction,
+});
+openInningsRef.current = openInnings;
+processDeliveryRef.current = processDelivery;
 
   let prepareTournamentMatch = (match) =>
     prepareTournamentMatchState({
@@ -401,88 +345,6 @@ export function useCricketSimulatorController() {
     setCareerSeasonHistoryAction,
   });
 
-  const openInnings = (firstSide = firstBattingSide) =>
-    openInningsHelper({
-      firstSide,
-      firstBattingSide,
-      getContext: getInningsContext,
-      setFirstInnings,
-      setSecondInnings,
-      matchType,
-      dispatch,
-      setShowScoreboardAction,
-      firstInningsTeamName,
-      setStageAction,
-      matchStatusEnum,
-    });
-  openInningsRef.current = openInnings;
-
-  const handleSelectOpener = (isFirstInnings, selectedIndex) =>
-    handleSelectOpenerHelper({
-      isFirstInnings,
-      selectedIndex,
-      getContext: getInningsContext,
-      updateState: updateInningsState,
-    });
-
-  const handleSelectNextBatter = (isFirstInnings, batterIndex) =>
-    handleSelectNextBatterHelper({
-      isFirstInnings,
-      batterIndex,
-      getContext: getInningsContext,
-      updateState: updateInningsState,
-    });
-
-  const handleSelectBowler = (isFirstInnings, bowlerIndex) =>
-    handleSelectBowlerHelper({
-      isFirstInnings,
-      bowlerIndex,
-      getContext: getInningsContext,
-      matchType,
-      updateState: updateInningsState,
-    });
-
-  const processDelivery = (isFirstInnings) =>
-    processDeliveryHelper({
-      isFirstInnings,
-      firstInnings,
-      secondInnings,
-      getContext: getInningsContext,
-      matchType,
-      maxBalls,
-      battingIntent,
-      bowlingIntent,
-      ownSanitizedRoles,
-      opponentSanitizedRoles,
-      ownTeam,
-      opponentTeam,
-      matchCondition,
-      matchTypeKey,
-      locationCountry,
-      dispatch,
-      setBattingIntentAction,
-      setBowlingIntentAction,
-      setFirstInnings,
-      setSecondInnings,
-      firstInningsScore: firstInnings.score,
-      setStageAction,
-    });
-
-  processDeliveryRef.current = processDelivery;
-
-  const buildInningsViewModel = (isFirstInnings, inningState) =>
-    buildInningsViewModelHelper({
-      isFirstInnings,
-      inningState,
-      getContext: (inningsFlag, side, explicitInningsState) =>
-        getInningsContext(inningsFlag, side, explicitInningsState || inningState),
-      matchType,
-      maxBalls,
-    });
-
-  const firstInningsView = buildInningsViewModel(true, firstInnings);
-  const secondInningsView = buildInningsViewModel(false, secondInnings);
-
   const resultSummary = useMemo(
     () =>
       resolveResultSummary({
@@ -493,7 +355,7 @@ export function useCricketSimulatorController() {
         secondInningsTeamName,
       }),
     [
-      firstInnings.score,
+
       firstInningsTeamName,
       secondInnings.score,
       secondInnings.wickets,

@@ -1,0 +1,113 @@
+import { outfieldType, pitchType, weather } from '../../gameData/matchCondition';
+
+import { battingAction, bowlingAction } from '../../gameData/actionType';
+
+import { matchStatusEnum } from '../../gameData/matchStatusEnum';
+
+const randomKey = (obj) => Object.keys(obj)[Math.floor(Math.random() * Object.keys(obj).length)];
+
+export const buildInitialInnings = () => ({
+  score: 0,
+  wickets: 0,
+  balls: 0,
+  wides: 0,
+  noBalls: 0,
+  commentary: [],
+  strikerIndex: null,
+  nonStrikerIndex: null,
+  nextBatterIndex: 0,
+  battingOrderIndices: [],
+  needsOpeners: false,
+  openerSelections: [],
+  outBatterIndices: [],
+  waitingForNextBatter: false,
+  currentBowlerIndex: null,
+  lastOverBowlerIndex: null,
+  completedOverBowlerIndices: [],
+  waitingForNextBowler: false,
+  battingStats: [],
+  bowlingStats: [],
+  freeHitArmed: false,
+  superShotUsedInOver: 0,
+  superShotUsedMatch: 0,
+  superShotBonus: 0,
+  specialBallUsedInOver: 0,
+  specialBallUsedMatch: 0,
+  specialBallBonus: 0,
+  lastEvent: 'Ready for first delivery.',
+});
+
+export const buildRandomMatchCondition = () => ({
+  weather: randomKey(weather),
+  pitch: randomKey(pitchType),
+  outfield: randomKey(outfieldType),
+});
+
+export const buildEmptyMatchCondition = () => ({
+  weather: '',
+  pitch: '',
+  outfield: '',
+});
+
+export const initialState = {
+  stage: matchStatusEnum.intro,
+  gameMode: 'quick',
+  seriesLength: 1,
+  seriesCurrentMatch: 1,
+  seriesResults: [],
+  seriesPlayerStats: {},
+  tournamentUserTeam: '',
+  tournamentOpponentTeams: [],
+  tournamentMatches: [],
+  tournamentCurrentMatchId: '',
+  tournamentChampion: '',
+  tournamentPlayerStats: {},
+  careerTeam: '',
+  careerPlayerProfile: null,
+  careerDomesticCountry: '',
+  careerDomesticTeams: [],
+  careerGlobalPlayerPool: [],
+  careerAuctionSummary: null,
+  careerOffers: [],
+  careerRetired: false,
+  careerSeason: 0,
+  careerSeasonLength: 'standard',
+  careerFormat: 't20',
+  careerMatchIndex: 0,
+  careerSchedule: [],
+  careerStandings: {},
+  careerPlayerStats: {},
+  careerSeasonHistory: [],
+  matchTypeKey: '',
+  ownTeam: '',
+  opponentTeam: '',
+  ownPlayingXI: [],
+  opponentPlayingXI: [],
+  ownBattingOrderIds: [],
+  opponentBattingOrderIds: [],
+  ownCustomPlayers: [],
+  opponentCustomPlayers: [],
+  ownTeamRoles: {
+    captainId: null,
+    viceCaptainId: null,
+    wicketKeeperId: null,
+  },
+  opponentTeamRoles: {
+    captainId: null,
+    viceCaptainId: null,
+    wicketKeeperId: null,
+  },
+  locationCountry: '',
+  selectedStadium: '',
+  commentator: '',
+  tossWinner: '',
+  tossDecision: '',
+  tossCall: '',
+  firstBattingSide: '',
+  matchCondition: buildEmptyMatchCondition(),
+  battingIntent: battingAction.normal,
+  bowlingIntent: bowlingAction.normal,
+  firstInnings: buildInitialInnings(),
+  secondInnings: buildInitialInnings(),
+  showScoreboard: false,
+};

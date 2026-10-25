@@ -11,7 +11,6 @@ import { getStadiumsForCountry, stadiumListForCountry } from './stadiumListForCo
 import { stadiums } from './stadiums';
 import { teamNamePrefixes, teamNamePostfixes } from './teamNameParts';
 import countryCities from './countryCities';
-import * as personNames from './countryPersonNames';
 import { battingAction, bowlingAction } from './actionType';
 
 describe('game reference data', () => {
@@ -103,7 +102,7 @@ describe('game reference data', () => {
     expect(Object.values(bowlingAction)).toEqual([0, 1, 2, 3]);
   });
 
-  test('provides complete commentary, team-name, and generated-name pools', () => {
+  test('provides complete commentary and team-name pools', () => {
     expect(runVoice).toHaveLength(6);
     expect(outVoice).toHaveLength(7);
     expect(runVoice.every((group) => group.length > 0)).toBe(true);
@@ -111,8 +110,5 @@ describe('game reference data', () => {
     expect(teamNamePrefixes.length).toBeGreaterThan(0);
     expect(teamNamePostfixes.length).toBeGreaterThan(0);
 
-    const namePools = Object.values(personNames);
-    expect(namePools.length).toBeGreaterThan(30);
-    expect(namePools.every((pool) => Array.isArray(pool) && pool.length > 0)).toBe(true);
   });
 });

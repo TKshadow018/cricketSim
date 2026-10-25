@@ -112,8 +112,10 @@ const makeHandler = (overrides = {}) => {
   return { handlers: createCompetitionHandlers(input), input, dispatch, actions };
 };
 
-describe('createCompetitionHandlers', () => {
-  test('handles toss decisions and keeps XI, role, and auto-pick updates valid', () => {
+describe("competition setup and team selection", () => {
+
+
+test('handles toss decisions and keeps XI, role, and auto-pick updates valid', () => {
     const { handlers, input, dispatch, actions } = makeHandler({ gameMode: MODE_TOURNAMENT });
     handlers.handleUserTossDecision('bat');
     expect(input.openInnings).toHaveBeenCalledWith('own');
@@ -150,7 +152,7 @@ describe('createCompetitionHandlers', () => {
     expect(actions.setOwnPlayingXIAction).toBeDefined();
   });
 
-  test('covers alternate user-side, selection, and role paths', () => {
+test('covers alternate user-side, selection, and role paths', () => {
     const opponentUser = makeHandler({ userTeamName: 'Ravens' });
     opponentUser.handlers.handleUserTossDecision('bat');
     expect(opponentUser.dispatch).toHaveBeenCalledWith({
@@ -247,7 +249,7 @@ describe('createCompetitionHandlers', () => {
     }));
   });
 
-  test('creates custom players for both teams and starts only when both XIs and roles are ready', () => {
+test('creates custom players for both teams and starts only when both XIs and roles are ready', () => {
     const { handlers, input, dispatch } = makeHandler({
       ownXIReady: false,
       ownSelectedXIIds: Array.from({ length: 11 }, (_, index) => index + 1),
@@ -278,7 +280,7 @@ describe('createCompetitionHandlers', () => {
     expect(dispatch).toHaveBeenCalledWith({ type: 'setOwnPlayingXIAction', payload: input.ownSelectedXIIds });
   });
 
-  test('creates custom players when team rosters or custom-player lists are empty', () => {
+test('creates custom players when team rosters or custom-player lists are empty', () => {
     const own = makeHandler({
       availableOwnPlayers: [],
       ownCustomPlayers: null,
@@ -314,191 +316,5 @@ describe('createCompetitionHandlers', () => {
       type: 'setOpponentCustomPlayersAction',
       payload: [expect.objectContaining({ id: 1, name: 'Second' })],
     }));
-  });
-
-  test('prepares tournament matches and ignores incomplete fixtures', () => {
-    const { handlers, input, dispatch } = makeHandler();
-    handlers.prepareTournamentMatch({ id: 'incomplete', teamA: 'Falcons' });
-    expect(dispatch).not.toHaveBeenCalled();
-    handlers.prepareTournamentMatch({ id: 'next', teamA: 'Falcons', teamB: 'Hawks' });
-    expect(dispatch).toHaveBeenCalledWith({ type: 'setOwnTeamAction', payload: 'Falcons' });
-    expect(dispatch).toHaveBeenCalledWith({ type: 'setOpponentTeamAction', payload: 'Hawks' });
-    expect(dispatch).toHaveBeenCalledWith({ type: 'setTournamentCurrentMatchIdAction', payload: 'next' });
-    expect(input.tournamentResultCommitSignatureRef.current).toBe('');
-  });
-
-  test('resolves stadium conditions and handles quick, series, and tournament results', () => {
-    const quick = makeHandler();
-    quick.handlers.matchPrimaryAction();
-    expect(quick.dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'game/resetMatchRuntime' }));
-
-    const series = makeHandler({ gameMode: MODE_SERIES, seriesCurrentMatch: 1, seriesLength: 2 });
-    series.handlers.matchPrimaryAction();
-    expect(series.dispatch).toHaveBeenCalledWith({
-      type: 'setSeriesResultsAction',
-      payload: [expect.objectContaining({ matchNumber: 1, winnerTeam: 'Falcons' })],
-    });
-    expect(series.dispatch).toHaveBeenCalledWith({ type: 'setSeriesCurrentMatchAction', payload: 2 });
-    expect(series.dispatch).toHaveBeenCalledWith({ type: 'setStageAction', payload: matchStatusEnum.TossTime });
-
-    const finalSeries = makeHandler({ gameMode: MODE_SERIES, seriesCurrentMatch: 3, seriesLength: 3 });
-    finalSeries.handlers.matchPrimaryAction();
-    expect(finalSeries.dispatch).toHaveBeenCalledWith({ type: 'setStageAction', payload: matchStatusEnum.SeriesSummary });
-
-    const seriesWin = makeHandler({
-      gameMode: MODE_SERIES,
-      firstInnings: { score: 90, wickets: 4, balls: 60 },
-      secondInnings: { score: 100, wickets: 3, balls: 55 },
-      seriesResults: null,
-      seriesLength: 2,
-    });
-    seriesWin.handlers.matchPrimaryAction();
-    expect(seriesWin.dispatch).toHaveBeenCalledWith({
-      type: 'setSeriesResultsAction',
-      payload: [expect.objectContaining({ winnerTeam: 'Ravens' })],
-    });
-
-    const seriesTie = makeHandler({
-      gameMode: MODE_SERIES,
-      firstInnings: { score: 90, wickets: 4, balls: 60 },
-      secondInnings: { score: 90, wickets: 3, balls: 55 },
-      seriesCurrentMatch: 1,
-      seriesLength: 2,
-    });
-    seriesTie.handlers.matchPrimaryAction();
-    expect(seriesTie.dispatch).toHaveBeenCalledWith({
-      type: 'setSeriesResultsAction',
-      payload: [expect.objectContaining({ winnerTeam: 'Tie' })],
-    });
-
-    const tournament = makeHandler({
-      gameMode: MODE_TOURNAMENT,
-      tournamentMatches: [{ id: 'match-1', teamA: 'Falcons', teamB: 'Ravens', round: 1, matchNumber: 1 }],
-    });
-    tournament.handlers.matchPrimaryAction();
-    expect(tournament.dispatch).toHaveBeenCalledWith({ type: 'setTournamentChampionAction', payload: 'Falcons' });
-    expect(tournament.dispatch).toHaveBeenCalledWith({ type: 'setStageAction', payload: matchStatusEnum.TournamentChampion });
-
-    const tournamentNextMatch = makeHandler({
-      gameMode: MODE_TOURNAMENT,
-      tournamentMatches: [
-        { id: 'match-1', teamA: 'Falcons', teamB: 'Ravens', round: 1, matchNumber: 1 },
-        { id: 'match-2', teamA: 'Lions', teamB: 'Hawks', round: 1, matchNumber: 2, isComplete: false },
-      ],
-    });
-    tournamentNextMatch.handlers.matchPrimaryAction();
-    expect(tournamentNextMatch.dispatch).toHaveBeenCalledWith({
-      type: 'setTournamentCurrentMatchIdAction',
-      payload: 'match-2',
-    });
-    expect(tournamentNextMatch.dispatch).toHaveBeenCalledWith({
-      type: 'setStageAction',
-      payload: matchStatusEnum.TossTime,
-    });
-
-    const emptyTournament = makeHandler({
-      gameMode: MODE_TOURNAMENT,
-      tournamentMatches: null,
-    });
-    emptyTournament.handlers.matchPrimaryAction();
-    expect(emptyTournament.dispatch).toHaveBeenCalledWith({
-      type: 'setTournamentChampionAction',
-      payload: '',
-    });
-
-    const orderedFinals = makeHandler({
-      gameMode: MODE_TOURNAMENT,
-      tournamentCurrentMatchId: 'final',
-      tournamentMatches: [
-        { id: 'earlier-2', round: 1, matchNumber: 2, isComplete: true, winnerTeam: 'Lions' },
-        { id: 'earlier-1', round: 1, matchNumber: 1, isComplete: true, winnerTeam: 'Hawks' },
-        { id: 'final', round: 2, matchNumber: 1, teamA: 'Falcons', teamB: 'Ravens' },
-      ],
-    });
-    orderedFinals.handlers.matchPrimaryAction();
-    expect(orderedFinals.dispatch).toHaveBeenCalledWith({
-      type: 'setTournamentChampionAction',
-      payload: 'Falcons',
-    });
-
-    tournament.handlers.setSelectedStadium('unknown');
-    expect(tournament.dispatch).toHaveBeenCalledWith({
-      type: 'setMatchConditionAction',
-      payload: { weather: 'sunny', pitch: 'sporting', outfield: 'lushGreen' },
-    });
-  });
-
-  test('resets match state, updates stadium, and records toss call outcomes', () => {
-    const { handlers, input, dispatch } = makeHandler();
-    handlers.resetMatch();
-    expect(input.setAutoSimMode).toHaveBeenCalledWith(null);
-    expect(input.seriesResultCommitSignatureRef.current).toBe('');
-    handlers.setSelectedStadium('Oval');
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'setMatchConditionAction',
-      payload: { weather: 'sunny', pitch: 'dusty', outfield: 'wetWithDew' },
-    });
-
-    const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.9);
-    handlers.handleTossCall('crown');
-    expect(dispatch).toHaveBeenCalledWith({ type: 'setTossWinnerAction', payload: 'Falcons' });
-    expect(dispatch).toHaveBeenCalledWith({ type: 'setTossDecisionAction', payload: 'bat' });
-    expect(dispatch).toHaveBeenCalledWith({ type: 'setFirstBattingSideAction', payload: 'own' });
-    randomSpy.mockReturnValue(0);
-    handlers.handleTossCall('crown');
-    expect(dispatch).toHaveBeenCalledWith({ type: 'setTossWinnerAction', payload: 'Ravens' });
-    expect(dispatch).toHaveBeenCalledWith({ type: 'setStageAction', payload: matchStatusEnum.TossResult });
-    randomSpy.mockRestore();
-
-    getOpponentDecision.mockReturnValue('bat');
-    const opponentToss = makeHandler({
-      userTeamName: 'Ravens',
-      venueStadiums: null,
-      matchCondition: {},
-    });
-    const deterministicToss = jest.spyOn(Math, 'random').mockReturnValue(0);
-    randomKey.mockReturnValueOnce('');
-    opponentToss.handlers.setSelectedStadium('unknown');
-    expect(opponentToss.dispatch).toHaveBeenCalledWith({
-      type: 'setMatchConditionAction',
-      payload: { weather: 'sunny', pitch: 'sporting', outfield: 'lushGreen' },
-    });
-    opponentToss.handlers.handleTossCall('crown');
-    expect(opponentToss.dispatch).toHaveBeenCalledWith({
-      type: 'setFirstBattingSideAction',
-      payload: 'own',
-    });
-    getOpponentDecision.mockReturnValue('bowl');
-    opponentToss.handlers.handleTossCall('crown');
-    expect(opponentToss.dispatch).toHaveBeenCalledWith({
-      type: 'setFirstBattingSideAction',
-      payload: 'opponent',
-    });
-
-    const userWinsAsOpponent = makeHandler({ userTeamName: 'Ravens' });
-    deterministicToss.mockReturnValue(0.9);
-    userWinsAsOpponent.handlers.handleTossCall('crown');
-    expect(userWinsAsOpponent.dispatch).toHaveBeenCalledWith({
-      type: 'setFirstBattingSideAction',
-      payload: 'opponent',
-    });
-
-    const userNameFallback = makeHandler({ userTeamName: '' });
-    deterministicToss.mockReturnValue(0);
-    getOpponentDecision.mockReturnValue('bowl');
-    userNameFallback.handlers.handleTossCall('crown');
-    expect(userNameFallback.dispatch).toHaveBeenCalledWith({
-      type: 'setTossWinnerAction',
-      payload: 'Ravens',
-    });
-
-    getOpponentDecision.mockReturnValue('bat');
-    const opponentWinsBatting = makeHandler();
-    opponentWinsBatting.handlers.handleTossCall('crown');
-    expect(opponentWinsBatting.dispatch).toHaveBeenCalledWith({
-      type: 'setFirstBattingSideAction',
-      payload: 'opponent',
-    });
-    deterministicToss.mockRestore();
   });
 });

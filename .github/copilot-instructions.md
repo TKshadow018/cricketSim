@@ -9,7 +9,7 @@
 - Preserve existing gameplay behavior and user-facing flows.
 - Keep Firebase access in the existing service layer and state updates in the relevant Redux slices.
 - Do not commit secrets or local environment files.
-- Limit file sizes to maintain readability and manageability. if a file becomes too large, consider splitting it into smaller, focused modules.
+- Keep every authored code file, including tests and stylesheets, at 500 lines or fewer. Split larger files into focused modules or utility files, reuse common helpers where appropriate, and preserve behavior with tests.
 - Follow consistent naming conventions for files, components, and functions to improve code clarity and maintainability.
 - 
 
