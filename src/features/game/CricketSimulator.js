@@ -17,6 +17,16 @@ import {
 } from './utils/controllerCareerScheduleUtils';
 import "./simulator.css";
 
+const resolvePlayerStatValue = (seasonValue, playerValue) => {
+  if (seasonValue) {
+    return seasonValue;
+  }
+  if (playerValue) {
+    return playerValue;
+  }
+  return 0;
+};
+
 function CricketSimulator() {
   const controller = useCricketSimulatorController();
   const [showDomesticStats, setShowDomesticStats] = React.useState(false);
@@ -258,7 +268,7 @@ function CricketSimulator() {
   }, [careerDomesticCountry, careerDomesticTeams, normalizedCareerStats]);
 
   const domesticTeamsForSelectedFormat = React.useMemo(
-    () => domesticTeamStatsByFormat[domesticStatsFormatTab] || [],
+    () => domesticTeamStatsByFormat[domesticStatsFormatTab],
     [domesticTeamStatsByFormat, domesticStatsFormatTab]
   );
 
@@ -305,7 +315,7 @@ function CricketSimulator() {
     };
   }, [careerPlayerProfile, careerTeam, normalizedCareerStats]);
 
-  const buildCareerPlayerProfileData = React.useCallback((player, teamNameHint = '') => {
+  const buildCareerPlayerProfileData = React.useCallback((player, teamNameHint) => {
     if (!player?.name) {
       return null;
     }
@@ -319,34 +329,39 @@ function CricketSimulator() {
       ? teamRoster.find((entry) => String(entry.id) === String(player.id))
       : teamRoster.find((entry) => entry.name === player.name);
     const base = rosterPlayer || player;
-    const ballsBowled = Number(stats.ballsBowled || player.ballsBowled || 0);
-    const runsConceded = Number(stats.runsConceded || player.runsConceded || 0);
+    const ballsBowled = Number(resolvePlayerStatValue(stats.ballsBowled, player.ballsBowled));
+    const runsConceded = Number(resolvePlayerStatValue(stats.runsConceded, player.runsConceded));
+    const runs = Number(resolvePlayerStatValue(stats.runs, player.runs));
+    const balls = Number(resolvePlayerStatValue(stats.balls, player.balls));
+    const wickets = Number(resolvePlayerStatValue(stats.wickets, player.wickets));
+    const matches = Number(resolvePlayerStatValue(stats.matches, player.matches));
+    const outs = Number(resolvePlayerStatValue(stats.outs, player.outs));
 
     return {
       ...base,
       team: teamName,
-      runs: Number(stats.runs || player.runs || 0),
-      balls: Number(stats.balls || player.balls || 0),
-      wickets: Number(stats.wickets || player.wickets || 0),
-      matches: Number(stats.matches || player.matches || 0),
-      outs: Number(stats.outs || player.outs || 0),
+      runs,
+      balls,
+      wickets,
+      matches,
+      outs,
       ballsBowled,
       overs: `${Math.floor(ballsBowled / 6)}.${ballsBowled % 6}`,
       runsConceded,
       economy: ballsBowled > 0 ? ((runsConceded * 6) / ballsBowled).toFixed(2) : '0.00',
-      strikeRate: Number(stats.balls || player.balls || 0) > 0
-        ? ((Number(stats.runs || player.runs || 0) * 100) / Number(stats.balls || player.balls || 0)).toFixed(2)
+      strikeRate: balls > 0
+        ? ((runs * 100) / balls).toFixed(2)
         : '0.00',
-      battingAverage: Number(stats.outs || player.outs || 0) > 0
-        ? (Number(stats.runs || player.runs || 0) / Number(stats.outs || player.outs || 0)).toFixed(2)
+      battingAverage: outs > 0
+        ? (runs / outs).toFixed(2)
         : 'NA',
-      bowlingAverage: Number(stats.wickets || player.wickets || 0) > 0
-        ? (runsConceded / Number(stats.wickets || player.wickets || 0)).toFixed(2)
+      bowlingAverage: wickets > 0
+        ? (runsConceded / wickets).toFixed(2)
         : 'NA',
     };
   }, [careerDomesticTeams, normalizedCareerStats]);
 
-  const openCareerPlayerProfile = React.useCallback((player, teamNameHint = '', title = 'Player Season Stats and Ability') => {
+  const openCareerPlayerProfile = React.useCallback((player, teamNameHint, title = 'Player Season Stats and Ability') => {
     const profile = buildCareerPlayerProfileData(player, teamNameHint);
     if (!profile) {
       return;
@@ -988,7 +1003,7 @@ function CricketSimulator() {
                     </tr>
                   </thead>
                   <tbody>
-                    {(leaguePlayerStatsByFormat[leaguePlayerFormatTab]?.topScorers || []).map((entry, index) => (
+                    {leaguePlayerStatsByFormat[leaguePlayerFormatTab].topScorers.map((entry, index) => (
                       <tr key={`league-scorer-${leaguePlayerFormatTab}-${entry.key}`}>
                         <td>{index + 1}</td>
                         <td>
@@ -1025,7 +1040,7 @@ function CricketSimulator() {
                     </tr>
                   </thead>
                   <tbody>
-                    {(leaguePlayerStatsByFormat[leaguePlayerFormatTab]?.topWicketTakers || []).map((entry, index) => (
+                    {leaguePlayerStatsByFormat[leaguePlayerFormatTab].topWicketTakers.map((entry, index) => (
                       <tr key={`league-wicket-${leaguePlayerFormatTab}-${entry.key}`}>
                         <td>{index + 1}</td>
                         <td>

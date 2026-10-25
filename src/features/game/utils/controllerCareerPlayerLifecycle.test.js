@@ -2,7 +2,11 @@ import { applyDomesticMatchPlayerUpdates, applyEndOfSeasonPlayerAbilityUpdates }
 import { buildPlayingXI, ensurePlayerMeta, getBattingOrderCoeffRange, selectAIPlayingXI } from './controllerCommonUtils';
 
 jest.mock('faker-user', () => ({
-  createPerson: jest.fn(() => ({ name: 'Test Player' })),
+  createPerson: jest.fn(({ custom = [] } = {}) => ({
+    name: 'Test Player',
+    age: 20,
+    ...Object.fromEntries(custom.filter(({ field }) => field !== 'isWicketKeeper').map(({ field, min }) => [field, min])),
+  })),
 }));
 
 describe('player lifecycle metadata', () => {

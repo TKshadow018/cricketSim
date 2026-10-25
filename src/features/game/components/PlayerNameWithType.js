@@ -48,7 +48,7 @@ function PlayerNameWithType({
 }) {
   const displayName = String(name || player?.name || '-');
   const typeKey = resolvePlayerTypeKey(player || {});
-  const iconSrc = PLAYER_TYPE_ICONS[typeKey] || PLAYER_TYPE_ICONS.batsman;
+  const iconSrc = PLAYER_TYPE_ICONS[typeKey];
 
   return (
     <span className={`sim-player-name-with-type ${className}`.trim()}>

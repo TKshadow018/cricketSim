@@ -19,10 +19,6 @@ export const ensureTournamentNextRound = (matches = []) => {
   }
 
   const nextRound = latestRound + 1;
-  if (matches.some((match) => match.round === nextRound)) {
-    return matches;
-  }
-
   const nextMatches = [];
   for (let index = 0; index < winners.length; index += 2) {
     nextMatches.push({

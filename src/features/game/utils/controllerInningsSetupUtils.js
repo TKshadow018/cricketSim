@@ -52,7 +52,8 @@ export const selectComputerBowler = ({ inningState, bowlingSide, previousBowlerI
   const randomFromIndices = (indices) => indices[Math.floor(Math.random() * indices.length)];
   const paceCandidates = validBowlerIndices.filter((index) => {
     const player = bowlingSide[index];
-    return (player?.paceAbility || 0) >= 30 && (player?.paceAbility || 0) >= (player?.spinAbility || 0);
+    const paceAbility = player?.paceAbility || 0;
+    return paceAbility >= 30 && paceAbility >= (player?.spinAbility || 0);
   });
 
   const bowlerOne = completedOverBowlerIndices[0];

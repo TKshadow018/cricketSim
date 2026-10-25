@@ -4,7 +4,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { isDebugAuthBypassEnabled } from '../utils/runtimeFlags';
 
-const readConfig = (key, fallback = '') => (process.env[key] || '').trim() || fallback;
+const readConfig = (key, fallback) => (process.env[key] || '').trim() || fallback;
 
 const firebaseConfig = {
   apiKey: readConfig('REACT_APP_FIREBASE_API_KEY', ''), // HIDDEN FOR SECURITY REASON

@@ -204,7 +204,7 @@ function CareerSeasonScheduleStage({
 
       {showPointsTable ? (
         CAREER_FORMATS.map((format) => {
-          const standingsList = leagueStandingsByFormat[format] || [];
+          const standingsList = leagueStandingsByFormat[format];
           if (!standingsList.length) {
             return null;
           }

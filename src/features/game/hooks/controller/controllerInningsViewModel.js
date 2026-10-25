@@ -51,7 +51,7 @@ export const buildInningsViewModel = ({
       return {
         ...action,
         disabled: action.key !== battingAction.freeHit,
-        reason: action.key !== battingAction.freeHit ? 'Free hit required this ball' : '',
+        reason: 'Free hit required this ball',
       };
     }
 
@@ -134,9 +134,6 @@ export const buildInningsViewModel = ({
   const battingRows = battingDisplayOrder
     .map((index) => {
       const player = battingSide[index];
-      if (!player) {
-        return null;
-      }
       const stat = inningState.battingStats[index] || {
         runs: 0,
         balls: 0,

@@ -405,6 +405,10 @@ export const processDelivery = ({
     lastEvent: eventLine,
     commentary: [deliveryCommentary, ...inningState.commentary].filter(Boolean).slice(0, 10),
   };
+  const bowlerIndexForIntent =
+    nextState.currentBowlerIndex === null || nextState.currentBowlerIndex === undefined
+      ? currentBowlerIndex
+      : nextState.currentBowlerIndex;
 
   if (isUserBatting && nextState.freeHitArmed && battingIntent !== battingAction.freeHit) {
     dispatch(setBattingIntentAction(battingAction.freeHit));
@@ -417,7 +421,7 @@ export const processDelivery = ({
   if (isUserBatting && battingIntent === battingAction.superShot) {
     const nextCanUseSuperShot = canUseSuperShot({
       striker: battingSide[nextState.strikerIndex],
-      bowler: bowlingSide[nextState.currentBowlerIndex ?? currentBowlerIndex],
+      bowler: bowlingSide[bowlerIndexForIntent],
       inningState: nextState,
       strikerIndex: nextState.strikerIndex,
     });
@@ -429,7 +433,7 @@ export const processDelivery = ({
 
   if (isUserBowling && bowlingIntent === bowlingAction.specialBowl) {
     const nextCanUseSpecialBall = canUseSpecialBall({
-      bowler: bowlingSide[nextState.currentBowlerIndex ?? currentBowlerIndex],
+      bowler: bowlingSide[bowlerIndexForIntent],
       inningState: nextState,
     });
 
