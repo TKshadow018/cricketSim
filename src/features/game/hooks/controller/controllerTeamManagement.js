@@ -1,6 +1,7 @@
 import { announceTeamChoice, speak } from '../../../../utils/speechUtils';
 import { matchStatusEnum } from '../../../../gameData/matchStatusEnum';
 import { selectAIPlayingXI } from '../../utils/controllerCommonUtils';
+import { autoPositionPlayers } from '../../utils/autoPositionPlayers';
 
 export const createTeamManagementHandlers = ({
   dispatch,
@@ -12,12 +13,14 @@ export const createTeamManagementHandlers = ({
   setFirstBattingSideAction,
   setStageAction,
   setOwnPlayingXIAction,
+  setOwnBattingOrderIdsAction,
   ownSelectedXIIds,
   availableOwnPlayers,
   setOwnTeamRolesAction,
   ownSanitizedRoles,
   sanitizeRoles,
   setOpponentPlayingXIAction,
+  setOpponentBattingOrderIdsAction,
   opponentSelectedXIIds,
   availableOpponentPlayers,
   setOpponentTeamRolesAction,
@@ -30,6 +33,8 @@ export const createTeamManagementHandlers = ({
   opponentCustomPlayers,
   ownXIReady,
   opponentXIReady,
+  ownBowlingRolesReady,
+  opponentBowlingRolesReady,
   ownRolesReady,
   opponentRolesReady,
   firstBattingSide,
@@ -203,19 +208,44 @@ export const createTeamManagementHandlers = ({
   };
 
   const autoPickOwnXI = () => {
-    const nextIds = availableOwnPlayers.slice(0, 11).map((player) => player.id);
+    const nextIds = selectAIPlayingXI({ roster: availableOwnPlayers, requireBowlingQuota: true });
     dispatch(setOwnPlayingXIAction(nextIds));
     dispatch(setOwnTeamRolesAction(pickDefaultRoles(availableOwnPlayers, nextIds)));
   };
 
   const autoPickOpponentXI = () => {
-    const nextIds = selectAIPlayingXI({ roster: availableOpponentPlayers });
+    const nextIds = selectAIPlayingXI({ roster: availableOpponentPlayers, requireBowlingQuota: true });
     dispatch(setOpponentPlayingXIAction(nextIds));
     dispatch(setOpponentTeamRolesAction(pickDefaultRoles(availableOpponentPlayers, nextIds)));
   };
 
+  const autoPositionOwnXI = () => {
+    if (ownSelectedXIIds.length !== 11) {
+      return;
+    }
+
+    const positionedPlayers = autoPositionPlayers(ownSelectedXIPlayers);
+    dispatch(setOwnBattingOrderIdsAction(positionedPlayers.map((player) => player.id)));
+  };
+
+  const autoPositionOpponentXI = () => {
+    if (opponentSelectedXIIds.length !== 11) {
+      return;
+    }
+
+    const positionedPlayers = autoPositionPlayers(opponentSelectedXIPlayers);
+    dispatch(setOpponentBattingOrderIdsAction(positionedPlayers.map((player) => player.id)));
+  };
+
   const startMatchWithSelectedXI = () => {
-    if (!ownXIReady || !opponentXIReady || !ownRolesReady || !opponentRolesReady) {
+    if (
+      !ownXIReady ||
+      !opponentXIReady ||
+      !ownBowlingRolesReady ||
+      !opponentBowlingRolesReady ||
+      !ownRolesReady ||
+      !opponentRolesReady
+    ) {
       return;
     }
 
@@ -233,6 +263,8 @@ export const createTeamManagementHandlers = ({
     createCustomPlayer,
     autoPickOwnXI,
     autoPickOpponentXI,
+    autoPositionOwnXI,
+    autoPositionOpponentXI,
     startMatchWithSelectedXI,
   };
 };

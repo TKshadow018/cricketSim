@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { getEffectiveAuthUser } from '../../../config/runtimeConfig';
 import { battingAction, bowlingAction } from '../../../gameData/actionType';
 import { countries } from '../../../gameData/countries';
+import { countBowlingRolePlayers } from '../../../gameData/playerTypes';
 import { stadiums } from '../../../gameData/stadiums';
 import { getPlayersForNations, playerListForNation } from '../../../gameData/playerListForNation';
 import { matchTypeList } from '../../../gameData/matchTypeList';
@@ -21,10 +22,12 @@ import {
   setMatchCondition as setMatchConditionAction,
   setMatchTypeKey as setMatchTypeKeyAction,
   setOpponentCustomPlayers as setOpponentCustomPlayersAction,
+  setOpponentBattingOrderIds as setOpponentBattingOrderIdsAction,
   setOpponentPlayingXI as setOpponentPlayingXIAction,
   setOpponentTeamRoles as setOpponentTeamRolesAction,
   setOpponentTeam as setOpponentTeamAction,
   setOwnCustomPlayers as setOwnCustomPlayersAction,
+  setOwnBattingOrderIds as setOwnBattingOrderIdsAction,
   setOwnPlayingXI as setOwnPlayingXIAction,
   setOwnTeamRoles as setOwnTeamRolesAction,
   setOwnTeam as setOwnTeamAction,
@@ -96,6 +99,23 @@ import {
 import { processDelivery as processDeliveryHelper } from './controller/controllerDeliveryEngine';
 import { buildInningsViewModel as buildInningsViewModelHelper } from './controller/controllerInningsViewModel';
 
+const getSelectedXIPlayers = (availablePlayers, selectedIds, battingOrderIds) => {
+  const selectedSet = new Set(selectedIds);
+  const hasCompleteBattingOrder =
+    selectedIds.length === 11 &&
+    Array.isArray(battingOrderIds) &&
+    battingOrderIds.length === 11 &&
+    new Set(battingOrderIds).size === 11 &&
+    battingOrderIds.every((id) => selectedSet.has(id));
+
+  if (hasCompleteBattingOrder) {
+    const playersById = new Map(availablePlayers.map((player) => [player.id, player]));
+    return battingOrderIds.map((id) => playersById.get(id)).filter(Boolean);
+  }
+
+  return availablePlayers.filter((player) => selectedSet.has(player.id));
+};
+
 export function useCricketSimulatorController() {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -119,6 +139,8 @@ export function useCricketSimulatorController() {
     opponentTeam,
     ownPlayingXI,
     opponentPlayingXI,
+    ownBattingOrderIds,
+    opponentBattingOrderIds,
     ownCustomPlayers,
     opponentCustomPlayers,
     ownTeamRoles,
@@ -206,15 +228,21 @@ export function useCricketSimulatorController() {
       ? [...fullOpponentPlayers, ...(Array.isArray(opponentCustomPlayers) ? opponentCustomPlayers : [])]
       : fallbackPlayers;
 
-  const ownPlayers = buildPlayingXI(availableOwnPlayers, ownPlayingXI);
-  const opponentPlayers = buildPlayingXI(availableOpponentPlayers, opponentPlayingXI);
+  const ownPlayers = buildPlayingXI(availableOwnPlayers, ownPlayingXI, ownBattingOrderIds);
+  const opponentPlayers = buildPlayingXI(availableOpponentPlayers, opponentPlayingXI, opponentBattingOrderIds);
 
   const ownSelectedXIIds = normalizePlayingXIIds(availableOwnPlayers, ownPlayingXI);
   const opponentSelectedXIIds = normalizePlayingXIIds(availableOpponentPlayers, opponentPlayingXI);
 
-  const ownSelectedXIPlayers = availableOwnPlayers.filter((player) => ownSelectedXIIds.includes(player.id));
-  const opponentSelectedXIPlayers = availableOpponentPlayers.filter((player) =>
-    opponentSelectedXIIds.includes(player.id)
+  const ownSelectedXIPlayers = getSelectedXIPlayers(
+    availableOwnPlayers,
+    ownSelectedXIIds,
+    ownBattingOrderIds
+  );
+  const opponentSelectedXIPlayers = getSelectedXIPlayers(
+    availableOpponentPlayers,
+    opponentSelectedXIIds,
+    opponentBattingOrderIds
   );
 
   const ownAvailablePool = availableOwnPlayers.filter((player) => !ownSelectedXIIds.includes(player.id));
@@ -227,16 +255,24 @@ export function useCricketSimulatorController() {
 
   const ownXIReady = ownSelectedXIIds.length === 11;
   const opponentXIReady = opponentSelectedXIIds.length === 11;
+  const ownBowlingRolesReady =
+    gameMode === MODE_CAREER || countBowlingRolePlayers(ownSelectedXIPlayers) >= 5;
+  const opponentBowlingRolesReady =
+    gameMode === MODE_CAREER || countBowlingRolePlayers(opponentSelectedXIPlayers) >= 5;
   const ownRolesReady =
     !!ownSanitizedRoles.captainId &&
     !!ownSanitizedRoles.viceCaptainId &&
-    !!ownSanitizedRoles.wicketKeeperId &&
-    ownSanitizedRoles.captainId !== ownSanitizedRoles.viceCaptainId;
+    ownSanitizedRoles.captainId !== ownSanitizedRoles.viceCaptainId &&
+    ownSelectedXIPlayers.some(
+      (player) => player.id === ownSanitizedRoles.wicketKeeperId && player.isWicketKeeper
+    );
   const opponentRolesReady =
     !!opponentSanitizedRoles.captainId &&
     !!opponentSanitizedRoles.viceCaptainId &&
-    !!opponentSanitizedRoles.wicketKeeperId &&
-    opponentSanitizedRoles.captainId !== opponentSanitizedRoles.viceCaptainId;
+    opponentSanitizedRoles.captainId !== opponentSanitizedRoles.viceCaptainId &&
+    opponentSelectedXIPlayers.some(
+      (player) => player.id === opponentSanitizedRoles.wicketKeeperId && player.isWicketKeeper
+    );
   const venueStadiums = stadiums[locationCountry] || [];
 
   const userTeamName = gameMode === MODE_TOURNAMENT ? tournamentUserTeam : gameMode === MODE_CAREER ? careerTeam : ownTeam;
@@ -476,7 +512,9 @@ export function useCricketSimulatorController() {
       matchType, matchTypeKey, firstBattingSide, firstInnings, secondInnings,
       firstInningsTeamName, secondInningsTeamName, ownPlayers, opponentPlayers,
       ownSelectedXIIds, opponentSelectedXIIds, availableOwnPlayers, availableOpponentPlayers,
+      ownBattingOrderIds, opponentBattingOrderIds,
       ownSelectedXIPlayers, opponentSelectedXIPlayers, ownCustomPlayers, opponentCustomPlayers,
+      ownBowlingRolesReady, opponentBowlingRolesReady,
       ownSanitizedRoles, opponentSanitizedRoles, ownXIReady, opponentXIReady, ownRolesReady,
       opponentRolesReady, isCurrentMatchUserInvolved, selectedStadium, venueStadiums,
       matchCondition, resultSummary, autoSimMode, maxBalls, userTeamName, isSavingGame,
@@ -506,7 +544,8 @@ export function useCricketSimulatorController() {
       resetMatchForCareerAction: resetMatchForCareer,
       resetMatchRuntimeAction: resetMatchRuntime,
       setBattingIntentAction, setBowlingIntentAction, setTossDecisionAction, setFirstBattingSideAction,
-      setStageAction, setOwnPlayingXIAction, setOwnTeamRolesAction, setOpponentPlayingXIAction,
+      setStageAction, setOwnPlayingXIAction, setOwnBattingOrderIdsAction, setOwnTeamRolesAction,
+      setOpponentPlayingXIAction, setOpponentBattingOrderIdsAction,
       setOpponentTeamRolesAction, setOwnCustomPlayersAction, setOpponentCustomPlayersAction,
       setTournamentMatchesAction, setTournamentPlayerStatsAction, setSeriesResultsAction,
       setSeriesPlayerStatsAction, setTossWinnerAction, setTossCallAction, setMatchConditionAction,
@@ -534,6 +573,8 @@ export function useCricketSimulatorController() {
       availableOpponentPlayers, ownAvailablePool, opponentAvailablePool,
       ownSelectedXIIds, opponentSelectedXIIds, ownSelectedXIPlayers,
       opponentSelectedXIPlayers, ownSanitizedRoles, opponentSanitizedRoles,
+      ownBowlingRolesReady, opponentBowlingRolesReady,
+      ownBattingOrderIds, opponentBattingOrderIds,
       ownXIReady, opponentXIReady, ownRolesReady, opponentRolesReady,
       processDelivery, handleSelectOpener, handleSelectNextBatter, handleSelectBowler,
       setPreferredVoice, speak,

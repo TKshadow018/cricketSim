@@ -13,6 +13,8 @@ export const buildMainControllerApi = ({
     setBowlingIntent,
     autoPickOwnXI,
     autoPickOpponentXI,
+    autoPositionOwnXI,
+    autoPositionOpponentXI,
     startMatchWithSelectedXI,
     resetMatch,
     ...restRuntime
@@ -28,6 +30,8 @@ export const buildMainControllerApi = ({
     handleSetBowlingIntent: setBowlingIntent,
     handleAutoPickOwnXI: autoPickOwnXI,
     handleAutoPickOpponentXI: autoPickOpponentXI,
+    handleAutoPositionOwnXI: autoPositionOwnXI,
+    handleAutoPositionOpponentXI: autoPositionOpponentXI,
     handleStartMatchWithSelectedXI: startMatchWithSelectedXI,
     handlePlayFreshMatch: resetMatch,
     setMatchTypeKey: mutations.setMatchTypeKey,

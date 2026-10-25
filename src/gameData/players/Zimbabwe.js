@@ -8,6 +8,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 7,
+    "battingOrderPreference": 826,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -26,6 +27,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": true,
     "spinAbility": 4,
     "paceAbility": 4,
+    "battingOrderPreference": 977,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -44,6 +46,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": true,
     "spinAbility": 4,
     "paceAbility": 4,
+    "battingOrderPreference": 977,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -62,6 +65,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 72,
     "paceAbility": 14,
+    "battingOrderPreference": 825,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -80,6 +84,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 82,
     "paceAbility": 16,
+    "battingOrderPreference": 761,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -98,6 +103,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 72,
     "paceAbility": 14,
+    "battingOrderPreference": 750,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -116,6 +122,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 72,
     "paceAbility": 14,
+    "battingOrderPreference": 675,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -134,6 +141,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": true,
     "spinAbility": 4,
     "paceAbility": 4,
+    "battingOrderPreference": 678,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -152,6 +160,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 7,
+    "battingOrderPreference": 977,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -170,6 +179,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 15,
     "paceAbility": 71,
+    "battingOrderPreference": 825,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -188,6 +198,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 94,
+    "battingOrderPreference": 348,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -206,6 +217,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 85,
+    "battingOrderPreference": 346,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -224,6 +236,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 13,
     "paceAbility": 69,
+    "battingOrderPreference": 522,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -242,6 +255,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 84,
+    "battingOrderPreference": 270,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -260,6 +274,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 86,
+    "battingOrderPreference": 273,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -278,6 +293,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 85,
     "paceAbility": 8,
+    "battingOrderPreference": 424,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -296,6 +312,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 86,
     "paceAbility": 9,
+    "battingOrderPreference": 426,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -314,6 +331,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 15,
     "paceAbility": 71,
+    "battingOrderPreference": 450,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -332,6 +350,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 71,
     "paceAbility": 13,
+    "battingOrderPreference": 448,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -350,6 +369,7 @@ const ZimbabwePlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 8,
+    "battingOrderPreference": 979,
     "currentMatch": {
       "run": 0,
       "ball": 0,

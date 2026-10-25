@@ -82,6 +82,8 @@ const initialState = {
   opponentTeam: '',
   ownPlayingXI: [],
   opponentPlayingXI: [],
+  ownBattingOrderIds: [],
+  opponentBattingOrderIds: [],
   ownCustomPlayers: [],
   opponentCustomPlayers: [],
   ownTeamRoles: {
@@ -203,6 +205,7 @@ const gameSlice = createSlice({
     setOwnTeam: (state, action) => {
       state.ownTeam = action.payload;
       state.ownPlayingXI = [];
+      state.ownBattingOrderIds = [];
       state.ownCustomPlayers = [];
       state.ownTeamRoles = {
         captainId: null,
@@ -213,6 +216,7 @@ const gameSlice = createSlice({
     setOpponentTeam: (state, action) => {
       state.opponentTeam = action.payload;
       state.opponentPlayingXI = [];
+      state.opponentBattingOrderIds = [];
       state.opponentCustomPlayers = [];
       state.opponentTeamRoles = {
         captainId: null,
@@ -222,9 +226,17 @@ const gameSlice = createSlice({
     },
     setOwnPlayingXI: (state, action) => {
       state.ownPlayingXI = Array.isArray(action.payload) ? action.payload : [];
+      state.ownBattingOrderIds = [];
     },
     setOpponentPlayingXI: (state, action) => {
       state.opponentPlayingXI = Array.isArray(action.payload) ? action.payload : [];
+      state.opponentBattingOrderIds = [];
+    },
+    setOwnBattingOrderIds: (state, action) => {
+      state.ownBattingOrderIds = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setOpponentBattingOrderIds: (state, action) => {
+      state.opponentBattingOrderIds = Array.isArray(action.payload) ? action.payload : [];
     },
     setOwnCustomPlayers: (state, action) => {
       state.ownCustomPlayers = Array.isArray(action.payload) ? action.payload : [];
@@ -362,6 +374,12 @@ const gameSlice = createSlice({
         opponentPlayingXI: Array.isArray(payload.opponentPlayingXI)
           ? payload.opponentPlayingXI
           : state.opponentPlayingXI,
+        ownBattingOrderIds: Array.isArray(payload.ownBattingOrderIds)
+          ? payload.ownBattingOrderIds
+          : state.ownBattingOrderIds,
+        opponentBattingOrderIds: Array.isArray(payload.opponentBattingOrderIds)
+          ? payload.opponentBattingOrderIds
+          : state.opponentBattingOrderIds,
         ownCustomPlayers: Array.isArray(payload.ownCustomPlayers)
           ? payload.ownCustomPlayers
           : state.ownCustomPlayers,
@@ -405,6 +423,8 @@ const gameSlice = createSlice({
       state.firstBattingSide = '';
       state.ownPlayingXI = [];
       state.opponentPlayingXI = [];
+      state.ownBattingOrderIds = [];
+      state.opponentBattingOrderIds = [];
       state.ownCustomPlayers = [];
       state.opponentCustomPlayers = [];
       state.ownTeamRoles = {
@@ -452,6 +472,8 @@ const gameSlice = createSlice({
       state.firstBattingSide = '';
       state.ownPlayingXI = [];
       state.opponentPlayingXI = [];
+      state.ownBattingOrderIds = [];
+      state.opponentBattingOrderIds = [];
       state.ownCustomPlayers = [];
       state.opponentCustomPlayers = [];
       state.ownTeamRoles = {
@@ -492,6 +514,8 @@ export const {
   setOpponentTeam,
   setOwnPlayingXI,
   setOpponentPlayingXI,
+  setOwnBattingOrderIds,
+  setOpponentBattingOrderIds,
   setOwnCustomPlayers,
   setOpponentCustomPlayers,
   setOwnTeamRoles,

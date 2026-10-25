@@ -8,6 +8,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 6,
     "paceAbility": 10,
+    "battingOrderPreference": 990,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -26,6 +27,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 5,
     "paceAbility": 9,
+    "battingOrderPreference": 988,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -44,6 +46,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 8,
+    "battingOrderPreference": 835,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -62,6 +65,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 9,
+    "battingOrderPreference": 830,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -80,6 +84,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 16,
     "paceAbility": 72,
+    "battingOrderPreference": 752,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -98,6 +103,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 74,
     "paceAbility": 16,
+    "battingOrderPreference": 678,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -116,6 +122,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 15,
     "paceAbility": 71,
+    "battingOrderPreference": 676,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -134,6 +141,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 14,
     "paceAbility": 70,
+    "battingOrderPreference": 674,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -152,6 +160,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 3,
     "paceAbility": 3,
+    "battingOrderPreference": 601,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -170,6 +179,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 3,
     "paceAbility": 3,
+    "battingOrderPreference": 601,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -188,6 +198,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 93,
+    "battingOrderPreference": 421,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -206,6 +217,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 94,
+    "battingOrderPreference": 423,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -224,6 +236,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 93,
+    "battingOrderPreference": 271,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -242,6 +255,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 93,
     "paceAbility": 8,
+    "battingOrderPreference": 350,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -260,6 +274,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 86,
+    "battingOrderPreference": 348,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -278,6 +293,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 14,
     "paceAbility": 70,
+    "battingOrderPreference": 448,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -296,6 +312,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 71,
     "paceAbility": 13,
+    "battingOrderPreference": 973,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -314,6 +331,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 84,
     "paceAbility": 7,
+    "battingOrderPreference": 348,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -332,6 +350,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 72,
     "paceAbility": 14,
+    "battingOrderPreference": 450,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -350,6 +369,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 6,
     "paceAbility": 10,
+    "battingOrderPreference": 982,
     "currentMatch": {
       "run": 0,
       "ball": 0,

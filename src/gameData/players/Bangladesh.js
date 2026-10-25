@@ -1,13 +1,14 @@
 const BangladeshPlayers = [
   {
     "id": 1,
-    "name": "Litton Das",
+    "name": "Liton Das",
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 82,
     "battingAggresion": 81,
     "isWicketKeeper": true,
     "spinAbility": 3,
     "paceAbility": 3,
+    "battingOrderPreference": 983,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -26,6 +27,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 5,
     "paceAbility": 9,
+    "battingOrderPreference": 981,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -44,6 +46,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 14,
     "paceAbility": 70,
+    "battingOrderPreference": 898,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -62,6 +65,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 7,
+    "battingOrderPreference": 833,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -80,6 +84,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 6,
     "paceAbility": 10,
+    "battingOrderPreference": 758,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -98,6 +103,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 4,
     "paceAbility": 4,
+    "battingOrderPreference": 760,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -116,6 +122,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 82,
     "paceAbility": 16,
+    "battingOrderPreference": 678,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -134,6 +141,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 72,
     "paceAbility": 14,
+    "battingOrderPreference": 600,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -152,6 +160,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 72,
     "paceAbility": 14,
+    "battingOrderPreference": 525,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -170,6 +179,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 94,
+    "battingOrderPreference": 423,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -188,6 +198,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 93,
+    "battingOrderPreference": 272,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -206,6 +217,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 85,
+    "battingOrderPreference": 272,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -224,6 +236,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 85,
+    "battingOrderPreference": 271,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -242,6 +255,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 85,
     "paceAbility": 8,
+    "battingOrderPreference": 349,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -260,6 +274,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 84,
     "paceAbility": 7,
+    "battingOrderPreference": 348,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -278,6 +293,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 84,
     "paceAbility": 7,
+    "battingOrderPreference": 423,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -296,6 +312,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 4,
     "paceAbility": 4,
+    "battingOrderPreference": 678,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -314,6 +331,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 4,
     "paceAbility": 4,
+    "battingOrderPreference": 602,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -332,6 +350,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 71,
     "paceAbility": 13,
+    "battingOrderPreference": 599,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -350,6 +369,7 @@ const BangladeshPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 85,
+    "battingOrderPreference": 271,
     "currentMatch": {
       "run": 0,
       "ball": 0,

@@ -1,98 +1,123 @@
-jest.mock('firebase/app', () => ({ initializeApp: jest.fn(() => ({ name: 'app' })) }));
-jest.mock('firebase/analytics', () => ({
-  getAnalytics: jest.fn(() => ({ name: 'analytics' })),
-  isSupported: jest.fn(),
-}));
-jest.mock('firebase/auth', () => ({ getAuth: jest.fn(() => ({ name: 'auth' })) }));
-jest.mock('firebase/firestore', () => ({ getFirestore: jest.fn(() => ({ name: 'firestore' })) }));
+const originalDebug = process.env.REACT_APP_DEBUG;
+const originalDebugAlias = process.env.REACT_APP_DEBUG_MODE;
+const originalApiKey = process.env.REACT_APP_FIREBASE_API_KEY;
+const originalAuthDomain = process.env.REACT_APP_FIREBASE_AUTH_DOMAIN;
+const originalProjectId = process.env.REACT_APP_FIREBASE_PROJECT_ID;
+const originalAppId = process.env.REACT_APP_FIREBASE_APP_ID;
 
-const firebaseEnvKeys = [
-  'REACT_APP_FIREBASE_API_KEY',
-  'REACT_APP_FIREBASE_AUTH_DOMAIN',
-  'REACT_APP_FIREBASE_PROJECT_ID',
-  'REACT_APP_FIREBASE_STORAGE_BUCKET',
-  'REACT_APP_FIREBASE_MESSAGING_SENDER_ID',
-  'REACT_APP_FIREBASE_APP_ID',
-  'REACT_APP_FIREBASE_MEASUREMENT_ID',
-];
-const originalEnv = Object.fromEntries(firebaseEnvKeys.map((key) => [key, process.env[key]]));
+const mockFirebase = () => {
+  jest.doMock('firebase/app', () => ({
+    initializeApp: jest.fn(() => ({ name: 'test-app' })),
+  }));
+  jest.doMock('firebase/analytics', () => ({
+    getAnalytics: jest.fn(),
+    isSupported: jest.fn(() => Promise.resolve(false)),
+  }));
+  jest.doMock('firebase/auth', () => ({
+    getAuth: jest.fn(() => ({ name: 'test-auth' })),
+  }));
+  jest.doMock('firebase/firestore', () => ({
+    getFirestore: jest.fn(() => ({ name: 'test-db' })),
+  }));
+};
 
-describe('firebase config initialization', () => {
+describe('Firebase configuration', () => {
   beforeEach(() => {
     jest.resetModules();
-    firebaseEnvKeys.forEach((key) => delete process.env[key]);
-    jest.doMock('../config/runtimeConfig', () => ({ isDebugMode: false }));
-    jest.requireMock('firebase/app').initializeApp.mockReturnValue({ name: 'app' });
-    jest.requireMock('firebase/analytics').getAnalytics.mockReturnValue({ name: 'analytics' });
-    jest.requireMock('firebase/auth').getAuth.mockReturnValue({ name: 'auth' });
-    jest.requireMock('firebase/firestore').getFirestore.mockReturnValue({ name: 'firestore' });
+    delete process.env.REACT_APP_FIREBASE_API_KEY;
+    delete process.env.REACT_APP_FIREBASE_PROJECT_ID;
+    delete process.env.REACT_APP_FIREBASE_APP_ID;
+    delete process.env.REACT_APP_DEBUG_MODE;
+    process.env.REACT_APP_DEBUG = 'true';
+    mockFirebase();
   });
 
-  afterAll(() => {
-    firebaseEnvKeys.forEach((key) => {
-      if (originalEnv[key] === undefined) {
+  afterEach(() => {
+    [
+      ['REACT_APP_DEBUG', originalDebug],
+      ['REACT_APP_DEBUG_MODE', originalDebugAlias],
+      ['REACT_APP_FIREBASE_API_KEY', originalApiKey],
+      ['REACT_APP_FIREBASE_AUTH_DOMAIN', originalAuthDomain],
+      ['REACT_APP_FIREBASE_PROJECT_ID', originalProjectId],
+      ['REACT_APP_FIREBASE_APP_ID', originalAppId],
+    ].forEach(([key, value]) => {
+      if (value === undefined) {
         delete process.env[key];
       } else {
-        process.env[key] = originalEnv[key];
+        process.env[key] = value;
       }
     });
   });
 
-  test('trims environment config, uses defaults, and enables analytics when supported', async () => {
+  test('skips Firebase initialization without credentials in debug mode', () => {
+    const { initializeApp } = require('firebase/app');
+    const { getAuth } = require('firebase/auth');
+    const { getFirestore } = require('firebase/firestore');
+    const config = require('./config');
+
+    expect(initializeApp).not.toHaveBeenCalled();
+    expect(getAuth).not.toHaveBeenCalled();
+    expect(getFirestore).not.toHaveBeenCalled();
+    expect(config.auth).toBeNull();
+    expect(config.db).toBeNull();
+  });
+
+  test('supports the legacy debug flag when Firebase credentials are absent', () => {
+    process.env.REACT_APP_DEBUG = '';
+    process.env.REACT_APP_DEBUG_MODE = 'true';
+
+    const { initializeApp } = require('firebase/app');
+    const config = require('./config');
+
+    expect(initializeApp).not.toHaveBeenCalled();
+    expect(config.auth).toBeNull();
+    expect(config.db).toBeNull();
+  });
+
+  test('initializes Firebase when debug mode is disabled and credentials are present', () => {
+    process.env.REACT_APP_DEBUG = 'false';
+    process.env.REACT_APP_FIREBASE_API_KEY = 'test-api-key';
+    process.env.REACT_APP_FIREBASE_PROJECT_ID = 'test-project';
+    process.env.REACT_APP_FIREBASE_APP_ID = 'test-app-id';
+
+    const { initializeApp } = require('firebase/app');
+    const { getAuth } = require('firebase/auth');
+    const { getFirestore } = require('firebase/firestore');
+    const config = require('./config');
+
+    expect(initializeApp).toHaveBeenCalledTimes(1);
+    expect(getAuth).toHaveBeenCalledTimes(1);
+    expect(getFirestore).toHaveBeenCalledTimes(1);
+    expect(config.auth).toEqual({ name: 'test-auth' });
+    expect(config.db).toEqual({ name: 'test-db' });
+  });
+
+  test('trims Firebase settings and enables analytics when supported', async () => {
+    process.env.REACT_APP_DEBUG = 'false';
     process.env.REACT_APP_FIREBASE_API_KEY = '  test-api-key  ';
     process.env.REACT_APP_FIREBASE_AUTH_DOMAIN = '  auth.example.test ';
-    const analyticsSdk = jest.requireMock('firebase/analytics');
+    process.env.REACT_APP_FIREBASE_PROJECT_ID = ' test-project ';
+    process.env.REACT_APP_FIREBASE_APP_ID = ' test-app-id ';
+    const analyticsSdk = require('firebase/analytics');
     analyticsSdk.isSupported.mockResolvedValue(true);
 
-    const config = require('./config');
+    const { initializeApp } = require('firebase/app');
+    require('./config');
     await Promise.resolve();
 
-    const appConfig = jest.requireMock('firebase/app').initializeApp.mock.calls[0][0];
+    const appConfig = initializeApp.mock.calls[0][0];
     expect(appConfig.apiKey).toBe('test-api-key');
     expect(appConfig.authDomain).toBe('auth.example.test');
-    expect(appConfig.projectId).toBe('cricketsim-6b8de');
-    expect(appConfig.appId).toBe('1:992325580149:web:1413ba6281dbed12d3cf3c');
-    expect(config.auth).toEqual({ name: 'auth' });
-    expect(config.db).toEqual({ name: 'firestore' });
-    expect(analyticsSdk.getAnalytics).toHaveBeenCalledWith({ name: 'app' });
+    expect(appConfig.projectId).toBe('test-project');
+    expect(appConfig.appId).toBe('test-app-id');
+    expect(analyticsSdk.getAnalytics).toHaveBeenCalledWith({ name: 'test-app' });
   });
 
-  test('reports incomplete required config and skips unsupported analytics', async () => {
-    const logError = jest.spyOn(console, 'error').mockImplementation(() => {});
-    const analyticsSdk = jest.requireMock('firebase/analytics');
-    analyticsSdk.isSupported.mockResolvedValue(false);
+  test('rejects incomplete Firebase configuration outside debug mode', () => {
+    process.env.REACT_APP_DEBUG = 'false';
 
-    require('./config');
-    await Promise.resolve();
-
-    expect(logError).toHaveBeenCalledWith('Firebase config is incomplete. Check your .env values.');
-    expect(analyticsSdk.getAnalytics).not.toHaveBeenCalled();
-    logError.mockRestore();
-  });
-
-  test('does not report missing Firebase credentials in debug mode', async () => {
-    jest.doMock('../config/runtimeConfig', () => ({ isDebugMode: true }));
-    const logError = jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.requireMock('firebase/analytics').isSupported.mockResolvedValue(false);
-
-    require('./config');
-    await Promise.resolve();
-
-    expect(logError).not.toHaveBeenCalled();
-    logError.mockRestore();
-  });
-
-  test('initializes auth without touching analytics outside a browser', () => {
-    const windowDescriptor = Object.getOwnPropertyDescriptor(global, 'window');
-    delete global.window;
-    try {
-      const analyticsSdk = jest.requireMock('firebase/analytics');
-      require('./config');
-      expect(analyticsSdk.isSupported).not.toHaveBeenCalled();
-    } finally {
-      if (windowDescriptor) {
-        Object.defineProperty(global, 'window', windowDescriptor);
-      }
-    }
+    expect(() => require('./config')).toThrow(
+      'Firebase configuration is missing apiKey.'
+    );
   });
 });

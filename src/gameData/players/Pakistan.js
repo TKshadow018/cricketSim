@@ -8,6 +8,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 8,
+    "battingOrderPreference": 835,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -26,6 +27,7 @@ const PakistanPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 3,
     "paceAbility": 3,
+    "battingOrderPreference": 758,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -44,6 +46,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 11,
+    "battingOrderPreference": 984,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -62,6 +65,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 7,
+    "battingOrderPreference": 976,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -80,6 +84,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 6,
     "paceAbility": 10,
+    "battingOrderPreference": 982,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -98,6 +103,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 7,
+    "battingOrderPreference": 751,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -116,6 +122,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 73,
     "paceAbility": 15,
+    "battingOrderPreference": 601,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -134,6 +141,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 82,
     "paceAbility": 16,
+    "battingOrderPreference": 528,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -152,6 +160,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 73,
     "paceAbility": 15,
+    "battingOrderPreference": 526,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -170,6 +179,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 71,
     "paceAbility": 13,
+    "battingOrderPreference": 673,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -188,6 +198,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 93,
+    "battingOrderPreference": 347,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -206,6 +217,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 93,
+    "battingOrderPreference": 272,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -224,6 +236,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 92,
+    "battingOrderPreference": 345,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -242,6 +255,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 84,
+    "battingOrderPreference": 345,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -260,6 +274,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 86,
+    "battingOrderPreference": 348,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -278,6 +293,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 84,
     "paceAbility": 7,
+    "battingOrderPreference": 423,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -296,6 +312,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 86,
     "paceAbility": 9,
+    "battingOrderPreference": 276,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -314,6 +331,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 7,
+    "battingOrderPreference": 827,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -332,6 +350,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 7,
+    "battingOrderPreference": 751,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -350,6 +369,7 @@ const PakistanPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 6,
     "paceAbility": 10,
+    "battingOrderPreference": 608,
     "currentMatch": {
       "run": 0,
       "ball": 0,

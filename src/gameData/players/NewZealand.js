@@ -8,6 +8,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 7,
+    "battingOrderPreference": 833,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -26,6 +27,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 3,
     "paceAbility": 3,
+    "battingOrderPreference": 976,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -44,6 +46,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 11,
+    "battingOrderPreference": 984,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -62,6 +65,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 74,
     "paceAbility": 16,
+    "battingOrderPreference": 828,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -80,6 +84,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 14,
     "paceAbility": 70,
+    "battingOrderPreference": 749,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -98,6 +103,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 5,
     "paceAbility": 5,
+    "battingOrderPreference": 679,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -116,6 +122,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 3,
     "paceAbility": 3,
+    "battingOrderPreference": 976,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -134,6 +141,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 81,
     "paceAbility": 15,
+    "battingOrderPreference": 527,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -152,6 +160,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 71,
     "paceAbility": 13,
+    "battingOrderPreference": 599,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -170,6 +179,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 13,
     "paceAbility": 69,
+    "battingOrderPreference": 597,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -188,6 +198,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 92,
+    "battingOrderPreference": 270,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -206,6 +217,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 93,
+    "battingOrderPreference": 347,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -224,6 +236,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 93,
+    "battingOrderPreference": 271,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -242,6 +255,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 84,
+    "battingOrderPreference": 345,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -260,6 +274,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 15,
     "paceAbility": 71,
+    "battingOrderPreference": 450,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -278,6 +293,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 85,
     "paceAbility": 8,
+    "battingOrderPreference": 349,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -296,6 +312,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 7,
+    "battingOrderPreference": 976,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -314,6 +331,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 6,
     "paceAbility": 10,
+    "battingOrderPreference": 758,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -332,6 +350,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 86,
+    "battingOrderPreference": 273,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -350,6 +369,7 @@ const NewZealandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 86,
+    "battingOrderPreference": 273,
     "currentMatch": {
       "run": 0,
       "ball": 0,

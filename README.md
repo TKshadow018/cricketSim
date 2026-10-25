@@ -64,10 +64,10 @@ The simulator progresses through these stages:
 	Winner decides bat/bowl. If opponent wins, follow prompted continuation choice.
 
 10. **Select Your XI**  
-	 Choose exactly 11 players, assign captain/vice-captain/wicketkeeper.
+	 Choose exactly 11 players, assign a captain, a different vice-captain, and a wicketkeeper. At least 5 players must be pace all-rounders, spin all-rounders, pacers, or spinners.
 
 11. **Select Opponent XI**  
-	 Choose opponent XI and roles (or auto-pick).
+	 Choose opponent XI and roles (or auto-pick); the same XI and role requirements apply.
 
 12. **Team One Bat**  
 	 Ball-by-ball first innings.
@@ -108,11 +108,13 @@ The simulator progresses through these stages:
 
 ### Prerequisites
 
-- Node.js 18+ (recommended)
+- Node.js 26.12.1 or newer (the project runtime is pinned in `.nvmrc`)
 - npm 9+
 - Firebase project (for auth + saves)
 
 ### Install & Run
+
+If you use nvm, select the project Node.js version with `nvm use`.
 
 1. Install dependencies:
 	```bash
@@ -281,5 +283,10 @@ src/
   npm install
   npm run build
   ```
+
+### Firebase `auth/invalid-api-key`
+
+- For Firebase authentication, set a valid `REACT_APP_FIREBASE_API_KEY` and the other Firebase values in `.env`, then restart the development server.
+- To run locally without Firebase credentials, set `REACT_APP_DEBUG=true` in `.env` and restart. Debug mode skips Firebase initialization and stores game data in browser local storage.
 
 ---

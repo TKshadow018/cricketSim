@@ -41,6 +41,23 @@ describe('player lifecycle metadata', () => {
     expect(playingXI.map((player) => player.name)).toEqual(['Opener', 'Finisher', 'Bowler']);
   });
 
+  test('preserves an explicitly assigned batting order for a complete XI', () => {
+    const players = Array.from({ length: 11 }, (_, index) => ({
+      id: index + 1,
+      name: `Player ${index + 1}`,
+      battingOrderCoeff: index + 1,
+    }));
+    const assignedIds = players.map((player) => player.id).reverse();
+
+    const playingXI = buildPlayingXI(
+      players,
+      players.map((player) => player.id),
+      assignedIds
+    );
+
+    expect(playingXI.map((player) => player.id)).toEqual(assignedIds);
+  });
+
   test('applies domestic recovery, participation penalties, and morale changes after a match', () => {
     const domesticTeams = [
       {
@@ -171,15 +188,15 @@ describe('player lifecycle metadata', () => {
       { id: 'b3', name: 'Bat 3', playerType: 'batsman', abilityToPlayPaceBall: 74, abilityToPlaySpinBall: 73, paceAbility: 10, spinAbility: 10 },
       { id: 'b4', name: 'Bat 4', playerType: 'batsman', abilityToPlayPaceBall: 70, abilityToPlaySpinBall: 70, paceAbility: 10, spinAbility: 10 },
       { id: 'b5', name: 'Bat 5', playerType: 'batsman', abilityToPlayPaceBall: 68, abilityToPlaySpinBall: 69, paceAbility: 10, spinAbility: 10 },
-      { id: 'bo1', name: 'Bowler 1', playerType: 'bowler', abilityToPlayPaceBall: 20, abilityToPlaySpinBall: 20, paceAbility: 85, spinAbility: 25 },
-      { id: 'bo2', name: 'Bowler 2', playerType: 'bowler', abilityToPlayPaceBall: 18, abilityToPlaySpinBall: 18, paceAbility: 80, spinAbility: 20 },
+      { id: 'bo1', name: 'Bowler 1', playerType: 'pacer', abilityToPlayPaceBall: 20, abilityToPlaySpinBall: 20, paceAbility: 85, spinAbility: 25 },
+      { id: 'bo2', name: 'Bowler 2', playerType: 'pacer', abilityToPlayPaceBall: 18, abilityToPlaySpinBall: 18, paceAbility: 80, spinAbility: 20 },
       { id: 'bo3', name: 'Bowler 3', playerType: 'spin allrounder', abilityToPlayPaceBall: 45, abilityToPlaySpinBall: 48, paceAbility: 20, spinAbility: 78 },
       { id: 'bo4', name: 'Bowler 4', playerType: 'pace allrounder', abilityToPlayPaceBall: 44, abilityToPlaySpinBall: 44, paceAbility: 76, spinAbility: 18 },
       { id: 'bo5', name: 'Bowler 5', playerType: 'pacer', abilityToPlayPaceBall: 15, abilityToPlaySpinBall: 15, paceAbility: 74, spinAbility: 15 },
       { id: 'benchBat', name: 'Bench Bat', playerType: 'batsman', abilityToPlayPaceBall: 52, abilityToPlaySpinBall: 52, paceAbility: 10, spinAbility: 10 },
     ];
 
-    const xiIds = selectAIPlayingXI({ roster });
+    const xiIds = selectAIPlayingXI({ roster, requireBowlingQuota: true });
     const byId = new Map(roster.map((player) => [player.id, player]));
     const selectedPlayers = xiIds.map((id) => byId.get(id)).filter(Boolean);
     const availableBowlerAllrounders = roster.filter((player) =>

@@ -1,7 +1,16 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 
-function SelectionGrid({ items, selectedKey, onSelect, renderTitle, renderMeta, renderDescription, keyOf }) {
+function SelectionGrid({
+  items,
+  selectedKey,
+  onSelect,
+  renderTitle,
+  renderMeta,
+  renderDescription,
+  renderAction,
+  keyOf,
+}) {
   const prefersReducedMotion = useReducedMotion();
 
   return (
@@ -13,26 +22,33 @@ function SelectionGrid({ items, selectedKey, onSelect, renderTitle, renderMeta, 
         const badge = item.badge || null;
         const meta = renderMeta ? renderMeta(item) : null;
         const description = renderDescription ? renderDescription(item) : null;
+        const action = renderAction ? renderAction(item) : null;
         const visualClassName = item.visualClassName
           ? `sim-choice-visual ${item.visualClassName}`
           : 'sim-choice-visual';
 
         return (
-          <motion.button
+          <div
             key={key}
-            className={`sim-choice-card ${active ? 'active' : ''}`}
-            aria-pressed={active}
-            onClick={() => onSelect(item)}
-            whileHover={prefersReducedMotion ? undefined : { y: -4 }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.15 }}
-            style={{ animationDelay: `${idx * 30}ms` }}
+            className={`sim-choice-card-shell ${action ? 'has-action' : ''}`}
           >
-            {visual ? <div className={visualClassName}>{visual}</div> : null}
-            <h4>{renderTitle(item)}</h4>
-            {typeof meta === 'string' ? <p>{meta}</p> : meta}
-            {typeof description === 'string' ? <small>{description}</small> : description}
-            {badge ? <span className="sim-choice-badge">{badge}</span> : null}
-          </motion.button>
+            <motion.button
+              type="button"
+              className={`sim-choice-card ${active ? 'active' : ''}`}
+              aria-pressed={active}
+              onClick={() => onSelect(item)}
+              whileHover={prefersReducedMotion ? undefined : { y: -4 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.15 }}
+              style={{ animationDelay: `${idx * 30}ms` }}
+            >
+              {visual ? <div className={visualClassName}>{visual}</div> : null}
+              <h4>{renderTitle(item)}</h4>
+              {typeof meta === 'string' ? <p>{meta}</p> : meta}
+              {typeof description === 'string' ? <small>{description}</small> : description}
+              {badge ? <span className="sim-choice-badge">{badge}</span> : null}
+            </motion.button>
+            {action ? <div className="sim-choice-card-action">{action}</div> : null}
+          </div>
         );
       })}
     </div>

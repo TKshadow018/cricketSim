@@ -1,4 +1,5 @@
 import { matchStatusEnum } from '../../../../gameData/matchStatusEnum';
+import { PLAYER_TYPES } from '../../../../gameData/playerTypes';
 import { buildRandomBattingOrderCoeff, ensurePlayerMeta, MODE_CAREER, selectAIPlayingXI } from '../../utils/controllerCommonUtils';
 import { buildCareerMatchScorecard, buildTopRunScorers, buildTopWicketTakers, mergePlayerStatsForCurrentMatch } from '../../utils/controllerCareerUtils';
 import { buildMomRecommendations } from '../../utils/controllerMomUtils';
@@ -374,16 +375,6 @@ const relocateCareerPlayerToTeam = ({ domesticTeams = [], currentCareerTeam, nex
     teams: updatedTeams,
     nextCareerTeam: targetTeamName,
   };
-};
-
-const PLAYER_TYPES = {
-  BATSMAN: 'batsman',
-  BOWLER: 'bowler',
-  WICKETKEEPER: 'wicketkeeper',
-  PACE_ALLROUNDER: 'pace allrounder',
-  SPIN_ALLROUNDER: 'spin allrounder',
-  PACER: 'pacer',
-  SPINER: 'spiner',
 };
 
 const normalizePlayerType = (value) => String(value || '').trim().toLowerCase();
