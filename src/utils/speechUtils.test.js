@@ -32,6 +32,7 @@ const makeSpeechSynthesis = (voices = []) => ({
 beforeEach(() => {
   localStorage.clear();
   speechHandler.setPreferredVoice('');
+  speechHandler.msg.voice = null;
   setSpeechSynthesis(makeSpeechSynthesis());
 });
 
