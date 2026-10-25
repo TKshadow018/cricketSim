@@ -368,9 +368,8 @@ function PreMatchBasicStages(props) {
               keyOf={(voice) => `${voice.name}-${voice.lang}`}
               renderTitle={(voice) => setCommentatorName(voice)}
               renderMeta={(voice) => voice.lang}
-              renderDescription={(voice) => (
-                <div className="sim-commentator-row">
-                  <small>Speech synthesis commentator</small>
+              renderDescription={() => <small>Speech synthesis commentator</small>}
+              renderAction={(voice) => (
                   <button
                     type="button"
                     className="sim-commentator-test-btn"
@@ -385,7 +384,6 @@ function PreMatchBasicStages(props) {
                   >
                     🔊
                   </button>
-                </div>
               )}
             />
           ) : (

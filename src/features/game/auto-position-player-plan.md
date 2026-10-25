@@ -6,10 +6,10 @@ Add an **Auto Position Players** action to both team-selection stages. After an 
 
 ## Assignment Rules
 
-1. Find a complete one-to-one assignment of the XI to positions 1 through 11.
-2. Minimize the worst preference rank assigned to any player, then minimize the sum of all preference ranks. This prevents early greedy choices from pushing a strong batter into an unnecessarily poor tail position.
-3. When multiple players can be assigned to the current position without worsening the best complete assignment, choose randomly among those candidates.
-4. Require exactly 11 selected players and valid preference arrays containing each integer from 1 to 11 once.
+1. Sort the XI by `battingOrderPreference` in descending order, so higher values bat earlier.
+2. Store each preference as an integer from 1 to 1000.
+3. When players have the same preference, choose their relative order randomly.
+4. Require exactly 11 selected players. Custom and legacy players without an explicit value use a role-based fallback; invalid explicit values are rejected.
 
 The allocator is implemented in [autoPositionPlayers.js](./utils/autoPositionPlayers.js). Its random chooser is injectable so tests can make tie-breaking deterministic.
 
@@ -24,11 +24,12 @@ The allocator is implemented in [autoPositionPlayers.js](./utils/autoPositionPla
 
 ## Bangladesh-Only Test Stage
 
-The current prototype test uses an explicit 11-player Bangladesh XI from `Bangladesh.js`. It verifies:
+The focused test uses an explicit 11-player Bangladesh XI from `Bangladesh.js`. It verifies:
 
-- all selected players receive a unique position from 1 through 11;
-- high-priority preference matches are chosen before lower-priority alternatives; and
-- a random tie between first-choice openers responds to the injected random chooser.
+- the XI is ordered by descending numeric preference; and
+- a random tie responds to the injected random chooser.
+
+The national roster test validates that every team uses an integer preference from 1 through 1000.
 
 The test is in [autoPositionPlayers.test.js](./utils/autoPositionPlayers.test.js). This tests the allocator only; it does not yet exercise either selection-stage button or match-order persistence.
 
@@ -46,5 +47,5 @@ The test is in [autoPositionPlayers.test.js](./utils/autoPositionPlayers.test.js
 - Complete: pure allocator, Bangladesh-only tests, own-team and opponent-team selection buttons, Redux/save-load order state, selected-XI position labels, and match-order propagation.
 - Custom and legacy players without preferences use a role-based fallback; invalid explicit preferences are surfaced in the selection screen.
 - Complete: selection-stage tests cover the XI-count gate, button action, assigned-position labels, and placement before Continue.
-- The Bangladesh regression test verifies that a top-order batter is not pushed to an 11th-choice position when a better complete assignment exists.
+- National player rosters use scalar preferences in the 1–1000 range.
 - Validation: full Jest suite and production build passed before the preference-balancing correction; the targeted Bangladesh allocator tests pass after the correction.

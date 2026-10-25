@@ -49,6 +49,16 @@ describe('national player type classification', () => {
     });
   });
 
+  test('gives every national player an integer batting-order preference from 1 to 1000', () => {
+    Object.values(playerListForNation)
+      .flat()
+      .forEach((player) => {
+        expect(Number.isInteger(player.battingOrderPreference)).toBe(true);
+        expect(player.battingOrderPreference).toBeGreaterThanOrEqual(1);
+        expect(player.battingOrderPreference).toBeLessThanOrEqual(1000);
+      });
+  });
+
   test('auto-picks a qualifying XI for each national roster', () => {
     Object.values(playerListForNation).forEach((roster) => {
       const selectedIds = selectAIPlayingXI({ roster, requireBowlingQuota: true });

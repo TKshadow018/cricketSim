@@ -8,7 +8,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 6,
     "paceAbility": 10,
-    "battingOrderPreference": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 990,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -27,7 +27,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 5,
     "paceAbility": 9,
-    "battingOrderPreference": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 988,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -46,7 +46,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 8,
-    "battingOrderPreference": [3, 2, 4, 1, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 835,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -65,7 +65,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 9,
-    "battingOrderPreference": [3, 2, 4, 1, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 830,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -84,7 +84,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 16,
     "paceAbility": 72,
-    "battingOrderPreference": [4, 3, 5, 2, 6, 1, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 752,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -103,7 +103,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 74,
     "paceAbility": 16,
-    "battingOrderPreference": [5, 4, 6, 3, 7, 2, 8, 1, 9, 10, 11],
+    "battingOrderPreference": 678,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -122,7 +122,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 15,
     "paceAbility": 71,
-    "battingOrderPreference": [5, 4, 6, 3, 7, 2, 8, 1, 9, 10, 11],
+    "battingOrderPreference": 676,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -141,7 +141,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 14,
     "paceAbility": 70,
-    "battingOrderPreference": [5, 4, 6, 3, 7, 2, 8, 1, 9, 10, 11],
+    "battingOrderPreference": 674,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -160,7 +160,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 3,
     "paceAbility": 3,
-    "battingOrderPreference": [6, 5, 7, 4, 8, 3, 9, 2, 10, 1, 11],
+    "battingOrderPreference": 601,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -179,7 +179,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 3,
     "paceAbility": 3,
-    "battingOrderPreference": [6, 5, 7, 4, 8, 3, 9, 2, 10, 1, 11],
+    "battingOrderPreference": 601,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -198,7 +198,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 93,
-    "battingOrderPreference": [8, 7, 9, 6, 10, 5, 11, 4, 3, 2, 1],
+    "battingOrderPreference": 421,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -217,7 +217,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 94,
-    "battingOrderPreference": [8, 7, 9, 6, 10, 5, 11, 4, 3, 2, 1],
+    "battingOrderPreference": 423,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -236,7 +236,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 93,
-    "battingOrderPreference": [10, 9, 11, 8, 7, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 271,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -255,7 +255,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 93,
     "paceAbility": 8,
-    "battingOrderPreference": [9, 8, 10, 7, 11, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 350,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -274,7 +274,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 86,
-    "battingOrderPreference": [9, 8, 10, 7, 11, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 348,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -293,7 +293,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 14,
     "paceAbility": 70,
-    "battingOrderPreference": [8, 7, 9, 6, 10, 5, 11, 4, 3, 2, 1],
+    "battingOrderPreference": 448,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -312,7 +312,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 71,
     "paceAbility": 13,
-    "battingOrderPreference": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 973,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -331,7 +331,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 84,
     "paceAbility": 7,
-    "battingOrderPreference": [9, 8, 10, 7, 11, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 348,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -350,7 +350,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 72,
     "paceAbility": 14,
-    "battingOrderPreference": [8, 7, 9, 6, 10, 5, 11, 4, 3, 2, 1],
+    "battingOrderPreference": 450,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -369,7 +369,7 @@ const AustraliaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 6,
     "paceAbility": 10,
-    "battingOrderPreference": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 982,
     "currentMatch": {
       "run": 0,
       "ball": 0,

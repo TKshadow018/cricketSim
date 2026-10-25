@@ -8,7 +8,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 11,
-    "battingOrderPreference": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 991,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -27,7 +27,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 8,
-    "battingOrderPreference": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 985,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -46,7 +46,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 8,
-    "battingOrderPreference": [3, 2, 4, 1, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 835,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -65,7 +65,7 @@ const IndiaPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 3,
     "paceAbility": 3,
-    "battingOrderPreference": [4, 3, 5, 2, 6, 1, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 758,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -84,7 +84,7 @@ const IndiaPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 3,
     "paceAbility": 3,
-    "battingOrderPreference": [5, 4, 6, 3, 7, 2, 8, 1, 9, 10, 11],
+    "battingOrderPreference": 682,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -103,7 +103,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 11,
-    "battingOrderPreference": [4, 3, 5, 2, 6, 1, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 759,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -122,7 +122,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 16,
     "paceAbility": 72,
-    "battingOrderPreference": [6, 5, 7, 4, 8, 3, 9, 2, 10, 1, 11],
+    "battingOrderPreference": 602,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -141,7 +141,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 73,
     "paceAbility": 15,
-    "battingOrderPreference": [7, 6, 8, 5, 9, 4, 10, 3, 11, 2, 1],
+    "battingOrderPreference": 527,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -160,7 +160,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 71,
     "paceAbility": 13,
-    "battingOrderPreference": [7, 6, 8, 5, 9, 4, 10, 3, 11, 2, 1],
+    "battingOrderPreference": 523,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -179,7 +179,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 93,
     "paceAbility": 8,
-    "battingOrderPreference": [8, 7, 9, 6, 10, 5, 11, 4, 3, 2, 1],
+    "battingOrderPreference": 424,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -198,7 +198,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 93,
-    "battingOrderPreference": [10, 9, 11, 8, 7, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 271,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -217,7 +217,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 93,
-    "battingOrderPreference": [10, 9, 11, 8, 7, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 272,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -236,7 +236,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 84,
-    "battingOrderPreference": [10, 9, 11, 8, 7, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 270,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -255,7 +255,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 86,
-    "battingOrderPreference": [10, 9, 11, 8, 7, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 273,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -274,7 +274,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 14,
     "paceAbility": 70,
-    "battingOrderPreference": [8, 7, 9, 6, 10, 5, 11, 4, 3, 2, 1],
+    "battingOrderPreference": 449,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -293,7 +293,7 @@ const IndiaPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 4,
     "paceAbility": 4,
-    "battingOrderPreference": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 977,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -312,7 +312,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 6,
     "paceAbility": 10,
-    "battingOrderPreference": [6, 5, 7, 4, 8, 3, 9, 2, 10, 1, 11],
+    "battingOrderPreference": 608,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -331,7 +331,7 @@ const IndiaPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 3,
     "paceAbility": 3,
-    "battingOrderPreference": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 976,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -350,7 +350,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 71,
     "paceAbility": 13,
-    "battingOrderPreference": [7, 6, 8, 5, 9, 4, 10, 3, 11, 2, 1],
+    "battingOrderPreference": 524,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -369,7 +369,7 @@ const IndiaPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 6,
     "paceAbility": 10,
-    "battingOrderPreference": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 982,
     "currentMatch": {
       "run": 0,
       "ball": 0,

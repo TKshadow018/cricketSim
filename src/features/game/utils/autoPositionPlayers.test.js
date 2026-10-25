@@ -15,33 +15,59 @@ const selectedBangladeshXI = [
   'Mustafizur Rahman',
 ].map((name) => BangladeshPlayers.find((player) => player.name === name));
 
-describe('autoPositionPlayers with the Bangladesh XI', () => {
-  test('assigns all 11 positions while balancing each player’s preference rank', () => {
+describe('autoPositionPlayers', () => {
+  test('orders the XI from highest to lowest batting-order preference', () => {
+    const players = Array.from({ length: 11 }, (_, index) => ({
+      id: index + 1,
+      battingOrderPreference: (index + 1) * 90,
+    }));
+
+    const positionedPlayers = autoPositionPlayers(players, () => 0);
+
+    expect(positionedPlayers.map((player) => player.battingOrderPreference)).toEqual([
+      990,
+      900,
+      810,
+      720,
+      630,
+      540,
+      450,
+      360,
+      270,
+      180,
+      90,
+    ]);
+  });
+
+  test('uses the random chooser to break ties in batting-order preference', () => {
+    const players = [
+      { name: 'First opener', battingOrderPreference: 1000 },
+      { name: 'Second opener', battingOrderPreference: 1000 },
+      ...Array.from({ length: 9 }, (_, index) => ({
+        name: `Player ${index + 3}`,
+        battingOrderPreference: 900 - index * 100,
+      })),
+    ];
+
+    expect(autoPositionPlayers(players, () => 0)[0].name).toBe('First opener');
+    expect(autoPositionPlayers(players, () => 0.99)[0].name).toBe('Second opener');
+  });
+
+  test('rejects preferences outside the integer 1–1000 range', () => {
+    const players = Array.from({ length: 11 }, (_, index) => ({
+      battingOrderPreference: index === 0 ? 1001 : 500,
+    }));
+
+    expect(() => autoPositionPlayers(players)).toThrow(
+      'Invalid battingOrderPreference for selected player.'
+    );
+  });
+
+  test('auto-positions a national XI according to numeric preference values', () => {
     const positionedPlayers = autoPositionPlayers(selectedBangladeshXI, () => 0);
+    const preferenceValues = positionedPlayers.map((player) => player.battingOrderPreference);
 
     expect(positionedPlayers).toHaveLength(11);
-    expect(new Set(positionedPlayers.map((player) => player.id)).size).toBe(11);
-    expect(positionedPlayers[0].name).toBe('Liton Das');
-    expect(positionedPlayers[1].name).toBe('Tanzid Hasan');
-    expect(positionedPlayers[2].name).toBe('Najmul Hossain Shanto');
-    expect(positionedPlayers[3].name).toBe('Towhid Hridoy');
-  });
-
-  test('does not force a top batter into an 11th-choice tail position when a better XI assignment exists', () => {
-    const positionedPlayers = autoPositionPlayers(selectedBangladeshXI, () => 0);
-    const mushfiqurPosition = positionedPlayers.findIndex((player) => player.name === 'Mushfiqur Rahim') + 1;
-    const preferenceRanks = positionedPlayers.map(
-      (player, index) => player.battingOrderPreference.indexOf(index + 1) + 1
-    );
-
-    expect(mushfiqurPosition).toBeLessThan(11);
-    expect(positionedPlayers[10].name).toBe('Mustafizur Rahman');
-    expect(Math.max(...preferenceRanks)).toBe(5);
-  });
-
-  test('chooses randomly between players tied for their first-choice opening slot', () => {
-    const positionedPlayers = autoPositionPlayers(selectedBangladeshXI, () => 0.99);
-
-    expect(positionedPlayers[0].name).toBe('Tanzid Hasan');
+    expect(preferenceValues).toEqual([...preferenceValues].sort((left, right) => right - left));
   });
 });

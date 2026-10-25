@@ -8,7 +8,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 8,
-    "battingOrderPreference": [4, 3, 5, 2, 6, 1, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 760,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -27,7 +27,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 11,
-    "battingOrderPreference": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 984,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -46,7 +46,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 11,
-    "battingOrderPreference": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 984,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -65,7 +65,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 16,
     "paceAbility": 72,
-    "battingOrderPreference": [4, 3, 5, 2, 6, 1, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 752,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -84,7 +84,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 5,
     "paceAbility": 5,
-    "battingOrderPreference": [6, 5, 7, 4, 8, 3, 9, 2, 10, 1, 11],
+    "battingOrderPreference": 604,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -103,7 +103,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 9,
-    "battingOrderPreference": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 980,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -122,7 +122,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": true,
     "spinAbility": 4,
     "paceAbility": 4,
-    "battingOrderPreference": [6, 5, 7, 4, 8, 3, 9, 2, 10, 1, 11],
+    "battingOrderPreference": 602,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -141,7 +141,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 73,
     "paceAbility": 15,
-    "battingOrderPreference": [6, 5, 7, 4, 8, 3, 9, 2, 10, 1, 11],
+    "battingOrderPreference": 601,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -160,7 +160,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 73,
     "paceAbility": 15,
-    "battingOrderPreference": [7, 6, 8, 5, 9, 4, 10, 3, 11, 2, 1],
+    "battingOrderPreference": 526,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -179,7 +179,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 93,
     "paceAbility": 8,
-    "battingOrderPreference": [8, 7, 9, 6, 10, 5, 11, 4, 3, 2, 1],
+    "battingOrderPreference": 425,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -198,7 +198,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 84,
-    "battingOrderPreference": [9, 8, 10, 7, 11, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 345,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -217,7 +217,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 86,
-    "battingOrderPreference": [9, 8, 10, 7, 11, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 348,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -236,7 +236,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 84,
-    "battingOrderPreference": [9, 8, 10, 7, 11, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 345,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -255,7 +255,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 85,
     "paceAbility": 8,
-    "battingOrderPreference": [9, 8, 10, 7, 11, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 350,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -274,7 +274,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 15,
     "paceAbility": 71,
-    "battingOrderPreference": [7, 6, 8, 5, 9, 4, 10, 3, 11, 2, 1],
+    "battingOrderPreference": 525,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -293,7 +293,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 8,
-    "battingOrderPreference": [5, 4, 6, 3, 7, 2, 8, 1, 9, 10, 11],
+    "battingOrderPreference": 679,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -312,7 +312,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 6,
     "paceAbility": 10,
-    "battingOrderPreference": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "battingOrderPreference": 982,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -331,7 +331,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 14,
     "paceAbility": 70,
-    "battingOrderPreference": [9, 8, 10, 7, 11, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 373,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -350,7 +350,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 85,
-    "battingOrderPreference": [9, 8, 10, 7, 11, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 346,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -369,7 +369,7 @@ const ScotlandPlayers = [
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 85,
-    "battingOrderPreference": [10, 9, 11, 8, 7, 6, 5, 4, 3, 2, 1],
+    "battingOrderPreference": 271,
     "currentMatch": {
       "run": 0,
       "ball": 0,
