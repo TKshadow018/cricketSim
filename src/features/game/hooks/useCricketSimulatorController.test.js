@@ -137,6 +137,8 @@ const makeRuntime = () => ({
   setBowlingIntent: jest.fn(),
   autoPickOwnXI: jest.fn(),
   autoPickOpponentXI: jest.fn(),
+  moveOwnPlayerInBattingOrder: jest.fn(),
+  moveOpponentPlayerInBattingOrder: jest.fn(),
   startMatchWithSelectedXI: jest.fn(),
   resetMatch: jest.fn(),
   seriesStanding: { ownWins: 1, opponentWins: 1, ties: 0 },
@@ -253,6 +255,10 @@ describe('useCricketSimulatorController', () => {
   });
 
   test('derives match state, readiness, score summaries, and controller navigation aliases', () => {
+    mockState.game = makeGame({
+      ownBattingOrderIds: [1, 2],
+      opponentBattingOrderIds: [3],
+    });
     const resultRef = { current: null };
     render(<HookHarness resultRef={resultRef} />);
     const controller = resultRef.current;
@@ -264,10 +270,17 @@ describe('useCricketSimulatorController', () => {
     expect(controller.isCurrentMatchUserInvolved).toBe(true);
     expect(controller.ownSelectedXIPlayers).toEqual([{ id: 1, name: 'Alice' }]);
     expect(controller.opponentSelectedXIPlayers).toEqual([{ id: 3, name: 'Cara' }]);
+    expect(controller.ownBattingOrderIds).toEqual([1, 2]);
+    expect(controller.opponentBattingOrderIds).toEqual([3]);
     expect(controller.ownAvailablePool).toEqual([{ id: 2, name: 'Bob' }]);
     expect(controller.ownXIReady).toBe(false);
     expect(controller.ownTeamRoles).toEqual({ captainId: 1, viceCaptainId: 2, wicketKeeperId: 1 });
     expect(controller.countryList.length).toBeGreaterThan(0);
+
+    controller.moveOwnPlayerInBattingOrder(2, -1);
+    controller.moveOpponentPlayerInBattingOrder(3, 1);
+    expect(mockRuntime.moveOwnPlayerInBattingOrder).toHaveBeenCalledWith(2, -1);
+    expect(mockRuntime.moveOpponentPlayerInBattingOrder).toHaveBeenCalledWith(3, 1);
 
     controller.selectGameMode('series');
     controller.selectSeriesLength(5);

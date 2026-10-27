@@ -24,8 +24,10 @@ const makeHandlers = (overrides = {}) => {
     'setFirstBattingSideAction',
     'setStageAction',
     'setOwnPlayingXIAction',
+    'setOwnBattingOrderIdsAction',
     'setOwnTeamRolesAction',
     'setOpponentPlayingXIAction',
+    'setOpponentBattingOrderIdsAction',
     'setOpponentTeamRolesAction',
     'setOwnCustomPlayersAction',
     'setOpponentCustomPlayersAction',
@@ -57,10 +59,12 @@ const makeHandlers = (overrides = {}) => {
     gameMode: 'quick',
     openInnings,
     ownSelectedXIIds,
+    ownBattingOrderIds: ownSelectedXIIds,
     availableOwnPlayers,
     ownSanitizedRoles: { captainId: 'own-1', viceCaptainId: 'own-2', wicketKeeperId: null },
     sanitizeRoles: jest.fn((roles, ids) => ({ ...roles, allowedIds: ids })),
     opponentSelectedXIIds,
+    opponentBattingOrderIds: opponentSelectedXIIds,
     availableOpponentPlayers,
     opponentSanitizedRoles: { captainId: 'opp-1', viceCaptainId: 'opp-2', wicketKeeperId: null },
     ownSelectedXIPlayers: [makePlayer('own-1'), makePlayer('own-2'), makePlayer('own-keeper', { isWicketKeeper: true })],
@@ -145,6 +149,42 @@ describe('team XI and role management', () => {
     });
     handlers.removeOpponentPlayerFromXI('opp-2');
     expect(args.sanitizeRoles).toHaveBeenCalledWith(args.opponentSanitizedRoles, ['opp-1']);
+  });
+
+  test('moves selected players up and down in both batting orders', () => {
+    const ownOrder = ['own-1', 'own-2', 'own-3'];
+    const opponentOrder = ['opp-1', 'opp-2', 'opp-3'];
+    const { handlers, dispatch } = makeHandlers({
+      ownSelectedXIIds: ownOrder,
+      ownBattingOrderIds: ownOrder,
+      opponentSelectedXIIds: opponentOrder,
+      opponentBattingOrderIds: opponentOrder,
+    });
+
+    handlers.moveOwnPlayerInBattingOrder('own-3', -1);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'setOwnBattingOrderIdsAction',
+      payload: ['own-1', 'own-3', 'own-2'],
+    });
+
+    handlers.moveOpponentPlayerInBattingOrder('opp-1', 1);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'setOpponentBattingOrderIdsAction',
+      payload: ['opp-2', 'opp-1', 'opp-3'],
+    });
+  });
+
+  test('does not move a batting-order player beyond the first or last position', () => {
+    const order = ['own-1', 'own-2', 'own-3'];
+    const { handlers, dispatch } = makeHandlers({
+      ownSelectedXIIds: order,
+      ownBattingOrderIds: order,
+    });
+
+    handlers.moveOwnPlayerInBattingOrder('own-1', -1);
+    handlers.moveOwnPlayerInBattingOrder('own-3', 1);
+
+    expect(dispatch).not.toHaveBeenCalled();
   });
 
   test('rejects non-keeper wicketkeeper assignments and clears duplicate captain roles', () => {

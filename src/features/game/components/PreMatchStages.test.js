@@ -73,6 +73,12 @@ jest.mock('./PreMatchSelectionStages', () => ({
         onClick: () => props.onDropToSelected('opponent', makeEvent(JSON.stringify({ teamKey: 'opponent', sourceList: 'available', playerId: 5 }))),
       }, 'Drop opponent player'),
       ReactActual.createElement('button', {
+        onClick: () => props.moveOwnPlayerInBattingOrder('own-1', -1),
+      }, 'Move own player in batting order'),
+      ReactActual.createElement('button', {
+        onClick: () => props.moveOpponentPlayerInBattingOrder('opponent-1', 1),
+      }, 'Move opponent player in batting order'),
+      ReactActual.createElement('button', {
         onClick: () => props.onDropToAvailable('opponent', makeEvent(JSON.stringify({ teamKey: 'opponent', sourceList: 'selected', playerId: 6 }))),
       }, 'Remove opponent player'),
       ReactActual.createElement('button', { onClick: props.onDragEnd }, 'End drag'),
@@ -138,8 +144,10 @@ const makeProps = (overrides = {}) => ({
   opponentRolesReady: false,
   moveOwnPlayerToXI: jest.fn(),
   removeOwnPlayerFromXI: jest.fn(),
+  moveOwnPlayerInBattingOrder: jest.fn(),
   moveOpponentPlayerToXI: jest.fn(),
   removeOpponentPlayerFromXI: jest.fn(),
+  moveOpponentPlayerInBattingOrder: jest.fn(),
   setOwnRole: jest.fn(),
   setOpponentRole: jest.fn(),
   createCustomPlayer: jest.fn(),
@@ -166,6 +174,17 @@ const makeProps = (overrides = {}) => ({
 });
 
 describe('PreMatchStages', () => {
+  test('passes batting-order controls through to the XI selection stages', () => {
+    const props = makeProps({ stage: matchStatusEnum.ChooseOwnPlayingXI });
+    render(<PreMatchStages {...props} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Move own player in batting order' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Move opponent player in batting order' }));
+
+    expect(props.moveOwnPlayerInBattingOrder).toHaveBeenCalledWith('own-1', -1);
+    expect(props.moveOpponentPlayerInBattingOrder).toHaveBeenCalledWith('opponent-1', 1);
+  });
+
   test('shows setup back controls only on supported stages and passes the resolved commentator', () => {
     const props = makeProps();
     const { rerender } = render(<PreMatchStages {...props} />);

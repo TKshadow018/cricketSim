@@ -57,8 +57,10 @@ function PreMatchStages({
   opponentRolesReady,
   moveOwnPlayerToXI,
   removeOwnPlayerFromXI,
+  moveOwnPlayerInBattingOrder,
   moveOpponentPlayerToXI,
   removeOpponentPlayerFromXI,
+  moveOpponentPlayerInBattingOrder,
   setOwnRole,
   setOpponentRole,
   createCustomPlayer,
@@ -327,8 +329,10 @@ function PreMatchStages({
         opponentRolesReady={opponentRolesReady}
         moveOwnPlayerToXI={moveOwnPlayerToXI}
         removeOwnPlayerFromXI={removeOwnPlayerFromXI}
+        moveOwnPlayerInBattingOrder={moveOwnPlayerInBattingOrder}
         moveOpponentPlayerToXI={moveOpponentPlayerToXI}
         removeOpponentPlayerFromXI={removeOpponentPlayerFromXI}
+        moveOpponentPlayerInBattingOrder={moveOpponentPlayerInBattingOrder}
         autoPickOwnXI={autoPickOwnXI}
         autoPickOpponentXI={autoPickOpponentXI}
         autoPositionOwnXI={() => runAutoPosition(autoPositionOwnXI)}

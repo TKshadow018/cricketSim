@@ -1,7 +1,14 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-function ScoreboardModal({ children, onClose }) {
+function ScoreboardModal({
+  children,
+  onClose,
+  title = 'Full Scoreboard',
+  kicker = 'MATCH DATA',
+  closeLabel = 'Close Scoreboard',
+  scrollHint = 'Swipe horizontally to view all columns.',
+}) {
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -36,13 +43,13 @@ function ScoreboardModal({ children, onClose }) {
       >
         <header className="sim-scoreboard-modal-header">
           <div>
-            <p className="sim-card-kicker">MATCH DATA</p>
-            <h2 id="full-scoreboard-title">Full Scoreboard</h2>
+            <p className="sim-card-kicker">{kicker}</p>
+            <h2 id="full-scoreboard-title">{title}</h2>
           </div>
           <button
             type="button"
             className="sim-modal-top-close"
-            aria-label="Close Scoreboard"
+            aria-label={closeLabel}
             autoFocus
             onClick={onClose}
           >
@@ -52,7 +59,7 @@ function ScoreboardModal({ children, onClose }) {
           </button>
         </header>
         <div className="sim-scoreboard-modal-content">
-          <p className="sim-scoreboard-scroll-hint">Swipe horizontally to view all columns.</p>
+          {scrollHint ? <p className="sim-scoreboard-scroll-hint">{scrollHint}</p> : null}
           {children}
         </div>
       </section>

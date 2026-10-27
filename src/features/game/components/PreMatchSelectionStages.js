@@ -4,6 +4,8 @@ import StageShell from './StageShell';
 import AppButton from '../../../components/ui/AppButton';
 import PlayerNameWithType from './PlayerNameWithType';
 import { countBowlingRolePlayers } from '../../../gameData/playerTypes';
+import BattingOrderControls from './BattingOrderControls';
+import '../styles/batting-order-controls.css';
 
 function PlayerCard({
   player,
@@ -53,6 +55,7 @@ function XIStage({
   setRole,
   movePlayer,
   removePlayer,
+  movePlayerInBattingOrder,
   autoPick,
   autoPosition,
   autoPositionError,
@@ -147,18 +150,25 @@ function XIStage({
           <h4>Selected XI</h4>
           <div className="sim-player-pick-grid">
             {selectedPlayers.map((player) => (
-              <PlayerCard
+              <BattingOrderControls
                 key={`selected-${teamKey}-${player.id}`}
                 player={player}
-                cardKey={`selected-${teamKey}-${player.id}`}
-                draggable
-                active
-                dragContext={{ teamKey, sourceList: 'selected' }}
-                onDragStart={onDragStart}
-                onDragEnd={onDragEnd}
-                onClick={() => removePlayer(player.id)}
-                hint={`Select to remove${battingOrderIds?.includes(player.id) ? ` · Batting position ${battingOrderIds.indexOf(player.id) + 1}` : ''}`}
-              />
+                battingOrderIds={battingOrderIds}
+                selectedPlayers={selectedPlayers}
+                onMove={(direction) => movePlayerInBattingOrder(player.id, direction)}
+              >
+                <PlayerCard
+                  cardKey={`selected-${teamKey}-${player.id}`}
+                  player={player}
+                  draggable
+                  active
+                  dragContext={{ teamKey, sourceList: 'selected' }}
+                  onDragStart={onDragStart}
+                  onDragEnd={onDragEnd}
+                  onClick={() => removePlayer(player.id)}
+                  hint={`Select to remove${battingOrderIds?.includes(player.id) ? ` · Batting position ${battingOrderIds.indexOf(player.id) + 1}` : ''}`}
+                />
+              </BattingOrderControls>
             ))}
           </div>
         </div>
@@ -283,6 +293,8 @@ function PreMatchSelectionStages(props) {
     removeOwnPlayerFromXI,
     moveOpponentPlayerToXI,
     removeOpponentPlayerFromXI,
+    moveOwnPlayerInBattingOrder,
+    moveOpponentPlayerInBattingOrder,
     autoPickOwnXI,
     autoPickOpponentXI,
     autoPositionOwnXI,
@@ -368,6 +380,7 @@ function PreMatchSelectionStages(props) {
           setRole={setOwnRole}
           movePlayer={moveOwnPlayerToXI}
           removePlayer={removeOwnPlayerFromXI}
+          movePlayerInBattingOrder={moveOwnPlayerInBattingOrder}
           autoPick={autoPickOwnXI}
           autoPosition={autoPositionOwnXI}
           autoPositionError={autoPositionError}
@@ -403,6 +416,7 @@ function PreMatchSelectionStages(props) {
           setRole={setOpponentRole}
           movePlayer={moveOpponentPlayerToXI}
           removePlayer={removeOpponentPlayerFromXI}
+          movePlayerInBattingOrder={moveOpponentPlayerInBattingOrder}
           autoPick={autoPickOpponentXI}
           autoPosition={autoPositionOpponentXI}
           autoPositionError={autoPositionError}

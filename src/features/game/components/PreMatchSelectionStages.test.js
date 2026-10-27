@@ -44,8 +44,10 @@ const makeProps = (overrides = {}) => ({
   opponentRolesReady: true,
   moveOwnPlayerToXI: jest.fn(),
   removeOwnPlayerFromXI: jest.fn(),
+  moveOwnPlayerInBattingOrder: jest.fn(),
   moveOpponentPlayerToXI: jest.fn(),
   removeOpponentPlayerFromXI: jest.fn(),
+  moveOpponentPlayerInBattingOrder: jest.fn(),
   autoPickOwnXI: jest.fn(),
   autoPickOpponentXI: jest.fn(),
   openCustomModal: jest.fn(),
@@ -245,7 +247,8 @@ const createProps = (selectedCount = 11) => {
     abilityToPlaySpinBall: 70,
     paceAbility: 10,
     spinAbility: 10,
-  }));
+  })).reverse();
+  const battingOrderIds = selectedPlayers.map((player) => player.id);
 
   return {
     stage: matchStatusEnum.ChooseOwnPlayingXI,
@@ -257,7 +260,7 @@ const createProps = (selectedCount = 11) => {
     tournamentOpponentTeams: [],
     ownSelectedXIIds: selectedPlayers.map((player) => player.id),
     opponentSelectedXIIds: [],
-    ownBattingOrderIds: selectedPlayers.map((player) => player.id).reverse(),
+    ownBattingOrderIds: battingOrderIds,
     opponentBattingOrderIds: [],
     ownAvailablePool: [],
     opponentAvailablePool: [],
@@ -276,8 +279,10 @@ const createProps = (selectedCount = 11) => {
     openCustomModal: jest.fn(),
     moveOwnPlayerToXI: jest.fn(),
     removeOwnPlayerFromXI: jest.fn(),
+    moveOwnPlayerInBattingOrder: jest.fn(),
     moveOpponentPlayerToXI: jest.fn(),
     removeOpponentPlayerFromXI: jest.fn(),
+    moveOpponentPlayerInBattingOrder: jest.fn(),
     setOwnRole: jest.fn(),
     setOpponentRole: jest.fn(),
     autoPickOwnXI: jest.fn(),
@@ -315,6 +320,19 @@ describe('PreMatchSelectionStages batting-order action', () => {
 
     expect(props.autoPositionOwnXI).toHaveBeenCalledTimes(1);
     expect(screen.getByText(/Batting position 11/)).toBeInTheDocument();
+  });
+
+  test('lets the user manually change an auto-selected batting order', () => {
+    const props = createProps(11);
+    render(<PreMatchSelectionStages {...props} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Auto Select Batting Order' }));
+    expect(screen.getByRole('button', { name: 'Move Player 11 up' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Move Player 1 down' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Move Player 10 up' }));
+
+    expect(props.autoPositionOwnXI).toHaveBeenCalledTimes(1);
+    expect(props.moveOwnPlayerInBattingOrder).toHaveBeenCalledWith(10, -1);
   });
 
   test('explains the selection requirements next to the disabled Continue button', () => {

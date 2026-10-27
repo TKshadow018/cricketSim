@@ -1,6 +1,7 @@
 import React from 'react';
 import StageShell from './StageShell';
 import AppButton from '../../../components/ui/AppButton';
+import CareerAuctionHistoryModal from './CareerAuctionHistoryModal';
 import CareerAuctionRoom from './CareerAuctionRoom';
 import PlayerNameWithType from './PlayerNameWithType';
 import TeamNameWithLogo from './TeamNameWithLogo';
@@ -26,17 +27,16 @@ function CareerAuctionStage({
 }) {
   const summary = careerAuctionSummary || EMPTY_OBJECT;
   const budgetRows = Array.isArray(summary.budgetTable) ? summary.budgetTable : EMPTY_ARRAY;
-  const marqueeRows = Array.isArray(summary.marqueeBids) ? summary.marqueeBids.slice(0, 28) : [];
   const timeline = Array.isArray(summary.auctionTimeline) ? summary.auctionTimeline : EMPTY_ARRAY;
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isAutoPlay, setIsAutoPlay] = React.useState(true);
   const [playbackMs, setPlaybackMs] = React.useState(900);
   const [pausedForUserMoment, setPausedForUserMoment] = React.useState(false);
   const [revealedBidCount, setRevealedBidCount] = React.useState(0);
+  const [isHistoryOpen, setIsHistoryOpen] = React.useState(false);
   const profileName = careerPlayerProfile?.name || 'Career Player';
   const playerAuctionEvent = summary.careerPlayerEvent;
   const currentEvent = timeline[currentIndex] || null;
-  const shownRows = timeline.slice(0, Math.max(0, currentIndex + 1)).slice(-16).reverse();
   const isAtFinalAuctionState = timeline.length > 0 && currentIndex >= timeline.length - 1;
 
   React.useEffect(() => {
@@ -135,6 +135,26 @@ function CareerAuctionStage({
     () => buildTeamMomentumRows({ budgetRows, timeline, currentIndex, isAtFinalAuctionState }),
     [budgetRows, timeline, currentIndex, isAtFinalAuctionState]
   );
+  const historyTimeline = timeline.length
+    ? timeline.slice(0, Math.max(0, currentIndex + 1))
+    : Array.isArray(summary.marqueeBids)
+      ? summary.marqueeBids
+      : EMPTY_ARRAY;
+  const purchasedEvents = historyTimeline
+    .filter((event) => event?.isSold && event?.winnerTeam);
+  const historyTeams = [...new Set([
+    ...budgetRows.map((row) => row.team),
+    ...purchasedEvents.map((event) => event.winnerTeam),
+  ])]
+    .filter(Boolean)
+    .sort((left, right) => String(left).localeCompare(String(right)));
+  const openAuctionHistory = React.useCallback(() => {
+    setIsAutoPlay(false);
+    setIsHistoryOpen(true);
+  }, []);
+  const closeAuctionHistory = React.useCallback(() => {
+    setIsHistoryOpen(false);
+  }, []);
 
   const quotaBadgeStyle = (passed) => ({
     display: 'inline-block',
@@ -172,9 +192,24 @@ function CareerAuctionStage({
       <CareerAuctionRoom
         currentEvent={currentEvent}
         auctioneerLine={auctioneerLine}
+        currentEventNarration={currentEventNarration}
         progressLabel={progressLabel}
         bidderRows={bidderRows}
         revealedBidsByTeam={revealedBidsByTeam}
+        revealedBidCount={revealedBidCount}
+        timeline={timeline}
+        currentIndex={currentIndex}
+        phaseLabel={phaseLabel}
+        momentum={momentum}
+        isAutoPlay={isAutoPlay}
+        playbackMs={playbackMs}
+        purchasedCount={purchasedEvents.length}
+        onOpenPurchaseHistory={openAuctionHistory}
+        onToggleAutoPlay={() => setIsAutoPlay((prev) => !prev)}
+        onPlaybackChange={(value) => setPlaybackMs(Number(value))}
+        onPrevious={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
+        onNext={() => setCurrentIndex((prev) => Math.min(timeline.length - 1, prev + 1))}
+        onJumpToFinal={() => setCurrentIndex(Math.max(0, timeline.length - 1))}
       />
 
       <div className="sim-scoreboard-panel" style={{ marginBottom: '12px' }}>
@@ -219,137 +254,6 @@ function CareerAuctionStage({
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="sim-scoreboard-panel" style={{ marginBottom: '12px' }}>
-        <h4 className="sim-section-title" style={{ marginTop: 0 }}>Live Auction Feed ({progressLabel})</h4>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '8px' }}>
-          <AppButton
-            text={isAutoPlay ? 'Pause Auto Play' : 'Resume Auto Play'}
-            variant="secondary"
-            fullWidth={false}
-            onClick={() => setIsAutoPlay((prev) => !prev)}
-            disabled={!timeline.length || currentIndex >= timeline.length - 1}
-          />
-          <small>Speed: {playbackMs} ms</small>
-          <input
-            type="range"
-            min={250}
-            max={1800}
-            step={50}
-            value={playbackMs}
-            onChange={(event) => setPlaybackMs(Number(event.target.value))}
-            style={{ width: '180px' }}
-          />
-        </div>
-
-        {currentEvent ? (
-          <div className="sim-saved-item" style={{ marginBottom: '8px' }}>
-            <div className="sim-saved-item-content">
-              <strong>Nomination {currentEvent.index}: {currentEvent.playerName}</strong>
-              <small>{currentEvent.playerCountry} • Rating {currentEvent.abilityScore} • Base {currentEvent.basePriceLabel}</small>
-              <small>
-                {currentEvent.isSold
-                  ? `Sold to ${currentEvent.winnerTeam} for ${currentEvent.amountLabel}`
-                  : 'Unsold'}
-              </small>
-              <small>{currentEventNarration}</small>
-            </div>
-          </div>
-        ) : (
-          <p style={{ margin: 0 }}>Preparing auction timeline...</p>
-        )}
-
-        <div className={`sim-auction-broadcast-bar sim-auction-broadcast-bar--${String(phaseLabel).toLowerCase().replace(/\s+/g, '-')}`}>
-          <span className="sim-auction-broadcast-label">{phaseLabel}</span>
-          <div className="sim-auction-broadcast-meter">
-            <span style={{ width: `${Math.max(8, momentum)}%` }} />
-          </div>
-          <span className="sim-auction-broadcast-score">{momentum}% heat</span>
-        </div>
-
-        {currentEvent?.isCareerPlayer ? (
-          <div className="sim-saved-item" style={{ marginBottom: '8px', border: '1px solid rgba(255,215,0,0.4)' }}>
-            <div className="sim-saved-item-content">
-              <strong>Spotlight: Your Auction Moment</strong>
-              <small>{currentEventNarration}</small>
-              <small>Auto play paused so you can review this bidding battle.</small>
-            </div>
-          </div>
-        ) : null}
-
-        {timeline.length ? (
-          <div className="sim-auction-ticker" aria-label="Auction ticker">
-            {timeline.slice(Math.max(0, currentIndex - 6), currentIndex + 1).map((event) => (
-              <span key={`ticker-${event.playerId}-${event.index}`} className="sim-auction-ticker-item">
-                <strong>#{event.index}</strong> {event.playerName} {event.isSold ? `• ${event.winnerTeam}` : '• unsold'}
-              </span>
-            ))}
-          </div>
-        ) : null}
-
-        {currentEvent?.bids?.length ? (
-          <div className="sim-table-scroll-shell">
-            <table style={{ width: '100%', minWidth: '320px', borderCollapse: 'collapse', fontSize: '0.88em', marginBottom: '8px' }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: 'left', padding: '4px 6px' }}>Bidder</th>
-                  <th style={{ textAlign: 'center', padding: '4px 6px' }}>Bid</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentEvent.bids.slice(0, revealedBidCount).map((bid, index) => (
-                  <tr
-                    key={`${currentEvent.playerId}-${bid.team}-${index}`}
-                    className={`sim-auction-bid-row ${index === 0 ? 'sim-auction-bid-row--winner' : ''}`}
-                  >
-                    <td style={{ padding: '4px 6px' }}><TeamNameWithLogo teamName={bid.team} size={18} /></td>
-                    <td style={{ textAlign: 'center', padding: '4px 6px', fontWeight: index === 0 ? 700 : 500 }}>${Number(bid.amount || 0).toLocaleString('en-US')}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : null}
-
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <AppButton
-            text="Previous"
-            variant="secondary"
-            fullWidth={false}
-            onClick={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
-            disabled={!timeline.length || currentIndex <= 0}
-          />
-          <AppButton
-            text="Next"
-            variant="secondary"
-            fullWidth={false}
-            onClick={() => setCurrentIndex((prev) => Math.min(timeline.length - 1, prev + 1))}
-            disabled={!timeline.length || currentIndex >= timeline.length - 1}
-          />
-          <AppButton
-            text="Jump to Final"
-            variant="secondary"
-            fullWidth={false}
-            onClick={() => setCurrentIndex(Math.max(0, timeline.length - 1))}
-            disabled={!timeline.length}
-          />
-        </div>
-
-        {shownRows.length ? (
-          <div style={{ marginTop: '8px' }}>
-            {shownRows.map((event) => (
-              <div key={`${event.playerId}-${event.index}`} className="sim-saved-item" style={{ marginBottom: '5px' }}>
-                <div className="sim-saved-item-content">
-                  <strong>#{event.index} {event.playerName}</strong>
-                  <small>
-                    {event.isSold ? <><TeamNameWithLogo teamName={event.winnerTeam} size={16} /> • {event.amountLabel}</> : 'Unsold'}
-                  </small>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : null}
       </div>
 
       <div className="sim-scoreboard-panel" style={{ marginBottom: '12px' }}>
@@ -413,24 +317,14 @@ function CareerAuctionStage({
         </div>
       </div>
 
-      <div className="sim-scoreboard-panel" style={{ marginBottom: '12px' }}>
-        <h4 className="sim-section-title" style={{ marginTop: 0 }}>Marquee Bids</h4>
-        {marqueeRows.length ? (
-          marqueeRows.map((event) => (
-            <div key={`${event.playerId}-${event.winnerTeam}`} className="sim-saved-item" style={{ marginBottom: '6px' }}>
-              <div className="sim-saved-item-content">
-                <strong>{event.playerName} → <TeamNameWithLogo teamName={event.winnerTeam} size={18} /></strong>
-                <small>{event.playerCountry} • {event.role} • Rating {event.abilityScore}</small>
-                <small>{event.amountLabel}</small>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p style={{ margin: 0 }}>No marquee bids captured.</p>
-        )}
-      </div>
-
       <AppButton text="Continue to Season Schedule" onClick={handleCareerContinueAfterAuction} fullWidth />
+      {isHistoryOpen ? (
+        <CareerAuctionHistoryModal
+          events={purchasedEvents}
+          teams={historyTeams}
+          onClose={closeAuctionHistory}
+        />
+      ) : null}
     </StageShell>
   );
 }

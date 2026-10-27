@@ -146,6 +146,11 @@ describe('CareerAuctionStage', () => {
     expect(screen.getByText('Auctioneer')).toBeInTheDocument();
     expect(screen.getByRole('list', { name: 'Bidding teams' })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'Falcons bid board, lowered' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Live auction floor' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /Live Auction Feed/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('slider', { name: 'Auction speed' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Purchase history' })).toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: 'Purchased players' })).not.toBeInTheDocument();
     expect(screen.getByText('Player pool: 80% domestic, 20% foreign')).toBeInTheDocument();
     expect(screen.getByText(/Team size: 1-3 domestic, 0-2 foreign/)).toBeInTheDocument();
     expect(screen.getByText('Live Quota Summary')).toBeInTheDocument();
@@ -154,8 +159,8 @@ describe('CareerAuctionStage', () => {
     expect(screen.getByText('SOLD')).toBeInTheDocument();
     expect(screen.getByText('Team Momentum')).toBeInTheDocument();
     expect(screen.getByLabelText('Auction ticker')).toBeInTheDocument();
-    expect(screen.getByText('Marquee Bids')).toBeInTheDocument();
-    expect(screen.getByText(/Marquee Player/)).toBeInTheDocument();
+    expect(screen.queryByText('Marquee Bids')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Marquee Player/)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled();
 
     act(() => {
@@ -196,6 +201,26 @@ describe('CareerAuctionStage', () => {
     expect(props.handleCareerContinueAfterAuction).toHaveBeenCalled();
   });
 
+  test('opens bought players in a team-filterable modal', () => {
+    render(<CareerAuctionStage {...makeProps()} />);
+
+    expect(screen.queryByRole('table', { name: 'Purchased players' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Purchase history' }));
+
+    expect(screen.getByRole('dialog', { name: 'Purchased players' })).toBeInTheDocument();
+    const teamFilter = screen.getByLabelText('Filter by team');
+    expect(screen.getByRole('row', { name: /First Nominee.*Falcons/ })).toBeInTheDocument();
+
+    fireEvent.change(teamFilter, { target: { value: 'Ravens' } });
+    expect(screen.getByText('No purchases by Ravens yet.')).toBeInTheDocument();
+    expect(screen.queryByRole('row', { name: /First Nominee.*Falcons/ })).not.toBeInTheDocument();
+
+    fireEvent.change(teamFilter, { target: { value: 'Falcons' } });
+    expect(screen.getByRole('row', { name: /First Nominee.*Falcons/ })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Close auction history' }));
+    expect(screen.queryByRole('dialog', { name: 'Purchased players' })).not.toBeInTheDocument();
+  });
+
   test('supports empty timelines, default rules, and unsold auction phases', () => {
     const props = makeProps({
       careerSeason: 0,
@@ -209,10 +234,24 @@ describe('CareerAuctionStage', () => {
     expect(screen.getByText('Auction loading')).toBeInTheDocument();
     expect(screen.getByText('Preparing auction timeline...')).toBeInTheDocument();
 
-    rerender(<CareerAuctionStage {...props} careerAuctionSummary={{ auctionTimeline: [] }} />);
-    expect(screen.getByText('No marquee bids captured.')).toBeInTheDocument();
+    rerender(<CareerAuctionStage {...props} careerAuctionSummary={{
+      auctionTimeline: [],
+      marqueeBids: [{
+        playerId: 'marquee-only',
+        playerName: 'Marquee Player',
+        winnerTeam: 'Falcons',
+        playerCountry: 'India',
+        amountLabel: '$500,000',
+        isSold: true,
+      }],
+    }} />);
+    expect(screen.getByRole('button', { name: 'Purchase history' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+    expect(screen.queryByText('Marquee Player')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Purchase history' }));
+    expect(screen.getByText('Marquee Player', { selector: '.sim-auction-history-player' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Close auction history' }));
 
     rerender(<CareerAuctionStage {...props} careerAuctionSummary={{
       auctionTimeline: [
@@ -304,7 +343,7 @@ describe('CareerAuctionStage', () => {
     expect(screen.getByText(/Team size: 0-0 domestic, 0-0 foreign/)).toBeInTheDocument();
     expect(screen.getByText('Minimum roles: 2 wicketkeepers, 10 bowling profile, 12 batting profile')).toBeInTheDocument();
     expect(screen.getByText('1 players auctioned across 0 clubs.')).toBeInTheDocument();
-    expect(screen.getByText('No marquee bids captured.')).toBeInTheDocument();
+    expect(screen.queryByText('Marquee Bids')).not.toBeInTheDocument();
     expect(document.body.textContent).toContain('Auctioneer:  at base undefined. Any bidder?');
     expect(screen.getByText(/Player goes unsold at base -/)).toBeInTheDocument();
 

@@ -3,6 +3,34 @@ import { matchStatusEnum } from '../../../../gameData/matchStatusEnum';
 import { selectAIPlayingXI } from '../../utils/controllerCommonUtils';
 import { autoPositionPlayers } from '../../utils/autoPositionPlayers';
 
+const reorderBattingOrder = (selectedIds, battingOrderIds, playerId, direction) => {
+  if (direction !== -1 && direction !== 1) {
+    return null;
+  }
+
+  const selectedOrder = [...new Set(selectedIds || [])];
+  const selectedSet = new Set(selectedOrder);
+  const nextOrder = (Array.isArray(battingOrderIds) ? battingOrderIds : [])
+    .filter((id, index, order) => selectedSet.has(id) && order.indexOf(id) === index);
+  selectedOrder.forEach((id) => {
+    if (!nextOrder.includes(id)) {
+      nextOrder.push(id);
+    }
+  });
+
+  const currentIndex = nextOrder.indexOf(playerId);
+  const targetIndex = currentIndex + direction;
+  if (currentIndex < 0 || targetIndex < 0 || targetIndex >= nextOrder.length) {
+    return null;
+  }
+
+  [nextOrder[currentIndex], nextOrder[targetIndex]] = [
+    nextOrder[targetIndex],
+    nextOrder[currentIndex],
+  ];
+  return nextOrder;
+};
+
 export const createTeamManagementHandlers = ({
   dispatch,
   userTeamName,
@@ -15,6 +43,7 @@ export const createTeamManagementHandlers = ({
   setOwnPlayingXIAction,
   setOwnBattingOrderIdsAction,
   ownSelectedXIIds,
+  ownBattingOrderIds,
   availableOwnPlayers,
   setOwnTeamRolesAction,
   ownSanitizedRoles,
@@ -22,6 +51,7 @@ export const createTeamManagementHandlers = ({
   setOpponentPlayingXIAction,
   setOpponentBattingOrderIdsAction,
   opponentSelectedXIIds,
+  opponentBattingOrderIds,
   availableOpponentPlayers,
   setOpponentTeamRolesAction,
   opponentSanitizedRoles,
@@ -105,6 +135,30 @@ export const createTeamManagementHandlers = ({
     const player = availableOpponentPlayers.find((item) => item.id === playerId);
     if (player) {
       speak(`${player.name} removed from ${opponentTeam} playing eleven.`);
+    }
+  };
+
+  const moveOwnPlayerInBattingOrder = (playerId, direction) => {
+    const nextOrder = reorderBattingOrder(
+      ownSelectedXIIds,
+      ownBattingOrderIds,
+      playerId,
+      direction
+    );
+    if (nextOrder) {
+      dispatch(setOwnBattingOrderIdsAction(nextOrder));
+    }
+  };
+
+  const moveOpponentPlayerInBattingOrder = (playerId, direction) => {
+    const nextOrder = reorderBattingOrder(
+      opponentSelectedXIIds,
+      opponentBattingOrderIds,
+      playerId,
+      direction
+    );
+    if (nextOrder) {
+      dispatch(setOpponentBattingOrderIdsAction(nextOrder));
     }
   };
 
@@ -258,6 +312,8 @@ export const createTeamManagementHandlers = ({
     removeOwnPlayerFromXI,
     moveOpponentPlayerToXI,
     removeOpponentPlayerFromXI,
+    moveOwnPlayerInBattingOrder,
+    moveOpponentPlayerInBattingOrder,
     setOwnRole,
     setOpponentRole,
     createCustomPlayer,

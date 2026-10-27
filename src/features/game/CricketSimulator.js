@@ -107,8 +107,10 @@ function CricketSimulator() {
     opponentRolesReady,
     moveOwnPlayerToXI,
     removeOwnPlayerFromXI,
+    moveOwnPlayerInBattingOrder,
     moveOpponentPlayerToXI,
     removeOpponentPlayerFromXI,
+    moveOpponentPlayerInBattingOrder,
     setOwnRole,
     setOpponentRole,
     createCustomPlayer,
@@ -338,8 +340,10 @@ function CricketSimulator() {
             opponentRolesReady={opponentRolesReady}
             moveOwnPlayerToXI={moveOwnPlayerToXI}
             removeOwnPlayerFromXI={removeOwnPlayerFromXI}
+            moveOwnPlayerInBattingOrder={moveOwnPlayerInBattingOrder}
             moveOpponentPlayerToXI={moveOpponentPlayerToXI}
             removeOpponentPlayerFromXI={removeOpponentPlayerFromXI}
+            moveOpponentPlayerInBattingOrder={moveOpponentPlayerInBattingOrder}
             setOwnRole={setOwnRole}
             setOpponentRole={setOpponentRole}
             createCustomPlayer={createCustomPlayer}

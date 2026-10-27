@@ -1,18 +1,39 @@
 import React from 'react';
+import AppButton from '../../../components/ui/AppButton';
 import PlayerNameWithType from './PlayerNameWithType';
 import TeamNameWithLogo from './TeamNameWithLogo';
 import '../styles/career-auction-room.css';
+import '../styles/career-auction-seating.css';
 
 const EMPTY_OBJECT = {};
 
 function CareerAuctionRoom({
   currentEvent,
   auctioneerLine,
+  currentEventNarration,
   progressLabel,
   bidderRows = [],
   revealedBidsByTeam = EMPTY_OBJECT,
+  revealedBidCount = 0,
+  timeline = [],
+  currentIndex = 0,
+  phaseLabel,
+  momentum = 0,
+  isAutoPlay,
+  playbackMs,
+  purchasedCount = 0,
+  onOpenPurchaseHistory,
+  onToggleAutoPlay,
+  onPlaybackChange,
+  onPrevious,
+  onNext,
+  onJumpToFinal,
 }) {
   const winningTeam = currentEvent?.isSold ? currentEvent.winnerTeam : '';
+  const revealedBids = Array.isArray(currentEvent?.bids)
+    ? currentEvent.bids.slice(0, revealedBidCount)
+    : [];
+  const isAtFinalAuctionState = timeline.length > 0 && currentIndex >= timeline.length - 1;
 
   return (
     <section className="sim-auction-room" aria-label="Live auction room">
@@ -26,6 +47,64 @@ function CareerAuctionRoom({
           <strong>{progressLabel}</strong>
         </div>
       </header>
+
+      <div className="sim-auction-floor-controls">
+        <div className="sim-auction-playback-controls">
+          <AppButton
+            text={isAutoPlay ? 'Pause Auto Play' : 'Resume Auto Play'}
+            variant="secondary"
+            fullWidth={false}
+            onClick={onToggleAutoPlay}
+            disabled={!timeline.length || isAtFinalAuctionState}
+          />
+          <label className="sim-auction-speed-control" htmlFor="career-auction-speed">
+            <span>Speed: {playbackMs} ms</span>
+            <input
+              id="career-auction-speed"
+              type="range"
+              min={250}
+              max={1800}
+              step={50}
+              value={playbackMs}
+              aria-label="Auction speed"
+              aria-valuetext={`${playbackMs} milliseconds between nominations`}
+              onChange={(event) => onPlaybackChange(Number(event.target.value))}
+            />
+          </label>
+        </div>
+        <div className="sim-auction-floor-navigation" aria-label="Auction navigation">
+          <AppButton
+            text="Previous"
+            variant="secondary"
+            fullWidth={false}
+            onClick={onPrevious}
+            disabled={!timeline.length || currentIndex <= 0}
+          />
+          <AppButton
+            text="Next"
+            variant="secondary"
+            fullWidth={false}
+            onClick={onNext}
+            disabled={!timeline.length || isAtFinalAuctionState}
+          />
+          <AppButton
+            text="Jump to Final"
+            variant="secondary"
+            fullWidth={false}
+            onClick={onJumpToFinal}
+            disabled={!timeline.length}
+          />
+        </div>
+        <div className="sim-auction-history-action">
+          <AppButton
+            text="Purchase history"
+            variant="secondary"
+            fullWidth={false}
+            onClick={onOpenPurchaseHistory}
+          />
+          <small>{purchasedCount} bought</small>
+        </div>
+      </div>
 
       <div className="sim-auction-floor">
         <div className="sim-auction-front-row">
@@ -65,6 +144,9 @@ function CareerAuctionRoom({
                     className="sim-auction-lot-player"
                   />
                 </h4>
+                <p className="sim-auction-lot-nomination">
+                  Nomination {currentEvent.index}: {currentEvent.playerName || 'Unnamed player'}
+                </p>
                 <p className="sim-auction-lot-meta">
                   {currentEvent.playerCountry || 'Country not listed'}
                   <span aria-hidden="true">·</span>
@@ -81,9 +163,10 @@ function CareerAuctionRoom({
                     {currentEvent.amountLabel ? <strong>{currentEvent.amountLabel}</strong> : null}
                   </div>
                 ) : null}
+                <p className="sim-auction-lot-narration">{currentEventNarration}</p>
               </>
             ) : (
-              <p className="sim-auction-lot-empty">Waiting for the first nomination.</p>
+              <p className="sim-auction-lot-empty">Preparing auction timeline...</p>
             )}
           </article>
         </div>
@@ -149,6 +232,59 @@ function CareerAuctionRoom({
             );
           })}
         </ul>
+
+        <div className={`sim-auction-broadcast-bar sim-auction-broadcast-bar--${String(phaseLabel).toLowerCase().replace(/\s+/g, '-')}`}>
+          <span className="sim-auction-broadcast-label">{phaseLabel}</span>
+          <div className="sim-auction-broadcast-meter">
+            <span style={{ width: `${Math.max(8, momentum)}%` }} />
+          </div>
+          <span className="sim-auction-broadcast-score">{momentum}% heat</span>
+        </div>
+
+        {currentEvent?.isCareerPlayer ? (
+          <aside className="sim-auction-career-spotlight">
+            <strong>Spotlight: Your Auction Moment</strong>
+            <span>{currentEventNarration}</span>
+            <small>Auto play paused so you can review this bidding battle.</small>
+          </aside>
+        ) : null}
+
+        {timeline.length ? (
+          <div className="sim-auction-ticker" aria-label="Auction ticker">
+            {timeline.slice(Math.max(0, currentIndex - 6), currentIndex + 1).map((event) => (
+              <span key={`ticker-${event.playerId}-${event.index}`} className="sim-auction-ticker-item">
+                <strong>#{event.index}</strong> {event.playerName} {event.isSold ? `• ${event.winnerTeam}` : '• unsold'}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        {revealedBids.length ? (
+          <div className="sim-auction-current-bids">
+            <h4>Current bids</h4>
+            <div className="sim-table-scroll-shell">
+              <table className="sim-auction-bid-table" aria-label="Current bids">
+                <thead>
+                  <tr>
+                    <th>Bidder</th>
+                    <th>Bid</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {revealedBids.map((bid, index) => (
+                    <tr
+                      key={`${currentEvent.playerId}-${bid.team}-${index}`}
+                      className={`sim-auction-bid-row ${index === 0 ? 'sim-auction-bid-row--winner' : ''}`}
+                    >
+                      <td><TeamNameWithLogo teamName={bid.team} size={18} /></td>
+                      <td>${Number(bid.amount || 0).toLocaleString('en-US')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : null}
       </div>
     </section>
   );
