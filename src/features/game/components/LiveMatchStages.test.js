@@ -28,6 +28,10 @@ jest.mock('./InningsStage', () => ({
       <button onClick={() => props.onSelectOpener(3)}>Select opener</button>
       <button onClick={() => props.onSelectNextBatter(4)}>Select next batter</button>
       <button onClick={() => props.onSelectBowler(5)}>Select bowler</button>
+      <span data-testid="bowling-plan">{props.bowlingTactics?.overPlan || 'legacy'}</span>
+      <button onClick={() => props.onBowlingTacticsChange?.({ overPlan: 'attack' })}>Change bowling plan</button>
+      <span data-testid="batting-approach">{props.battingTactics?.approach || 'legacy'}</span>
+      <button onClick={() => props.onBattingTacticsChange?.({ approach: 'attack' })}>Change batting approach</button>
       {props.showScoreboard ? (
         <button onClick={props.onCloseScoreboard}>Close Scoreboard</button>
       ) : null}
@@ -76,6 +80,20 @@ const makeProps = (overrides = {}) => ({
     secondInnings: { balls: 0, score: 0, wickets: 0, lastEvent: '', needsOpeners: false, openerSelections: [], waitingForNextBatter: false, waitingForNextBowler: false, commentary: [] },
     battingIntent: 'normal',
     bowlingIntent: 'normal',
+    bowlingTactics: {
+      overPlan: 'balanced',
+      fieldPreset: 'balanced',
+      line: 'stumps',
+      length: 'good',
+      variation: 'stock',
+      specialDeliveryArmed: false,
+    },
+    battingTactics: {
+      approach: 'balanced',
+      shot: 'rotate',
+      target: 'straight',
+      retainShotAndTarget: false,
+    },
     showScoreboard: false,
     ownTeam: 'Falcons',
     opponentTeam: 'Ravens',
@@ -117,7 +135,9 @@ const makeProps = (overrides = {}) => ({
     canPlayNextBall: false,
   },
   setBattingIntent: jest.fn(),
+  setBattingTactics: jest.fn(),
   setBowlingIntent: jest.fn(),
+  setBowlingTactics: jest.fn(),
   onSaveGame: jest.fn(),
   isSavingGame: false,
   saveMessage: '',
@@ -202,6 +222,7 @@ describe('LiveMatchStages', () => {
       stage: matchStatusEnum.TeamTwoBat,
       game: { ...first.game, showScoreboard: true },
     });
+
     rerender(<LiveMatchStages {...second} />);
     expect(screen.getByText('Ravens Chase')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Deliver ball' }));
@@ -215,6 +236,39 @@ describe('LiveMatchStages', () => {
     expect(second.buildTeamTwoScorecard).toHaveBeenCalled();
     rerender(<LiveMatchStages {...second} game={{ ...second.game, showScoreboard: false }} />);
     expect(screen.getByRole('button', { name: 'Show Scoreboard' })).toBeInTheDocument();
+  });
+
+  test('passes tactical bowling state and updates to the innings screen', () => {
+    const base = makeProps();
+    const props = {
+      ...base,
+      firstInningsView: {
+        ...base.firstInningsView,
+        isUserBatting: false,
+        isUserBowling: true,
+      },
+      game: {
+        ...base.game,
+        bowlingTactics: {
+          ...base.game.bowlingTactics,
+          overPlan: 'attack',
+        },
+      },
+    };
+    render(<LiveMatchStages {...props} />);
+
+    expect(screen.getByTestId('bowling-plan')).toHaveTextContent('attack');
+    fireEvent.click(screen.getByRole('button', { name: 'Change bowling plan' }));
+    expect(props.setBowlingTactics).toHaveBeenCalledWith({ overPlan: 'attack' });
+  });
+
+  test('passes tactical batting state and updates to the innings screen', () => {
+    const props = makeProps();
+    render(<LiveMatchStages {...props} />);
+
+    expect(screen.getByTestId('batting-approach')).toHaveTextContent('balanced');
+    fireEvent.click(screen.getByRole('button', { name: 'Change batting approach' }));
+    expect(props.setBattingTactics).toHaveBeenCalledWith({ approach: 'attack' });
   });
 
   test('labels match-result actions by match mode and wires scoreboard and MOM behavior', () => {

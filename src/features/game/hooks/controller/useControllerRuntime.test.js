@@ -86,6 +86,7 @@ describe('useControllerRuntime', () => {
     };
     const actions = {
       setBattingIntentAction: jest.fn((value) => ({ type: 'bat', payload: value })),
+      setBattingTacticsAction: jest.fn((value) => ({ type: 'batting-tactics', payload: value })),
       setBowlingIntentAction: jest.fn((value) => ({ type: 'bowl', payload: value })),
     };
 
@@ -102,11 +103,13 @@ describe('useControllerRuntime', () => {
     runtime.setBattingIntent('missing');
     runtime.setBattingIntent('blocked');
     runtime.setBattingIntent('attack');
+    runtime.setBattingTactics({ approach: 'attack' });
     runtime.setBowlingIntent('missing');
     runtime.setBowlingIntent('blocked');
     runtime.setBowlingIntent('spin');
     expect(dispatch.mock.calls.map(([action]) => action)).toEqual([
       { type: 'bat', payload: 'attack' },
+      { type: 'batting-tactics', payload: { approach: 'attack' } },
       { type: 'bowl', payload: 'spin' },
     ]);
 
@@ -116,11 +119,20 @@ describe('useControllerRuntime', () => {
     base.secondInningsView.isUserBowling = true;
     base.firstInningsView.bowlingActionOptions = [{ key: 'pace' }];
     runtime.setBattingIntent('defend');
+    runtime.setBattingTactics({ approach: 'defend' });
     runtime.setBowlingIntent('pace');
     base.isCurrentMatchUserInvolved = false;
     runtime.setBattingIntent('defend');
+    runtime.setBattingTactics({ approach: 'defend' });
     runtime.setBowlingIntent('pace');
-    expect(dispatch.mock.calls.map(([action]) => action.payload)).toEqual(['attack', 'spin', 'defend', 'pace']);
+    expect(dispatch.mock.calls.map(([action]) => action.payload)).toEqual([
+      'attack',
+      { approach: 'attack' },
+      'spin',
+      'defend',
+      { approach: 'defend' },
+      'pace',
+    ]);
 
     expect(runtime.buildTeamOneScorecard()).toEqual({
       currentInnings: { title: 'Falcons Innings' },

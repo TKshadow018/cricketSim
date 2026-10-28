@@ -9,6 +9,8 @@ import {
 import { processDelivery as processDeliveryHelper } from "./controllerDeliveryEngine";
 import { buildInningsViewModel as buildInningsViewModelHelper } from "./controllerInningsViewModel";
 import { matchStatusEnum } from "../../../../gameData/matchStatusEnum";
+import { DEFAULT_BATTING_TACTICS } from "../../utils/battingTactics";
+import { DEFAULT_BOWLING_TACTICS } from "../../utils/bowlingTactics";
 
 export function buildControllerInningsActions({
   firstBattingSide,
@@ -31,14 +33,18 @@ export function buildControllerInningsActions({
   setStageAction,
   maxBalls,
   battingIntent,
+  battingTactics,
   bowlingIntent,
+  bowlingTactics,
   ownSanitizedRoles,
   opponentSanitizedRoles,
   matchCondition,
   matchTypeKey,
   locationCountry,
   setBattingIntentAction,
+  setBattingTacticsAction,
   setBowlingIntentAction,
+  setBowlingTacticsAction,
 }) {
 const getInningsContext = (isFirstInnings, firstSide = firstBattingSide, inningStateOverride = null) =>
     getInningsContextHelper({
@@ -70,8 +76,10 @@ const updateInningsState = (isFirstInnings, updater) =>
       updater,
     });
 
-const openInnings = (firstSide = firstBattingSide) =>
-    openInningsHelper({
+const openInnings = (firstSide = firstBattingSide) => {
+    dispatch(setBattingTacticsAction(DEFAULT_BATTING_TACTICS));
+    dispatch(setBowlingTacticsAction(DEFAULT_BOWLING_TACTICS));
+    return openInningsHelper({
       firstSide,
       firstBattingSide,
       getContext: getInningsContext,
@@ -84,6 +92,7 @@ const openInnings = (firstSide = firstBattingSide) =>
       setStageAction,
       matchStatusEnum,
     });
+  };
 
 const handleSelectOpener = (isFirstInnings, selectedIndex) =>
     handleSelectOpenerHelper({
@@ -119,7 +128,9 @@ const processDelivery = (isFirstInnings) =>
       matchType,
       maxBalls,
       battingIntent,
+      battingTactics,
       bowlingIntent,
+      bowlingTactics,
       ownSanitizedRoles,
       opponentSanitizedRoles,
       ownTeam,
@@ -129,7 +140,9 @@ const processDelivery = (isFirstInnings) =>
       locationCountry,
       dispatch,
       setBattingIntentAction,
+      setBattingTacticsAction,
       setBowlingIntentAction,
+      setBowlingTacticsAction,
       setFirstInnings,
       setSecondInnings,
       firstInningsScore: firstInnings.score,

@@ -102,8 +102,13 @@ The simulator progresses through these stages:
 
 ### During Innings
 
-- **Batting Intent** (when your side is batting): Defend, Normal, Hit Big, Super Shot, Free Hit (when armed).
-- **Bowling Intent** (when your side is bowling): Normal, Wicket Ball, Save Run, Special Ball.
+- **Batting tactics** (when your side is batting): set a persistent Defend, Balanced, or Attack approach; choose a shot intent and target sector for the next ball.
+- Shot and target calls reset after a delivery by default. Enable **Keep shot & target for next ball** to retain them; a new batter or free-hit situation always gets a fresh call.
+- **Super Shot** and **Free Hit** remain contextual actions and follow their existing ability, credit, and dismissal rules.
+- **Bowling Plan** (when your side is bowling): choose Balanced, Attack, Build Pressure, or Protect Boundaries.
+- Set a field preset and call line, length, and a bowler-compatible variation for the next ball.
+- Arm a Special Delivery explicitly; the cockpit shows eligibility, remaining credits, and over use.
+- Use the over ball tracker to review legal deliveries and extras alongside the selected plan.
 - **Play Next Ball** advances simulation one delivery.
 - **Choose Openers / Next Batsman / Next Bowler** appears contextually when required.
 - **Show/Hide Scoreboard** toggles detailed innings tables.

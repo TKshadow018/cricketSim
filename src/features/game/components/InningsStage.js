@@ -1,7 +1,10 @@
 import React from 'react';
 import AppButton from '../../../components/ui/AppButton';
+import { battingAction } from '../../../gameData/actionType';
 import PlayerNameWithType from './PlayerNameWithType';
 import ScoreboardModal from './ScoreboardModal';
+import BattingTacticsPanel from './BattingTacticsPanel';
+import BowlingTacticsPanel from './BowlingTacticsPanel';
 
 const splitCommentaryLine = (line = '') => {
   const match = line.match(/^(\d+\.\d+)\s+(.*)$/);
@@ -39,9 +42,15 @@ function InningsStage({
   battingActions,
   bowlingActions,
   battingIntent,
+  battingTactics,
+  battingContext,
   bowlingIntent,
+  bowlingTactics,
+  bowlingContext,
   onBattingIntent,
+  onBattingTacticsChange,
   onBowlingIntent,
+  onBowlingTacticsChange,
   onBowlBall,
   onSaveGame,
   isSavingGame,
@@ -122,7 +131,17 @@ function InningsStage({
   };
 
   const safeOnBattingIntent = typeof onBattingIntent === 'function' ? onBattingIntent : () => {};
+  const safeOnBattingTacticsChange =
+    typeof onBattingTacticsChange === 'function' ? onBattingTacticsChange : () => {};
   const safeOnBowlingIntent = typeof onBowlingIntent === 'function' ? onBowlingIntent : () => {};
+  const safeOnBowlingTacticsChange =
+    typeof onBowlingTacticsChange === 'function' ? onBowlingTacticsChange : () => {};
+  const showBowlingCockpit = Boolean(
+    isUserBowling && bowlingTactics && !waitingForNextBowler && !waitingForNextBatter
+  );
+  const showBattingCockpit = Boolean(
+    isUserBatting && battingTactics && !needsOpeners && !waitingForNextBatter
+  );
 
   return (
     <>
@@ -137,42 +156,62 @@ function InningsStage({
         <div className="sim-score-pill">{score}/{wickets}</div>
       </div>
       <p className="sim-subtitle">{subtitle}</p>
-      <div className="sim-innings-layout">
+      <div className={`sim-innings-layout ${showBowlingCockpit ? 'sim-innings-layout--bowling' : ''} ${showBattingCockpit ? 'sim-innings-layout--batting' : ''}`}>
         <div className='sim-match-action-layout'>
           <p className="sim-event-line">{lastEvent}</p>
 
           {strikerName || nonStrikerName || currentBowlerName ? (
+            (isUserBowling && bowlingTactics) || (isUserBatting && battingTactics) ? null : (
             <div className="sim-player-strip">
               {strikerName ? <p>Striker: <PlayerNameWithType player={strikerPlayer} name={strikerName} /></p> : null}
               {nonStrikerName ? <p>Non-Striker: <PlayerNameWithType player={nonStrikerPlayer} name={nonStrikerName} /></p> : null}
               {currentBowlerName ? <p>Bowler: <PlayerNameWithType player={currentBowlerPlayer} name={currentBowlerName} /></p> : null}
             </div>
+            )
           ) : null}
 
           {isUserBatting && !needsOpeners && !waitingForNextBowler && !waitingForNextBatter ? (
-            <>
-              <p className="sim-section-title">Batting Intent</p>
-              <div className="sim-intent-grid">
-                {battingActions.map((action) => (
-                  <button
-                    key={action.key}
-                    type="button"
-                    aria-pressed={battingIntent === action.key}
-                    aria-label={action.reason ? `${action.label}. ${action.reason}` : undefined}
-                    className={`sim-intent-btn ${battingIntent === action.key ? 'active' : ''} ${action.disabled ? 'disabled' : ''}`}
-                    onClick={() => safeOnBattingIntent(action.key)}
-                    disabled={action.disabled}
-                    title={action.reason || ''}
-                  >
-                    <span>{action.label}</span>
-                    {action.reason ? <small>{action.reason}</small> : null}
-                  </button>
-                ))}
-              </div>
-            </>
+            battingTactics ? (
+              <BattingTacticsPanel
+                tactics={battingTactics}
+                context={battingContext}
+                actions={battingActions}
+                intent={battingIntent}
+                onTacticsChange={safeOnBattingTacticsChange}
+                onIntentChange={safeOnBattingIntent}
+              />
+            ) : (
+              <>
+                <p className="sim-section-title">Batting Intent</p>
+                <div className="sim-intent-grid">
+                  {battingActions.map((action) => (
+                    <button
+                      key={action.key}
+                      type="button"
+                      aria-pressed={battingIntent === action.key}
+                      aria-label={action.reason ? `${action.label}. ${action.reason}` : undefined}
+                      className={`sim-intent-btn ${battingIntent === action.key ? 'active' : ''} ${action.disabled ? 'disabled' : ''}`}
+                      onClick={() => safeOnBattingIntent(action.key)}
+                      disabled={action.disabled}
+                      title={action.reason || ''}
+                    >
+                      <span>{action.label}</span>
+                      {action.reason ? <small>{action.reason}</small> : null}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )
           ) : null}
 
           {isUserBowling && !waitingForNextBowler && !waitingForNextBatter ? (
+            bowlingTactics ? (
+              <BowlingTacticsPanel
+                tactics={bowlingTactics}
+                context={bowlingContext}
+                onTacticsChange={safeOnBowlingTacticsChange}
+              />
+            ) : (
             <>
               <p className="sim-section-title">Bowling Intent</p>
               <div className="sim-intent-grid">
@@ -193,6 +232,7 @@ function InningsStage({
                 ))}
               </div>
             </>
+            )
           ) : null}
 
           {needsOpeners ? (
@@ -258,7 +298,17 @@ function InningsStage({
 
           <div className="sim-innings-action">
             <AppButton
-              text={isAutoSimulating ? 'Simulating...' : 'Play Next Ball'}
+              text={
+                isAutoSimulating
+                  ? 'Simulating...'
+                  : isUserBowling && bowlingTactics?.specialDeliveryArmed
+                    ? 'Play Special Delivery'
+                    : isUserBatting && battingIntent === battingAction.superShot
+                      ? 'Play Super Shot'
+                      : isUserBatting && battingContext?.freeHitArmed
+                        ? 'Play Free Hit'
+                        : 'Play Next Ball'
+              }
               onClick={onBowlBall}
               fullWidth={false}
               disabled={!canPlayNextBall || isAutoSimulating}

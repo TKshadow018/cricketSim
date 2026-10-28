@@ -3,6 +3,8 @@ import { outfieldType, pitchType, weather } from '../../gameData/matchCondition'
 import { battingAction, bowlingAction } from '../../gameData/actionType';
 
 import { matchStatusEnum } from '../../gameData/matchStatusEnum';
+import { DEFAULT_BATTING_TACTICS } from './utils/battingTactics';
+import { DEFAULT_BOWLING_TACTICS } from './utils/bowlingTactics';
 
 const randomKey = (obj) => Object.keys(obj)[Math.floor(Math.random() * Object.keys(obj).length)];
 
@@ -27,6 +29,7 @@ export const buildInitialInnings = () => ({
   waitingForNextBowler: false,
   battingStats: [],
   bowlingStats: [],
+  ballHistory: [],
   freeHitArmed: false,
   superShotUsedInOver: 0,
   superShotUsedMatch: 0,
@@ -106,7 +109,9 @@ export const initialState = {
   firstBattingSide: '',
   matchCondition: buildEmptyMatchCondition(),
   battingIntent: battingAction.normal,
+  battingTactics: { ...DEFAULT_BATTING_TACTICS },
   bowlingIntent: bowlingAction.normal,
+  bowlingTactics: { ...DEFAULT_BOWLING_TACTICS },
   firstInnings: buildInitialInnings(),
   secondInnings: buildInitialInnings(),
   showScoreboard: false,

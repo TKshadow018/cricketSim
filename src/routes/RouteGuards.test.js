@@ -52,9 +52,9 @@ describe('route guards', () => {
     useSelector.mockImplementation((selector) => selector({ auth: mockAuthState }));
   });
 
-  test('allows protected content during debug bypass or for a signed-in user', () => {
+  test('allows protected content for a signed-in debug or regular user', () => {
     mockDebugAuthBypassEnabled = true;
-    mockAuthState.isSessionLoading = true;
+    mockAuthState = { user: { uid: 'debug-local-user' }, isSessionLoading: false };
     const { unmount } = renderProtectedRoute();
     expect(screen.getByText('Protected content')).toBeInTheDocument();
 
@@ -63,6 +63,15 @@ describe('route guards', () => {
     mockAuthState = { user: { uid: 'player' }, isSessionLoading: false };
     renderProtectedRoute();
     expect(screen.getByText('Protected content')).toBeInTheDocument();
+  });
+
+  test('redirects a signed-out debug session to login', () => {
+    mockDebugAuthBypassEnabled = true;
+    mockAuthState = { user: null, isSessionLoading: false };
+
+    renderProtectedRoute();
+
+    expect(screen.getByText('Login page')).toBeInTheDocument();
   });
 
   test('shows a loading message and redirects signed-out users from protected content', () => {
@@ -76,8 +85,9 @@ describe('route guards', () => {
     expect(screen.getByText('Login page')).toBeInTheDocument();
   });
 
-  test('redirects signed-in users or debug sessions away from public pages', () => {
+  test('redirects signed-in debug or regular users away from public pages', () => {
     mockDebugAuthBypassEnabled = true;
+    mockAuthState = { user: { uid: 'debug-local-user' }, isSessionLoading: false };
     const { unmount } = renderPublicRoute();
     expect(screen.getByText('Dashboard page')).toBeInTheDocument();
 
@@ -86,6 +96,15 @@ describe('route guards', () => {
     mockAuthState = { user: { uid: 'player' }, isSessionLoading: false };
     renderPublicRoute();
     expect(screen.getByText('Dashboard page')).toBeInTheDocument();
+  });
+
+  test('allows a signed-out debug session to access public pages', () => {
+    mockDebugAuthBypassEnabled = true;
+    mockAuthState = { user: null, isSessionLoading: false };
+
+    renderPublicRoute();
+
+    expect(screen.getByText('Public content')).toBeInTheDocument();
   });
 
   test('shows a loading message and allows signed-out users on public pages', () => {

@@ -68,6 +68,7 @@ const makeProps = (overrides = {}) => ({
   dispatch: jest.fn(),
   setBattingIntentAction: jest.fn((payload) => ({ type: 'batting-intent', payload })),
   setBowlingIntentAction: jest.fn((payload) => ({ type: 'bowling-intent', payload })),
+  setBowlingTacticsAction: jest.fn((payload) => ({ type: 'bowling-tactics', payload })),
   setFirstInnings: jest.fn(),
   setSecondInnings: jest.fn(),
   firstInningsScore: 100,
@@ -286,5 +287,80 @@ describe('processDelivery guards and bowler selection', () => {
     expect(resolveOutcome).toHaveBeenCalledWith(expect.objectContaining({ bowler: bowlingSide[0] }));
     expect(props.setFirstInnings).toHaveBeenCalled();
     random.mockRestore();
+  });
+
+  test('passes the pending bowling call to resolution, records the delivery, and consumes special once', () => {
+    const bowlingTactics = {
+      overPlan: 'attack',
+      fieldPreset: 'attacking',
+      line: 'outside',
+      length: 'yorker',
+      variation: 'slower',
+      specialDeliveryArmed: true,
+    };
+    const props = makeProps({
+      bowlingIntent: bowlingAction.normal,
+      bowlingTactics,
+      getContext: jest.fn(() => ({
+        isOwnBatting: false,
+        isUserBatting: false,
+        isUserBowling: true,
+        battingSide,
+        bowlingSide,
+      })),
+    });
+
+    processDelivery(props);
+
+    expect(resolveOutcome).toHaveBeenCalledWith(expect.objectContaining({
+      bowlingTactics: expect.objectContaining(bowlingTactics),
+      isUserBowling: true,
+    }));
+    expect(props.dispatch).toHaveBeenCalledWith({
+      type: 'bowling-tactics',
+      payload: { specialDeliveryArmed: false },
+    });
+    expect(props.setFirstInnings.mock.calls[0][0].ballHistory).toEqual([
+      expect.objectContaining({
+        overNumber: 1,
+        ballNumber: 1,
+        token: '1',
+        bowler: 'Bowler 0',
+        striker: 'Batter 0',
+        tactics: {
+          overPlan: 'attack',
+          fieldPreset: 'attacking',
+          line: 'outside',
+          length: 'yorker',
+          variation: 'slower',
+        },
+        specialDelivery: true,
+      }),
+    ]);
+  });
+
+  test('passes batting tactics to resolution, records the shot, and resets one-ball choices', () => {
+    const battingTactics = {
+      approach: 'attack',
+      shot: 'loft',
+      target: 'leg',
+      retainShotAndTarget: false,
+    };
+    const props = makeProps({
+      battingTactics,
+      setBattingTacticsAction: jest.fn((payload) => ({ type: 'batting-tactics', payload })),
+    });
+
+    processDelivery(props);
+
+    expect(resolveOutcome).toHaveBeenCalledWith(expect.objectContaining({ battingTactics }));
+    expect(props.setFirstInnings.mock.calls[0][0].ballHistory[0]).toMatchObject({
+      battingTactics: { approach: 'attack', shot: 'loft', target: 'leg' },
+      specialShot: false,
+    });
+    expect(props.dispatch).toHaveBeenCalledWith({
+      type: 'batting-tactics',
+      payload: { shot: 'rotate', target: 'straight' },
+    });
   });
 });

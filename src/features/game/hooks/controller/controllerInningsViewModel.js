@@ -36,6 +36,69 @@ export const buildInningsViewModel = ({
     bowler: currentBowler,
     inningState,
   });
+  const currentBowlerStat =
+    currentBowler && Array.isArray(inningState.bowlingStats)
+      ? inningState.bowlingStats[inningState.currentBowlerIndex] || {}
+      : {};
+  const currentBowlerBalls = Number(currentBowlerStat.balls) || 0;
+  const oversRemainingBalls = Math.max(0, maxOversPerBowler * 6 - currentBowlerBalls);
+  const currentOverNumber = Math.floor((Number(inningState.balls) || 0) / 6) + 1;
+  const currentOverBall = (Number(inningState.balls) || 0) % 6;
+  const strikerStat =
+    inningState.strikerIndex === null || inningState.strikerIndex === undefined
+      ? {}
+      : inningState.battingStats?.[inningState.strikerIndex] || {};
+  const nonStrikerStat =
+    inningState.nonStrikerIndex === null || inningState.nonStrikerIndex === undefined
+      ? {}
+      : inningState.battingStats?.[inningState.nonStrikerIndex] || {};
+  const specialDeliveriesRemaining = Math.max(
+    0,
+    3 + (Number(inningState.specialBallBonus) || 0) - (Number(inningState.specialBallUsedMatch) || 0)
+  );
+  const currentOverEvents = (Array.isArray(inningState.ballHistory) ? inningState.ballHistory : [])
+    .filter((event) => event?.overNumber === currentOverNumber);
+  const bowlingContext = {
+    score: Number(inningState.score) || 0,
+    wickets: Number(inningState.wickets) || 0,
+    balls: Number(inningState.balls) || 0,
+    currentOverNumber,
+    currentOverBall,
+    bowler: currentBowler,
+    bowlerFigures: {
+      overs: `${Math.floor(currentBowlerBalls / 6)}.${currentBowlerBalls % 6}`,
+      runs: Number(currentBowlerStat.runsConceded) || 0,
+      wickets: Number(currentBowlerStat.wickets) || 0,
+      economy: currentBowlerBalls > 0
+        ? (Number(currentBowlerStat.runsConceded || 0) / (currentBowlerBalls / 6)).toFixed(2)
+        : '0.00',
+      oversRemaining: `${Math.floor(oversRemainingBalls / 6)}.${oversRemainingBalls % 6}`,
+      oversLimit: maxOversPerBowler,
+    },
+    striker: {
+      player: striker,
+      runs: Number(strikerStat.runs) || 0,
+      balls: Number(strikerStat.balls) || 0,
+    },
+    nonStriker: {
+      player: inningState.nonStrikerIndex === null || inningState.nonStrikerIndex === undefined
+        ? null
+        : battingSide[inningState.nonStrikerIndex] || null,
+      runs: Number(nonStrikerStat.runs) || 0,
+      balls: Number(nonStrikerStat.balls) || 0,
+    },
+    specialDelivery: {
+      remaining: specialDeliveriesRemaining,
+      usedThisOver: Number(inningState.specialBallUsedInOver) || 0,
+      available: canUseCurrentSpecialBall,
+    },
+    currentOverEvents,
+  };
+  const battingContext = {
+    ...bowlingContext,
+    freeHitArmed: Boolean(inningState.freeHitArmed),
+    superShotUsedInOver: Number(inningState.superShotUsedInOver) || 0,
+  };
 
   const battingActionOptions = battingActionList.map((action) => {
     if (action.key === battingAction.freeHit) {
@@ -199,6 +262,8 @@ export const buildInningsViewModel = ({
     bowlerCandidates,
     battingActionOptions,
     bowlingActionOptions,
+    battingContext,
+    bowlingContext,
     battingRows,
     bowlingRows,
     strikerName: inningState.strikerIndex === null ? '' : battingSide[inningState.strikerIndex]?.name || '',

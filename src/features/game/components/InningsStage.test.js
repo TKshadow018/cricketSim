@@ -1,6 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import InningsStage from './InningsStage';
+import { battingAction } from '../../../gameData/actionType';
 
 jest.mock('../../../components/ui/AppButton', () => ({
   __esModule: true,
@@ -53,8 +54,14 @@ const makeProps = (overrides = {}) => ({
   ],
   battingIntent: 'normal',
   bowlingIntent: 'pace',
+  battingTactics: undefined,
+  battingContext: undefined,
+  bowlingTactics: undefined,
+  bowlingContext: undefined,
   onBattingIntent: jest.fn(),
+  onBattingTacticsChange: jest.fn(),
   onBowlingIntent: jest.fn(),
+  onBowlingTacticsChange: jest.fn(),
   onBowlBall: jest.fn(),
   onSaveGame: jest.fn(),
   isSavingGame: false,
@@ -202,6 +209,114 @@ describe('InningsStage', () => {
     expect(screen.queryByText('Batting Intent')).not.toBeInTheDocument();
     rerender(<InningsStage {...props} strikerName="" nonStrikerName="" currentBowlerName="" />);
     expect(document.querySelector('.sim-player-strip')).not.toBeInTheDocument();
+  });
+
+  test('shows the batting cockpit in place of legacy intents when tactical state is present', () => {
+    const props = makeProps({
+      battingActions: [
+        { key: battingAction.superShot, label: 'Super Shot', disabled: false, reason: '' },
+        { key: battingAction.freeHit, label: 'Free Hit', disabled: true, reason: 'Available only after a no-ball' },
+      ],
+      battingTactics: {
+        approach: 'balanced',
+        shot: 'rotate',
+        target: 'straight',
+        retainShotAndTarget: false,
+      },
+      battingContext: {
+        score: 30,
+        wickets: 1,
+        over: '5.0',
+        currentOverNumber: 6,
+        currentOverBall: 0,
+        striker: { player: { name: 'Striker' }, runs: 18, balls: 13 },
+        nonStriker: { player: { name: 'Partner' }, runs: 7, balls: 9 },
+        bowler: { name: 'Bowler', paceAbility: 80, spinAbility: 20 },
+        bowlerFigures: { overs: '2.0', runs: 12, wickets: 1, economy: '6.00' },
+        freeHitArmed: false,
+        currentOverEvents: [],
+      },
+      bowlingActions: [],
+    });
+
+    const { rerender } = render(<InningsStage {...props} />);
+
+    expect(screen.getByRole('region', { name: 'Batting tactics' })).toBeInTheDocument();
+    expect(document.querySelector('.sim-innings-layout--batting')).toBeInTheDocument();
+    expect(screen.queryByText('Batting Intent')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Attack' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Drive' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Super Shot' }));
+
+    expect(props.onBattingTacticsChange).toHaveBeenNthCalledWith(1, { approach: 'attack' });
+    expect(props.onBattingTacticsChange).toHaveBeenNthCalledWith(2, { shot: 'drive' });
+    expect(props.onBattingIntent).toHaveBeenCalledWith(battingAction.superShot);
+    rerender(<InningsStage {...props} battingIntent={battingAction.superShot} />);
+    expect(screen.getByRole('button', { name: 'Play Super Shot' })).toBeEnabled();
+  });
+
+  test('shows the bowling cockpit instead of legacy intents when tactical state is present', () => {
+    const props = makeProps({
+      isUserBatting: false,
+      isUserBowling: true,
+      battingActions: [],
+      bowlingTactics: {
+        overPlan: 'balanced',
+        fieldPreset: 'balanced',
+        line: 'stumps',
+        length: 'good',
+        variation: 'stock',
+        specialDeliveryArmed: false,
+      },
+      bowlingContext: {
+        score: 42,
+        wickets: 1,
+        over: '5.2',
+        currentOverNumber: 6,
+        currentOverBall: 3,
+        bowler: { name: 'Current Bowler', paceAbility: 80, spinAbility: 25 },
+        bowlerFigures: { overs: '2.0', runs: 16, wickets: 1, economy: '8.00', oversRemaining: '2.0' },
+        striker: { player: { name: 'Striker' }, runs: 29, balls: 60 },
+        nonStriker: { player: { name: 'Partner' }, runs: 10, balls: 11 },
+        specialDelivery: { available: true, remaining: 2, usedThisOver: 0 },
+        currentOverEvents: [],
+        matchCondition: { pitch: 'sporting', weather: 'cloudy', outfield: 'lushGreen' },
+      },
+    });
+
+    render(<InningsStage {...props} />);
+
+    expect(screen.getByRole('region', { name: 'Bowling tactics' })).toBeInTheDocument();
+    expect(document.querySelector('.sim-innings-layout--bowling')).toBeInTheDocument();
+    expect(screen.queryByText('Bowling Intent')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Attack' }));
+    expect(props.onBowlingTacticsChange).toHaveBeenCalledWith({ overPlan: 'attack' });
+  });
+
+  test('labels the primary action when a special delivery is armed', () => {
+    render(<InningsStage {...makeProps({
+      isUserBatting: false,
+      isUserBowling: true,
+      battingActions: [],
+      bowlingTactics: {
+        overPlan: 'balanced',
+        fieldPreset: 'balanced',
+        line: 'stumps',
+        length: 'good',
+        variation: 'stock',
+        specialDeliveryArmed: true,
+      },
+      bowlingContext: {
+        bowler: { name: 'Bowler', paceAbility: 80, spinAbility: 20 },
+        bowlerFigures: {},
+        striker: {},
+        nonStriker: {},
+        specialDelivery: { available: true, remaining: 2, usedThisOver: 0 },
+        currentOverEvents: [],
+      },
+    })} />);
+
+    expect(screen.getByRole('button', { name: 'Play Special Delivery' })).toBeEnabled();
   });
 
   test('renders a partial player strip and safely ignores missing batting intent callbacks', () => {

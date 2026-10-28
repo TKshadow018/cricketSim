@@ -1,6 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { battingAction, bowlingAction } from '../../gameData/actionType';
 import { matchStatusEnum } from '../../gameData/matchStatusEnum';
+import {
+  DEFAULT_BATTING_TACTICS,
+  mergeBattingTactics,
+  migrateLegacyBattingTactics,
+  normalizeBattingTactics,
+} from './utils/battingTactics';
+import {
+  DEFAULT_BOWLING_TACTICS,
+  getLegacyBowlingIntent,
+  mergeBowlingTactics,
+  migrateLegacyBowlingTactics,
+  normalizeBowlingTactics,
+} from './utils/bowlingTactics';
 
 import { buildInitialInnings, buildEmptyMatchCondition, initialState } from "./gameState";
 export { buildInitialInnings, buildRandomMatchCondition, buildEmptyMatchCondition } from "./gameState";
@@ -181,8 +194,20 @@ const gameSlice = createSlice({
     setBattingIntent: (state, action) => {
       state.battingIntent = action.payload;
     },
+    setBattingTactics: (state, action) => {
+      state.battingTactics = mergeBattingTactics(state.battingTactics, action.payload);
+    },
     setBowlingIntent: (state, action) => {
       state.bowlingIntent = action.payload;
+      const legacyTactics = migrateLegacyBowlingTactics(action.payload);
+      state.bowlingTactics = mergeBowlingTactics(state.bowlingTactics, {
+        overPlan: legacyTactics.overPlan,
+        specialDeliveryArmed: action.payload === bowlingAction.specialBowl,
+      });
+    },
+    setBowlingTactics: (state, action) => {
+      state.bowlingTactics = mergeBowlingTactics(state.bowlingTactics, action.payload);
+      state.bowlingIntent = getLegacyBowlingIntent(state.bowlingTactics.overPlan);
     },
     setFirstInnings: (state, action) => {
       state.firstInnings = action.payload;
@@ -204,11 +229,26 @@ const gameSlice = createSlice({
         hasLegacyNoXI && Number.isInteger(stageValue) && stageValue >= 9 && stageValue <= 11
           ? stageValue + 2
           : stageValue;
+      const bowlingTactics = payload.bowlingTactics && typeof payload.bowlingTactics === 'object'
+        ? normalizeBowlingTactics(payload.bowlingTactics)
+        : migrateLegacyBowlingTactics(payload.bowlingIntent);
+      const hasBattingTactics =
+        payload.battingTactics && typeof payload.battingTactics === 'object' && !Array.isArray(payload.battingTactics);
+      const battingTactics = hasBattingTactics
+        ? normalizeBattingTactics(payload.battingTactics)
+        : migrateLegacyBattingTactics(payload.battingIntent);
+      const battingIntent = hasBattingTactics || [battingAction.superShot, battingAction.freeHit].includes(payload.battingIntent)
+        ? payload.battingIntent ?? state.battingIntent
+        : battingAction.normal;
       return {
         ...state,
         ...payload,
         stage: migratedStage ?? state.stage,
         gameMode: payload.gameMode || state.gameMode,
+        battingTactics,
+        battingIntent,
+        bowlingTactics,
+        bowlingIntent: getLegacyBowlingIntent(bowlingTactics.overPlan),
         seriesLength: Number(payload.seriesLength) > 0 ? Number(payload.seriesLength) : state.seriesLength,
         seriesCurrentMatch:
           Number(payload.seriesCurrentMatch) > 0 ? Number(payload.seriesCurrentMatch) : state.seriesCurrentMatch,
@@ -333,7 +373,9 @@ const gameSlice = createSlice({
       };
       state.matchCondition = buildEmptyMatchCondition();
       state.battingIntent = battingAction.normal;
+      state.battingTactics = { ...DEFAULT_BATTING_TACTICS };
       state.bowlingIntent = bowlingAction.normal;
+      state.bowlingTactics = { ...DEFAULT_BOWLING_TACTICS };
       state.firstInnings = buildInitialInnings();
       state.secondInnings = buildInitialInnings();
       state.showScoreboard = false;
@@ -382,7 +424,9 @@ const gameSlice = createSlice({
       };
       state.matchCondition = buildEmptyMatchCondition();
       state.battingIntent = battingAction.normal;
+      state.battingTactics = { ...DEFAULT_BATTING_TACTICS };
       state.bowlingIntent = bowlingAction.normal;
+      state.bowlingTactics = { ...DEFAULT_BOWLING_TACTICS };
       state.firstInnings = buildInitialInnings();
       state.secondInnings = buildInitialInnings();
       state.showScoreboard = false;
@@ -423,7 +467,9 @@ export const {
   setFirstBattingSide,
   setMatchCondition,
   setBattingIntent,
+  setBattingTactics,
   setBowlingIntent,
+  setBowlingTactics,
   setFirstInnings,
   setSecondInnings,
   setShowScoreboard,

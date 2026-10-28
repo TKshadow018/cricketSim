@@ -112,7 +112,21 @@ const makeGame = (overrides = {}) => ({
   firstBattingSide: 'own',
   matchCondition: { weather: 'sunny', pitch: 'sporting', outfield: 'lushGreen' },
   battingIntent: 'normal',
+  battingTactics: {
+    approach: 'balanced',
+    shot: 'rotate',
+    target: 'straight',
+    retainShotAndTarget: false,
+  },
   bowlingIntent: 'normal',
+  bowlingTactics: {
+    overPlan: 'balanced',
+    fieldPreset: 'balanced',
+    line: 'stumps',
+    length: 'good',
+    variation: 'stock',
+    specialDeliveryArmed: false,
+  },
   firstInnings: { score: 100, wickets: 3, balls: 120 },
   secondInnings: { score: 101, wickets: 4, balls: 118 },
   showScoreboard: false,
@@ -134,7 +148,9 @@ const makeNavigation = () => ({
 const makeRuntime = () => ({
   matchPrimaryAction: jest.fn(),
   setBattingIntent: jest.fn(),
+  setBattingTactics: jest.fn(),
   setBowlingIntent: jest.fn(),
+  setBowlingTactics: jest.fn(),
   autoPickOwnXI: jest.fn(),
   autoPickOpponentXI: jest.fn(),
   moveOwnPlayerInBattingOrder: jest.fn(),
@@ -302,7 +318,9 @@ describe('useCricketSimulatorController', () => {
 
     controller.matchPrimaryAction();
     controller.setBattingIntent('aggressive');
+    controller.setBattingTactics({ shot: 'drive' });
     controller.setBowlingIntent('spin');
+    controller.setBowlingTactics({ overPlan: 'attack' });
     controller.autoPickOwnXI();
     controller.autoPickOpponentXI();
     controller.startMatchWithSelectedXI();
@@ -313,7 +331,9 @@ describe('useCricketSimulatorController', () => {
     controller.deleteSavedGame({ id: 'save' });
     expect(mockRuntime.matchPrimaryAction).toHaveBeenCalled();
     expect(mockRuntime.setBattingIntent).toHaveBeenCalledWith('aggressive');
+    expect(mockRuntime.setBattingTactics).toHaveBeenCalledWith({ shot: 'drive' });
     expect(mockRuntime.setBowlingIntent).toHaveBeenCalledWith('spin');
+    expect(mockRuntime.setBowlingTactics).toHaveBeenCalledWith({ overPlan: 'attack' });
     expect(mockRuntime.autoPickOwnXI).toHaveBeenCalled();
     expect(mockRuntime.autoPickOpponentXI).toHaveBeenCalled();
     expect(mockRuntime.startMatchWithSelectedXI).toHaveBeenCalled();

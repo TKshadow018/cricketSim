@@ -1,5 +1,7 @@
 import { battingAction, bowlingAction } from '../../../gameData/actionType';
 import { outfieldType, pitchType } from '../../../gameData/matchCondition';
+import { getBattingTacticShift } from './battingTactics';
+import { getBowlingTacticShift } from './bowlingTactics';
 
 const baseMatchWeights = {
   micro: { 0: 10, 1: 20, 2: 20, 3: 3, 4: 20, 6: 15, wide: 1, nb: 1, W: 10 },
@@ -83,7 +85,9 @@ export const resolveOutcome = ({
   matchType,
   matchTypeKey,
   battingIntent,
+  battingTactics,
   bowlingIntent,
+  bowlingTactics,
   locationCountry,
 }) => {
   const outcomes = ['0', '1', '2', '3', '4', '6', 'wide', 'nb', 'W'];
@@ -188,10 +192,26 @@ export const resolveOutcome = ({
   }
 
   if (isUserBatting) {
-    applyDelta(weights, battingIntentShift[appliedBattingIntent]);
+    if (battingTactics && typeof battingTactics === 'object') {
+      applyDelta(weights, getBattingTacticShift(battingTactics, bowlingTactics));
+      if (appliedBattingIntent === battingAction.superShot) {
+        applyDelta(weights, battingIntentShift[battingAction.superShot]);
+      } else if (appliedBattingIntent !== battingAction.normal && appliedBattingIntent !== battingAction.freeHit) {
+        applyDelta(weights, battingIntentShift[appliedBattingIntent]);
+      }
+    } else {
+      applyDelta(weights, battingIntentShift[appliedBattingIntent]);
+    }
   }
   if (isUserBowling) {
-    applyDelta(weights, bowlingIntentShift[appliedBowlingIntent]);
+    if (bowlingTactics && typeof bowlingTactics === 'object') {
+      applyDelta(weights, getBowlingTacticShift(bowlingTactics, bowler));
+      if (bowlingTactics.specialDeliveryArmed) {
+        applyDelta(weights, bowlingIntentShift[bowlingAction.specialBowl]);
+      }
+    } else {
+      applyDelta(weights, bowlingIntentShift[appliedBowlingIntent]);
+    }
   }
 
   const normalized = {};

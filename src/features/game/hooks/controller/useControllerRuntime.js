@@ -80,6 +80,14 @@ export const useControllerRuntime = ({
     dispatch(actions.setBattingIntentAction(value));
   };
 
+  const handleSetBattingTactics = (patch) => {
+    if (!base.isCurrentMatchUserInvolved || typeof actions.setBattingTacticsAction !== 'function') {
+      return;
+    }
+
+    dispatch(actions.setBattingTacticsAction(patch));
+  };
+
   const handleSetBowlingIntent = (value) => {
     if (!base.isCurrentMatchUserInvolved) {
       return;
@@ -92,6 +100,14 @@ export const useControllerRuntime = ({
     }
 
     dispatch(actions.setBowlingIntentAction(value));
+  };
+
+  const handleSetBowlingTactics = (patch) => {
+    if (!base.isCurrentMatchUserInvolved || typeof actions.setBowlingTacticsAction !== 'function') {
+      return;
+    }
+
+    dispatch(actions.setBowlingTacticsAction(patch));
   };
 
   const buildTeamOneScorecard = () => ({
@@ -140,7 +156,9 @@ export const useControllerRuntime = ({
     matchPrimaryAction: competitionHandlers.handleMatchPrimaryAction,
     resetMatch: competitionHandlers.handlePlayFreshMatch,
     setBattingIntent: handleSetBattingIntent,
+    setBattingTactics: handleSetBattingTactics,
     setBowlingIntent: handleSetBowlingIntent,
+    setBowlingTactics: handleSetBowlingTactics,
     buildTeamOneScorecard,
     buildTeamTwoScorecard,
     stageOrder,

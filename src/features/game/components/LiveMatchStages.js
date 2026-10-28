@@ -6,6 +6,33 @@ import InningsStage from "./InningsStage";
 import TeamNameWithFlag from "./TeamNameWithFlag";
 import MatchSummaryStages from "./MatchSummaryStages";
 
+const buildInningsSituation = ({ innings, view, matchType, matchCondition, oversDisplay, target }) => {
+  const score = Number(innings?.score) || 0;
+  const wickets = Number(innings?.wickets) || 0;
+  const balls = Number(innings?.balls) || 0;
+  const maxBalls = Math.max(0, (Number(matchType?.over) || 0) * 6);
+  const ballsRemaining = Math.max(0, maxBalls - balls);
+  const runsRemaining = target === null ? null : Math.max(0, target - score);
+
+  return {
+    ...(view?.bowlingContext || {}),
+    ...(view?.battingContext || {}),
+    score,
+    wickets,
+    over: oversDisplay(balls),
+    oversLimit: Number(matchType?.over) || 0,
+    target,
+    runsRemaining,
+    ballsRemaining,
+    currentRunRate: balls > 0 ? ((score / balls) * 6).toFixed(2) : '0.00',
+    requiredRunRate:
+      runsRemaining === null || ballsRemaining <= 0
+        ? null
+        : ((runsRemaining / ballsRemaining) * 6).toFixed(2),
+    matchCondition: matchCondition || {},
+  };
+};
+
 function LiveMatchStages(props) {
   const {
     stage,
@@ -17,7 +44,9 @@ function LiveMatchStages(props) {
     firstInningsView,
     secondInningsView,
     setBattingIntent,
+    setBattingTactics,
     setBowlingIntent,
+    setBowlingTactics,
     onSaveGame,
     isSavingGame,
     saveMessage,
@@ -34,6 +63,22 @@ function LiveMatchStages(props) {
     onSimulateMatch,
     oversDisplay,
   } = props;
+  const firstInningsBowlingSituation = buildInningsSituation({
+    innings: game.firstInnings,
+    view: firstInningsView,
+    matchType,
+    matchCondition: game.matchCondition,
+    oversDisplay,
+    target: null,
+  });
+  const secondInningsBowlingSituation = buildInningsSituation({
+    innings: game.secondInnings,
+    view: secondInningsView,
+    matchType,
+    matchCondition: game.matchCondition,
+    oversDisplay,
+    target: Number(game.firstInnings?.score || 0) + 1,
+  });
 
   return (
     <>
@@ -89,9 +134,15 @@ function LiveMatchStages(props) {
             battingActions={firstInningsView.battingActionOptions}
             bowlingActions={firstInningsView.bowlingActionOptions}
             battingIntent={game.battingIntent}
+            battingTactics={game.battingTactics}
+            battingContext={firstInningsBowlingSituation}
             bowlingIntent={game.bowlingIntent}
+            bowlingTactics={game.bowlingTactics}
+            bowlingContext={firstInningsBowlingSituation}
             onBattingIntent={setBattingIntent}
+            onBattingTacticsChange={setBattingTactics}
             onBowlingIntent={setBowlingIntent}
+            onBowlingTacticsChange={setBowlingTactics}
             onBowlBall={() => processDelivery(true)}
             onSaveGame={onSaveGame}
             isSavingGame={isSavingGame}
@@ -160,9 +211,15 @@ function LiveMatchStages(props) {
             battingActions={secondInningsView.battingActionOptions}
             bowlingActions={secondInningsView.bowlingActionOptions}
             battingIntent={game.battingIntent}
+            battingTactics={game.battingTactics}
+            battingContext={secondInningsBowlingSituation}
             bowlingIntent={game.bowlingIntent}
+            bowlingTactics={game.bowlingTactics}
+            bowlingContext={secondInningsBowlingSituation}
             onBattingIntent={setBattingIntent}
+            onBattingTacticsChange={setBattingTactics}
             onBowlingIntent={setBowlingIntent}
+            onBowlingTacticsChange={setBowlingTactics}
             onBowlBall={() => processDelivery(false)}
             onSaveGame={onSaveGame}
             isSavingGame={isSavingGame}

@@ -84,7 +84,9 @@ function CricketSimulator() {
     loadSavedGame,
     deleteSavedGame,
     setBattingIntent,
+    setBattingTactics,
     setBowlingIntent,
+    setBowlingTactics,
     processDelivery,
     handleSelectOpener,
     handleSelectNextBatter,
@@ -229,7 +231,9 @@ function CricketSimulator() {
               firstInningsView={firstInningsView}
               secondInningsView={secondInningsView}
               setBattingIntent={setBattingIntent}
+              setBattingTactics={setBattingTactics}
               setBowlingIntent={setBowlingIntent}
+              setBowlingTactics={setBowlingTactics}
               onSaveGame={saveGame}
               isSavingGame={isSavingGame}
               saveMessage={saveMessage}

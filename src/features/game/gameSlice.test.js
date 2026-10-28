@@ -6,7 +6,9 @@ import reducer, {
   resetMatchForCareer,
   resetMatchRuntime,
   setBattingIntent,
+  setBattingTactics,
   setBowlingIntent,
+  setBowlingTactics,
   setCareerAuctionSummary,
   setCareerDomesticCountry,
   setCareerDomesticTeams,
@@ -73,6 +75,7 @@ describe('game state setup', () => {
       bowlingStats: [],
       lastEvent: 'Ready for first delivery.',
     });
+
     expect(buildEmptyMatchCondition()).toEqual({ weather: '', pitch: '', outfield: '' });
 
     const random = jest.spyOn(Math, 'random').mockReturnValue(0);
@@ -81,6 +84,71 @@ describe('game state setup', () => {
     expect(condition.weather).toBe('sunny');
     expect(condition.pitch).toBe('grassy');
     expect(condition.outfield).toBe('lushGreen');
+  });
+
+  test('migrates saved bowling intents and preserves validated tactical state', () => {
+    expect(reducer(undefined, hydrateGameState({ bowlingIntent: bowlingAction.tryForWicket })))
+      .toMatchObject({
+        bowlingTactics: { overPlan: 'attack', specialDeliveryArmed: false },
+      });
+    expect(reducer(undefined, hydrateGameState({ bowlingIntent: bowlingAction.specialBowl })))
+      .toMatchObject({
+        bowlingTactics: { overPlan: 'balanced', specialDeliveryArmed: false },
+      });
+
+    const restored = reducer(undefined, hydrateGameState({
+      bowlingTactics: {
+        overPlan: 'pressure',
+        fieldPreset: 'attacking',
+        line: 'body',
+        length: 'short',
+        variation: 'flighted',
+        specialDeliveryArmed: true,
+      },
+    }));
+    expect(restored.bowlingTactics).toEqual({
+      overPlan: 'pressure',
+      fieldPreset: 'attacking',
+      line: 'body',
+      length: 'short',
+      variation: 'flighted',
+      specialDeliveryArmed: true,
+    });
+
+    const invalidTactics = reducer(restored, setBowlingTactics({
+      overPlan: 'impossible',
+      line: 'wrong',
+      specialDeliveryArmed: 'yes',
+    }));
+    expect(invalidTactics.bowlingTactics).toEqual(restored.bowlingTactics);
+  });
+
+  test('migrates legacy batting intent and hydrates, validates, and resets batting tactics', () => {
+    expect(reducer(undefined, hydrateGameState({ battingIntent: battingAction.defence }))).toMatchObject({
+      battingIntent: battingAction.normal,
+      battingTactics: { approach: 'defend' },
+    });
+    expect(reducer(undefined, hydrateGameState({ battingIntent: battingAction.hitBig })))
+      .toMatchObject({ battingTactics: { approach: 'attack' } });
+    expect(reducer(undefined, hydrateGameState({ battingIntent: battingAction.superShot })))
+      .toMatchObject({ battingIntent: battingAction.superShot, battingTactics: { approach: 'balanced' } });
+
+    const restored = reducer(undefined, hydrateGameState({
+      battingTactics: {
+        approach: 'attack',
+        shot: 'loft',
+        target: 'off',
+        retainShotAndTarget: true,
+      },
+    }));
+    expect(restored.battingTactics).toEqual({
+      approach: 'attack',
+      shot: 'loft',
+      target: 'off',
+      retainShotAndTarget: true,
+    });
+    expect(reducer(restored, setBattingTactics({ shot: 'invalid', target: 'leg' })).battingTactics)
+      .toEqual({ ...restored.battingTactics, target: 'leg' });
   });
 
   test('starts with the quick-match defaults', () => {
@@ -92,7 +160,18 @@ describe('game state setup', () => {
       ownTeam: '',
       opponentTeam: '',
       battingIntent: battingAction.normal,
+      battingTactics: expect.objectContaining({
+        approach: 'balanced',
+        shot: 'rotate',
+        target: 'straight',
+        retainShotAndTarget: false,
+      }),
       bowlingIntent: bowlingAction.normal,
+      bowlingTactics: expect.objectContaining({
+        overPlan: 'balanced',
+        fieldPreset: 'balanced',
+        specialDeliveryArmed: false,
+      }),
       matchCondition: buildEmptyMatchCondition(),
       firstInnings: buildInitialInnings(),
       secondInnings: buildInitialInnings(),
@@ -141,6 +220,14 @@ describe('game state setup', () => {
       [setMatchCondition, 'matchCondition', { weather: 'sunny' }],
       [setBattingIntent, 'battingIntent', battingAction.hitBig],
       [setBowlingIntent, 'bowlingIntent', bowlingAction.tryForWicket],
+      [setBowlingTactics, 'bowlingTactics', {
+        overPlan: 'attack',
+        fieldPreset: 'boundary',
+        line: 'outside',
+        length: 'yorker',
+        variation: 'slower',
+        specialDeliveryArmed: true,
+      }],
       [setFirstInnings, 'firstInnings', { score: 12 }],
       [setSecondInnings, 'secondInnings', { score: 8 }],
       [setShowScoreboard, 'showScoreboard', true],
@@ -357,6 +444,12 @@ describe('game state setup', () => {
         ownPlayingXI: ['p1'],
         opponentPlayingXI: ['p2'],
         showScoreboard: true,
+        battingTactics: {
+          approach: 'attack',
+          shot: 'loft',
+          target: 'leg',
+          retainShotAndTarget: true,
+        },
       })
     );
 
@@ -365,6 +458,12 @@ describe('game state setup', () => {
       stage: matchStatusEnum.intro,
       gameMode: 'quick',
       seriesLength: 1,
+      battingTactics: expect.objectContaining({
+        approach: 'balanced',
+        shot: 'rotate',
+        target: 'straight',
+        retainShotAndTarget: false,
+      }),
       ownTeam: '',
       opponentTeam: '',
       careerTeam: '',
@@ -382,6 +481,12 @@ describe('game state setup', () => {
     expect(careerReady).toMatchObject({
       gameMode: 'career',
       careerTeam: 'Team A',
+      battingTactics: expect.objectContaining({
+        approach: 'balanced',
+        shot: 'rotate',
+        target: 'straight',
+        retainShotAndTarget: false,
+      }),
       ownTeam: 'Team A',
       opponentTeam: '',
       careerSeason: 2,

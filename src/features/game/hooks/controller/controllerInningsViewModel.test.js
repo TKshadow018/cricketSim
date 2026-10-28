@@ -201,5 +201,81 @@ describe('innings view model', () => {
       currentBowlerName: '',
       nonStrikerPlayer: null,
     });
+
+  });
+
+  test('builds the bowling cockpit context from the current bowler, batters, quota, and over events', () => {
+    const inningState = {
+      ...buildInitialInnings(),
+      balls: 8,
+      score: 42,
+      wickets: 1,
+      strikerIndex: 0,
+      nonStrikerIndex: 1,
+      currentBowlerIndex: 0,
+      bowlingStats: [
+        { balls: 8, runsConceded: 13, wickets: 1 },
+        { balls: 0, runsConceded: 0, wickets: 0 },
+      ],
+      battingStats: [
+        { runs: 18, balls: 13 },
+        { runs: 7, balls: 9 },
+      ],
+      specialBallUsedInOver: 1,
+      specialBallUsedMatch: 2,
+      specialBallBonus: 1,
+      ballHistory: [
+        { overNumber: 1, ballNumber: 1, token: '1', runs: 1 },
+        { overNumber: 2, ballNumber: 1, token: 'W', isWicket: true },
+      ],
+    };
+    const model = buildInningsViewModel({
+      isFirstInnings: false,
+      inningState,
+      getContext: () => ({
+        isUserBatting: false,
+        isUserBowling: true,
+        battingSide,
+        bowlingSide,
+      }),
+      matchType: { over: 20 },
+      maxBalls: 120,
+    });
+
+    expect(model.bowlingContext).toMatchObject({
+      currentOverNumber: 2,
+      currentOverBall: 2,
+      bowler: { name: 'Current Bowler' },
+      bowlerFigures: {
+        overs: '1.2',
+        runs: 13,
+        wickets: 1,
+      },
+      striker: {
+        player: { name: 'Striker' },
+        runs: 18,
+        balls: 13,
+      },
+      nonStriker: {
+        player: { name: 'Partner' },
+        runs: 7,
+        balls: 9,
+      },
+      specialDelivery: {
+        remaining: 2,
+        usedThisOver: 1,
+        available: false,
+      },
+      currentOverEvents: [{ overNumber: 2, ballNumber: 1, token: 'W', isWicket: true }],
+    });
+    expect(model.battingContext).toMatchObject({
+      score: 42,
+      wickets: 1,
+      currentOverNumber: 2,
+      currentOverBall: 2,
+      freeHitArmed: false,
+      striker: { player: { name: 'Striker' }, runs: 18, balls: 13 },
+      currentOverEvents: [{ overNumber: 2, ballNumber: 1, token: 'W', isWicket: true }],
+    });
   });
 });

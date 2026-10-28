@@ -1,0 +1,441 @@
+.sim-innings-layout.sim-innings-layout--batting {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.sim-batting-cockpit {
+  display: grid;
+  gap: 0.72rem;
+  min-width: 0;
+  padding: clamp(0.7rem, 1.4vw, 1rem);
+  border: 1px solid rgba(199, 243, 107, 0.2);
+  border-radius: 20px;
+  color: var(--text-main);
+  background:
+    radial-gradient(ellipse at 85% -25%, rgba(199, 243, 107, 0.1), transparent 22rem),
+    linear-gradient(155deg, rgba(22, 34, 26, 0.98), rgba(13, 21, 16, 0.98));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.sim-batting-header,
+.sim-batting-section-heading,
+.sim-batting-player-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.sim-batting-header h3,
+.sim-batting-section-heading h4 {
+  margin: 0;
+  color: var(--text-main);
+}
+
+.sim-batting-header h3 {
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  letter-spacing: -0.035em;
+}
+
+.sim-batting-kicker,
+.sim-batting-card-kicker {
+  margin: 0 0 0.18rem;
+  color: var(--brand-primary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.sim-batting-score-context {
+  display: grid;
+  justify-items: end;
+  flex: 0 0 auto;
+  padding-left: 0.7rem;
+  border-left: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-batting-score-context strong {
+  color: var(--text-main);
+  font-size: 1.18rem;
+  line-height: 1.1;
+}
+
+.sim-batting-score-context span,
+.sim-batting-section-heading > span,
+.sim-batting-matchup-label {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.sim-batting-situation {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid rgba(199, 243, 107, 0.15);
+  border-radius: 12px;
+  background: rgba(3, 10, 5, 0.3);
+}
+
+.sim-batting-situation > div {
+  display: grid;
+  gap: 0.08rem;
+  min-width: 0;
+  padding: 0.45rem 0.55rem;
+  border-right: 1px solid rgba(240, 244, 233, 0.07);
+}
+
+.sim-batting-situation > div:last-child {
+  border-right: 0;
+}
+
+.sim-batting-situation span {
+  color: var(--text-muted);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sim-batting-situation strong {
+  overflow: hidden;
+  color: var(--text-main);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sim-batting-player-matchup {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.sim-batting-player-card {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.7rem;
+  border: 1px solid rgba(221, 232, 215, 0.1);
+  border-radius: 12px;
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018));
+}
+
+.sim-batting-player-card--striker {
+  border-left: 3px solid var(--brand-primary);
+}
+
+.sim-batting-player-name {
+  overflow-wrap: anywhere;
+  color: var(--text-main);
+  font-size: 0.92rem;
+}
+
+.sim-batting-figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.65rem;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.sim-batting-figures b {
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-batting-control-section,
+.sim-batting-over-tracker {
+  display: grid;
+  gap: 0.48rem;
+  min-width: 0;
+  padding: 0.68rem;
+  border: 1px solid rgba(221, 232, 215, 0.09);
+  border-radius: 12px;
+  background: rgba(2, 8, 4, 0.25);
+}
+
+.sim-batting-section-heading h4 {
+  font-size: 0.88rem;
+}
+
+.sim-batting-choice-grid {
+  display: grid;
+  gap: 0.32rem;
+}
+
+.sim-batting-approach-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sim-batting-shot-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.sim-batting-choice-card,
+.sim-batting-target-button,
+.sim-batting-special-button {
+  min-width: 0;
+  min-height: 48px;
+  border: 1px solid rgba(170, 190, 166, 0.2);
+  border-radius: 9px;
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.025);
+  cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
+}
+
+.sim-batting-choice-card {
+  display: grid;
+  align-content: start;
+  gap: 0.22rem;
+  padding: 0.48rem;
+  text-align: left;
+}
+
+.sim-batting-choice-card strong,
+.sim-batting-target-button,
+.sim-batting-special-button strong {
+  font-size: 0.72rem;
+}
+
+.sim-batting-choice-card small,
+.sim-batting-special-button small {
+  color: var(--text-muted);
+  font-size: 0.63rem;
+  line-height: 1.3;
+}
+
+.sim-batting-choice-card.active,
+.sim-batting-target-button.active,
+.sim-batting-special-button.active {
+  border-color: var(--brand-primary);
+  color: #172114;
+  background: var(--brand-primary);
+  box-shadow: 0 0 14px rgba(199, 243, 107, 0.12);
+}
+
+.sim-batting-choice-card.active small,
+.sim-batting-special-button.active small {
+  color: rgba(23, 33, 20, 0.8);
+}
+
+.sim-batting-target-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(13rem, 0.9fr);
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sim-batting-target-map {
+  display: block;
+  width: 100%;
+  max-height: 10rem;
+}
+
+.sim-batting-target-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.32rem;
+}
+
+.sim-batting-target-button {
+  padding: 0.45rem 0.25rem;
+}
+
+.sim-batting-retain-choice {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.sim-batting-retain-choice input {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: 0 0 auto;
+  accent-color: var(--brand-primary);
+}
+
+.sim-batting-retain-choice span {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.sim-batting-retain-choice strong {
+  font-size: 0.74rem;
+}
+
+.sim-batting-retain-choice small,
+.sim-batting-target-note,
+.sim-batting-condition-note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.67rem;
+  line-height: 1.35;
+}
+
+.sim-batting-special-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.sim-batting-special-button {
+  display: grid;
+  align-content: start;
+  gap: 0.22rem;
+  padding: 0.48rem 0.6rem;
+  text-align: left;
+}
+
+.sim-batting-special-button:disabled {
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.012);
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
+.sim-batting-free-hit-note,
+.sim-batting-last-call,
+.sim-batting-extra-track {
+  margin: 0;
+  color: var(--brand-primary);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.sim-batting-last-call {
+  padding: 0.5rem 0.65rem;
+  border-left: 2px solid var(--brand-primary);
+  color: var(--text-main);
+  background: rgba(199, 243, 107, 0.06);
+}
+
+.sim-batting-last-call span {
+  padding: 0 0.15rem;
+  color: var(--brand-primary);
+}
+
+.sim-batting-ball-track {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sim-batting-ball-track li {
+  display: grid;
+  justify-items: center;
+  gap: 0.14rem;
+  min-width: 0;
+  padding: 0.38rem 0.15rem;
+  border: 1px solid rgba(221, 232, 215, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.sim-batting-ball-track li.completed {
+  border-color: rgba(199, 243, 107, 0.32);
+}
+
+.sim-batting-ball-track li.wicket {
+  border-color: rgba(252, 115, 115, 0.7);
+  background: rgba(140, 37, 37, 0.2);
+}
+
+.sim-batting-ball-track li span {
+  color: var(--text-muted);
+  font-size: 0.58rem;
+}
+
+.sim-batting-ball-track li strong {
+  overflow: hidden;
+  max-width: 100%;
+  color: var(--text-main);
+  font-size: 0.7rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sim-batting-extra-track {
+  color: var(--text-muted);
+}
+
+.sim-batting-cockpit :is(button, input):focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+.sim-batting-cockpit button:not(:disabled):hover {
+  border-color: rgba(199, 243, 107, 0.6);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 700px) {
+  .sim-batting-situation {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sim-batting-situation > div:nth-child(2) {
+    border-right: 0;
+  }
+
+  .sim-batting-situation > div:nth-child(-n + 2) {
+    border-bottom: 1px solid rgba(240, 244, 233, 0.07);
+  }
+
+  .sim-batting-target-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sim-batting-target-map {
+    max-height: 8.5rem;
+  }
+
+  .sim-batting-shot-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sim-batting-shot-card:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 420px) {
+  .sim-batting-cockpit {
+    padding: 0.55rem;
+    border-radius: 14px;
+  }
+
+  .sim-batting-control-section,
+  .sim-batting-over-tracker {
+    padding: 0.55rem;
+  }
+
+  .sim-batting-choice-card {
+    padding: 0.42rem;
+  }
+
+  .sim-batting-section-heading > span {
+    max-width: 7rem;
+    text-align: right;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sim-batting-choice-card,
+  .sim-batting-target-button,
+  .sim-batting-special-button {
+    transition: none;
+  }
+
+  .sim-batting-cockpit button:not(:disabled):hover {
+    transform: none;
+  }
+}

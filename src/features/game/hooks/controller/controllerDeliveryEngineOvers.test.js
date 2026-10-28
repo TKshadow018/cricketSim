@@ -68,6 +68,7 @@ const makeProps = (overrides = {}) => ({
   dispatch: jest.fn(),
   setBattingIntentAction: jest.fn((payload) => ({ type: 'batting-intent', payload })),
   setBowlingIntentAction: jest.fn((payload) => ({ type: 'bowling-intent', payload })),
+  setBowlingTacticsAction: jest.fn((payload) => ({ type: 'bowling-tactics', payload })),
   setFirstInnings: jest.fn(),
   setSecondInnings: jest.fn(),
   firstInningsScore: 100,

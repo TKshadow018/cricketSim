@@ -14,8 +14,12 @@ import {
   randomFrom,
   replaceName,
 } from '../../../../utils/simulatorUtils';
-import { canUseSpecialBall, canUseSuperShot, resolveOutcome } from '../../utils/controllerOutcomeUtils';
+import { canUseSpecialBall, resolveOutcome } from '../../utils/controllerOutcomeUtils';
 import { getBestEligibleBowlerIndex, selectComputerBowler } from '../../utils/controllerInningsSetupUtils';
+import { buildNextBallHistory } from '../../utils/bowlingBallEventUtils';
+import { getBattingTacticsResetPatch } from '../../utils/battingTactics';
+import { DEFAULT_BOWLING_TACTICS } from '../../utils/bowlingTactics';
+import { syncDeliveryIntentState } from './controllerDeliveryIntentUtils';
 
 export const processDelivery = ({
   isFirstInnings,
@@ -25,7 +29,9 @@ export const processDelivery = ({
   matchType,
   maxBalls,
   battingIntent,
+  battingTactics,
   bowlingIntent,
+  bowlingTactics,
   ownSanitizedRoles,
   opponentSanitizedRoles,
   ownTeam,
@@ -35,7 +41,9 @@ export const processDelivery = ({
   locationCountry,
   dispatch,
   setBattingIntentAction,
+  setBattingTacticsAction,
   setBowlingIntentAction,
+  setBowlingTacticsAction,
   setFirstInnings,
   setSecondInnings,
   firstInningsScore,
@@ -124,6 +132,21 @@ export const processDelivery = ({
     return;
   }
 
+  const hasUserBowlingTactics = Boolean(
+    isUserBowling &&
+    bowlingTactics &&
+    typeof bowlingTactics === 'object'
+  );
+  const hasArmedSpecial = hasUserBowlingTactics && Boolean(bowlingTactics.specialDeliveryArmed);
+  const usedSpecialBall = isUserBowling && (
+    hasUserBowlingTactics
+      ? hasArmedSpecial && canUseSpecialBall({ bowler, inningState })
+      : bowlingIntent === bowlingAction.specialBowl
+  );
+  const deliveryBowlingTactics = hasUserBowlingTactics
+    ? { ...bowlingTactics, specialDeliveryArmed: usedSpecialBall }
+    : undefined;
+
   const deliveryIsPaceBowler = (bowler?.paceAbility || 0) >= (bowler?.spinAbility || 0);
   const deliveryMaxSuperShot = Math.max(
     0,
@@ -137,7 +160,6 @@ export const processDelivery = ({
 
   const wasFreeHit = isUserBatting && inningState.freeHitArmed;
   const usedSuperShot = isUserBatting && battingIntent === battingAction.superShot;
-  const usedSpecialBall = isUserBowling && bowlingIntent === bowlingAction.specialBowl;
   const battingRoles = isOwnBatting ? ownSanitizedRoles : opponentSanitizedRoles;
   const bowlingRoles = isOwnBatting ? opponentSanitizedRoles : ownSanitizedRoles;
   const bowlingTeamName = isOwnBatting ? opponentTeam : ownTeam;
@@ -154,7 +176,9 @@ export const processDelivery = ({
     matchType,
     matchTypeKey,
     battingIntent,
+    battingTactics,
     bowlingIntent,
+    bowlingTactics: deliveryBowlingTactics,
     locationCountry,
   });
   const nextBalls = inningState.balls + (outcome.isLegalDelivery ? 1 : 0);
@@ -376,6 +400,17 @@ export const processDelivery = ({
     }
   }
 
+  const nextBallHistory = buildNextBallHistory({
+    inningState,
+    outcome,
+    striker,
+    bowler,
+    battingTactics,
+    bowlingTactics: deliveryBowlingTactics,
+    isUserBatting,
+    isUserBowling,
+    specialShot: usedSuperShot,
+  });
   const nextState = {
     ...inningState,
     score: nextScore,
@@ -394,6 +429,7 @@ export const processDelivery = ({
     waitingForNextBowler: nextWaitingForNextBowler,
     battingStats: nextBattingStats,
     bowlingStats: nextBowlingStats,
+    ballHistory: nextBallHistory,
     freeHitArmed: nextFreeHitArmed,
     superShotUsedInOver: nextSuperShotUsedInOver,
     superShotUsedMatch: nextSuperShotUsedMatch,
@@ -409,42 +445,41 @@ export const processDelivery = ({
     nextState.currentBowlerIndex === null || nextState.currentBowlerIndex === undefined
       ? currentBowlerIndex
       : nextState.currentBowlerIndex;
+  const inningsEnded = nextBalls >= maxBalls || nextWickets >= 10;
+  const battingTacticsResetPatch = getBattingTacticsResetPatch(battingTactics, {
+    wasFreeHit,
+    freeHitArmed: nextState.freeHitArmed,
+    newBatterAtStrike: nextState.waitingForNextBatter || nextState.strikerIndex === null,
+    resetAll: isFirstInnings && inningsEnded,
+  });
 
-  if (isUserBatting && nextState.freeHitArmed && battingIntent !== battingAction.freeHit) {
-    dispatch(setBattingIntentAction(battingAction.freeHit));
-  }
+  syncDeliveryIntentState({
+    dispatch,
+    isUserBatting,
+    isUserBowling,
+    isFirstInnings,
+    inningsEnded,
+    nextState,
+    battingIntent,
+    bowlingIntent,
+    battingSide,
+    bowlingSide,
+    bowlerIndexForIntent,
+    hasUserBowlingTactics,
+    hasArmedSpecial,
+    setBattingIntentAction,
+    setBowlingIntentAction,
+    setBowlingTacticsAction,
+  });
 
-  if (isUserBatting && !nextState.freeHitArmed && battingIntent === battingAction.freeHit) {
-    dispatch(setBattingIntentAction(battingAction.normal));
-  }
-
-  if (isUserBatting && battingIntent === battingAction.superShot) {
-    const nextCanUseSuperShot = canUseSuperShot({
-      striker: battingSide[nextState.strikerIndex],
-      bowler: bowlingSide[bowlerIndexForIntent],
-      inningState: nextState,
-      strikerIndex: nextState.strikerIndex,
-    });
-
-    if (!nextCanUseSuperShot) {
-      dispatch(setBattingIntentAction(battingAction.normal));
-    }
-  }
-
-  if (isUserBowling && bowlingIntent === bowlingAction.specialBowl) {
-    const nextCanUseSpecialBall = canUseSpecialBall({
-      bowler: bowlingSide[bowlerIndexForIntent],
-      inningState: nextState,
-    });
-
-    if (!nextCanUseSpecialBall) {
-      dispatch(setBowlingIntentAction(bowlingAction.normal));
-    }
+  if (battingTacticsResetPatch && typeof setBattingTacticsAction === 'function') {
+    dispatch(setBattingTacticsAction(battingTacticsResetPatch));
   }
 
   if (isFirstInnings) {
     setFirstInnings(nextState);
-    if (nextBalls >= maxBalls || nextWickets >= 10) {
+    if (inningsEnded) {
+      dispatch(setBowlingTacticsAction(DEFAULT_BOWLING_TACTICS));
       announceTarget(isOwnBatting ? opponentTeam : ownTeam, nextScore);
       dispatch(setStageAction(matchStatusEnum.TeamTwoBat));
     }
@@ -452,7 +487,7 @@ export const processDelivery = ({
   }
 
   setSecondInnings(nextState);
-  if (nextScore > firstInningsScore || nextBalls >= maxBalls || nextWickets >= 10) {
+  if (nextScore > firstInningsScore || inningsEnded) {
     dispatch(setStageAction(matchStatusEnum.MatchEnd));
   }
 };
