@@ -99,8 +99,10 @@ Use a small set of cricket-readable choices:
   these profiles during migration.
 - **Shot intent:** Leave/defend, rotate strike, drive, cut/pull, or loft. Offer only shots that
   make sense for the active batter and delivery context.
-- **Target sector:** Off side, straight, or leg side, represented by an original field-map
-  target plus a labeled button alternative.
+- **Target sector:** Third man, point, cover, mid-off, straight, mid-on, midwicket, square leg,
+  or fine leg. Make each field-map area clickable and keyboard-operable instead of using separate
+  target buttons. Highlight the selected area and treat it as a bounded probability modifier, not
+  exact ball direction or fielder placement.
 - Keep Super Shot and Free Hit as contextual special actions, with their current eligibility,
   usage limits, and explanatory disabled reasons.
 
@@ -153,10 +155,11 @@ bowlingTactics: {
 ```
 
 Implemented batting values are `defend` / `balanced` / `attack`; `leave` / `rotate` / `drive` /
-`cutPull` / `loft`; and `off` / `straight` / `leg`. Approach persists until changed. Shot and
-target reset after each delivery unless retention is enabled; they always reset around a new
-batter, a free hit, or the next innings. Defaults keep the existing outcome distribution
-unchanged. Hydration merges safe defaults into old saves, and match/career resets clear tactics.
+`cutPull` / `loft`; and the nine field sectors. Approach persists until changed. Shot and target
+reset after each delivery unless retention is enabled; they always reset around a new batter, a
+free hit, or the next innings. Older `off` and `leg` targets migrate to `cover` and `midWicket`.
+Defaults keep the existing outcome distribution unchanged. Hydration merges safe defaults into
+old saves, and match/career resets clear tactics.
 
 Pass one immutable tactical-plan snapshot into `processDelivery` and `resolveOutcome`. Translate
 plans into bounded probability adjustments alongside existing ability, pitch, weather, outfield,

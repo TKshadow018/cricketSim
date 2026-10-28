@@ -22,40 +22,59 @@ export const BATTING_SHOTS = [
 ];
 
 export const BATTING_TARGETS = [
-  { key: 'off', label: 'Off side' },
+  { key: 'thirdMan', label: 'Third man' },
+  { key: 'point', label: 'Point' },
+  { key: 'cover', label: 'Cover' },
+  { key: 'midOff', label: 'Mid-off' },
   { key: 'straight', label: 'Straight' },
-  { key: 'leg', label: 'Leg side' },
+  { key: 'midOn', label: 'Mid-on' },
+  { key: 'midWicket', label: 'Midwicket' },
+  { key: 'squareLeg', label: 'Square leg' },
+  { key: 'fineLeg', label: 'Fine leg' },
 ];
 
 const VALID_APPROACHES = new Set(BATTING_APPROACHES.map(({ key }) => key));
 const VALID_SHOTS = new Set(BATTING_SHOTS.map(({ key }) => key));
 const VALID_TARGETS = new Set(BATTING_TARGETS.map(({ key }) => key));
 const VALID_BOWLING_LINES = new Set(['outside', 'stumps', 'body']);
+const LEGACY_TARGETS = { off: 'cover', leg: 'midWicket' };
 
 const approachShifts = {
-  defend: { 0: 6, 1: -2, 2: -1, 4: -1, 6: -1, W: -1 },
+  defend: { 0: 15, 1: -4, 2: -2, 3: -1, 4: -4, 6: -2, W: -2 },
   balanced: {},
-  attack: { 0: -9, 1: 1, 2: 1, 3: 1, 4: 2, 6: 2, W: 2 },
+  attack: { 0: -10, 1: 4, 2: 1, 3: 1, 4: 2, 6: 1, W: 1 },
 };
 
 const shotShifts = {
-  leave: { 0: 4, 1: -1, 4: -2, W: -1 },
+  leave: { 0: 8, 1: -2, 2: -1, 4: -3, 6: -1, W: -1 },
   rotate: {},
-  drive: { 0: -2, 1: 1, 4: 2, W: -1 },
-  cutPull: { 0: -2, 2: 1, 4: 1, 6: 1, W: -1 },
-  loft: { 0: -4, 4: 2, 6: 3, W: -1 },
+  drive: { 0: -5, 1: 1, 2: 1, 4: 4, W: -1 },
+  cutPull: { 0: -5, 1: 1, 2: 1, 4: 1, 6: 3, W: -1 },
+  loft: { 0: -10, 1: 1, 2: 1, 4: 3, 6: 3, W: 2 },
 };
 
 const targetShifts = {
-  off: { 0: -2, 1: 1, 4: 1 },
+  thirdMan: { 0: -1, 1: 1 },
+  point: { 0: -2, 1: 1, 2: 1 },
+  cover: { 0: -4, 1: 1, 4: 3 },
+  midOff: { 0: -2, 1: 2 },
   straight: {},
-  leg: { 0: -2, 2: 1, 6: 1 },
+  midOn: { 0: -1, 2: 1 },
+  midWicket: { 0: -4, 1: 1, 2: 1, 6: 2 },
+  squareLeg: { 0: -3, 1: 1, 2: 2 },
+  fineLeg: { 0: -2, 3: 2 },
 };
 
 const targetLineBySector = {
-  off: 'outside',
+  thirdMan: 'outside',
+  point: 'outside',
+  cover: 'outside',
+  midOff: 'outside',
   straight: 'stumps',
-  leg: 'body',
+  midOn: 'body',
+  midWicket: 'body',
+  squareLeg: 'body',
+  fineLeg: 'body',
 };
 
 const addShifts = (...shifts) =>
@@ -74,6 +93,20 @@ const resolveValue = (set, source, fallback, defaultValue) => {
   return defaultValue;
 };
 
+const normalizeTargetKey = (source, fallback) => {
+  const resolveTarget = (value) => {
+    const key = LEGACY_TARGETS[value] || value;
+    return VALID_TARGETS.has(key) ? key : null;
+  };
+
+  return resolveTarget(source) || resolveTarget(fallback) || DEFAULT_BATTING_TACTICS.target;
+};
+
+export const getBattingTarget = (value) => {
+  const key = normalizeTargetKey(value);
+  return BATTING_TARGETS.find((target) => target.key === key);
+};
+
 export const normalizeBattingTactics = (value, fallback = DEFAULT_BATTING_TACTICS) => {
   const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
   const safeFallback =
@@ -84,7 +117,7 @@ export const normalizeBattingTactics = (value, fallback = DEFAULT_BATTING_TACTIC
   return {
     approach: resolveValue(VALID_APPROACHES, source.approach, safeFallback.approach, DEFAULT_BATTING_TACTICS.approach),
     shot: resolveValue(VALID_SHOTS, source.shot, safeFallback.shot, DEFAULT_BATTING_TACTICS.shot),
-    target: resolveValue(VALID_TARGETS, source.target, safeFallback.target, DEFAULT_BATTING_TACTICS.target),
+    target: normalizeTargetKey(source.target, safeFallback.target),
     retainShotAndTarget: typeof source.retainShotAndTarget === 'boolean'
       ? source.retainShotAndTarget
       : typeof safeFallback.retainShotAndTarget === 'boolean'

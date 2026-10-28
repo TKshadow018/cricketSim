@@ -7,6 +7,7 @@ import {
 import { battingAction, bowlingAction } from '../gameData/actionType';
 import { matchStatusEnum } from '../gameData/matchStatusEnum';
 import { getPlayersForNations } from '../gameData/playerListForNation';
+import { DEFAULT_BATTING_TACTICS } from '../features/game/utils/battingTactics';
 
 jest.mock('../gameData/playerListForNation', () => ({
   getPlayersForNations: jest.fn(),
@@ -146,6 +147,28 @@ test('builds the first-innings admin matrix with conditions, roles, free hit, an
   expect(matrix.rows).toHaveLength(9);
   expect(matrix.rows.find(({ key }) => key === 'W').value).toBe(0);
   expect(matrix.rows.reduce((total, { value }) => total + value, 0)).toBe(100);
+});
+
+test('reflects live batting tactics in the existing admin matrix rows', () => {
+  const balanced = buildAdminMatrix(makeGameState({
+    battingTactics: DEFAULT_BATTING_TACTICS,
+  }));
+  const attacking = buildAdminMatrix(makeGameState({
+    battingTactics: {
+      ...DEFAULT_BATTING_TACTICS,
+      approach: 'attack',
+      shot: 'loft',
+      target: 'leg',
+    },
+  }));
+  const valueFor = (matrix, outcome) => matrix.rows.find((row) => row.key === outcome)?.value || 0;
+
+  expect(attacking.rows.map(({ key }) => key)).toEqual(balanced.rows.map(({ key }) => key));
+  expect(attacking.rows).toHaveLength(9);
+  expect(attacking.rows.reduce((total, { value }) => total + value, 0)).toBe(100);
+  expect(valueFor(attacking, 'W')).toBeGreaterThan(valueFor(balanced, 'W'));
+  expect(valueFor(attacking, '6')).toBeGreaterThan(valueFor(balanced, '6'));
+  expect(attacking.battingIntentLabel).toBe('Normal');
 });
 
 test('uses defaults for incomplete XIs and shifts outcomes for the second innings', () => {

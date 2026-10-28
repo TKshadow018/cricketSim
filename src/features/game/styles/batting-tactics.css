@@ -174,7 +174,6 @@
 }
 
 .sim-batting-choice-card,
-.sim-batting-target-button,
 .sim-batting-special-button {
   min-width: 0;
   min-height: 48px;
@@ -195,7 +194,6 @@
 }
 
 .sim-batting-choice-card strong,
-.sim-batting-target-button,
 .sim-batting-special-button strong {
   font-size: 0.72rem;
 }
@@ -208,7 +206,6 @@
 }
 
 .sim-batting-choice-card.active,
-.sim-batting-target-button.active,
 .sim-batting-special-button.active {
   border-color: var(--brand-primary);
   color: #172114;
@@ -223,25 +220,43 @@
 
 .sim-batting-target-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(13rem, 0.9fr);
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
   gap: 0.75rem;
 }
 
 .sim-batting-target-map {
   display: block;
-  width: 100%;
-  max-height: 10rem;
+  width: min(100%, 28rem);
+  max-height: 18rem;
 }
 
-.sim-batting-target-buttons {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.32rem;
+.sim-batting-target-sector {
+  fill: rgba(255, 255, 255, 0.035);
+  stroke: rgba(205, 222, 194, 0.28);
+  stroke-width: 0.8;
+  cursor: pointer;
+  outline: none;
+  touch-action: manipulation;
+  user-select: none;
+  transition: fill 150ms ease, stroke 150ms ease;
 }
 
-.sim-batting-target-button {
-  padding: 0.45rem 0.25rem;
+.sim-batting-target-sector:not(.active):hover {
+  fill: rgba(199, 243, 107, 0.16);
+}
+
+.sim-batting-target-sector.active {
+  fill: rgba(199, 243, 107, 0.34);
+  stroke: var(--brand-primary);
+  stroke-width: 1.6;
+}
+
+.sim-batting-target-sector:focus-visible {
+  outline: none;
+  stroke: #f3ffd9;
+  stroke-width: 2.8;
+  filter: drop-shadow(0 0 2px var(--brand-primary));
 }
 
 .sim-batting-retain-choice {
@@ -395,7 +410,7 @@
   }
 
   .sim-batting-target-map {
-    max-height: 8.5rem;
+    max-height: 16rem;
   }
 
   .sim-batting-shot-grid {
@@ -430,8 +445,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .sim-batting-choice-card,
-  .sim-batting-target-button,
-  .sim-batting-special-button {
+  .sim-batting-special-button,
+  .sim-batting-target-sector {
     transition: none;
   }
 

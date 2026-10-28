@@ -46,6 +46,30 @@ const bowlingIntentShift = {
   [bowlingAction.specialBowl]: { 0: -4, 1: -5, 2: -2, 3: -1, 4: 2, 6: 1, wide: 1, nb: 1, W: 7 },
 };
 
+const normalizeOverflowingWeights = (weights, outcomes) => {
+  const total = outcomes.reduce((sum, outcome) => sum + weights[outcome], 0);
+  if (total <= 0) {
+    return Object.fromEntries(outcomes.map((outcome) => [outcome, outcome === '0' ? 100 : 0]));
+  }
+
+  const scaled = outcomes.map((outcome, index) => {
+    const exact = weights[outcome] * 100 / total;
+    const value = Math.floor(exact);
+    return { outcome, index, value, remainder: exact - value };
+  });
+  let slotsRemaining = 100 - scaled.reduce((sum, entry) => sum + entry.value, 0);
+
+  scaled
+    .slice()
+    .sort((left, right) => right.remainder - left.remainder || left.index - right.index)
+    .slice(0, slotsRemaining)
+    .forEach(({ outcome }) => {
+      scaled.find((entry) => entry.outcome === outcome).value += 1;
+    });
+
+  return Object.fromEntries(scaled.map(({ outcome, value }) => [outcome, value]));
+};
+
 export const canUseSuperShot = ({ striker, bowler, inningState, strikerIndex }) => {
   if (!striker || !bowler) {
     return false;
@@ -72,7 +96,7 @@ export const canUseSpecialBall = ({ bowler, inningState }) => {
   return hasAbility && availableBalls > 0 && (inningState.specialBallUsedInOver || 0) < 1;
 };
 
-export const resolveOutcome = ({
+const calculateOutcomeDistribution = ({
   striker,
   bowler,
   inningState,
@@ -223,24 +247,33 @@ export const resolveOutcome = ({
     normalized.W = 0;
   }
 
-  const nonDotTotal = outcomes.filter((outcome) => outcome !== '0').reduce((sum, outcome) => sum + normalized[outcome], 0);
-  normalized['0'] = Math.max(0, 100 - nonDotTotal);
-
-  const total = outcomes.reduce((sum, outcome) => sum + normalized[outcome], 0);
-  if (total > 100) {
-    normalized['0'] = Math.max(0, normalized['0'] - (total - 100));
+  const nonDotTotal = outcomes
+    .filter((outcome) => outcome !== '0')
+    .reduce((sum, outcome) => sum + normalized[outcome], 0);
+  if (nonDotTotal <= 100) {
+    normalized['0'] = 100 - nonDotTotal;
+  } else {
+    Object.assign(normalized, normalizeOverflowingWeights(normalized, outcomes));
   }
 
+  return {
+    outcomes,
+    weights: normalized,
+    battingAbility,
+    bowlingAbility,
+  };
+};
+
+export const buildOutcomeWeights = (input) => calculateOutcomeDistribution(input).weights;
+
+export const resolveOutcome = (input) => {
+  const { outcomes, weights, battingAbility, bowlingAbility } = calculateOutcomeDistribution(input);
   const outcomePossibilityArray = [];
   outcomes.forEach((token) => {
-    for (let index = 0; index < normalized[token]; index += 1) {
+    for (let index = 0; index < weights[token]; index += 1) {
       outcomePossibilityArray.push(token);
     }
   });
-
-  if (outcomePossibilityArray.length > 100) {
-    outcomePossibilityArray.length = 100;
-  }
 
   const selected = outcomePossibilityArray[Math.floor(Math.random() * 100)] || '0';
   if (selected === 'W') {

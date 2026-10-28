@@ -5,7 +5,7 @@ import { battingAction } from '../../../gameData/actionType';
 import {
   BATTING_APPROACHES,
   BATTING_SHOTS,
-  BATTING_TARGETS,
+  getBattingTarget,
 } from '../utils/battingTactics';
 import '../styles/batting-tactics.css';
 
@@ -64,7 +64,7 @@ function BattingTacticsPanel({
     ? [
         BATTING_APPROACHES.find(({ key }) => key === lastCall.approach)?.label,
         BATTING_SHOTS.find(({ key }) => key === lastCall.shot)?.label,
-        BATTING_TARGETS.find(({ key }) => key === lastCall.target)?.label,
+        getBattingTarget(lastCall.target)?.label,
       ].filter(Boolean).join(' · ')
     : '';
 
@@ -197,23 +197,13 @@ function BattingTacticsPanel({
             <p className="sim-batting-card-kicker">TARGET SECTOR</p>
             <h4 id="batting-target-heading">Pick a scoring lane</h4>
           </div>
-          <span>{BATTING_TARGETS.find(({ key }) => key === tactics?.target)?.label || 'Straight'}</span>
+          <span>{getBattingTarget(tactics?.target).label}</span>
         </div>
         <div className="sim-batting-target-layout">
-          <BattingTargetMap target={tactics?.target} />
-          <div className="sim-batting-target-buttons" role="group" aria-label="Target sector">
-            {BATTING_TARGETS.map((target) => (
-              <button
-                key={target.key}
-                type="button"
-                className={`sim-batting-target-button${tactics?.target === target.key ? ' active' : ''}`}
-                aria-pressed={tactics?.target === target.key}
-                onClick={() => updateTactics({ target: target.key })}
-              >
-                {target.label}
-              </button>
-            ))}
-          </div>
+          <BattingTargetMap
+            target={tactics?.target}
+            onTargetChange={(target) => updateTactics({ target })}
+          />
         </div>
         <label className="sim-batting-retain-choice">
           <input
@@ -228,7 +218,8 @@ function BattingTacticsPanel({
           </span>
         </label>
         <p className="sim-batting-target-note">
-          The target nudges the outcome model; exact ball direction and batter handedness are not simulated.
+          Select a field sector on the map with a click, or focus it and press Enter or Space.
+          Targeting nudges the outcome model; exact ball direction and batter handedness are not simulated.
         </p>
       </section>
 

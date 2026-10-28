@@ -70,9 +70,12 @@ describe('BattingTacticsPanel', () => {
     expect(screen.getByText('141')).toBeInTheDocument();
     expect(screen.getByText('A Woodhouse')).toBeInTheDocument();
     expect(screen.getByText('J Tongue')).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: /Straight target sector/ })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Choose a scoring sector on the batting target map' }))
+      .toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /Select .* scoring lane/ })).toHaveLength(9);
+    expect(screen.queryByRole('group', { name: 'Target sector' })).not.toBeInTheDocument();
     expect(screen.getByRole('list', { name: 'Current over ball tracker' })).toBeInTheDocument();
-    expect(screen.getByText(/Last call: Attack · Drive · Off side/)).toBeInTheDocument();
+    expect(screen.getByText(/Last call: Attack · Drive · Cover/)).toBeInTheDocument();
   });
 
   test('updates approach, shot, target, and shot-retention choices', () => {
@@ -81,12 +84,12 @@ describe('BattingTacticsPanel', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Attack' }));
     fireEvent.click(screen.getByRole('button', { name: 'Drive' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Leg side' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Select Midwicket scoring lane' }));
     fireEvent.click(screen.getByRole('checkbox', { name: 'Keep shot & target for next ball' }));
 
     expect(props.onTacticsChange).toHaveBeenNthCalledWith(1, { approach: 'attack' });
     expect(props.onTacticsChange).toHaveBeenNthCalledWith(2, { shot: 'drive' });
-    expect(props.onTacticsChange).toHaveBeenNthCalledWith(3, { target: 'leg' });
+    expect(props.onTacticsChange).toHaveBeenNthCalledWith(3, { target: 'midWicket' });
     expect(props.onTacticsChange).toHaveBeenNthCalledWith(4, { retainShotAndTarget: true });
   });
 

@@ -102,7 +102,7 @@ The simulator progresses through these stages:
 
 ### During Innings
 
-- **Batting tactics** (when your side is batting): set a persistent Defend, Balanced, or Attack approach; choose a shot intent and target sector for the next ball.
+- **Batting tactics** (when your side is batting): set a persistent Defend, Balanced, or Attack approach; choose a shot intent and select one of nine target sectors directly on the interactive field map.
 - Shot and target calls reset after a delivery by default. Enable **Keep shot & target for next ball** to retain them; a new batter or free-hit situation always gets a fresh call.
 - **Super Shot** and **Free Hit** remain contextual actions and follow their existing ability, credit, and dismissal rules.
 - **Bowling Plan** (when your side is bowling): choose Balanced, Attack, Build Pressure, or Protect Boundaries.

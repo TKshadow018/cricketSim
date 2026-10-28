@@ -1,7 +1,6 @@
 import { battingAction, bowlingAction } from '../../../gameData/actionType';
 import { outfieldType } from '../../../gameData/matchCondition';
 import { canUseSpecialBall, canUseSuperShot, resolveOutcome } from './controllerOutcomeUtils';
-import { DEFAULT_BATTING_TACTICS } from './battingTactics';
 
 const basePlay = {
   striker: { id: 'striker', abilityToPlayPaceBall: 70, abilityToPlaySpinBall: 70 },
@@ -334,53 +333,6 @@ describe('delivery outcome resolution', () => {
     expect(Object.values(contain).reduce((sum, count) => sum + count, 0)).toBe(100);
   });
 
-  test('applies batting tactics with normalized probabilities and preserves free-hit rules', () => {
-    const countOutcomes = (battingTactics, overrides = {}) => {
-      const counts = {};
-      let roll = 0;
-      jest.spyOn(Math, 'random').mockImplementation(() => {
-        const value = roll / 100;
-        roll += 1;
-        return value;
-      });
-
-      for (let index = 0; index < 100; index += 1) {
-        const outcome = resolveOutcome({
-          ...basePlay,
-          isUserBatting: true,
-          battingTactics,
-          ...overrides,
-        });
-        counts[outcome.token] = (counts[outcome.token] || 0) + 1;
-      }
-
-      jest.restoreAllMocks();
-      return counts;
-    };
-
-    const balanced = countOutcomes(DEFAULT_BATTING_TACTICS);
-    const attack = countOutcomes({
-      ...DEFAULT_BATTING_TACTICS,
-      approach: 'attack',
-      shot: 'loft',
-      target: 'leg',
-    });
-    const freeHit = countOutcomes(
-      { ...DEFAULT_BATTING_TACTICS, approach: 'attack', shot: 'loft', target: 'leg' },
-      {
-        battingIntent: battingAction.freeHit,
-        inningState: { ...basePlay.inningState, freeHitArmed: true },
-      }
-    );
-
-    expect(attack['6'] || 0).toBeGreaterThan(balanced['6'] || 0);
-    expect(attack.W || 0).toBeGreaterThan(balanced.W || 0);
-    expect(freeHit.W || 0).toBe(0);
-    expect(Object.values(balanced).reduce((sum, count) => sum + count, 0)).toBe(100);
-    expect(Object.values(attack).reduce((sum, count) => sum + count, 0)).toBe(100);
-    expect(Object.values(freeHit).reduce((sum, count) => sum + count, 0)).toBe(100);
-  });
-
   test('applies every batting-versus-bowling ability adjustment band', () => {
     const abilityCases = [
       [{ abilityToPlayPaceBall: 100 }, { paceAbility: 20 }],
@@ -404,7 +356,7 @@ describe('delivery outcome resolution', () => {
     expect(resolveAt(100).token).toBe('0');
   });
 
-  test('normalizes weights above the outcome total and caps the generated outcome list', () => {
+  test('returns a valid outcome for high-ability and attacking intent', () => {
     const result = resolveAt(0, {
       matchTypeKey: 'micro',
       striker: { id: 'striker', abilityToPlayPaceBall: 100, abilityToPlaySpinBall: 100 },

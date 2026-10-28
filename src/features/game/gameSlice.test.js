@@ -144,11 +144,11 @@ describe('game state setup', () => {
     expect(restored.battingTactics).toEqual({
       approach: 'attack',
       shot: 'loft',
-      target: 'off',
+      target: 'cover',
       retainShotAndTarget: true,
     });
     expect(reducer(restored, setBattingTactics({ shot: 'invalid', target: 'leg' })).battingTactics)
-      .toEqual({ ...restored.battingTactics, target: 'leg' });
+      .toEqual({ ...restored.battingTactics, target: 'midWicket' });
   });
 
   test('starts with the quick-match defaults', () => {

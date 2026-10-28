@@ -3,37 +3,7 @@ import { getPlayersForNations } from '../gameData/playerListForNation';
 import { outfieldType, pitchType } from '../gameData/matchCondition';
 import { battingAction, bowlingAction } from '../gameData/actionType';
 import { matchStatusEnum } from '../gameData/matchStatusEnum';
-
-const baseMatchWeights = {
-  micro: { 0: 10, 1: 20, 2: 20, 3: 3, 4: 20, 6: 15, wide: 1, nb: 1, W: 10 },
-  mini: { 0: 15, 1: 25, 2: 15, 3: 4, 4: 17, 6: 12, wide: 1, nb: 1, W: 10 },
-  t10: { 0: 20, 1: 25, 2: 15, 3: 5, 4: 15, 6: 10, wide: 1, nb: 1, W: 8 },
-  t20: { 0: 25, 1: 25, 2: 15, 3: 5, 4: 12, 6: 8, wide: 1, nb: 1, W: 7 },
-  ODI: { 0: 50, 1: 22, 2: 10, 3: 3, 4: 7, 6: 3, wide: 1, nb: 1, W: 3 },
-  test: { 0: 65, 1: 17, 2: 8, 3: 1, 4: 5, 6: 1, wide: 1, nb: 1, W: 1 },
-};
-
-const abilityShiftByDiff = (difference) => {
-  if (difference > 50) return { 0: -10, 1: 4, 2: 2, 3: 1, 4: 4, 6: 2, wide: 0, nb: 0, W: -3 };
-  if (difference > 20) return { 0: -7, 1: 4, 2: 1, 3: 1, 4: 2, 6: 1, wide: 0, nb: 0, W: -2 };
-  if (difference > 5) return { 0: -4, 1: 2, 2: 1, 3: 0, 4: 2, 6: 0, wide: 0, nb: 0, W: -1 };
-  if (difference < -50) return { 0: 20, 1: -12, 2: -5, 3: -2, 4: -4, 6: -2, wide: 0, nb: 0, W: 5 };
-  if (difference < -20) return { 0: 7, 1: -4, 2: -1, 3: -1, 4: -2, 6: -1, wide: 0, nb: 0, W: 2 };
-  if (difference < -5) return { 0: 5, 1: -2, 2: -1, 3: 0, 4: -2, 6: -1, wide: 0, nb: 0, W: 1 };
-  return null;
-};
-
-const battingIntentShift = {
-  [battingAction.defence]: { 0: 15, 1: -4, 2: -2, 3: -1, 4: -4, 6: -2, wide: 0, nb: 0, W: -2 },
-  [battingAction.hitBig]: { 0: -10, 1: 4, 2: 1, 3: 1, 4: 2, 6: 1, wide: 0, nb: 0, W: 1 },
-  [battingAction.superShot]: { 0: -15, 1: 5, 2: 3, 3: 0, 4: 3, 6: 2, wide: 0, nb: 0, W: 2 },
-};
-
-const bowlingIntentShift = {
-  [bowlingAction.saveRun]: { 0: 20, 1: -8, 2: -3, 3: -1, 4: -4, 6: -2, wide: 0, nb: 0, W: -2 },
-  [bowlingAction.tryForWicket]: { 0: -15, 1: 4, 2: 2, 3: 1, 4: 4, 6: 1, wide: 0, nb: 0, W: 3 },
-  [bowlingAction.specialBowl]: { 0: -4, 1: -5, 2: -2, 3: -1, 4: 2, 6: 1, wide: 1, nb: 1, W: 7 },
-};
+import { buildOutcomeWeights } from '../features/game/utils/controllerOutcomeUtils';
 
 const battingLabels = {
   [battingAction.defence]: 'Defend',
@@ -162,41 +132,7 @@ export const buildAdminMatrix = (gameState) => {
   const outfieldProfile = outfieldType[gameState.matchCondition?.outfield] || outfieldType.lushGreen;
   const weatherKey = gameState.matchCondition?.weather;
 
-  const applyDelta = (weights, delta) => {
-    if (!delta) return;
-    Object.entries(delta).forEach(([key, value]) => {
-      weights[key] = (weights[key] || 0) + value;
-    });
-  };
-
   const toPercentAdjusted = (value, percent) => value + value * percent;
-
-  const activeMatchTypeKey = (() => {
-    const isTestLike = ['test', 'practiceTestMicro', 'practiceTestMini'].includes(gameState.matchTypeKey);
-    if (isTestLike) return 'test';
-    const order = ['micro', 'mini', 't10', 't20', 'ODI'];
-    const currentIndex = Math.max(0, order.indexOf(gameState.matchTypeKey));
-    const remainingOvers = Math.max(0, matchType.over - Math.floor((innings?.balls || 0) / 6));
-    if (remainingOvers < matchType.over * 0.15 && currentIndex > 0) {
-      return order[currentIndex - 1];
-    }
-    return order[currentIndex] || 't20';
-  })();
-
-  const weights = { ...(baseMatchWeights[activeMatchTypeKey] || baseMatchWeights.t20) };
-
-  if (outfieldProfile.boundaryScoring < 4) {
-    weights['6'] -= 1;
-    weights['4'] -= 1;
-    weights['0'] += 2;
-  } else if (outfieldProfile.boundaryScoring >= 6 && outfieldProfile.boundaryScoring < 8) {
-    weights['4'] += 1;
-    weights['0'] -= 1;
-  } else if (outfieldProfile.boundaryScoring >= 8) {
-    weights['6'] += 1;
-    weights['4'] += 2;
-    weights['0'] -= 3;
-  }
 
   const abilityForPaceBase = (striker?.abilityToPlayPaceBall || 50) + (pitchProfile.goodForBatting || 0);
   const abilityForSpinBase = (striker?.abilityToPlaySpinBall || 50) + (pitchProfile.goodForBatting || 0);
@@ -234,46 +170,27 @@ export const buildAdminMatrix = (gameState) => {
   const bowlingAbility = bowler ? (isPaceBowler ? bowlingPaceAbility : bowlingSpinAbility) : 0;
   const abilityDifference = battingAbility - bowlingAbility;
 
-  if (striker?.id && battingRoles?.captainId === striker.id) {
-    applyDelta(weights, { 0: -3, 1: 3 });
-  }
-
-  if (striker?.id && battingRoles?.viceCaptainId === striker.id) {
-    applyDelta(weights, { 0: -1, 1: 1 });
-  }
-
-  if (bowler?.id && bowlingRoles?.captainId === bowler.id) {
-    applyDelta(weights, { 0: 3, 1: -3 });
-  }
-
-  if (bowler?.id && bowlingRoles?.viceCaptainId === bowler.id) {
-    applyDelta(weights, { 0: 1, 1: -1 });
-  }
-
-  if (striker && bowler) {
-    applyDelta(weights, abilityShiftByDiff(abilityDifference));
-  }
-
   const isUserBatting = isOwnBatting;
   const isUserBowling = !isOwnBatting;
   const appliedBattingIntent = isUserBatting && innings?.freeHitArmed ? battingAction.freeHit : gameState.battingIntent;
-
-  if (isUserBatting) applyDelta(weights, battingIntentShift[appliedBattingIntent]);
-  if (isUserBowling) applyDelta(weights, bowlingIntentShift[gameState.bowlingIntent]);
-
-  const normalized = {};
-  outcomeOrder.forEach((outcome) => {
-    normalized[outcome] = Math.max(0, Math.round(weights[outcome] || 0));
+  const weights = buildOutcomeWeights({
+    striker,
+    bowler,
+    inningState: innings || {},
+    isUserBatting,
+    isUserBowling,
+    battingRoles,
+    bowlingRoles,
+    bowlingTeamName,
+    matchCondition: gameState.matchCondition || {},
+    matchType,
+    matchTypeKey: gameState.matchTypeKey,
+    battingIntent: gameState.battingIntent,
+    battingTactics: gameState.battingTactics,
+    bowlingIntent: gameState.bowlingIntent,
+    bowlingTactics: isUserBowling ? gameState.bowlingTactics : undefined,
+    locationCountry: gameState.locationCountry,
   });
-
-  if (appliedBattingIntent === battingAction.freeHit) {
-    normalized.W = 0;
-  }
-
-  const nonDotTotal = outcomeOrder
-    .filter((item) => item !== '0')
-    .reduce((sum, item) => sum + normalized[item], 0);
-  normalized['0'] = Math.max(0, 100 - nonDotTotal);
 
   return {
     isOwnBatting,
@@ -300,6 +217,6 @@ export const buildAdminMatrix = (gameState) => {
         : 'Normal Phase',
       oversLeft: Math.max(0, matchType.over - Math.floor((innings?.balls || 0) / 6)),
     },
-    rows: outcomeOrder.map((key) => ({ key, value: normalized[key] || 0 })),
+    rows: outcomeOrder.map((key) => ({ key, value: weights[key] || 0 })),
   };
 };
