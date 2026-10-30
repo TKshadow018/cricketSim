@@ -143,12 +143,10 @@ test('generates custom attributes for every player archetype and handles mixed c
       const skillTypes = player.skills.map((skillName) =>
         skillList.find((skill) => skill.name === skillName).affects
       );
-      if (playerType === 'batsman') {
-        expect(skillTypes).not.toContain('bowling');
-      }
-      if (playerType === 'bowler pacer' || playerType === 'bowler spinner') {
-        expect(skillTypes).not.toContain('batting');
-      }
+      expect(skillTypes.some((type) =>
+        (playerType === 'batsman' && type === 'bowling') ||
+        (['bowler pacer', 'bowler spinner'].includes(playerType) && type === 'batting')
+      )).toBe(false);
       const latestCustom = createPerson.mock.calls[createPerson.mock.calls.length - 1][0].custom;
       expect(latestCustom.find((entry) => entry.field === 'isWicketKeeper').value).toBe(isWicketKeeper);
     });
@@ -273,6 +271,7 @@ test('distributes every national roster across its domestic clubs with unique ca
     expect(nationalPlayers).toHaveLength(BangladeshPlayers.length + IndiaPlayers.length);
     expect(new Set(nationalPlayers.map((player) => player.id)).size).toBe(nationalPlayers.length);
     expect(nationalPlayers.every((player) => player.skills.length <= 2)).toBe(true);
+    expect(nationalPlayers.find((player) => player.name === 'Virat Kohli').skills).toContain('CoverDriveArtist');
     expect(nationalPlayers.filter((player) => player.country === 'Bangladesh').map((player) => player.name).sort())
       .toEqual(BangladeshPlayers.map((player) => player.name).sort());
     expect(nationalPlayers.filter((player) => player.country === 'India').map((player) => player.name).sort())
