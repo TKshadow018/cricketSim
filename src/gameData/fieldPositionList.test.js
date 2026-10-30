@@ -24,8 +24,8 @@ describe('cricket field reference data', () => {
     const positionKeys = new Set(fieldPositionList.map(({ key }) => key));
 
     expect(fieldSettingList.map(({ key }) => key)).toEqual([
-      'attacking',
       'balanced',
+      'attacking',
       'boundary',
     ]);
 

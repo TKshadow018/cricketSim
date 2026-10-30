@@ -1,23 +1,5 @@
 export const fieldSettingList = [
   {
-    key: 'attacking',
-    label: 'Attacking field',
-    shortLabel: 'Attacking',
-    description: 'Crowd the bat and create close-catching chances.',
-    positions: [
-      'wicketkeeper',
-      'firstSlip',
-      'secondSlip',
-      'gully',
-      'point',
-      'cover',
-      'midOff',
-      'midOn',
-      'shortLeg',
-      'shortMidWicket',
-    ],
-  },
-  {
     key: 'balanced',
     label: 'Balanced field',
     shortLabel: 'Balanced',
@@ -33,6 +15,24 @@ export const fieldSettingList = [
       'squareLeg',
       'fineLeg',
       'longOn',
+    ],
+  },
+  {
+    key: 'attacking',
+    label: 'Attacking field',
+    shortLabel: 'Attacking',
+    description: 'Crowd the bat and create close-catching chances.',
+    positions: [
+      'wicketkeeper',
+      'firstSlip',
+      'secondSlip',
+      'gully',
+      'point',
+      'cover',
+      'midOff',
+      'midOn',
+      'shortLeg',
+      'shortMidWicket',
     ],
   },
   {

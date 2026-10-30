@@ -40,7 +40,7 @@ function BowlingFieldMap({ preset = 'balanced' }) {
               stroke="#102117"
               strokeWidth="2"
             >
-            <title>{position.name}</title>
+              <title>{position.name}</title>
             </circle>
           ))}
         </g>
