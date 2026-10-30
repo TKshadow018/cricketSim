@@ -218,6 +218,15 @@ Current rules scope user data to authenticated owner paths under:
 npm run firebase:deploy
 ```
 
+### 5) Automatically Deploy Hosting
+
+The GitHub Actions workflow deploys the production site to Firebase Hosting after every push to `main`. In the repository's **Settings → Secrets and variables → Actions**, add:
+
+- `FIREBASE_PROJECT_ID` — the Firebase project ID.
+- `FIREBASE_SERVICE_ACCOUNT` — the full JSON key for a service account with the **Firebase Hosting Admin** role on that project.
+
+Keep the service account key in GitHub Secrets; do not commit it to the repository.
+
 ## Available Scripts
 
 - `npm start` — start local development server.
