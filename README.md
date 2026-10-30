@@ -122,6 +122,12 @@ The simulator progresses through these stages:
 - Wicketkeeper must be set.
 - You can create custom players and auto-pick XIs.
 
+### Planned Engine Improvements
+
+The [settings and fielding impact plan](src/features/game/match-engine-settings-impact-plan.md)
+compares three approaches to deeper batting, bowling, and field-placement interactions, with
+a recommended design and validation roadmap. It is a proposal only; gameplay is unchanged.
+
 ## Man of the Match (MoM)
 
 - At match end, simulator generates **Top 5** MoM recommendations.
