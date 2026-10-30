@@ -3,6 +3,11 @@
 **Status:** Implemented as the first playable batting-and-bowling cockpit. The current controls,
 legacy-save migration, probability modifiers, and delivery tracker are described below.
 
+For the proposed next engine iteration, see
+[Match engine: meaningful settings and fielding impact](./match-engine-settings-impact-plan.md).
+It compares three approaches for connecting all gameplay settings to two-sided tactical
+interactions and the displayed field. That proposal is documentation only, not implemented.
+
 ## Goal
 
 Replace the current intent-button-only match experience with a more tactical live-match
