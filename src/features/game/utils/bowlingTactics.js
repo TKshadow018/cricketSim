@@ -1,4 +1,5 @@
 import { bowlingAction } from '../../../gameData/actionType';
+import { fieldSettingList } from '../../../gameData/fieldSettingList';
 
 export const DEFAULT_BOWLING_TACTICS = {
   overPlan: 'balanced',
@@ -16,11 +17,11 @@ export const BOWLING_OVER_PLANS = [
   { key: 'contain', label: 'Protect boundaries', description: 'Guard the rope and accept some singles.' },
 ];
 
-export const BOWLING_FIELD_PRESETS = [
-  { key: 'balanced', label: 'Balanced field', shortLabel: 'Balanced' },
-  { key: 'attacking', label: 'Attacking field', shortLabel: 'Attacking' },
-  { key: 'boundary', label: 'Boundary field', shortLabel: 'Boundary' },
-];
+export const BOWLING_FIELD_PRESETS = fieldSettingList.map(({ key, label, shortLabel }) => ({
+  key,
+  label,
+  shortLabel,
+}));
 
 export const BOWLING_LINES = [
   { key: 'outside', label: 'Outside channel' },
