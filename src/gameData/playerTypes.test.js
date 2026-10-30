@@ -1,6 +1,7 @@
 import { classifyPlayerType, countBowlingRolePlayers } from './playerTypes';
 import { playerListForNation } from './playerListForNation';
-import { assignCareerSkills, getNationalPlayerSkills } from './playerSkills';
+import IndiaPlayers from './players/India';
+import { assignCareerSkills } from './playerSkills';
 import { skillList } from './skillList';
 import { selectAIPlayingXI } from '../features/game/utils/controllerCommonUtils';
 
@@ -78,11 +79,13 @@ describe('national player type classification', () => {
 
     expect(skillList).toHaveLength(20);
     expect(new Set(skillNames).size).toBe(skillNames.length);
-    expect(skillList.every(({ affects, frequency, name }) =>
-      typeof name === 'string' &&
-      ['batting', 'bowling', 'fielding', 'personality'].includes(affects) &&
-      frequency >= 0 &&
-      frequency <= 100
+    expect(skillList.every((skill) =>
+      typeof skill.name === 'string' &&
+      ['batting', 'bowling', 'fielding', 'personality'].includes(skill.affects) &&
+      typeof skill.icon === 'string' &&
+      skill.icon.length > 0 &&
+      skill.frequency >= 0 &&
+      skill.frequency <= 100
     )).toBe(true);
     players.forEach((player) => {
       expect(Array.isArray(player.skills)).toBe(true);
@@ -91,12 +94,6 @@ describe('national player type classification', () => {
     });
     expect(players.some((player) => player.skills.length === 0)).toBe(true);
     expect(players.some((player) => player.skills.length > 0)).toBe(true);
-  });
-
-  test('curates national player skills by identity and real-world strengths', () => {
-    expect(getNationalPlayerSkills({ name: 'Jasprit Bumrah' })).toContain('YorkerKing');
-    expect(getNationalPlayerSkills({ name: 'Virat Kohli' })).toContain('CoverDriveArtist');
-    expect(getNationalPlayerSkills({ name: 'Unknown Player' })).toEqual([]);
   });
 
   test('keeps curated national batting and bowling skills within the matching player roles', () => {
@@ -112,6 +109,14 @@ describe('national player type classification', () => {
       });
       expect(hasRoleMismatch).toBe(false);
     });
+  });
+
+  test('keeps national skills on the exported player records', () => {
+    Object.values(playerListForNation).flat().forEach((player) => {
+      expect(Array.isArray(player.skills)).toBe(true);
+    });
+    expect(IndiaPlayers.find(({ name }) => name === 'Jasprit Bumrah').skills).toContain('YorkerKing');
+    expect(IndiaPlayers.find(({ name }) => name === 'Virat Kohli').skills).toContain('CoverDriveArtist');
   });
 
   test('randomly assigns career skills by frequency without crossing player roles', () => {

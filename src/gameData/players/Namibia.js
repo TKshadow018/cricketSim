@@ -1,9 +1,9 @@
-import { addSkillsToPlayers } from '../playerSkills';
 
 const NamibiaPlayers = [
   {
     "id": 1,
     "name": "Gerhard Erasmus",
+    "skills": ['Anchor', 'SafeHands', 'CaptainCalm'],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 74,
@@ -23,6 +23,7 @@ const NamibiaPlayers = [
   {
     "id": 2,
     "name": "Michael van Lingen",
+    "skills": [],
     "abilityToPlayPaceBall": 82,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 86,
@@ -42,6 +43,7 @@ const NamibiaPlayers = [
   {
     "id": 3,
     "name": "Nikolaas Davin",
+    "skills": [],
     "abilityToPlayPaceBall": 82,
     "abilityToPlaySpinBall": 80,
     "battingAggresion": 73,
@@ -61,6 +63,7 @@ const NamibiaPlayers = [
   {
     "id": 4,
     "name": "Jan Nicol Loftie-Eaton",
+    "skills": [],
     "abilityToPlayPaceBall": 72,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 70,
@@ -80,6 +83,7 @@ const NamibiaPlayers = [
   {
     "id": 5,
     "name": "David Wiese",
+    "skills": ['Finisher', 'SeamSpecialist'],
     "abilityToPlayPaceBall": 83,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 76,
@@ -99,6 +103,7 @@ const NamibiaPlayers = [
   {
     "id": 6,
     "name": "JJ Smit",
+    "skills": ['HardHitter', 'SeamSpecialist'],
     "abilityToPlayPaceBall": 82,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 75,
@@ -118,6 +123,7 @@ const NamibiaPlayers = [
   {
     "id": 7,
     "name": "Jan Frylinck",
+    "skills": [],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 70,
     "battingAggresion": 74,
@@ -137,6 +143,7 @@ const NamibiaPlayers = [
   {
     "id": 8,
     "name": "Zane Green",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 78,
@@ -156,6 +163,7 @@ const NamibiaPlayers = [
   {
     "id": 9,
     "name": "Malan Kruger",
+    "skills": [],
     "abilityToPlayPaceBall": 77,
     "abilityToPlaySpinBall": 74,
     "battingAggresion": 76,
@@ -175,6 +183,7 @@ const NamibiaPlayers = [
   {
     "id": 10,
     "name": "Jean-Pierre Kotze",
+    "skills": [],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 80,
@@ -194,6 +203,7 @@ const NamibiaPlayers = [
   {
     "id": 11,
     "name": "Ruben Trumpelmann",
+    "skills": ['SwingMaster', 'YorkerKing'],
     "abilityToPlayPaceBall": 53,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 39,
@@ -213,6 +223,7 @@ const NamibiaPlayers = [
   {
     "id": 12,
     "name": "Bernard Scholtz",
+    "skills": ['FlightMaster', 'SpinWizard'],
     "abilityToPlayPaceBall": 50,
     "abilityToPlaySpinBall": 58,
     "battingAggresion": 38,
@@ -232,6 +243,7 @@ const NamibiaPlayers = [
   {
     "id": 13,
     "name": "Tangeni Lungameni",
+    "skills": [],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 38,
@@ -251,6 +263,7 @@ const NamibiaPlayers = [
   {
     "id": 14,
     "name": "Ben Shikongo",
+    "skills": [],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -270,6 +283,7 @@ const NamibiaPlayers = [
   {
     "id": 15,
     "name": "Karl Birkenstock",
+    "skills": [],
     "abilityToPlayPaceBall": 54,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 40,
@@ -289,6 +303,7 @@ const NamibiaPlayers = [
   {
     "id": 16,
     "name": "Maurice van der Westhuizen",
+    "skills": [],
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 90,
@@ -308,6 +323,7 @@ const NamibiaPlayers = [
   {
     "id": 17,
     "name": "Michau du Preez",
+    "skills": [],
     "abilityToPlayPaceBall": 85,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 89,
@@ -327,6 +343,7 @@ const NamibiaPlayers = [
   {
     "id": 18,
     "name": "Divan la Cock",
+    "skills": [],
     "abilityToPlayPaceBall": 78,
     "abilityToPlaySpinBall": 74,
     "battingAggresion": 77,
@@ -346,6 +363,7 @@ const NamibiaPlayers = [
   {
     "id": 19,
     "name": "Ruben Claassen",
+    "skills": [],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 38,
@@ -365,6 +383,7 @@ const NamibiaPlayers = [
   {
     "id": 20,
     "name": "Jonathan Smit",
+    "skills": [],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 74,
@@ -383,4 +402,4 @@ const NamibiaPlayers = [
   }
 ];
 
-export default addSkillsToPlayers(NamibiaPlayers);
+export default NamibiaPlayers;

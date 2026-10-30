@@ -48,6 +48,7 @@ const playerListForNation = Object.fromEntries(
     country,
     players.map((player) => ({
       ...player,
+      skills: Array.isArray(player.skills) ? player.skills : [],
       playerType: classifyPlayerType(player),
     })),
   ])

@@ -1,9 +1,9 @@
-import { addSkillsToPlayers } from '../playerSkills';
 
 const SriLankaPlayers = [
   {
     "id": 1,
     "name": "Pathum Nissanka",
+    "skills": ['Anchor', 'CoverDriveArtist'],
     "abilityToPlayPaceBall": 91,
     "abilityToPlaySpinBall": 89,
     "battingAggresion": 78,
@@ -23,6 +23,7 @@ const SriLankaPlayers = [
   {
     "id": 2,
     "name": "Kusal Perera",
+    "skills": ['PowerplaySpecialist', 'HardHitter'],
     "abilityToPlayPaceBall": 78,
     "abilityToPlaySpinBall": 74,
     "battingAggresion": 77,
@@ -42,6 +43,7 @@ const SriLankaPlayers = [
   {
     "id": 3,
     "name": "Kusal Mendis",
+    "skills": ['HardHitter', 'CoverDriveArtist'],
     "abilityToPlayPaceBall": 87,
     "abilityToPlaySpinBall": 83,
     "battingAggresion": 82,
@@ -61,6 +63,7 @@ const SriLankaPlayers = [
   {
     "id": 4,
     "name": "Avishka Fernando",
+    "skills": [],
     "abilityToPlayPaceBall": 83,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 87,
@@ -80,6 +83,7 @@ const SriLankaPlayers = [
   {
     "id": 5,
     "name": "Charith Asalanka",
+    "skills": ['Anchor', 'Finisher'],
     "abilityToPlayPaceBall": 72,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 70,
@@ -99,6 +103,7 @@ const SriLankaPlayers = [
   {
     "id": 6,
     "name": "Sadeera Samarawickrama",
+    "skills": [],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 80,
@@ -118,6 +123,7 @@ const SriLankaPlayers = [
   {
     "id": 7,
     "name": "Kamindu Mendis",
+    "skills": [],
     "abilityToPlayPaceBall": 75,
     "abilityToPlaySpinBall": 78,
     "battingAggresion": 73,
@@ -137,6 +143,7 @@ const SriLankaPlayers = [
   {
     "id": 8,
     "name": "Dasun Shanaka",
+    "skills": ['Finisher', 'ClutchPerformer'],
     "abilityToPlayPaceBall": 78,
     "abilityToPlaySpinBall": 71,
     "battingAggresion": 76,
@@ -156,6 +163,7 @@ const SriLankaPlayers = [
   {
     "id": 9,
     "name": "Wanindu Hasaranga",
+    "skills": ['GooglyGenius', 'SpinWizard', 'Finisher'],
     "abilityToPlayPaceBall": 77,
     "abilityToPlaySpinBall": 82,
     "battingAggresion": 70,
@@ -175,6 +183,7 @@ const SriLankaPlayers = [
   {
     "id": 10,
     "name": "Maheesh Theekshana",
+    "skills": ['MagicHand', 'DoosraArtist'],
     "abilityToPlayPaceBall": 49,
     "abilityToPlaySpinBall": 57,
     "battingAggresion": 37,
@@ -194,6 +203,7 @@ const SriLankaPlayers = [
   {
     "id": 11,
     "name": "Dunith Wellalage",
+    "skills": [],
     "abilityToPlayPaceBall": 74,
     "abilityToPlaySpinBall": 78,
     "battingAggresion": 72,
@@ -213,6 +223,7 @@ const SriLankaPlayers = [
   {
     "id": 12,
     "name": "Matheesha Pathirana",
+    "skills": ['YorkerKing', 'SeamSpecialist'],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -232,6 +243,7 @@ const SriLankaPlayers = [
   {
     "id": 13,
     "name": "Dushmantha Chameera",
+    "skills": [],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -251,6 +263,7 @@ const SriLankaPlayers = [
   {
     "id": 14,
     "name": "Dilshan Madushanka",
+    "skills": [],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 38,
@@ -270,6 +283,7 @@ const SriLankaPlayers = [
   {
     "id": 15,
     "name": "Kasun Rajitha",
+    "skills": [],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -289,6 +303,7 @@ const SriLankaPlayers = [
   {
     "id": 16,
     "name": "Nuwan Thushara",
+    "skills": [],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 38,
@@ -308,6 +323,7 @@ const SriLankaPlayers = [
   {
     "id": 17,
     "name": "Jeffrey Vandersay",
+    "skills": [],
     "abilityToPlayPaceBall": 51,
     "abilityToPlaySpinBall": 58,
     "battingAggresion": 39,
@@ -327,6 +343,7 @@ const SriLankaPlayers = [
   {
     "id": 18,
     "name": "Niroshan Dickwella",
+    "skills": ['WicketWall', 'HardHitter'],
     "abilityToPlayPaceBall": 80,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 79,
@@ -346,6 +363,7 @@ const SriLankaPlayers = [
   {
     "id": 19,
     "name": "Nuwanidu Fernando",
+    "skills": [],
     "abilityToPlayPaceBall": 82,
     "abilityToPlaySpinBall": 80,
     "battingAggresion": 73,
@@ -365,6 +383,7 @@ const SriLankaPlayers = [
   {
     "id": 20,
     "name": "Chamika Karunaratne",
+    "skills": [],
     "abilityToPlayPaceBall": 75,
     "abilityToPlaySpinBall": 69,
     "battingAggresion": 73,
@@ -383,4 +402,4 @@ const SriLankaPlayers = [
   }
 ];
 
-export default addSkillsToPlayers(SriLankaPlayers);
+export default SriLankaPlayers;

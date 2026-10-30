@@ -1,9 +1,9 @@
-import { addSkillsToPlayers } from '../playerSkills';
 
 const EnglandPlayers = [
   {
     "id": 1,
     "name": "Jos Buttler",
+    "skills": ['PowerplaySpecialist', 'HardHitter', 'Finisher'],
     "abilityToPlayPaceBall": 85,
     "abilityToPlaySpinBall": 82,
     "battingAggresion": 80,
@@ -23,6 +23,7 @@ const EnglandPlayers = [
   {
     "id": 2,
     "name": "Jonny Bairstow",
+    "skills": ['PowerplaySpecialist', 'HardHitter'],
     "abilityToPlayPaceBall": 78,
     "abilityToPlaySpinBall": 74,
     "battingAggresion": 77,
@@ -42,6 +43,7 @@ const EnglandPlayers = [
   {
     "id": 3,
     "name": "Phil Salt",
+    "skills": ['PowerplaySpecialist', 'HardHitter'],
     "abilityToPlayPaceBall": 80,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 79,
@@ -61,6 +63,7 @@ const EnglandPlayers = [
   {
     "id": 4,
     "name": "Ben Duckett",
+    "skills": [],
     "abilityToPlayPaceBall": 82,
     "abilityToPlaySpinBall": 80,
     "battingAggresion": 73,
@@ -80,6 +83,7 @@ const EnglandPlayers = [
   {
     "id": 5,
     "name": "Joe Root",
+    "skills": ['Anchor', 'CoverDriveArtist', 'SweepSpecialist'],
     "abilityToPlayPaceBall": 90,
     "abilityToPlaySpinBall": 88,
     "battingAggresion": 77,
@@ -99,6 +103,7 @@ const EnglandPlayers = [
   {
     "id": 6,
     "name": "Harry Brook",
+    "skills": ['HardHitter', 'Finisher'],
     "abilityToPlayPaceBall": 94,
     "abilityToPlaySpinBall": 85,
     "battingAggresion": 94,
@@ -118,6 +123,7 @@ const EnglandPlayers = [
   {
     "id": 7,
     "name": "Ben Stokes",
+    "skills": ['Finisher', 'ClutchPerformer', 'CaptainCalm'],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 74,
@@ -137,6 +143,7 @@ const EnglandPlayers = [
   {
     "id": 8,
     "name": "Liam Livingstone",
+    "skills": ['HardHitter', 'Finisher'],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 74,
@@ -156,6 +163,7 @@ const EnglandPlayers = [
   {
     "id": 9,
     "name": "Moeen Ali",
+    "skills": ['SweepSpecialist', 'SpinWizard'],
     "abilityToPlayPaceBall": 72,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 70,
@@ -175,6 +183,7 @@ const EnglandPlayers = [
   {
     "id": 10,
     "name": "Sam Curran",
+    "skills": ['Finisher', 'SwingMaster'],
     "abilityToPlayPaceBall": 74,
     "abilityToPlaySpinBall": 69,
     "battingAggresion": 72,
@@ -194,6 +203,7 @@ const EnglandPlayers = [
   {
     "id": 11,
     "name": "Chris Woakes",
+    "skills": [],
     "abilityToPlayPaceBall": 74,
     "abilityToPlaySpinBall": 69,
     "battingAggresion": 72,
@@ -213,6 +223,7 @@ const EnglandPlayers = [
   {
     "id": 12,
     "name": "Jofra Archer",
+    "skills": ['YorkerKing', 'SeamSpecialist'],
     "abilityToPlayPaceBall": 54,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 40,
@@ -232,6 +243,7 @@ const EnglandPlayers = [
   {
     "id": 13,
     "name": "Mark Wood",
+    "skills": ['SeamSpecialist', 'YorkerKing'],
     "abilityToPlayPaceBall": 53,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 39,
@@ -251,6 +263,7 @@ const EnglandPlayers = [
   {
     "id": 14,
     "name": "Reece Topley",
+    "skills": [],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -270,6 +283,7 @@ const EnglandPlayers = [
   {
     "id": 15,
     "name": "Adil Rashid",
+    "skills": ['GooglyGenius', 'FlightMaster'],
     "abilityToPlayPaceBall": 51,
     "abilityToPlaySpinBall": 58,
     "battingAggresion": 39,
@@ -289,6 +303,7 @@ const EnglandPlayers = [
   {
     "id": 16,
     "name": "Gus Atkinson",
+    "skills": [],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -308,6 +323,7 @@ const EnglandPlayers = [
   {
     "id": 17,
     "name": "Brydon Carse",
+    "skills": [],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -327,6 +343,7 @@ const EnglandPlayers = [
   {
     "id": 18,
     "name": "Will Jacks",
+    "skills": [],
     "abilityToPlayPaceBall": 74,
     "abilityToPlaySpinBall": 78,
     "battingAggresion": 72,
@@ -346,6 +363,7 @@ const EnglandPlayers = [
   {
     "id": 19,
     "name": "Jamie Overton",
+    "skills": [],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 70,
     "battingAggresion": 74,
@@ -365,6 +383,7 @@ const EnglandPlayers = [
   {
     "id": 20,
     "name": "Tom Hartley",
+    "skills": [],
     "abilityToPlayPaceBall": 48,
     "abilityToPlaySpinBall": 57,
     "battingAggresion": 36,
@@ -383,4 +402,4 @@ const EnglandPlayers = [
   }
 ];
 
-export default addSkillsToPlayers(EnglandPlayers);
+export default EnglandPlayers;

@@ -1,9 +1,9 @@
-import { addSkillsToPlayers } from '../playerSkills';
 
 const NewZealandPlayers = [
   {
     "id": 1,
     "name": "Kane Williamson",
+    "skills": ['Anchor', 'CoverDriveArtist', 'ClutchPerformer'],
     "abilityToPlayPaceBall": 87,
     "abilityToPlaySpinBall": 87,
     "battingAggresion": 74,
@@ -23,6 +23,7 @@ const NewZealandPlayers = [
   {
     "id": 2,
     "name": "Devon Conway",
+    "skills": ['Anchor', 'CoverDriveArtist'],
     "abilityToPlayPaceBall": 77,
     "abilityToPlaySpinBall": 74,
     "battingAggresion": 76,
@@ -42,6 +43,7 @@ const NewZealandPlayers = [
   {
     "id": 3,
     "name": "Finn Allen",
+    "skills": ['PowerplaySpecialist', 'HardHitter'],
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 90,
@@ -61,6 +63,7 @@ const NewZealandPlayers = [
   {
     "id": 4,
     "name": "Rachin Ravindra",
+    "skills": ['CoverDriveArtist', 'SweepSpecialist'],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 83,
     "battingAggresion": 72,
@@ -80,6 +83,7 @@ const NewZealandPlayers = [
   {
     "id": 5,
     "name": "Daryl Mitchell",
+    "skills": [],
     "abilityToPlayPaceBall": 77,
     "abilityToPlaySpinBall": 70,
     "battingAggresion": 75,
@@ -99,6 +103,7 @@ const NewZealandPlayers = [
   {
     "id": 6,
     "name": "Glenn Phillips",
+    "skills": ['HardHitter', 'Finisher', 'SafeHands'],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 80,
@@ -118,6 +123,7 @@ const NewZealandPlayers = [
   {
     "id": 7,
     "name": "Tom Latham",
+    "skills": [],
     "abilityToPlayPaceBall": 77,
     "abilityToPlaySpinBall": 74,
     "battingAggresion": 76,
@@ -137,6 +143,7 @@ const NewZealandPlayers = [
   {
     "id": 8,
     "name": "Mitchell Santner",
+    "skills": ['FlightMaster', 'SpinWizard'],
     "abilityToPlayPaceBall": 78,
     "abilityToPlaySpinBall": 82,
     "battingAggresion": 71,
@@ -156,6 +163,7 @@ const NewZealandPlayers = [
   {
     "id": 9,
     "name": "Michael Bracewell",
+    "skills": [],
     "abilityToPlayPaceBall": 73,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 71,
@@ -175,6 +183,7 @@ const NewZealandPlayers = [
   {
     "id": 10,
     "name": "Jimmy Neesham",
+    "skills": [],
     "abilityToPlayPaceBall": 74,
     "abilityToPlaySpinBall": 69,
     "battingAggresion": 72,
@@ -194,6 +203,7 @@ const NewZealandPlayers = [
   {
     "id": 11,
     "name": "Trent Boult",
+    "skills": ['SwingMaster', 'YorkerKing'],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 38,
@@ -213,6 +223,7 @@ const NewZealandPlayers = [
   {
     "id": 12,
     "name": "Tim Southee",
+    "skills": ['SwingMaster', 'SeamSpecialist'],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -232,6 +243,7 @@ const NewZealandPlayers = [
   {
     "id": 13,
     "name": "Lockie Ferguson",
+    "skills": [],
     "abilityToPlayPaceBall": 54,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 40,
@@ -251,6 +263,7 @@ const NewZealandPlayers = [
   {
     "id": 14,
     "name": "Matt Henry",
+    "skills": [],
     "abilityToPlayPaceBall": 53,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 39,
@@ -270,6 +283,7 @@ const NewZealandPlayers = [
   {
     "id": 15,
     "name": "Kyle Jamieson",
+    "skills": [],
     "abilityToPlayPaceBall": 78,
     "abilityToPlaySpinBall": 71,
     "battingAggresion": 76,
@@ -289,6 +303,7 @@ const NewZealandPlayers = [
   {
     "id": 16,
     "name": "Ish Sodhi",
+    "skills": [],
     "abilityToPlayPaceBall": 50,
     "abilityToPlaySpinBall": 58,
     "battingAggresion": 38,
@@ -308,6 +323,7 @@ const NewZealandPlayers = [
   {
     "id": 17,
     "name": "Will Young",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 70,
@@ -327,6 +343,7 @@ const NewZealandPlayers = [
   {
     "id": 18,
     "name": "Mark Chapman",
+    "skills": [],
     "abilityToPlayPaceBall": 85,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 89,
@@ -346,6 +363,7 @@ const NewZealandPlayers = [
   {
     "id": 19,
     "name": "Adam Milne",
+    "skills": [],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -365,6 +383,7 @@ const NewZealandPlayers = [
   {
     "id": 20,
     "name": "Ben Sears",
+    "skills": [],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -383,4 +402,4 @@ const NewZealandPlayers = [
   }
 ];
 
-export default addSkillsToPlayers(NewZealandPlayers);
+export default NewZealandPlayers;

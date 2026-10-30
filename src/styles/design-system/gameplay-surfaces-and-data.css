@@ -328,6 +328,48 @@
   color: var(--brand-primary);
 }
 
+.sim-career-player-skills {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sim-career-player-skill {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  padding: 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-high);
+}
+
+.sim-career-player-skill img {
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.sim-career-player-skill span {
+  display: grid;
+  min-width: 0;
+}
+
+.sim-career-player-skill strong {
+  color: var(--text-main);
+  overflow-wrap: anywhere;
+}
+
+.sim-career-player-skill small {
+  color: var(--text-muted);
+  text-transform: capitalize;
+}
+
 .sim-save-row-actions,
 .sim-career-tools {
   gap: 0.65rem;
