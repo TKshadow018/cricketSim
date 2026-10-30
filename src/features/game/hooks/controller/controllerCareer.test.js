@@ -44,8 +44,6 @@ test('starts careers only with valid setup and creates supported player archetyp
         .find((action) => action.type === 'setCareerPlayerProfileAction');
       expect(profileAction.payload.playerType).toBe(expectedType);
       expect(profileAction.payload.playerId).toMatch(/^career-player-/);
-      expect(profileAction.payload.skills).toEqual(expect.any(Array));
-      expect(profileAction.payload.skills.length).toBeLessThanOrEqual(2);
       expect(run.dispatch).toHaveBeenCalledWith({ type: 'setStageAction', payload: matchStatusEnum.CareerAuction });
       if (playerType === 'bowler') {
         expect(profileAction.payload.paceAbility).toBeLessThan(profileAction.payload.spinAbility);
@@ -65,6 +63,22 @@ test('starts careers only with valid setup and creates supported player archetyp
       domesticTeams,
     });
     expect(noAuctionWinner.dispatch).not.toHaveBeenCalled();
+  });
+
+  test('includes at most two assigned skills in the career player profile', () => {
+    const run = makeFlow();
+    run.flow.beginCareer({
+      playerProfile: { name: 'Skilled Player', playerType: 'batsman' },
+      domesticCountry: 'Country A',
+      domesticTeams,
+    });
+
+    const profileAction = run.dispatch.mock.calls
+      .map(([action]) => action)
+      .find((action) => action.type === 'setCareerPlayerProfileAction');
+
+    expect(profileAction.payload.skills).toEqual(expect.any(Array));
+    expect(profileAction.payload.skills.length).toBeLessThanOrEqual(2);
   });
 
 test('uses safe setup defaults when optional auction data is absent', () => {

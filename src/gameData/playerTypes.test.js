@@ -1,5 +1,6 @@
 import { classifyPlayerType, countBowlingRolePlayers } from './playerTypes';
 import { playerListForNation } from './playerListForNation';
+import { assignPlayerSkills } from './playerSkills';
 import { skillList } from './skillList';
 import { selectAIPlayingXI } from '../features/game/utils/controllerCommonUtils';
 
@@ -83,6 +84,14 @@ describe('national player type classification', () => {
     });
     expect(players.some((player) => player.skills.length === 0)).toBe(true);
     expect(players.some((player) => player.skills.length > 0)).toBe(true);
+  });
+
+  test('matches player skills to their strongest batting or bowling abilities', () => {
+    expect(assignPlayerSkills({ paceAbility: 95 })).toContain('YorkerKing');
+    expect(assignPlayerSkills({ spinAbility: 95 })).toContain('SpinWizard');
+    expect(assignPlayerSkills({ battingAggresion: 92 })).toContain('HardHitter');
+    expect(assignPlayerSkills({ paceAbility: 10, spinAbility: 10 })).toEqual([]);
+    expect(assignPlayerSkills({ paceAbility: 95 }, 2)).toHaveLength(2);
   });
 
   test('auto-picks a qualifying XI for each national roster', () => {

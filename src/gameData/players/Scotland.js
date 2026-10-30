@@ -1,3 +1,5 @@
+import { addSkillsToPlayers } from '../playerSkills';
+
 const ScotlandPlayers = [
   {
     "id": 1,
@@ -381,4 +383,4 @@ const ScotlandPlayers = [
   }
 ];
 
-export default ScotlandPlayers;
+export default addSkillsToPlayers(ScotlandPlayers);

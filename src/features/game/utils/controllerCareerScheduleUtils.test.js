@@ -259,6 +259,7 @@ test('distributes every national roster across its domestic clubs with unique ca
     expect(teams.every((team) => team.players.some((player) => player.isNationalTeamPlayer))).toBe(true);
     expect(nationalPlayers).toHaveLength(BangladeshPlayers.length + IndiaPlayers.length);
     expect(new Set(nationalPlayers.map((player) => player.id)).size).toBe(nationalPlayers.length);
+    expect(nationalPlayers.every((player) => player.skills.length <= 2)).toBe(true);
     expect(nationalPlayers.filter((player) => player.country === 'Bangladesh').map((player) => player.name).sort())
       .toEqual(BangladeshPlayers.map((player) => player.name).sort());
     expect(nationalPlayers.filter((player) => player.country === 'India').map((player) => player.name).sort())

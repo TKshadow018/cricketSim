@@ -1,3 +1,5 @@
+import { addSkillsToPlayers } from '../playerSkills';
+
 const NamibiaPlayers = [
   {
     "id": 1,
@@ -381,4 +383,4 @@ const NamibiaPlayers = [
   }
 ];
 
-export default NamibiaPlayers;
+export default addSkillsToPlayers(NamibiaPlayers);
