@@ -105,15 +105,12 @@ describe('national player type classification', () => {
     const skillsByName = new Map(skillList.map((skill) => [skill.name, skill]));
 
     Object.values(playerListForNation).flat().forEach((player) => {
-      player.skills.forEach((name) => {
+      const hasRoleMismatch = player.skills.some((name) => {
         const domain = skillsByName.get(name).affects;
-        if (domain === 'batting') {
-          expect(battingRoles.has(player.playerType)).toBe(true);
-        }
-        if (domain === 'bowling') {
-          expect(bowlingRoles.has(player.playerType)).toBe(true);
-        }
+        return (domain === 'batting' && !battingRoles.has(player.playerType)) ||
+          (domain === 'bowling' && !bowlingRoles.has(player.playerType));
       });
+      expect(hasRoleMismatch).toBe(false);
     });
   });
 
