@@ -99,6 +99,24 @@ describe('national player type classification', () => {
     expect(getNationalPlayerSkills({ name: 'Unknown Player' })).toEqual([]);
   });
 
+  test('keeps curated national batting and bowling skills within the matching player roles', () => {
+    const battingRoles = new Set(['batsman', 'wicketkeeper', 'pace allrounder', 'spin allrounder']);
+    const bowlingRoles = new Set(['pacer', 'spiner', 'pace allrounder', 'spin allrounder']);
+    const skillsByName = new Map(skillList.map((skill) => [skill.name, skill]));
+
+    Object.values(playerListForNation).flat().forEach((player) => {
+      player.skills.forEach((name) => {
+        const domain = skillsByName.get(name).affects;
+        if (domain === 'batting') {
+          expect(battingRoles.has(player.playerType)).toBe(true);
+        }
+        if (domain === 'bowling') {
+          expect(bowlingRoles.has(player.playerType)).toBe(true);
+        }
+      });
+    });
+  });
+
   test('randomly assigns career skills by frequency without crossing player roles', () => {
     jest.spyOn(Math, 'random').mockReturnValue(0);
     const bowlerSkills = assignCareerSkills({

@@ -1,7 +1,7 @@
 import { ensurePlayerMeta, shuffleArray } from "./controllerCommonUtils";
 
 import { getDomesticLocationsForCountry } from "../../../gameData/domesticClubLocations";
-import { assignPlayerSkills } from "../../../gameData/playerSkills";
+import { limitPlayerSkills } from "../../../gameData/playerSkills";
 import { playerListForNation } from "../../../gameData/playerListForNation";
 
 import { randomInt, AI_PLAYER_TYPE_DISTRIBUTION, buildFakerPlayerData, CLUB_PREFIXES, CLUB_SUFFIXES, DOMESTIC_TEAM_PLAYER_TYPE_COUNTS, DOMESTIC_TEAM_COUNT, toSlug, DEFAULT_GLOBAL_ASSIGN_STEP_PER_TEAM, MIN_LOCAL_PLAYER_RATIO } from "./careerPlayerDataUtils";
@@ -117,7 +117,7 @@ const assignNationalPlayersToDomesticTeams = (teams, country) => {
     playersByTeam[teamIndex].push(
       ensurePlayerMeta({
         ...player,
-        skills: assignPlayerSkills(player, 2),
+        skills: limitPlayerSkills(player, 2),
         id: `national-${toSlug(country)}-${player.id ?? playerIndex + 1}`,
         country,
         sourceCountry: country,

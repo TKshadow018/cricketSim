@@ -1,5 +1,5 @@
 import { createPerson } from "faker-user";
-import { assignPlayerSkills } from '../../../gameData/playerSkills';
+import { assignCareerSkills } from '../../../gameData/playerSkills';
 
 const FAKER_USER_COUNTRY_MAP = {
   Afghanistan: 'Afghanistan',
@@ -133,7 +133,7 @@ export const buildFakerPlayerData = (country, playerType) => {
   };
   return {
     ...generatedPlayer,
-    skills: assignPlayerSkills(generatedPlayer, 2),
+    skills: assignCareerSkills({ ...generatedPlayer, playerType }, 2),
   };
 };
 
