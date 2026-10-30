@@ -44,6 +44,8 @@ test('starts careers only with valid setup and creates supported player archetyp
         .find((action) => action.type === 'setCareerPlayerProfileAction');
       expect(profileAction.payload.playerType).toBe(expectedType);
       expect(profileAction.payload.playerId).toMatch(/^career-player-/);
+      expect(profileAction.payload.skills).toEqual(expect.any(Array));
+      expect(profileAction.payload.skills.length).toBeLessThanOrEqual(2);
       expect(run.dispatch).toHaveBeenCalledWith({ type: 'setStageAction', payload: matchStatusEnum.CareerAuction });
       if (playerType === 'bowler') {
         expect(profileAction.payload.paceAbility).toBeLessThan(profileAction.payload.spinAbility);

@@ -1,5 +1,6 @@
 import { classifyPlayerType, countBowlingRolePlayers } from './playerTypes';
 import { playerListForNation } from './playerListForNation';
+import { skillList } from './skillList';
 import { selectAIPlayingXI } from '../features/game/utils/controllerCommonUtils';
 
 describe('national player type classification', () => {
@@ -68,6 +69,20 @@ describe('national player type classification', () => {
         expect(player.battingOrderPreference).toBeGreaterThanOrEqual(1);
         expect(player.battingOrderPreference).toBeLessThanOrEqual(1000);
       });
+  });
+
+  test('assigns every national player up to three skills from the shared skill list', () => {
+    const players = Object.values(playerListForNation).flat();
+
+    expect(skillList).toHaveLength(20);
+    expect(new Set(skillList).size).toBe(skillList.length);
+    players.forEach((player) => {
+      expect(Array.isArray(player.skills)).toBe(true);
+      expect(player.skills.length).toBeLessThanOrEqual(3);
+      expect(player.skills.every((skill) => skillList.includes(skill))).toBe(true);
+    });
+    expect(players.some((player) => player.skills.length === 0)).toBe(true);
+    expect(players.some((player) => player.skills.length > 0)).toBe(true);
   });
 
   test('auto-picks a qualifying XI for each national roster', () => {
