@@ -1,6 +1,6 @@
 import { classifyPlayerType, countBowlingRolePlayers } from './playerTypes';
 import { playerListForNation } from './playerListForNation';
-import { assignPlayerSkills } from './playerSkills';
+import { assignCareerSkills, getNationalPlayerSkills } from './playerSkills';
 import { skillList } from './skillList';
 import { selectAIPlayingXI } from '../features/game/utils/controllerCommonUtils';
 
@@ -74,24 +74,62 @@ describe('national player type classification', () => {
 
   test('assigns every national player up to three skills from the shared skill list', () => {
     const players = Object.values(playerListForNation).flat();
+    const skillNames = skillList.map(({ name }) => name);
 
     expect(skillList).toHaveLength(20);
-    expect(new Set(skillList).size).toBe(skillList.length);
+    expect(new Set(skillNames).size).toBe(skillNames.length);
+    expect(skillList.every(({ affects, frequency, name }) =>
+      typeof name === 'string' &&
+      ['batting', 'bowling', 'fielding', 'personality'].includes(affects) &&
+      frequency >= 0 &&
+      frequency <= 100
+    )).toBe(true);
     players.forEach((player) => {
       expect(Array.isArray(player.skills)).toBe(true);
       expect(player.skills.length).toBeLessThanOrEqual(3);
-      expect(player.skills.every((skill) => skillList.includes(skill))).toBe(true);
+      expect(player.skills.every((skill) => skillNames.includes(skill))).toBe(true);
     });
     expect(players.some((player) => player.skills.length === 0)).toBe(true);
     expect(players.some((player) => player.skills.length > 0)).toBe(true);
   });
 
-  test('matches player skills to their strongest batting or bowling abilities', () => {
-    expect(assignPlayerSkills({ paceAbility: 95 })).toContain('YorkerKing');
-    expect(assignPlayerSkills({ spinAbility: 95 })).toContain('SpinWizard');
-    expect(assignPlayerSkills({ battingAggresion: 92 })).toContain('HardHitter');
-    expect(assignPlayerSkills({ paceAbility: 10, spinAbility: 10 })).toEqual([]);
-    expect(assignPlayerSkills({ paceAbility: 95 }, 2)).toHaveLength(2);
+  test('curates national player skills by identity and real-world strengths', () => {
+    expect(getNationalPlayerSkills({ name: 'Jasprit Bumrah' })).toContain('YorkerKing');
+    expect(getNationalPlayerSkills({ name: 'Virat Kohli' })).toContain('CoverDriveArtist');
+    expect(getNationalPlayerSkills({ name: 'Unknown Player' })).toEqual([]);
+  });
+
+  test('randomly assigns career skills by frequency without crossing player roles', () => {
+    jest.spyOn(Math, 'random').mockReturnValue(0);
+    const bowlerSkills = assignCareerSkills({
+      playerType: 'pacer',
+      abilityToPlayPaceBall: 10,
+      abilityToPlaySpinBall: 10,
+      paceAbility: 90,
+      spinAbility: 10,
+    });
+    const batterSkills = assignCareerSkills({
+      playerType: 'batsman',
+      abilityToPlayPaceBall: 90,
+      abilityToPlaySpinBall: 90,
+      paceAbility: 10,
+      spinAbility: 10,
+    });
+
+    expect(bowlerSkills.length).toBeLessThanOrEqual(2);
+    expect(bowlerSkills.every((name) =>
+      skillList.find((skill) => skill.name === name).affects !== 'batting'
+    )).toBe(true);
+    expect(batterSkills.length).toBeLessThanOrEqual(2);
+    expect(batterSkills.every((name) =>
+      skillList.find((skill) => skill.name === name).affects !== 'bowling'
+    )).toBe(true);
+  });
+
+  test('honors skill frequency percentages in Career Mode', () => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.99);
+
+    expect(assignCareerSkills({ playerType: 'batsman' })).toEqual([]);
   });
 
   test('auto-picks a qualifying XI for each national roster', () => {

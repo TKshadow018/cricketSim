@@ -1,6 +1,7 @@
 import { createPerson } from 'faker-user';
 import BangladeshPlayers from '../../../gameData/players/Bangladesh';
 import IndiaPlayers from '../../../gameData/players/India';
+import { skillList } from '../../../gameData/skillList';
 import { resolveDomesticTargetPerTeam } from './careerPlayerProgressionUtils';
 import {
   assignGlobalPoolPlayersToDomesticTeams,
@@ -98,6 +99,9 @@ test('creates generated player metadata using the faker-provided name', () => {
       skills: expect.any(Array),
     });
     expect(player.skills.length).toBeLessThanOrEqual(2);
+    expect(player.skills.every((skillName) =>
+      skillList.find((skill) => skill.name === skillName).affects !== 'bowling'
+    )).toBe(true);
     const fakerOptions = createPerson.mock.calls[0][0];
     expect(fakerOptions.custom.find((entry) => entry.field === 'isWicketKeeper').value).toBe(true);
     expect(fakerOptions.custom.find((entry) => entry.field === 'abilityToPlayPaceBall')).toMatchObject({
@@ -136,6 +140,15 @@ test('generates custom attributes for every player archetype and handles mixed c
       const player = createGeneratedDomesticPlayer({ id: playerType, country: 'India', playerType });
       expect(player).toMatchObject({ id: playerType, playerType, skills: expect.any(Array) });
       expect(player.skills.length).toBeLessThanOrEqual(2);
+      const skillTypes = player.skills.map((skillName) =>
+        skillList.find((skill) => skill.name === skillName).affects
+      );
+      if (playerType === 'batsman') {
+        expect(skillTypes).not.toContain('bowling');
+      }
+      if (playerType === 'bowler pacer' || playerType === 'bowler spinner') {
+        expect(skillTypes).not.toContain('batting');
+      }
       const latestCustom = createPerson.mock.calls[createPerson.mock.calls.length - 1][0].custom;
       expect(latestCustom.find((entry) => entry.field === 'isWicketKeeper').value).toBe(isWicketKeeper);
     });

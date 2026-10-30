@@ -10,6 +10,8 @@ describe('career player skills', () => {
 
     expect(Array.isArray(player.skills)).toBe(true);
     expect(player.skills.length).toBeLessThanOrEqual(2);
-    expect(player.skills.every((skill) => skillList.includes(skill))).toBe(true);
+    expect(player.skills.every((skillName) =>
+      skillList.some((skill) => skill.name === skillName)
+    )).toBe(true);
   });
 });
