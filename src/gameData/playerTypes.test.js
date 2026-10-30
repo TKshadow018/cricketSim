@@ -96,6 +96,26 @@ describe('national player type classification', () => {
     expect(players.some((player) => player.skills.length > 0)).toBe(true);
   });
 
+  test('defines probability impact deltas for every skill using valid outcomes', () => {
+    const outcomes = new Set(['0', '1', '2', '3', '4', '6', 'wide', 'nb', 'W']);
+
+    skillList.forEach(({ impact }) => {
+      expect(impact).toBeDefined();
+      expect(Object.keys(impact).length).toBeGreaterThan(0);
+      expect(Object.entries(impact).every(([outcome, delta]) =>
+        outcomes.has(outcome) && Number.isFinite(delta)
+      )).toBe(true);
+      expect(Object.values(impact).reduce((total, delta) => total + delta, 0)).toBe(0);
+    });
+
+    expect(skillList.find(({ name }) => name === 'HardHitter').impact).toEqual({
+      '6': 3,
+      W: 1,
+      '0': -3,
+      '1': -1,
+    });
+  });
+
   test('keeps curated national batting and bowling skills within the matching player roles', () => {
     const battingRoles = new Set(['batsman', 'wicketkeeper', 'pace allrounder', 'spin allrounder']);
     const bowlingRoles = new Set(['pacer', 'spiner', 'pace allrounder', 'spin allrounder']);
