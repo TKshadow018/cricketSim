@@ -1,7 +1,9 @@
+
 const IndiaPlayers = [
   {
     "id": 1,
     "name": "Rohit Sharma",
+    "skills": ['PowerplaySpecialist', 'HardHitter', 'CaptainCalm'],
     "abilityToPlayPaceBall": 94,
     "abilityToPlaySpinBall": 85,
     "battingAggresion": 94,
@@ -21,6 +23,7 @@ const IndiaPlayers = [
   {
     "id": 2,
     "name": "Shubman Gill",
+    "skills": ['CoverDriveArtist', 'Anchor'],
     "abilityToPlayPaceBall": 89,
     "abilityToPlaySpinBall": 88,
     "battingAggresion": 76,
@@ -40,6 +43,7 @@ const IndiaPlayers = [
   {
     "id": 3,
     "name": "Virat Kohli",
+    "skills": ['CoverDriveArtist', 'Anchor', 'ClutchPerformer'],
     "abilityToPlayPaceBall": 90,
     "abilityToPlaySpinBall": 88,
     "battingAggresion": 77,
@@ -59,6 +63,7 @@ const IndiaPlayers = [
   {
     "id": 4,
     "name": "KL Rahul",
+    "skills": ['CoverDriveArtist', 'WicketWall'],
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 82,
     "battingAggresion": 81,
@@ -78,6 +83,7 @@ const IndiaPlayers = [
   {
     "id": 5,
     "name": "Rishabh Pant",
+    "skills": ['HardHitter', 'Finisher', 'WicketWall'],
     "abilityToPlayPaceBall": 85,
     "abilityToPlaySpinBall": 82,
     "battingAggresion": 80,
@@ -97,6 +103,7 @@ const IndiaPlayers = [
   {
     "id": 6,
     "name": "Suryakumar Yadav",
+    "skills": ['SlowMotionVision', 'HardHitter', 'Finisher'],
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 90,
@@ -116,6 +123,7 @@ const IndiaPlayers = [
   {
     "id": 7,
     "name": "Hardik Pandya",
+    "skills": ['HardHitter', 'Finisher'],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 74,
@@ -135,6 +143,7 @@ const IndiaPlayers = [
   {
     "id": 8,
     "name": "Ravindra Jadeja",
+    "skills": ['SafeHands', 'ClutchPerformer'],
     "abilityToPlayPaceBall": 77,
     "abilityToPlaySpinBall": 82,
     "battingAggresion": 70,
@@ -154,6 +163,7 @@ const IndiaPlayers = [
   {
     "id": 9,
     "name": "Axar Patel",
+    "skills": [],
     "abilityToPlayPaceBall": 72,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 70,
@@ -173,6 +183,7 @@ const IndiaPlayers = [
   {
     "id": 10,
     "name": "Kuldeep Yadav",
+    "skills": ['SpinWizard', 'GooglyGenius', 'MagicHand'],
     "abilityToPlayPaceBall": 50,
     "abilityToPlaySpinBall": 58,
     "battingAggresion": 38,
@@ -192,6 +203,7 @@ const IndiaPlayers = [
   {
     "id": 11,
     "name": "Jasprit Bumrah",
+    "skills": ['YorkerKing', 'ReverseSwingArtist', 'ClutchPerformer'],
     "abilityToPlayPaceBall": 54,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 40,
@@ -211,6 +223,7 @@ const IndiaPlayers = [
   {
     "id": 12,
     "name": "Mohammed Shami",
+    "skills": ['SwingMaster', 'SeamSpecialist'],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -230,6 +243,7 @@ const IndiaPlayers = [
   {
     "id": 13,
     "name": "Mohammed Siraj",
+    "skills": ['SwingMaster', 'SeamSpecialist'],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 38,
@@ -249,6 +263,7 @@ const IndiaPlayers = [
   {
     "id": 14,
     "name": "Arshdeep Singh",
+    "skills": [],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -268,6 +283,7 @@ const IndiaPlayers = [
   {
     "id": 15,
     "name": "Shardul Thakur",
+    "skills": [],
     "abilityToPlayPaceBall": 77,
     "abilityToPlaySpinBall": 70,
     "battingAggresion": 75,
@@ -287,6 +303,7 @@ const IndiaPlayers = [
   {
     "id": 16,
     "name": "Ishan Kishan",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 78,
@@ -306,6 +323,7 @@ const IndiaPlayers = [
   {
     "id": 17,
     "name": "Rinku Singh",
+    "skills": ['Finisher', 'ClutchPerformer'],
     "abilityToPlayPaceBall": 85,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 89,
@@ -325,6 +343,7 @@ const IndiaPlayers = [
   {
     "id": 18,
     "name": "Sanju Samson",
+    "skills": [],
     "abilityToPlayPaceBall": 77,
     "abilityToPlaySpinBall": 74,
     "battingAggresion": 76,
@@ -344,6 +363,7 @@ const IndiaPlayers = [
   {
     "id": 19,
     "name": "Washington Sundar",
+    "skills": [],
     "abilityToPlayPaceBall": 73,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 71,
@@ -363,6 +383,7 @@ const IndiaPlayers = [
   {
     "id": 20,
     "name": "Yashasvi Jaiswal",
+    "skills": ['PowerplaySpecialist', 'HardHitter'],
     "abilityToPlayPaceBall": 84,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 88,

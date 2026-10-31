@@ -1,7 +1,9 @@
+
 const KenyaPlayers = [
   {
     "id": 1,
     "name": "Steve Tikolo",
+    "skills": ['Anchor', 'ClutchPerformer', 'CaptainCalm'],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 80,
     "battingAggresion": 72,
@@ -21,6 +23,7 @@ const KenyaPlayers = [
   {
     "id": 2,
     "name": "Collins Obuya",
+    "skills": ['SpinWizard', 'Anchor'],
     "abilityToPlayPaceBall": 75,
     "abilityToPlaySpinBall": 78,
     "battingAggresion": 73,
@@ -40,6 +43,7 @@ const KenyaPlayers = [
   {
     "id": 3,
     "name": "Thomas Odoyo",
+    "skills": ['SeamSpecialist', 'Finisher'],
     "abilityToPlayPaceBall": 78,
     "abilityToPlaySpinBall": 71,
     "battingAggresion": 76,
@@ -59,6 +63,7 @@ const KenyaPlayers = [
   {
     "id": 4,
     "name": "Maurice Odumbe",
+    "skills": [],
     "abilityToPlayPaceBall": 73,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 71,
@@ -78,6 +83,7 @@ const KenyaPlayers = [
   {
     "id": 5,
     "name": "Kennedy Otieno",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 78,
@@ -97,6 +103,7 @@ const KenyaPlayers = [
   {
     "id": 6,
     "name": "David Obuya",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 78,
@@ -116,6 +123,7 @@ const KenyaPlayers = [
   {
     "id": 7,
     "name": "Tanmay Mishra",
+    "skills": [],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 80,
     "battingAggresion": 72,
@@ -135,6 +143,7 @@ const KenyaPlayers = [
   {
     "id": 8,
     "name": "Alex Obanda",
+    "skills": [],
     "abilityToPlayPaceBall": 84,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 88,
@@ -154,6 +163,7 @@ const KenyaPlayers = [
   {
     "id": 9,
     "name": "Brijal Patel",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 70,
@@ -173,6 +183,7 @@ const KenyaPlayers = [
   {
     "id": 10,
     "name": "Nehemiah Odhiambo",
+    "skills": [],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -192,6 +203,7 @@ const KenyaPlayers = [
   {
     "id": 11,
     "name": "Peter Ongondo",
+    "skills": [],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -211,6 +223,7 @@ const KenyaPlayers = [
   {
     "id": 12,
     "name": "Elijah Otieno",
+    "skills": [],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -230,6 +243,7 @@ const KenyaPlayers = [
   {
     "id": 13,
     "name": "Collins Omondi",
+    "skills": [],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 38,
@@ -249,6 +263,7 @@ const KenyaPlayers = [
   {
     "id": 14,
     "name": "Ragheb Aga",
+    "skills": [],
     "abilityToPlayPaceBall": 74,
     "abilityToPlaySpinBall": 78,
     "battingAggresion": 72,
@@ -268,6 +283,7 @@ const KenyaPlayers = [
   {
     "id": 15,
     "name": "Seren Waters",
+    "skills": [],
     "abilityToPlayPaceBall": 80,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 71,
@@ -287,6 +303,7 @@ const KenyaPlayers = [
   {
     "id": 16,
     "name": "Shem Ngoche",
+    "skills": [],
     "abilityToPlayPaceBall": 48,
     "abilityToPlaySpinBall": 57,
     "battingAggresion": 36,
@@ -306,6 +323,7 @@ const KenyaPlayers = [
   {
     "id": 17,
     "name": "Irfan Karim",
+    "skills": [],
     "abilityToPlayPaceBall": 80,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 79,
@@ -325,6 +343,7 @@ const KenyaPlayers = [
   {
     "id": 18,
     "name": "Rakep Patel",
+    "skills": [],
     "abilityToPlayPaceBall": 85,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 89,
@@ -344,6 +363,7 @@ const KenyaPlayers = [
   {
     "id": 19,
     "name": "Nelson Odhiambo",
+    "skills": [],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -363,6 +383,7 @@ const KenyaPlayers = [
   {
     "id": 20,
     "name": "Lucas Oluoch",
+    "skills": [],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,

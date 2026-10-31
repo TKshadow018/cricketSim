@@ -1,7 +1,9 @@
+
 const PakistanPlayers = [
   {
     "id": 1,
     "name": "Babar Azam",
+    "skills": ['Anchor', 'CoverDriveArtist', 'ClutchPerformer'],
     "abilityToPlayPaceBall": 89,
     "abilityToPlaySpinBall": 88,
     "battingAggresion": 76,
@@ -21,6 +23,7 @@ const PakistanPlayers = [
   {
     "id": 2,
     "name": "Mohammad Rizwan",
+    "skills": ['Anchor', 'WicketWall', 'SafeHands'],
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 82,
     "battingAggresion": 81,
@@ -40,6 +43,7 @@ const PakistanPlayers = [
   {
     "id": 3,
     "name": "Fakhar Zaman",
+    "skills": ['PowerplaySpecialist', 'HardHitter'],
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 90,
@@ -59,6 +63,7 @@ const PakistanPlayers = [
   {
     "id": 4,
     "name": "Imam-ul-Haq",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 70,
@@ -78,6 +83,7 @@ const PakistanPlayers = [
   {
     "id": 5,
     "name": "Saim Ayub",
+    "skills": [],
     "abilityToPlayPaceBall": 84,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 88,
@@ -97,6 +103,7 @@ const PakistanPlayers = [
   {
     "id": 6,
     "name": "Saud Shakeel",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 70,
@@ -116,6 +123,7 @@ const PakistanPlayers = [
   {
     "id": 7,
     "name": "Iftikhar Ahmed",
+    "skills": [],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 74,
@@ -135,6 +143,7 @@ const PakistanPlayers = [
   {
     "id": 8,
     "name": "Shadab Khan",
+    "skills": ['GooglyGenius', 'SafeHands'],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 83,
     "battingAggresion": 72,
@@ -154,6 +163,7 @@ const PakistanPlayers = [
   {
     "id": 9,
     "name": "Mohammad Nawaz",
+    "skills": [],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 74,
@@ -173,6 +183,7 @@ const PakistanPlayers = [
   {
     "id": 10,
     "name": "Agha Salman",
+    "skills": [],
     "abilityToPlayPaceBall": 72,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 70,
@@ -192,6 +203,7 @@ const PakistanPlayers = [
   {
     "id": 11,
     "name": "Shaheen Shah Afridi",
+    "skills": ['SwingMaster', 'YorkerKing'],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -211,6 +223,7 @@ const PakistanPlayers = [
   {
     "id": 12,
     "name": "Haris Rauf",
+    "skills": ['SeamSpecialist', 'YorkerKing'],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -230,6 +243,7 @@ const PakistanPlayers = [
   {
     "id": 13,
     "name": "Naseem Shah",
+    "skills": ['SwingMaster', 'SeamSpecialist'],
     "abilityToPlayPaceBall": 53,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 39,
@@ -249,6 +263,7 @@ const PakistanPlayers = [
   {
     "id": 14,
     "name": "Hasan Ali",
+    "skills": [],
     "abilityToPlayPaceBall": 53,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 39,
@@ -268,6 +283,7 @@ const PakistanPlayers = [
   {
     "id": 15,
     "name": "Mohammad Wasim Jr",
+    "skills": [],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -287,6 +303,7 @@ const PakistanPlayers = [
   {
     "id": 16,
     "name": "Usama Mir",
+    "skills": [],
     "abilityToPlayPaceBall": 49,
     "abilityToPlaySpinBall": 57,
     "battingAggresion": 37,
@@ -306,6 +323,7 @@ const PakistanPlayers = [
   {
     "id": 17,
     "name": "Abrar Ahmed",
+    "skills": ['GooglyGenius', 'MagicHand'],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 59,
     "battingAggresion": 40,
@@ -325,6 +343,7 @@ const PakistanPlayers = [
   {
     "id": 18,
     "name": "Abdullah Shafique",
+    "skills": [],
     "abilityToPlayPaceBall": 80,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 71,
@@ -344,6 +363,7 @@ const PakistanPlayers = [
   {
     "id": 19,
     "name": "Kamran Ghulam",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 70,
@@ -363,6 +383,7 @@ const PakistanPlayers = [
   {
     "id": 20,
     "name": "Irfan Khan Niazi",
+    "skills": [],
     "abilityToPlayPaceBall": 85,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 89,

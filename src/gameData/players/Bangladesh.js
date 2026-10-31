@@ -1,7 +1,9 @@
+
 const BangladeshPlayers = [
   {
     "id": 1,
     "name": "Liton Das",
+    "skills": ['PowerplaySpecialist', 'CoverDriveArtist'],
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 82,
     "battingAggresion": 81,
@@ -21,6 +23,7 @@ const BangladeshPlayers = [
   {
     "id": 2,
     "name": "Tanzid Hasan",
+    "skills": [],
     "abilityToPlayPaceBall": 83,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 87,
@@ -40,6 +43,7 @@ const BangladeshPlayers = [
   {
     "id": 3,
     "name": "Soumya Sarkar",
+    "skills": ['PowerplaySpecialist', 'HardHitter'],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 70,
     "battingAggresion": 74,
@@ -59,6 +63,7 @@ const BangladeshPlayers = [
   {
     "id": 4,
     "name": "Najmul Hossain Shanto",
+    "skills": ['Anchor', 'CoverDriveArtist'],
     "abilityToPlayPaceBall": 87,
     "abilityToPlaySpinBall": 87,
     "battingAggresion": 74,
@@ -78,6 +83,7 @@ const BangladeshPlayers = [
   {
     "id": 5,
     "name": "Towhid Hridoy",
+    "skills": [],
     "abilityToPlayPaceBall": 85,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 89,
@@ -97,6 +103,7 @@ const BangladeshPlayers = [
   {
     "id": 6,
     "name": "Mushfiqur Rahim",
+    "skills": ['Anchor', 'WicketWall', 'SafeHands'],
     "abilityToPlayPaceBall": 88,
     "abilityToPlaySpinBall": 83,
     "battingAggresion": 83,
@@ -116,6 +123,7 @@ const BangladeshPlayers = [
   {
     "id": 7,
     "name": "Shakib Al Hasan",
+    "skills": ['SpinWizard', 'Anchor', 'CaptainCalm'],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 83,
     "battingAggresion": 72,
@@ -135,6 +143,7 @@ const BangladeshPlayers = [
   {
     "id": 8,
     "name": "Mahmudullah",
+    "skills": ['Finisher', 'ClutchPerformer'],
     "abilityToPlayPaceBall": 75,
     "abilityToPlaySpinBall": 78,
     "battingAggresion": 73,
@@ -154,6 +163,7 @@ const BangladeshPlayers = [
   {
     "id": 9,
     "name": "Mehidy Hasan Miraz",
+    "skills": ['FlightMaster', 'SafeHands'],
     "abilityToPlayPaceBall": 75,
     "abilityToPlaySpinBall": 78,
     "battingAggresion": 73,
@@ -173,6 +183,7 @@ const BangladeshPlayers = [
   {
     "id": 10,
     "name": "Taskin Ahmed",
+    "skills": ['SeamSpecialist', 'SwingMaster'],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -192,6 +203,7 @@ const BangladeshPlayers = [
   {
     "id": 11,
     "name": "Mustafizur Rahman",
+    "skills": ['YorkerKing', 'ReverseSwingArtist'],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -211,6 +223,7 @@ const BangladeshPlayers = [
   {
     "id": 12,
     "name": "Shoriful Islam",
+    "skills": [],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -230,6 +243,7 @@ const BangladeshPlayers = [
   {
     "id": 13,
     "name": "Hasan Mahmud",
+    "skills": [],
     "abilityToPlayPaceBall": 54,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 40,
@@ -249,6 +263,7 @@ const BangladeshPlayers = [
   {
     "id": 14,
     "name": "Nasum Ahmed",
+    "skills": [],
     "abilityToPlayPaceBall": 50,
     "abilityToPlaySpinBall": 58,
     "battingAggresion": 38,
@@ -268,6 +283,7 @@ const BangladeshPlayers = [
   {
     "id": 15,
     "name": "Taijul Islam",
+    "skills": [],
     "abilityToPlayPaceBall": 49,
     "abilityToPlaySpinBall": 57,
     "battingAggresion": 37,
@@ -287,6 +303,7 @@ const BangladeshPlayers = [
   {
     "id": 16,
     "name": "Rishad Hossain",
+    "skills": ['GooglyGenius', 'SpinWizard'],
     "abilityToPlayPaceBall": 48,
     "abilityToPlaySpinBall": 57,
     "battingAggresion": 36,
@@ -306,6 +323,7 @@ const BangladeshPlayers = [
   {
     "id": 17,
     "name": "Jaker Ali",
+    "skills": [],
     "abilityToPlayPaceBall": 80,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 79,
@@ -325,6 +343,7 @@ const BangladeshPlayers = [
   {
     "id": 18,
     "name": "Nurul Hasan",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 78,
@@ -344,6 +363,7 @@ const BangladeshPlayers = [
   {
     "id": 19,
     "name": "Afif Hossain",
+    "skills": [],
     "abilityToPlayPaceBall": 73,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 71,
@@ -363,6 +383,7 @@ const BangladeshPlayers = [
   {
     "id": 20,
     "name": "Tanzim Hasan Sakib",
+    "skills": [],
     "abilityToPlayPaceBall": 54,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 40,

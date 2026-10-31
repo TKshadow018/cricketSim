@@ -3,7 +3,7 @@ import { getPlayersForNations } from '../gameData/playerListForNation';
 import { outfieldType, pitchType } from '../gameData/matchCondition';
 import { battingAction, bowlingAction } from '../gameData/actionType';
 import { matchStatusEnum } from '../gameData/matchStatusEnum';
-import { buildOutcomeWeights } from '../features/game/utils/controllerOutcomeUtils';
+import { buildOutcomeAnalysis } from '../features/game/utils/controllerOutcomeUtils';
 
 const battingLabels = {
   [battingAction.defence]: 'Defend',
@@ -173,10 +173,12 @@ export const buildAdminMatrix = (gameState) => {
   const isUserBatting = isOwnBatting;
   const isUserBowling = !isOwnBatting;
   const appliedBattingIntent = isUserBatting && innings?.freeHitArmed ? battingAction.freeHit : gameState.battingIntent;
-  const weights = buildOutcomeWeights({
+  const outcomeAnalysis = buildOutcomeAnalysis({
     striker,
     bowler,
     inningState: innings || {},
+    battingSide,
+    bowlingSide,
     isUserBatting,
     isUserBowling,
     battingRoles,
@@ -191,6 +193,7 @@ export const buildAdminMatrix = (gameState) => {
     bowlingTactics: isUserBowling ? gameState.bowlingTactics : undefined,
     locationCountry: gameState.locationCountry,
   });
+  const { weights } = outcomeAnalysis;
 
   return {
     isOwnBatting,
@@ -217,6 +220,12 @@ export const buildAdminMatrix = (gameState) => {
         : 'Normal Phase',
       oversLeft: Math.max(0, matchType.over - Math.floor((innings?.balls || 0) / 6)),
     },
-    rows: outcomeOrder.map((key) => ({ key, value: weights[key] || 0 })),
+    rows: outcomeOrder.map((key) => ({
+      key,
+      value: weights[key] || 0,
+      skillImpact: outcomeAnalysis.skillImpactDeltas[key] || 0,
+    })),
+    skillImpacts: outcomeAnalysis.appliedSkillImpacts,
+    hasSkillImpacts: outcomeAnalysis.appliedSkillImpacts.length > 0,
   };
 };

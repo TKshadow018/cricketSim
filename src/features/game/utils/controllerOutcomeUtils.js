@@ -1,7 +1,11 @@
 import { battingAction, bowlingAction } from '../../../gameData/actionType';
 import { outfieldType, pitchType } from '../../../gameData/matchCondition';
+import { skillApplyTimeEnum } from '../../../gameData/skillApplyTimeEnum';
+import { skillList } from '../../../gameData/skillList';
 import { getBattingTacticShift } from './battingTactics';
 import { getBowlingTacticShift } from './bowlingTactics';
+
+const skillByName = new Map(skillList.map((skill) => [skill.name, skill]));
 
 const baseMatchWeights = {
   micro: { 0: 10, 1: 20, 2: 20, 3: 3, 4: 20, 6: 15, wide: 1, nb: 1, W: 10 },
@@ -70,6 +74,28 @@ const normalizeOverflowingWeights = (weights, outcomes) => {
   return Object.fromEntries(scaled.map(({ outcome, value }) => [outcome, value]));
 };
 
+const normalizeOutcomeWeights = (weights, outcomes, freeHitArmed) => {
+  const normalized = {};
+  outcomes.forEach((outcome) => {
+    normalized[outcome] = Math.max(0, Math.round(weights[outcome] || 0));
+  });
+
+  if (freeHitArmed) {
+    normalized.W = 0;
+  }
+
+  const nonDotTotal = outcomes
+    .filter((outcome) => outcome !== '0')
+    .reduce((sum, outcome) => sum + normalized[outcome], 0);
+  if (nonDotTotal <= 100) {
+    normalized['0'] = 100 - nonDotTotal;
+  } else {
+    Object.assign(normalized, normalizeOverflowingWeights(normalized, outcomes));
+  }
+
+  return normalized;
+};
+
 export const canUseSuperShot = ({ striker, bowler, inningState, strikerIndex }) => {
   if (!striker || !bowler) {
     return false;
@@ -113,6 +139,8 @@ const calculateOutcomeDistribution = ({
   bowlingIntent,
   bowlingTactics,
   locationCountry,
+  battingSide = [],
+  bowlingSide = [],
 }) => {
   const outcomes = ['0', '1', '2', '3', '4', '6', 'wide', 'nb', 'W'];
   const weatherKey = matchCondition.weather;
@@ -134,6 +162,32 @@ const calculateOutcomeDistribution = ({
   };
 
   const toPercentAdjusted = (value, percent) => value + value * percent;
+  const scheduledOvers = Number(matchType?.over);
+  const completedOvers = Math.floor(Math.max(0, Number(inningState?.balls) || 0) / 6);
+  const isInLastTwentyPercent =
+    Number.isFinite(scheduledOvers) &&
+    scheduledOvers > 0 &&
+    completedOvers >= Math.floor(scheduledOvers * 0.8);
+  const powerPlayOvers = (() => {
+    if (!Number.isFinite(scheduledOvers) || scheduledOvers <= 0) {
+      return 0;
+    }
+
+    switch (String(matchTypeKey || '').toLowerCase()) {
+      case 'odi':
+        return Math.min(scheduledOvers, 10);
+      case 't20':
+        return Math.min(scheduledOvers, 6);
+      case 't10':
+        return Math.min(scheduledOvers, 2);
+      case 'micro':
+      case 'mini':
+        return Math.min(scheduledOvers, Math.ceil(scheduledOvers * 0.2));
+      default:
+        return 0;
+    }
+  })();
+  const isInPowerPlay = completedOvers < powerPlayOvers;
   const abilityForPaceBase = (striker?.abilityToPlayPaceBall || 50) + pitchProfile.goodForBatting;
   const abilityForSpinBase = (striker?.abilityToPlaySpinBall || 50) + pitchProfile.goodForBatting;
   const bowlerPaceBase = (bowler?.paceAbility || 40) + pitchProfile.goodForPaceBowling;
@@ -238,31 +292,91 @@ const calculateOutcomeDistribution = ({
     }
   }
 
-  const normalized = {};
-  outcomes.forEach((outcome) => {
-    normalized[outcome] = Math.max(0, Math.round(weights[outcome] || 0));
-  });
+  const isSkillTimingActive = (applyTime, scope) => {
+    const isBattingScope = scope === 'batting' || scope === 'fullTeamBatting';
+    const isBowlingScope = scope === 'bowling' || scope === 'fullTeamBowling';
 
-  if (appliedBattingIntent === battingAction.freeHit) {
-    normalized.W = 0;
-  }
+    switch (applyTime) {
+      case skillApplyTimeEnum.always:
+        return true;
+      case skillApplyTimeEnum.whenBatting:
+        return isBattingScope;
+      case skillApplyTimeEnum.whenBowling:
+        return isBowlingScope;
+      case skillApplyTimeEnum.powerPlay:
+        return isInPowerPlay;
+      case skillApplyTimeEnum.last20PercentOfOvers:
+        return isBattingScope && isInLastTwentyPercent;
+      default:
+        return false;
+    }
+  };
+  const appliedSkillImpacts = [];
+  const applySkillImpacts = (players, scope) => {
+    const isBowlingScope = scope === 'bowling' || scope === 'fullTeamBowling';
+    const selectedRoles = isBowlingScope ? bowlingRoles : battingRoles;
 
-  const nonDotTotal = outcomes
-    .filter((outcome) => outcome !== '0')
-    .reduce((sum, outcome) => sum + normalized[outcome], 0);
-  if (nonDotTotal <= 100) {
-    normalized['0'] = 100 - nonDotTotal;
-  } else {
-    Object.assign(normalized, normalizeOverflowingWeights(normalized, outcomes));
-  }
+    players.forEach((player) => {
+      if (!Array.isArray(player?.skills)) {
+        return;
+      }
+
+      player.skills.forEach((skillName) => {
+        const skill = skillByName.get(skillName);
+        const impact = skill?.impact;
+        const scopedDelta = impact?.[scope];
+        if (
+          skill?.name === 'CaptainCalm' &&
+          (!player.id || selectedRoles?.captainId !== player.id)
+        ) {
+          return;
+        }
+        if (scopedDelta && isSkillTimingActive(impact.applyTime, scope)) {
+          applyDelta(weights, scopedDelta);
+          appliedSkillImpacts.push({
+            skillName: skill.name,
+            holderId: player.id || null,
+            holderName: player.name || player.id || 'Unknown player',
+            scope,
+            applyTime: impact.applyTime,
+            deltas: { ...scopedDelta },
+          });
+        }
+      });
+    });
+  };
+
+  const weightsWithoutSkills = { ...weights };
+  applySkillImpacts(striker ? [striker] : [], 'batting');
+  applySkillImpacts(bowler ? [bowler] : [], 'bowling');
+  applySkillImpacts(Array.isArray(battingSide) ? battingSide : [], 'fullTeamBatting');
+  applySkillImpacts(Array.isArray(bowlingSide) ? bowlingSide : [], 'fullTeamBowling');
+
+  const isFreeHit = appliedBattingIntent === battingAction.freeHit;
+  const normalized = normalizeOutcomeWeights(weights, outcomes, isFreeHit);
+  const normalizedWithoutSkills = normalizeOutcomeWeights(
+    weightsWithoutSkills,
+    outcomes,
+    isFreeHit
+  );
+  const skillImpactDeltas = Object.fromEntries(
+    outcomes.map((outcome) => [
+      outcome,
+      normalized[outcome] - normalizedWithoutSkills[outcome],
+    ])
+  );
 
   return {
     outcomes,
     weights: normalized,
     battingAbility,
     bowlingAbility,
+    appliedSkillImpacts,
+    skillImpactDeltas,
   };
 };
+
+export const buildOutcomeAnalysis = (input) => calculateOutcomeDistribution(input);
 
 export const buildOutcomeWeights = (input) => calculateOutcomeDistribution(input).weights;
 

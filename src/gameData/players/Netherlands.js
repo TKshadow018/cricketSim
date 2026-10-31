@@ -1,7 +1,9 @@
+
 const NetherlandsPlayers = [
   {
     "id": 1,
     "name": "Scott Edwards",
+    "skills": ['WicketWall', 'SafeHands', 'CaptainCalm'],
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 82,
     "battingAggresion": 81,
@@ -21,6 +23,7 @@ const NetherlandsPlayers = [
   {
     "id": 2,
     "name": "Max ODowd",
+    "skills": ['Anchor', 'CoverDriveArtist'],
     "abilityToPlayPaceBall": 82,
     "abilityToPlaySpinBall": 80,
     "battingAggresion": 73,
@@ -40,6 +43,7 @@ const NetherlandsPlayers = [
   {
     "id": 3,
     "name": "Vikramjit Singh",
+    "skills": [],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 80,
     "battingAggresion": 72,
@@ -59,6 +63,7 @@ const NetherlandsPlayers = [
   {
     "id": 4,
     "name": "Teja Nidamanuru",
+    "skills": [],
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 90,
@@ -78,6 +83,7 @@ const NetherlandsPlayers = [
   {
     "id": 5,
     "name": "Bas de Leede",
+    "skills": ['Finisher', 'SeamSpecialist'],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 74,
@@ -97,6 +103,7 @@ const NetherlandsPlayers = [
   {
     "id": 6,
     "name": "Colin Ackermann",
+    "skills": [],
     "abilityToPlayPaceBall": 72,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 70,
@@ -116,6 +123,7 @@ const NetherlandsPlayers = [
   {
     "id": 7,
     "name": "Sybrand Engelbrecht",
+    "skills": [],
     "abilityToPlayPaceBall": 75,
     "abilityToPlaySpinBall": 78,
     "battingAggresion": 73,
@@ -135,6 +143,7 @@ const NetherlandsPlayers = [
   {
     "id": 8,
     "name": "Noah Croes",
+    "skills": [],
     "abilityToPlayPaceBall": 77,
     "abilityToPlaySpinBall": 74,
     "battingAggresion": 76,
@@ -154,6 +163,7 @@ const NetherlandsPlayers = [
   {
     "id": 9,
     "name": "Roelof van der Merwe",
+    "skills": ['FlightMaster', 'SpinWizard'],
     "abilityToPlayPaceBall": 75,
     "abilityToPlaySpinBall": 78,
     "battingAggresion": 73,
@@ -173,6 +183,7 @@ const NetherlandsPlayers = [
   {
     "id": 10,
     "name": "Logan van Beek",
+    "skills": ['SeamSpecialist', 'Finisher'],
     "abilityToPlayPaceBall": 75,
     "abilityToPlaySpinBall": 69,
     "battingAggresion": 73,
@@ -192,6 +203,7 @@ const NetherlandsPlayers = [
   {
     "id": 11,
     "name": "Paul van Meekeren",
+    "skills": [],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -211,6 +223,7 @@ const NetherlandsPlayers = [
   {
     "id": 12,
     "name": "Aryan Dutt",
+    "skills": [],
     "abilityToPlayPaceBall": 49,
     "abilityToPlaySpinBall": 57,
     "battingAggresion": 37,
@@ -230,6 +243,7 @@ const NetherlandsPlayers = [
   {
     "id": 13,
     "name": "Vivian Kingma",
+    "skills": [],
     "abilityToPlayPaceBall": 54,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 40,
@@ -249,6 +263,7 @@ const NetherlandsPlayers = [
   {
     "id": 14,
     "name": "Fred Klaassen",
+    "skills": [],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 38,
@@ -268,6 +283,7 @@ const NetherlandsPlayers = [
   {
     "id": 15,
     "name": "Ryan Klein",
+    "skills": [],
     "abilityToPlayPaceBall": 53,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 39,
@@ -287,6 +303,7 @@ const NetherlandsPlayers = [
   {
     "id": 16,
     "name": "Shariz Ahmad",
+    "skills": [],
     "abilityToPlayPaceBall": 50,
     "abilityToPlaySpinBall": 58,
     "battingAggresion": 38,
@@ -306,6 +323,7 @@ const NetherlandsPlayers = [
   {
     "id": 17,
     "name": "Kyle Klein",
+    "skills": [],
     "abilityToPlayPaceBall": 53,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 39,
@@ -325,6 +343,7 @@ const NetherlandsPlayers = [
   {
     "id": 18,
     "name": "Michael Levitt",
+    "skills": [],
     "abilityToPlayPaceBall": 82,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 86,
@@ -344,6 +363,7 @@ const NetherlandsPlayers = [
   {
     "id": 19,
     "name": "Wesley Barresi",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 78,
@@ -363,6 +383,7 @@ const NetherlandsPlayers = [
   {
     "id": 20,
     "name": "Saqib Zulfiqar",
+    "skills": [],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 74,

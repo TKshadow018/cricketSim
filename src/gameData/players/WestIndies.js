@@ -1,7 +1,9 @@
+
 const WestIndiesPlayers = [
   {
     "id": 1,
     "name": "Shai Hope",
+    "skills": ['Anchor', 'CoverDriveArtist', 'CaptainCalm'],
     "abilityToPlayPaceBall": 87,
     "abilityToPlaySpinBall": 83,
     "battingAggresion": 82,
@@ -21,6 +23,7 @@ const WestIndiesPlayers = [
   {
     "id": 2,
     "name": "Brandon King",
+    "skills": ['PowerplaySpecialist', 'CoverDriveArtist'],
     "abilityToPlayPaceBall": 82,
     "abilityToPlaySpinBall": 80,
     "battingAggresion": 73,
@@ -40,6 +43,7 @@ const WestIndiesPlayers = [
   {
     "id": 3,
     "name": "Johnson Charles",
+    "skills": [],
     "abilityToPlayPaceBall": 80,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 79,
@@ -59,6 +63,7 @@ const WestIndiesPlayers = [
   {
     "id": 4,
     "name": "Alick Athanaze",
+    "skills": [],
     "abilityToPlayPaceBall": 82,
     "abilityToPlaySpinBall": 80,
     "battingAggresion": 73,
@@ -78,6 +83,7 @@ const WestIndiesPlayers = [
   {
     "id": 5,
     "name": "Nicholas Pooran",
+    "skills": ['HardHitter', 'Finisher', 'WicketWall'],
     "abilityToPlayPaceBall": 87,
     "abilityToPlaySpinBall": 83,
     "battingAggresion": 82,
@@ -97,6 +103,7 @@ const WestIndiesPlayers = [
   {
     "id": 6,
     "name": "Shimron Hetmyer",
+    "skills": ['HardHitter', 'Finisher'],
     "abilityToPlayPaceBall": 84,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 88,
@@ -116,6 +123,7 @@ const WestIndiesPlayers = [
   {
     "id": 7,
     "name": "Rovman Powell",
+    "skills": ['HardHitter', 'Finisher', 'ClutchPerformer'],
     "abilityToPlayPaceBall": 83,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 87,
@@ -135,6 +143,7 @@ const WestIndiesPlayers = [
   {
     "id": 8,
     "name": "Andre Russell",
+    "skills": ['HardHitter', 'Finisher', 'ClutchPerformer'],
     "abilityToPlayPaceBall": 82,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 75,
@@ -154,6 +163,7 @@ const WestIndiesPlayers = [
   {
     "id": 9,
     "name": "Jason Holder",
+    "skills": ['SeamSpecialist', 'CaptainCalm'],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 74,
     "battingAggresion": 72,
@@ -173,6 +183,7 @@ const WestIndiesPlayers = [
   {
     "id": 10,
     "name": "Roston Chase",
+    "skills": ['Anchor', 'FlightMaster'],
     "abilityToPlayPaceBall": 73,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 71,
@@ -192,6 +203,7 @@ const WestIndiesPlayers = [
   {
     "id": 11,
     "name": "Romario Shepherd",
+    "skills": [],
     "abilityToPlayPaceBall": 74,
     "abilityToPlaySpinBall": 69,
     "battingAggresion": 72,
@@ -211,6 +223,7 @@ const WestIndiesPlayers = [
   {
     "id": 12,
     "name": "Alzarri Joseph",
+    "skills": [],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -230,6 +243,7 @@ const WestIndiesPlayers = [
   {
     "id": 13,
     "name": "Akeal Hosein",
+    "skills": ['FlightMaster', 'SpinWizard'],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 59,
     "battingAggresion": 40,
@@ -249,6 +263,7 @@ const WestIndiesPlayers = [
   {
     "id": 14,
     "name": "Gudakesh Motie",
+    "skills": [],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 59,
     "battingAggresion": 40,
@@ -268,6 +283,7 @@ const WestIndiesPlayers = [
   {
     "id": 15,
     "name": "Obed McCoy",
+    "skills": [],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 38,
@@ -287,6 +303,7 @@ const WestIndiesPlayers = [
   {
     "id": 16,
     "name": "Shamar Joseph",
+    "skills": [],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
@@ -306,6 +323,7 @@ const WestIndiesPlayers = [
   {
     "id": 17,
     "name": "Keacy Carty",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 70,
@@ -325,6 +343,7 @@ const WestIndiesPlayers = [
   {
     "id": 18,
     "name": "Kavem Hodge",
+    "skills": [],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 74,
@@ -344,6 +363,7 @@ const WestIndiesPlayers = [
   {
     "id": 19,
     "name": "Yannic Cariah",
+    "skills": [],
     "abilityToPlayPaceBall": 49,
     "abilityToPlaySpinBall": 57,
     "battingAggresion": 37,
@@ -363,6 +383,7 @@ const WestIndiesPlayers = [
   {
     "id": 20,
     "name": "Matthew Forde",
+    "skills": [],
     "abilityToPlayPaceBall": 77,
     "abilityToPlaySpinBall": 70,
     "battingAggresion": 75,

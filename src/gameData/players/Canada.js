@@ -1,7 +1,9 @@
+
 const CanadaPlayers = [
   {
     "id": 1,
     "name": "Navneet Dhaliwal",
+    "skills": [],
     "abilityToPlayPaceBall": 83,
     "abilityToPlaySpinBall": 81,
     "battingAggresion": 74,
@@ -21,6 +23,7 @@ const CanadaPlayers = [
   {
     "id": 2,
     "name": "Aaron Johnson",
+    "skills": ['PowerplaySpecialist', 'HardHitter'],
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 90,
@@ -40,6 +43,7 @@ const CanadaPlayers = [
   {
     "id": 3,
     "name": "Pargat Singh",
+    "skills": [],
     "abilityToPlayPaceBall": 83,
     "abilityToPlaySpinBall": 81,
     "battingAggresion": 74,
@@ -59,6 +63,7 @@ const CanadaPlayers = [
   {
     "id": 4,
     "name": "Nicholas Kirton",
+    "skills": [],
     "abilityToPlayPaceBall": 72,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 70,
@@ -78,6 +83,7 @@ const CanadaPlayers = [
   {
     "id": 5,
     "name": "Ravinderpal Singh",
+    "skills": [],
     "abilityToPlayPaceBall": 83,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 87,
@@ -97,6 +103,7 @@ const CanadaPlayers = [
   {
     "id": 6,
     "name": "Dilpreet Bajwa",
+    "skills": [],
     "abilityToPlayPaceBall": 84,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 88,
@@ -116,6 +123,7 @@ const CanadaPlayers = [
   {
     "id": 7,
     "name": "Shreyas Movva",
+    "skills": [],
     "abilityToPlayPaceBall": 80,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 79,
@@ -135,6 +143,7 @@ const CanadaPlayers = [
   {
     "id": 8,
     "name": "Saad Bin Zafar",
+    "skills": ['FlightMaster', 'CaptainCalm'],
     "abilityToPlayPaceBall": 50,
     "abilityToPlaySpinBall": 58,
     "battingAggresion": 38,
@@ -154,6 +163,7 @@ const CanadaPlayers = [
   {
     "id": 9,
     "name": "Kaleem Sana",
+    "skills": ['YorkerKing', 'SwingMaster'],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 38,
@@ -173,6 +183,7 @@ const CanadaPlayers = [
   {
     "id": 10,
     "name": "Jeremy Gordon",
+    "skills": [],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -192,6 +203,7 @@ const CanadaPlayers = [
   {
     "id": 11,
     "name": "Dillon Heyliger",
+    "skills": [],
     "abilityToPlayPaceBall": 54,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 40,
@@ -211,6 +223,7 @@ const CanadaPlayers = [
   {
     "id": 12,
     "name": "Nikhil Dutta",
+    "skills": [],
     "abilityToPlayPaceBall": 51,
     "abilityToPlaySpinBall": 58,
     "battingAggresion": 39,
@@ -230,6 +243,7 @@ const CanadaPlayers = [
   {
     "id": 13,
     "name": "Harsh Thaker",
+    "skills": [],
     "abilityToPlayPaceBall": 73,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 71,
@@ -249,6 +263,7 @@ const CanadaPlayers = [
   {
     "id": 14,
     "name": "Rayyan Pathan",
+    "skills": [],
     "abilityToPlayPaceBall": 78,
     "abilityToPlaySpinBall": 71,
     "battingAggresion": 76,
@@ -268,6 +283,7 @@ const CanadaPlayers = [
   {
     "id": 15,
     "name": "Kanwarpal Tathgur",
+    "skills": [],
     "abilityToPlayPaceBall": 49,
     "abilityToPlaySpinBall": 57,
     "battingAggresion": 37,
@@ -287,6 +303,7 @@ const CanadaPlayers = [
   {
     "id": 16,
     "name": "Junaid Siddiqui",
+    "skills": [],
     "abilityToPlayPaceBall": 51,
     "abilityToPlaySpinBall": 58,
     "battingAggresion": 39,
@@ -306,6 +323,7 @@ const CanadaPlayers = [
   {
     "id": 17,
     "name": "Rommel Shahzad",
+    "skills": [],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 80,
@@ -325,6 +343,7 @@ const CanadaPlayers = [
   {
     "id": 18,
     "name": "Uday Bhagwan",
+    "skills": [],
     "abilityToPlayPaceBall": 53,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 39,
@@ -344,6 +363,7 @@ const CanadaPlayers = [
   {
     "id": 19,
     "name": "Shahid Ahmadzai",
+    "skills": [],
     "abilityToPlayPaceBall": 78,
     "abilityToPlaySpinBall": 71,
     "battingAggresion": 76,
@@ -363,6 +383,7 @@ const CanadaPlayers = [
   {
     "id": 20,
     "name": "Srimantha Wijeyeratne",
+    "skills": [],
     "abilityToPlayPaceBall": 78,
     "abilityToPlaySpinBall": 74,
     "battingAggresion": 77,

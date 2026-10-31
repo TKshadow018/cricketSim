@@ -1,4 +1,5 @@
 import { PLAYER_TYPES } from "../../../../gameData/playerTypes";
+import { assignCareerSkills, limitPlayerSkills } from "../../../../gameData/playerSkills";
 import { buildRandomBattingOrderCoeff, ensurePlayerMeta } from "../../utils/controllerCommonUtils";
 import { randomInt } from "./controllerCareerMarketUtils";
 
@@ -110,6 +111,7 @@ export const buildCreatedCareerPlayer = (profile, domesticCountry) => {
     paceAbility: assigned.paceAbility,
     spinAbility: assigned.spinAbility,
     isWicketKeeper: assigned.isWicketKeeper,
+    skills: assignCareerSkills(assigned, 2),
     fitness: 100,
     morale: 50,
     battingOrderCoeff: buildRandomBattingOrderCoeff({
@@ -128,6 +130,7 @@ export const normalizeDomesticTeams = (domesticTeams = []) =>
     const players = (team.players || []).map((player, playerIndex) => ({
       ...ensurePlayerMeta(player),
       id: player.id ?? `${team.name || 'team'}-P${teamIndex + 1}-${playerIndex + 1}`,
+      skills: limitPlayerSkills(player, 2),
     }));
     return {
       ...team,

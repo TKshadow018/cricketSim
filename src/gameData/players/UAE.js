@@ -1,7 +1,9 @@
+
 const UAEPlayers = [
   {
     "id": 1,
     "name": "Muhammad Waseem",
+    "skills": ['PowerplaySpecialist', 'HardHitter'],
     "abilityToPlayPaceBall": 92,
     "abilityToPlaySpinBall": 84,
     "battingAggresion": 92,
@@ -21,6 +23,7 @@ const UAEPlayers = [
   {
     "id": 2,
     "name": "Vriitya Aravind",
+    "skills": ['WicketWall', 'Anchor'],
     "abilityToPlayPaceBall": 77,
     "abilityToPlaySpinBall": 74,
     "battingAggresion": 76,
@@ -40,6 +43,7 @@ const UAEPlayers = [
   {
     "id": 3,
     "name": "Asif Khan",
+    "skills": [],
     "abilityToPlayPaceBall": 82,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 86,
@@ -59,6 +63,7 @@ const UAEPlayers = [
   {
     "id": 4,
     "name": "Alishan Sharafu",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 70,
@@ -78,6 +83,7 @@ const UAEPlayers = [
   {
     "id": 5,
     "name": "Waseem Muhammad",
+    "skills": [],
     "abilityToPlayPaceBall": 84,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 88,
@@ -97,6 +103,7 @@ const UAEPlayers = [
   {
     "id": 6,
     "name": "Basil Hameed",
+    "skills": [],
     "abilityToPlayPaceBall": 75,
     "abilityToPlaySpinBall": 78,
     "battingAggresion": 73,
@@ -116,6 +123,7 @@ const UAEPlayers = [
   {
     "id": 7,
     "name": "Aayan Afzal Khan",
+    "skills": ['FlightMaster', 'SpinWizard'],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 74,
@@ -135,6 +143,7 @@ const UAEPlayers = [
   {
     "id": 8,
     "name": "Ali Naseer",
+    "skills": [],
     "abilityToPlayPaceBall": 75,
     "abilityToPlaySpinBall": 69,
     "battingAggresion": 73,
@@ -154,6 +163,7 @@ const UAEPlayers = [
   {
     "id": 9,
     "name": "Aryansh Sharma",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 78,
@@ -173,6 +183,7 @@ const UAEPlayers = [
   {
     "id": 10,
     "name": "Sanchit Sharma",
+    "skills": [],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 38,
@@ -192,6 +203,7 @@ const UAEPlayers = [
   {
     "id": 11,
     "name": "Junaid Siddique",
+    "skills": ['SwingMaster', 'YorkerKing'],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -211,6 +223,7 @@ const UAEPlayers = [
   {
     "id": 12,
     "name": "Zahoor Khan",
+    "skills": [],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 38,
@@ -230,6 +243,7 @@ const UAEPlayers = [
   {
     "id": 13,
     "name": "Karthik Meiyappan",
+    "skills": [],
     "abilityToPlayPaceBall": 50,
     "abilityToPlaySpinBall": 58,
     "battingAggresion": 38,
@@ -249,6 +263,7 @@ const UAEPlayers = [
   {
     "id": 14,
     "name": "Haider Ali",
+    "skills": [],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 74,
@@ -268,6 +283,7 @@ const UAEPlayers = [
   {
     "id": 15,
     "name": "Ammar Badami",
+    "skills": [],
     "abilityToPlayPaceBall": 72,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 70,
@@ -287,6 +303,7 @@ const UAEPlayers = [
   {
     "id": 16,
     "name": "Akif Raja",
+    "skills": [],
     "abilityToPlayPaceBall": 77,
     "abilityToPlaySpinBall": 70,
     "battingAggresion": 75,
@@ -306,6 +323,7 @@ const UAEPlayers = [
   {
     "id": 17,
     "name": "Sabir Ali",
+    "skills": [],
     "abilityToPlayPaceBall": 54,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 40,
@@ -325,6 +343,7 @@ const UAEPlayers = [
   {
     "id": 18,
     "name": "Dhruv Parashar",
+    "skills": [],
     "abilityToPlayPaceBall": 73,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 71,
@@ -344,6 +363,7 @@ const UAEPlayers = [
   {
     "id": 19,
     "name": "Lovepreet Singh",
+    "skills": [],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 80,
     "battingAggresion": 72,
@@ -363,6 +383,7 @@ const UAEPlayers = [
   {
     "id": 20,
     "name": "Khalid Shah",
+    "skills": [],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 80,

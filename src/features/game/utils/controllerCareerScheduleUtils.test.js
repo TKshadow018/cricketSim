@@ -1,6 +1,7 @@
 import { createPerson } from 'faker-user';
 import BangladeshPlayers from '../../../gameData/players/Bangladesh';
 import IndiaPlayers from '../../../gameData/players/India';
+import { skillList } from '../../../gameData/skillList';
 import { resolveDomesticTargetPerTeam } from './careerPlayerProgressionUtils';
 import {
   assignGlobalPoolPlayersToDomesticTeams,
@@ -95,7 +96,12 @@ test('creates generated player metadata using the faker-provided name', () => {
       playerType: 'wicketkeeper',
       fitness: 100,
       name: 'India Generated Player',
+      skills: expect.any(Array),
     });
+    expect(player.skills.length).toBeLessThanOrEqual(2);
+    expect(player.skills.every((skillName) =>
+      skillList.find((skill) => skill.name === skillName).affects !== 'bowling'
+    )).toBe(true);
     const fakerOptions = createPerson.mock.calls[0][0];
     expect(fakerOptions.custom.find((entry) => entry.field === 'isWicketKeeper').value).toBe(true);
     expect(fakerOptions.custom.find((entry) => entry.field === 'abilityToPlayPaceBall')).toMatchObject({
@@ -132,7 +138,15 @@ test('generates custom attributes for every player archetype and handles mixed c
       ['unrecognized role', false],
     ].forEach(([playerType, isWicketKeeper]) => {
       const player = createGeneratedDomesticPlayer({ id: playerType, country: 'India', playerType });
-      expect(player).toMatchObject({ id: playerType, playerType });
+      expect(player).toMatchObject({ id: playerType, playerType, skills: expect.any(Array) });
+      expect(player.skills.length).toBeLessThanOrEqual(2);
+      const skillTypes = player.skills.map((skillName) =>
+        skillList.find((skill) => skill.name === skillName).affects
+      );
+      expect(skillTypes.some((type) =>
+        (playerType === 'batsman' && type === 'bowling') ||
+        (['bowler pacer', 'bowler spinner'].includes(playerType) && type === 'batting')
+      )).toBe(false);
       const latestCustom = createPerson.mock.calls[createPerson.mock.calls.length - 1][0].custom;
       expect(latestCustom.find((entry) => entry.field === 'isWicketKeeper').value).toBe(isWicketKeeper);
     });
@@ -212,6 +226,9 @@ test('creates domestic clubs with and without balanced rosters', () => {
     expect(populatedTeams.every((team) => team.players.length === 23)).toBe(true);
     expect(populatedTeams.flatMap((team) => team.players)).toHaveLength(276);
     expect(populatedTeams.every((team) => team.players.every((player) => player.country === 'India'))).toBe(true);
+    expect(populatedTeams.every((team) =>
+      team.players.every((player) => Array.isArray(player.skills) && player.skills.length <= 2)
+    )).toBe(true);
     const zeroStartIdTeams = createDomesticTeamsForCountry('India', { withPlayers: true, startId: 0 });
     const zeroStartIds = zeroStartIdTeams.flatMap((team) => team.players).map((player) => Number(player.id));
     expect(Math.min(...zeroStartIds)).toBe(10000);
@@ -236,6 +253,7 @@ test('builds ranked domestic clubs and a country-scaled global player pool', () 
     expect(pool.filter((player) => player.country === 'Top-ranked Country')).toHaveLength(35 * 12);
     expect(pool.filter((player) => player.country === 'Lower-ranked Country')).toHaveLength(25 * 12);
     expect(pool.every((player) => player.baseMarketPrice > 0 && Number.isFinite(player.abilityScore))).toBe(true);
+    expect(pool.every((player) => Array.isArray(player.skills) && player.skills.length <= 2)).toBe(true);
   });
 
 test('distributes every national roster across its domestic clubs with unique career ids', () => {
@@ -252,6 +270,8 @@ test('distributes every national roster across its domestic clubs with unique ca
     expect(teams.every((team) => team.players.some((player) => player.isNationalTeamPlayer))).toBe(true);
     expect(nationalPlayers).toHaveLength(BangladeshPlayers.length + IndiaPlayers.length);
     expect(new Set(nationalPlayers.map((player) => player.id)).size).toBe(nationalPlayers.length);
+    expect(nationalPlayers.every((player) => player.skills.length <= 2)).toBe(true);
+    expect(nationalPlayers.find((player) => player.name === 'Virat Kohli').skills).toContain('CoverDriveArtist');
     expect(nationalPlayers.filter((player) => player.country === 'Bangladesh').map((player) => player.name).sort())
       .toEqual(BangladeshPlayers.map((player) => player.name).sort());
     expect(nationalPlayers.filter((player) => player.country === 'India').map((player) => player.name).sort())

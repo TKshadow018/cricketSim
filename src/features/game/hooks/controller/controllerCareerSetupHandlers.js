@@ -128,6 +128,7 @@ const beginCareer = ({ seasonLength, playerProfile, domesticCountry, domesticTea
       spinAbility: createdPlayer.spinAbility,
       isWicketKeeper: createdPlayer.isWicketKeeper,
       playerType: createdPlayer.playerType,
+      skills: createdPlayer.skills,
       fitness: createdPlayer.fitness,
       morale: createdPlayer.morale,
       battingOrderCoeff: createdPlayer.battingOrderCoeff,

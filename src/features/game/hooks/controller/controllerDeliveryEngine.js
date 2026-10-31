@@ -177,6 +177,8 @@ export const processDelivery = ({
     matchTypeKey,
     battingIntent,
     battingTactics,
+    battingSide,
+    bowlingSide,
     bowlingIntent,
     bowlingTactics: deliveryBowlingTactics,
     locationCountry,

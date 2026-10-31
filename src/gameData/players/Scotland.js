@@ -1,7 +1,9 @@
+
 const ScotlandPlayers = [
   {
     "id": 1,
     "name": "Richie Berrington",
+    "skills": ['Anchor', 'HardHitter', 'CaptainCalm'],
     "abilityToPlayPaceBall": 90,
     "abilityToPlaySpinBall": 88,
     "battingAggresion": 77,
@@ -21,6 +23,7 @@ const ScotlandPlayers = [
   {
     "id": 2,
     "name": "George Munsey",
+    "skills": ['PowerplaySpecialist', 'HardHitter'],
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 90,
@@ -40,6 +43,7 @@ const ScotlandPlayers = [
   {
     "id": 3,
     "name": "Michael Jones",
+    "skills": [],
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 90,
@@ -59,6 +63,7 @@ const ScotlandPlayers = [
   {
     "id": 4,
     "name": "Brandon McMullen",
+    "skills": [],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 74,
@@ -78,6 +83,7 @@ const ScotlandPlayers = [
   {
     "id": 5,
     "name": "Matthew Cross",
+    "skills": ['WicketWall', 'SafeHands'],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 80,
@@ -97,6 +103,7 @@ const ScotlandPlayers = [
   {
     "id": 6,
     "name": "Charlie Tear",
+    "skills": [],
     "abilityToPlayPaceBall": 83,
     "abilityToPlaySpinBall": 81,
     "battingAggresion": 74,
@@ -116,6 +123,7 @@ const ScotlandPlayers = [
   {
     "id": 7,
     "name": "Tom Mackintosh",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 78,
@@ -135,6 +143,7 @@ const ScotlandPlayers = [
   {
     "id": 8,
     "name": "Michael Leask",
+    "skills": ['HardHitter', 'Finisher'],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 74,
@@ -154,6 +163,7 @@ const ScotlandPlayers = [
   {
     "id": 9,
     "name": "Chris Greaves",
+    "skills": [],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 74,
@@ -173,6 +183,7 @@ const ScotlandPlayers = [
   {
     "id": 10,
     "name": "Mark Watt",
+    "skills": ['FlightMaster', 'SpinWizard'],
     "abilityToPlayPaceBall": 51,
     "abilityToPlaySpinBall": 58,
     "battingAggresion": 39,
@@ -192,6 +203,7 @@ const ScotlandPlayers = [
   {
     "id": 11,
     "name": "Brad Wheal",
+    "skills": [],
     "abilityToPlayPaceBall": 53,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 39,
@@ -211,6 +223,7 @@ const ScotlandPlayers = [
   {
     "id": 12,
     "name": "Safyaan Sharif",
+    "skills": [],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -230,6 +243,7 @@ const ScotlandPlayers = [
   {
     "id": 13,
     "name": "Chris Sole",
+    "skills": [],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 38,
@@ -249,6 +263,7 @@ const ScotlandPlayers = [
   {
     "id": 14,
     "name": "Hamza Tahir",
+    "skills": [],
     "abilityToPlayPaceBall": 51,
     "abilityToPlaySpinBall": 58,
     "battingAggresion": 39,
@@ -268,6 +283,7 @@ const ScotlandPlayers = [
   {
     "id": 15,
     "name": "Jasper Davidson",
+    "skills": [],
     "abilityToPlayPaceBall": 78,
     "abilityToPlaySpinBall": 71,
     "battingAggresion": 76,
@@ -287,6 +303,7 @@ const ScotlandPlayers = [
   {
     "id": 16,
     "name": "Dylan Budge",
+    "skills": [],
     "abilityToPlayPaceBall": 82,
     "abilityToPlaySpinBall": 80,
     "battingAggresion": 73,
@@ -306,6 +323,7 @@ const ScotlandPlayers = [
   {
     "id": 17,
     "name": "Oli Hairs",
+    "skills": [],
     "abilityToPlayPaceBall": 84,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 88,
@@ -325,6 +343,7 @@ const ScotlandPlayers = [
   {
     "id": 18,
     "name": "Jack Jarvis",
+    "skills": [],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 70,
     "battingAggresion": 74,
@@ -344,6 +363,7 @@ const ScotlandPlayers = [
   {
     "id": 19,
     "name": "Alasdair Evans",
+    "skills": [],
     "abilityToPlayPaceBall": 54,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 40,
@@ -363,6 +383,7 @@ const ScotlandPlayers = [
   {
     "id": 20,
     "name": "Gavin Main",
+    "skills": [],
     "abilityToPlayPaceBall": 54,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 40,

@@ -426,6 +426,7 @@ describe('match presentation components', () => {
       job: 'Player',
       email: 'player@example.com',
       phone: '123',
+      skills: ['YorkerKing', 'ClutchPerformer'],
     };
     const { rerender } = render(<CareerPlayerProfileModal isOpen={false} player={player} onClose={onClose} />);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -433,6 +434,11 @@ describe('match presentation components', () => {
     expect(screen.getByRole('dialog', { name: 'Career player profile' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Profile', level: 4 })).toBeInTheDocument();
     expect(document.querySelector('.sim-ability-fill')).toHaveStyle({ width: '100%' });
+    expect(screen.getByText('YorkerKing')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'YorkerKing skill icon' })).toHaveAttribute(
+      'src',
+      '/asset/img/icon/skill/dummy.svg'
+    );
     expect(screen.queryByText('Free Agent')).not.toBeInTheDocument();
     const closeButtons = screen.getAllByRole('button', { name: 'Close' });
     fireEvent.click(closeButtons[1]);

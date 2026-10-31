@@ -1,7 +1,9 @@
+
 const AustraliaPlayers = [
   {
     "id": 1,
     "name": "David Warner",
+    "skills": ['PowerplaySpecialist', 'HardHitter'],
     "abilityToPlayPaceBall": 93,
     "abilityToPlaySpinBall": 84,
     "battingAggresion": 93,
@@ -21,6 +23,7 @@ const AustraliaPlayers = [
   {
     "id": 2,
     "name": "Travis Head",
+    "skills": ['PowerplaySpecialist', 'HardHitter', 'ClutchPerformer'],
     "abilityToPlayPaceBall": 90,
     "abilityToPlaySpinBall": 83,
     "battingAggresion": 90,
@@ -40,6 +43,7 @@ const AustraliaPlayers = [
   {
     "id": 3,
     "name": "Steve Smith",
+    "skills": ['Anchor', 'SweepSpecialist'],
     "abilityToPlayPaceBall": 90,
     "abilityToPlaySpinBall": 88,
     "battingAggresion": 77,
@@ -59,6 +63,7 @@ const AustraliaPlayers = [
   {
     "id": 4,
     "name": "Marnus Labuschagne",
+    "skills": ['Anchor', 'CoverDriveArtist'],
     "abilityToPlayPaceBall": 83,
     "abilityToPlaySpinBall": 81,
     "battingAggresion": 74,
@@ -78,6 +83,7 @@ const AustraliaPlayers = [
   {
     "id": 5,
     "name": "Mitchell Marsh",
+    "skills": ['HardHitter', 'Finisher'],
     "abilityToPlayPaceBall": 81,
     "abilityToPlaySpinBall": 75,
     "battingAggresion": 74,
@@ -97,6 +103,7 @@ const AustraliaPlayers = [
   {
     "id": 6,
     "name": "Glenn Maxwell",
+    "skills": ['HardHitter', 'Finisher', 'ClutchPerformer'],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 83,
     "battingAggresion": 72,
@@ -116,6 +123,7 @@ const AustraliaPlayers = [
   {
     "id": 7,
     "name": "Marcus Stoinis",
+    "skills": ['HardHitter', 'Finisher'],
     "abilityToPlayPaceBall": 80,
     "abilityToPlaySpinBall": 74,
     "battingAggresion": 73,
@@ -135,6 +143,7 @@ const AustraliaPlayers = [
   {
     "id": 8,
     "name": "Cameron Green",
+    "skills": ['CoverDriveArtist', 'SeamSpecialist'],
     "abilityToPlayPaceBall": 77,
     "abilityToPlaySpinBall": 70,
     "battingAggresion": 75,
@@ -154,6 +163,7 @@ const AustraliaPlayers = [
   {
     "id": 9,
     "name": "Josh Inglis",
+    "skills": ['PowerplaySpecialist', 'SafeHands'],
     "abilityToPlayPaceBall": 77,
     "abilityToPlaySpinBall": 74,
     "battingAggresion": 76,
@@ -173,6 +183,7 @@ const AustraliaPlayers = [
   {
     "id": 10,
     "name": "Alex Carey",
+    "skills": ['WicketWall', 'SafeHands'],
     "abilityToPlayPaceBall": 78,
     "abilityToPlaySpinBall": 74,
     "battingAggresion": 77,
@@ -192,6 +203,7 @@ const AustraliaPlayers = [
   {
     "id": 11,
     "name": "Pat Cummins",
+    "skills": ['SeamSpecialist', 'SwingMaster', 'CaptainCalm'],
     "abilityToPlayPaceBall": 54,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 40,
@@ -211,6 +223,7 @@ const AustraliaPlayers = [
   {
     "id": 12,
     "name": "Mitchell Starc",
+    "skills": ['YorkerKing', 'SwingMaster'],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -230,6 +243,7 @@ const AustraliaPlayers = [
   {
     "id": 13,
     "name": "Josh Hazlewood",
+    "skills": ['SeamSpecialist', 'SwingMaster'],
     "abilityToPlayPaceBall": 54,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 40,
@@ -249,6 +263,7 @@ const AustraliaPlayers = [
   {
     "id": 14,
     "name": "Adam Zampa",
+    "skills": ['SpinWizard', 'GooglyGenius'],
     "abilityToPlayPaceBall": 51,
     "abilityToPlaySpinBall": 58,
     "battingAggresion": 39,
@@ -268,6 +283,7 @@ const AustraliaPlayers = [
   {
     "id": 15,
     "name": "Nathan Ellis",
+    "skills": [],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
@@ -287,6 +303,7 @@ const AustraliaPlayers = [
   {
     "id": 16,
     "name": "Sean Abbott",
+    "skills": [],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 70,
     "battingAggresion": 74,
@@ -306,6 +323,7 @@ const AustraliaPlayers = [
   {
     "id": 17,
     "name": "Matthew Short",
+    "skills": [],
     "abilityToPlayPaceBall": 72,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 70,
@@ -325,6 +343,7 @@ const AustraliaPlayers = [
   {
     "id": 18,
     "name": "Tanveer Sangha",
+    "skills": [],
     "abilityToPlayPaceBall": 49,
     "abilityToPlaySpinBall": 57,
     "battingAggresion": 37,
@@ -344,6 +363,7 @@ const AustraliaPlayers = [
   {
     "id": 19,
     "name": "Ashton Agar",
+    "skills": [],
     "abilityToPlayPaceBall": 74,
     "abilityToPlaySpinBall": 78,
     "battingAggresion": 72,
@@ -363,6 +383,7 @@ const AustraliaPlayers = [
   {
     "id": 20,
     "name": "Jake Fraser-McGurk",
+    "skills": [],
     "abilityToPlayPaceBall": 84,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 88,
