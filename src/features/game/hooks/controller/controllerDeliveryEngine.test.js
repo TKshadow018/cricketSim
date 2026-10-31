@@ -353,7 +353,11 @@ describe('processDelivery guards and bowler selection', () => {
 
     processDelivery(props);
 
-    expect(resolveOutcome).toHaveBeenCalledWith(expect.objectContaining({ battingTactics }));
+    expect(resolveOutcome).toHaveBeenCalledWith(expect.objectContaining({
+      battingTactics,
+      battingSide,
+      bowlingSide,
+    }));
     expect(props.setFirstInnings.mock.calls[0][0].ballHistory[0]).toMatchObject({
       battingTactics: { approach: 'attack', shot: 'loft', target: 'leg' },
       specialShot: false,

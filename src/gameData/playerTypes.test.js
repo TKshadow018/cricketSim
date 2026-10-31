@@ -3,9 +3,20 @@ import { playerListForNation } from './playerListForNation';
 import IndiaPlayers from './players/India';
 import { assignCareerSkills } from './playerSkills';
 import { skillList } from './skillList';
+import { skillApplyTimeEnum } from './skillApplyTimeEnum';
 import { selectAIPlayingXI } from '../features/game/utils/controllerCommonUtils';
 
 describe('national player type classification', () => {
+  test('defines the skill impact apply-time enum', () => {
+    expect(skillApplyTimeEnum).toEqual({
+      always: 'always',
+      whenBatting: 'whenBatting',
+      whenBowling: 'whenBowling',
+      powerPlay: 'powerPlay',
+      last20PercentOfOvers: 'last20PercentOfOvers',
+    });
+  });
+
   test.each([
     [{ isWicketKeeper: true, paceAbility: 99 }, 'wicketkeeper'],
     [{ abilityToPlayPaceBall: 40, abilityToPlaySpinBall: 40, paceAbility: 61 }, 'pace allrounder'],
@@ -96,24 +107,116 @@ describe('national player type classification', () => {
     expect(players.some((player) => player.skills.length > 0)).toBe(true);
   });
 
-  test('defines probability impact deltas for every skill using valid outcomes', () => {
+  test('defines per-skill scoped probability impacts and timing', () => {
     const outcomes = new Set(['0', '1', '2', '3', '4', '6', 'wide', 'nb', 'W']);
+    const applyTimes = new Set(Object.values(skillApplyTimeEnum));
+    const expectedImpacts = {
+      YorkerKing: {
+        applyTime: 'whenBowling',
+        bowling: { W: 2, '0': 3, '1': 1, '2': -2, '4': -2, '6': -2 },
+      },
+      SwingMaster: {
+        applyTime: 'whenBowling',
+        bowling: { W: 1, '0': 4, '1': -3, '4': -1, '6': -1 },
+      },
+      SeamSpecialist: {
+        applyTime: 'whenBowling',
+        bowling: { W: 2, '0': 3, '1': -5, '2': -2, '4': 1, '6': 1 },
+      },
+      ReverseSwingArtist: {
+        applyTime: 'whenBowling',
+        bowling: { W: 1, '0': 4, '1': -2, '2': -1, '4': -1, '6': -1 },
+      },
+      SpinWizard: {
+        applyTime: 'whenBowling',
+        bowling: { W: 2, '0': 2, '1': -1, '2': -1, '4': -1, '6': -1 },
+      },
+      DoosraArtist: {
+        applyTime: 'whenBowling',
+        bowling: { W: 3, '0': 1, '1': -1, '2': -1, '4': -1, '6': -1 },
+      },
+      GooglyGenius: {
+        applyTime: 'whenBowling',
+        bowling: { W: 3, '0': 1, '1': -1, '2': -1, '4': -1, '6': -1 },
+      },
+      FlightMaster: {
+        applyTime: 'whenBowling',
+        bowling: { W: 1, '0': 3, '1': -1, '2': -1, '4': -1, '6': -1 },
+      },
+      MagicHand: {
+        applyTime: 'whenBowling',
+        bowling: { W: 2, '0': 2, '1': -1, '2': -1, '4': -1, '6': -1 },
+      },
+      SlowMotionVision: {
+        applyTime: 'whenBatting',
+        batting: { '0': -3, '1': 2, '2': 1 },
+      },
+      HardHitter: {
+        applyTime: 'whenBatting',
+        batting: { '6': 3, W: 1, '4': 2, '0': -3, '1': -2, '2': -1 },
+      },
+      Finisher: {
+        applyTime: 'last20PercentOfOvers',
+        batting: { '4': 2, '6': 2, W: 2, '0': -3, '1': -2, '2': -1 },
+      },
+      Anchor: {
+        applyTime: 'whenBatting',
+        batting: { '4': -2, '6': -1, W: -2, '0': 3, '1': 2 },
+      },
+      CoverDriveArtist: {
+        applyTime: 'whenBatting',
+        batting: { '2': 1, '0': -2, '1': 1 },
+      },
+      SweepSpecialist: {
+        applyTime: 'whenBatting',
+        batting: { '2': 1, '3': -1, '0': -1, '1': 1 },
+      },
+      WicketWall: {
+        applyTime: 'whenBowling',
+        bowling: { '4': -2, '6': -2, W: -2, '0': 5, '1': 1 },
+      },
+      PowerplaySpecialist: {
+        applyTime: 'powerPlay',
+        batting: { '4': 3, '6': 2, W: 1, '0': -4, '1': -2 },
+      },
+      ClutchPerformer: {
+        applyTime: 'always',
+        batting: { '0': -1, '4': 1 },
+        bowling: { '0': 1, '4': -1 },
+      },
+      SafeHands: {
+        applyTime: 'whenBowling',
+        fullTeamBowling: { '0': 2, '1': 1, '2': -1, '3': -1, '4': -1 },
+      },
+      CaptainCalm: {
+        applyTime: 'always',
+        batting: { '0': 1, W: -1 },
+        bowling: { '0': 1, W: -1 },
+        fullTeamBatting: { '0': -1, '1': 1 },
+        fullTeamBowling: { '0': 1, '1': -1 },
+      },
+    };
 
-    skillList.forEach(({ impact }) => {
+    skillList.forEach(({ name, impact }) => {
       expect(impact).toBeDefined();
-      expect(Object.keys(impact).length).toBeGreaterThan(0);
-      expect(Object.entries(impact).every(([outcome, delta]) =>
-        outcomes.has(outcome) && Number.isFinite(delta)
-      )).toBe(true);
-      expect(Object.values(impact).reduce((total, delta) => total + delta, 0)).toBe(0);
-    });
+      expect(impact).toEqual(expectedImpacts[name]);
+      expect(applyTimes.has(impact.applyTime)).toBe(true);
 
-    expect(skillList.find(({ name }) => name === 'HardHitter').impact).toEqual({
-      '6': 3,
-      W: 1,
-      '0': -3,
-      '1': -1,
+      Object.entries(impact)
+        .filter(([scope]) => scope !== 'applyTime')
+        .forEach(([scope, deltas]) => {
+          expect(['batting', 'bowling', 'fullTeamBatting', 'fullTeamBowling'])
+            .toContain(scope);
+          expect(Object.keys(deltas).length).toBeGreaterThan(0);
+          expect(Object.entries(deltas).every(([outcome, delta]) =>
+            outcomes.has(outcome) && Number.isFinite(delta)
+          )).toBe(true);
+          expect(Object.values(deltas).reduce((total, delta) => total + delta, 0)).toBe(0);
+        });
     });
+    expect(Object.keys(expectedImpacts).sort()).toEqual(
+      skillList.map(({ name }) => name).sort()
+    );
   });
 
   test('keeps curated national batting and bowling skills within the matching player roles', () => {

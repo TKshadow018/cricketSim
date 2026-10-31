@@ -339,3 +339,30 @@ test('renders live admin probabilities and the non-admin quick panel', () => {
   expect(screen.getByText('Quick Panel')).toBeInTheDocument();
   expect(screen.getByText('Selection Profile')).toBeInTheDocument();
 });
+
+test('shows active skill holders and outcome weight deltas in the admin matrix', () => {
+  process.env.REACT_APP_FIREBASE_ADMIN_EMAIL = 'player@example.com';
+  state.game.stage = matchStatusEnum.TeamOneBat;
+  getPlayersForNations.mockReturnValue({
+    ownPlayers: [
+      { ...dashboardOwnPlayers[0], skills: ['HardHitter'] },
+      dashboardOwnPlayers[1],
+    ],
+    opponentPlayers: [
+      { ...dashboardOpponentPlayers[0], skills: ['YorkerKing'] },
+      { ...dashboardOpponentPlayers[1], skills: ['SafeHands'] },
+    ],
+  });
+
+  renderPage();
+
+  expect(screen.getByText('Active skill impacts')).toBeInTheDocument();
+  expect(screen.getByText('3 effects')).toBeInTheDocument();
+  expect(screen.getByText('HardHitter')).toBeInTheDocument();
+  expect(screen.getByText('YorkerKing')).toBeInTheDocument();
+  expect(screen.getByText('SafeHands')).toBeInTheDocument();
+  expect(screen.getByText('6 +3')).toBeInTheDocument();
+  expect(screen.getByText('W +2')).toBeInTheDocument();
+  expect(screen.getAllByText(/\(skill impact -?\d+%\)/).length).toBeGreaterThan(0);
+  expect(screen.getByText(/Outcome weight delta/)).toBeInTheDocument();
+});

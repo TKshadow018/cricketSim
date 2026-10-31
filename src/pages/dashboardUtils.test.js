@@ -149,6 +149,54 @@ test('builds the first-innings admin matrix with conditions, roles, free hit, an
   expect(matrix.rows.reduce((total, { value }) => total + value, 0)).toBe(100);
 });
 
+test('includes active individual and team skill impacts in the admin matrix', () => {
+  const baseline = buildAdminMatrix(makeGameState());
+  const ownPlayersWithSkill = ownPlayers.map((player, index) =>
+    index === 0 ? makePlayer(player.id, { skills: ['HardHitter'] }) : player
+  );
+  const opponentPlayersWithSkills = opponentPlayers.map((player, index) => {
+    if (index === 0) {
+      return makePlayer(player.id, { skills: ['YorkerKing'] });
+    }
+    if (index === 1) {
+      return makePlayer(player.id, { skills: ['SafeHands'] });
+    }
+    return player;
+  });
+  getPlayersForNations.mockReturnValueOnce({
+    ownPlayers: ownPlayersWithSkill,
+    opponentPlayers: opponentPlayersWithSkills,
+  });
+
+  const matrix = buildAdminMatrix(makeGameState());
+
+  expect(matrix.skillImpacts).toEqual(expect.arrayContaining([
+    expect.objectContaining({
+      skillName: 'HardHitter',
+      holderName: 'Player own-0',
+      scope: 'batting',
+      deltas: expect.objectContaining({ '6': 3 }),
+    }),
+    expect.objectContaining({
+      skillName: 'YorkerKing',
+      holderName: 'Player opponent-0',
+      scope: 'bowling',
+      deltas: expect.objectContaining({ W: 2 }),
+    }),
+    expect.objectContaining({
+      skillName: 'SafeHands',
+      holderName: 'Player opponent-1',
+      scope: 'fullTeamBowling',
+      deltas: expect.objectContaining({ '0': 2 }),
+    }),
+  ]));
+  expect(matrix.rows).not.toEqual(baseline.rows);
+  const matrixSix = matrix.rows.find(({ key }) => key === '6');
+  const baselineSix = baseline.rows.find(({ key }) => key === '6');
+  expect(matrixSix.skillImpact).toBe(matrixSix.value - baselineSix.value);
+  expect(matrixSix.skillImpact).not.toBe(0);
+});
+
 test('reflects live batting tactics in the existing admin matrix rows', () => {
   const balanced = buildAdminMatrix(makeGameState({
     battingTactics: DEFAULT_BATTING_TACTICS,

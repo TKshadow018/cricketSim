@@ -18,6 +18,7 @@ import {
   buildAdminMatrix,
   buildBattingOrderPreview,
 } from './dashboardUtils';
+import AdminSkillImpactPanel from './AdminSkillImpactPanel';
 
 function DashboardPage() {
   const dispatch = useDispatch();
@@ -170,10 +171,18 @@ function DashboardPage() {
                 {adminMatrix?.rows.map((row) => (
                   <div key={row.key} className="admin-matrix-row">
                     <span>{row.key}</span>
-                    <strong>{row.value}%</strong>
+                    <strong className="admin-matrix-outcome-value">
+                      <span>{row.value}%</span>
+                      {adminMatrix?.hasSkillImpacts && (
+                        <small className="admin-matrix-skill-impact">
+                          (skill impact {row.skillImpact}%)
+                        </small>
+                      )}
+                    </strong>
                   </div>
                 ))}
               </div>
+              <AdminSkillImpactPanel impacts={adminMatrix?.skillImpacts} />
 
               <h3 className="admin-matrix-subhead">Ability Snapshot</h3>
               <div className="admin-matrix-table">
