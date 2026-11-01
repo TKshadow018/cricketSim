@@ -14,10 +14,15 @@ contract and roadmap for balancing and future spatial-fielding work. It expands 
   Boundaries. Legacy Special Bowl saves do not auto-arm a delivery.
 - Bowling plans and calls now change the normalized outcome distribution for user-controlled
   bowling. Special Bowl remains resource-limited and is consumed as one explicit delivery.
-- The field graphic shows an approximate preset and its outcome modifiers are abstract. The
-  simulator still does not model individual fielder positions, ball trajectories, or fielding
-  legality. Batting handedness is also not represented, so line controls use general channel
+- The field graphic shows a preset or a custom field. Open **Customize field positions** to move
+  any of the nine numbered fielders between named positions; the wicketkeeper and bowler remain
+  fixed. Selections persist between deliveries and are included in saved games. Selecting a preset
+  replaces the custom layout. The closest preset by number of matching positions determines the
+  custom field's abstract outcome modifiers; ties follow the listed preset order.
+  The simulator does not model ball trajectories or fielding legality. Batting handedness is
+  also not represented, so line controls use general channel
   labels rather than claiming precise batter-relative off/leg geometry.
+- See [field-settings.md](./field-settings.md) for the field editor and its limitations.
 - Balance the initial modifiers with longer seeded scenarios before treating them as final game
   tuning.
 

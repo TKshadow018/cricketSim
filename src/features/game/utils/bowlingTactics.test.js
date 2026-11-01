@@ -5,10 +5,57 @@ import {
   getAvailableBowlingVariations,
   getLegacyBowlingIntent,
   migrateLegacyBowlingTactics,
+  mergeBowlingTactics,
   normalizeBowlingTactics,
 } from './bowlingTactics';
+import { fieldSettingList } from '../../../gameData/fieldSettingList';
 
 describe('bowling tactics', () => {
+  test.each([
+    ['newBall', { 4: 1, 6: 1, W: 2 }],
+    ['spinAttack', { 4: 1, 6: 1, W: 2 }],
+    ['powerplay', { 1: -1, 4: -1, W: 1 }],
+    ['ring', { 1: -2, 4: 1, W: 1 }],
+    ['middleOvers', { 1: -1, 4: -1, W: 1 }],
+    ['deathOvers', { 1: 1, 4: -2, 6: -2, W: -1 }],
+    ['offSide', { 1: -1, 4: -1, W: 1 }],
+    ['legSide', { 1: -1, 4: -1, W: 1 }],
+    ['defendSingle', { 1: -2, 4: 1, W: 1 }],
+  ])('supports the %s preset and applies its field effect', (fieldPreset, expectedShift) => {
+    const setting = fieldSettingList.find(({ key }) => key === fieldPreset);
+    expect(setting).toBeDefined();
+    expect(normalizeBowlingTactics({ fieldPreset }).fieldPreset).toBe(fieldPreset);
+    expect(getBowlingTacticShift({ fieldPreset })).toEqual(expectedShift);
+    expect(getBowlingTacticShift({ fieldPreset: 'custom', fieldPositions: setting.positions }))
+      .toEqual(expectedShift);
+  });
+
+  test('preserves valid custom positions, rejects invalid layouts and clears them on preset selection', () => {
+    const positions = [...fieldSettingList[0].positions];
+    positions[1] = 'gully';
+    const custom = mergeBowlingTactics(DEFAULT_BOWLING_TACTICS, {
+      fieldPreset: 'custom',
+      fieldPositions: positions,
+    });
+    expect(custom).toMatchObject({ fieldPreset: 'custom', fieldPositions: positions });
+    expect(normalizeBowlingTactics(custom)).toEqual(custom);
+    expect(mergeBowlingTactics(custom, { fieldPositions: ['wicketkeeper', 'gully'] })).toEqual(custom);
+    expect(mergeBowlingTactics(custom, { fieldPositions: positions.map(() => 'gully') })).toEqual(custom);
+    expect(mergeBowlingTactics(custom, { fieldPreset: 'boundary' })).not.toHaveProperty('fieldPositions');
+    expect(normalizeBowlingTactics({ fieldPreset: 'custom', fieldPositions: ['unknown'] }).fieldPreset)
+      .toBe('balanced');
+  });
+
+  test('custom layouts use the closest preset for field outcome modifiers', () => {
+    const attacking = fieldSettingList.find(({ key }) => key === 'attacking').positions;
+    const boundary = fieldSettingList.find(({ key }) => key === 'boundary').positions;
+    expect(getBowlingTacticShift({ fieldPreset: 'custom', fieldPositions: attacking }))
+      .toEqual(getBowlingTacticShift({ fieldPreset: 'attacking' }));
+    expect(getBowlingTacticShift({ fieldPreset: 'custom', fieldPositions: boundary }))
+      .toEqual(getBowlingTacticShift({ fieldPreset: 'boundary' }));
+    expect(getBowlingTacticShift({ fieldPreset: 'custom', fieldPositions: attacking }))
+      .not.toEqual(getBowlingTacticShift({ fieldPreset: 'custom', fieldPositions: boundary }));
+  });
   test('normalizes saved and partial tactics without losing valid selections', () => {
     expect(normalizeBowlingTactics({
       overPlan: 'attack',

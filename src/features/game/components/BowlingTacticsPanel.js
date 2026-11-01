@@ -1,6 +1,8 @@
 import React from 'react';
 import PlayerNameWithType from './PlayerNameWithType';
 import BowlingFieldMap from './BowlingFieldMap';
+import BowlingFieldEditor from './BowlingFieldEditor';
+import { getFieldPositions } from '../utils/bowlingField';
 import {
   BOWLING_FIELD_PRESETS,
   BOWLING_LENGTHS,
@@ -44,6 +46,7 @@ function BowlingTacticsPanel({
   const completedBalls = Math.min(6, Number(safeContext.currentOverBall) || 0);
   const nextBall = completedBalls < 6 ? completedBalls + 1 : null;
   const special = safeContext.specialDelivery || {};
+  const selectedField = BOWLING_FIELD_PRESETS.find(({ key }) => key === tactics?.fieldPreset);
   const isSpecialArmed = Boolean(tactics?.specialDeliveryArmed);
   const runRateTarget = safeContext.target !== null && safeContext.target !== undefined;
   const bowlerStyle = Number(bowler?.paceAbility || 0) > Number(bowler?.spinAbility || 0)
@@ -198,14 +201,19 @@ function BowlingTacticsPanel({
                 key={field.key}
                 type="button"
                 className={`sim-bowling-field-tab${tactics?.fieldPreset === field.key ? ' active' : ''}`}
+                aria-label={field.label}
                 aria-pressed={tactics?.fieldPreset === field.key}
                 onClick={() => updateTactics({ fieldPreset: field.key })}
               >
-                {field.label}
+                {field.shortLabel}
               </button>
             ))}
           </div>
-          <BowlingFieldMap preset={tactics?.fieldPreset} />
+          <p className="sim-bowling-field-description">
+            {selectedField ? selectedField.description : 'Adjust the numbered fielders below to customize your field.'}
+          </p>
+          <BowlingFieldMap preset={tactics?.fieldPreset} fieldPositions={getFieldPositions(tactics)} />
+          <BowlingFieldEditor tactics={tactics} onChange={updateTactics} />
         </section>
 
         <section className="sim-bowling-control-section" aria-labelledby="bowling-call-heading">

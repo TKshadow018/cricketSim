@@ -301,6 +301,14 @@
   color: var(--text-main);
 }
 
+.sim-bowling-field-description {
+  min-height: 2.5em;
+  margin: 0.55rem 0 0.3rem;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  line-height: 1.25;
+}
+
 .sim-bowling-field-figure {
   margin: 0;
 }
@@ -316,4 +324,49 @@
   color: var(--text-muted);
   font-size: 0.68rem;
   line-height: 1.25;
+}
+
+.sim-field-editor {
+  margin-top: 0.6rem;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.sim-field-editor summary {
+  color: var(--brand-primary);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sim-field-editor p {
+  margin: 0.5rem 0;
+  line-height: 1.4;
+}
+
+.sim-field-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.45rem;
+}
+
+.sim-field-editor-grid label {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.sim-field-editor-grid select {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-main);
+  background: var(--surface, #17241b);
+}
+
+.sim-field-editor-grid select:focus-visible,
+.sim-field-editor summary:focus-visible {
+  outline: 3px solid var(--brand-primary);
+  outline-offset: 2px;
 }

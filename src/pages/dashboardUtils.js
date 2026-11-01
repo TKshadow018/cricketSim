@@ -4,6 +4,7 @@ import { outfieldType, pitchType } from '../gameData/matchCondition';
 import { battingAction, bowlingAction } from '../gameData/actionType';
 import { matchStatusEnum } from '../gameData/matchStatusEnum';
 import { buildOutcomeAnalysis } from '../features/game/utils/controllerOutcomeUtils';
+import { selectOpponentFieldForDelivery } from '../features/game/utils/opponentField';
 
 const battingLabels = {
   [battingAction.defence]: 'Defend',
@@ -191,6 +192,15 @@ export const buildAdminMatrix = (gameState) => {
     battingTactics: gameState.battingTactics,
     bowlingIntent: gameState.bowlingIntent,
     bowlingTactics: isUserBowling ? gameState.bowlingTactics : undefined,
+    opponentFieldPreset: isUserBatting && innings
+      ? selectOpponentFieldForDelivery({
+          isFirstInnings: isFirst,
+          inningState: innings,
+          matchType,
+          matchTypeKey: gameState.matchTypeKey,
+          firstInningsScore: gameState.firstInnings?.score,
+        })
+      : undefined,
     locationCountry: gameState.locationCountry,
   });
   const { weights } = outcomeAnalysis;
@@ -222,8 +232,9 @@ export const buildAdminMatrix = (gameState) => {
     },
     rows: outcomeOrder.map((key) => ({
       key,
-      value: weights[key] || 0,
-      skillImpact: outcomeAnalysis.skillImpactDeltas[key] || 0,
+      value: (weights[key] || 0) + (key === 'W' ? weights.runOut || 0 : 0),
+      skillImpact: (outcomeAnalysis.skillImpactDeltas[key] || 0) +
+        (key === 'W' ? outcomeAnalysis.skillImpactDeltas.runOut || 0 : 0),
     })),
     skillImpacts: outcomeAnalysis.appliedSkillImpacts,
     hasSkillImpacts: outcomeAnalysis.appliedSkillImpacts.length > 0,

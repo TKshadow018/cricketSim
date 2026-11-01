@@ -8,6 +8,7 @@ import {
 } from '../../../../utils/simulatorUtils';
 import { battingAction, bowlingAction } from '../../../../gameData/actionType';
 import { canUseSpecialBall, canUseSuperShot } from '../../utils/controllerOutcomeUtils';
+import { formatDismissal } from '../../utils/deliveryDismissalUtils';
 
 export const buildInningsViewModel = ({
   isFirstInnings,
@@ -220,7 +221,7 @@ export const buildInningsViewModel = ({
         balls: stat.balls,
         strikeRate,
         dismissal: stat.isOut
-          ? `b ${stat.outByBowler || 'Unknown'} @ ${stat.outAtScore || '-'} (${stat.outAtBall || '-'})`
+          ? formatDismissal(stat)
           : stat.balls > 0 || isCurrent
             ? 'Not Out'
             : 'Yet to bat',

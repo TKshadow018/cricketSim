@@ -61,6 +61,20 @@ const makeProps = (overrides = {}) => ({
 });
 
 describe('BattingTacticsPanel', () => {
+  test('shows the opponent field and coverage for the selected scoring lane', () => {
+    const props = makeProps({
+      tactics: { ...DEFAULT_BATTING_TACTICS, target: 'cover', shot: 'drive' },
+      context: { ...makeProps().context, opponentFieldPreset: 'boundary' },
+    });
+    const { rerender } = render(<BattingTacticsPanel {...props} />);
+    expect(screen.getByRole('region', { name: 'Opposition field' })).toHaveTextContent('Boundary field');
+    expect(screen.getByRole('img', { name: /Boundary field layout/ })).toBeInTheDocument();
+    expect(screen.getByText(/Deep coverage: Deep cover/)).toBeInTheDocument();
+    expect(screen.getByTestId('field-position-markers')).toHaveAttribute('transform', 'translate(0 220) scale(1 -1)');
+    rerender(<BattingTacticsPanel {...props} tactics={{ ...props.tactics, target: 'midWicket' }} />);
+    expect(screen.getByText(/Deep coverage: Deep midwicket/)).toBeInTheDocument();
+  });
+
   test('shows match pressure, player matchup, target sector, and the over tracker', () => {
     render(<BattingTacticsPanel {...makeProps()} />);
 

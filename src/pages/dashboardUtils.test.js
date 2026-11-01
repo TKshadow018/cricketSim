@@ -8,6 +8,7 @@ import { battingAction, bowlingAction } from '../gameData/actionType';
 import { matchStatusEnum } from '../gameData/matchStatusEnum';
 import { getPlayersForNations } from '../gameData/playerListForNation';
 import { DEFAULT_BATTING_TACTICS } from '../features/game/utils/battingTactics';
+import * as outcomeUtils from '../features/game/utils/controllerOutcomeUtils';
 
 jest.mock('../gameData/playerListForNation', () => ({
   getPlayersForNations: jest.fn(),
@@ -145,7 +146,7 @@ test('builds the first-innings admin matrix with conditions, roles, free hit, an
   });
   expect(matrix.factors.battingSupport).toBe(7);
   expect(matrix.rows).toHaveLength(9);
-  expect(matrix.rows.find(({ key }) => key === 'W').value).toBe(0);
+  expect(matrix.rows.find(({ key }) => key === 'W').value).toBe(1);
   expect(matrix.rows.reduce((total, { value }) => total + value, 0)).toBe(100);
 });
 
@@ -217,6 +218,19 @@ test('reflects live batting tactics in the existing admin matrix rows', () => {
   expect(valueFor(attacking, 'W')).toBeGreaterThan(valueFor(balanced, 'W'));
   expect(valueFor(attacking, '6')).toBeGreaterThan(valueFor(balanced, '6'));
   expect(attacking.battingIntentLabel).toBe('Normal');
+});
+
+test('uses the live opponent field in batting outcome analysis', () => {
+  const analysis = jest.spyOn(outcomeUtils, 'buildOutcomeAnalysis');
+  buildAdminMatrix(makeGameState({
+    firstInnings: { strikerIndex: 0, currentBowlerIndex: 0, balls: 36, score: 50, wickets: 2 },
+    battingTactics: { ...DEFAULT_BATTING_TACTICS, target: 'cover', shot: 'drive' },
+  }));
+  expect(analysis).toHaveBeenLastCalledWith(expect.objectContaining({
+    isUserBatting: true,
+    opponentFieldPreset: 'middleOvers',
+  }));
+  analysis.mockRestore();
 });
 
 test('uses defaults for incomplete XIs and shifts outcomes for the second innings', () => {

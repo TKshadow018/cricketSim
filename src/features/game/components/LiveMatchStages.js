@@ -5,8 +5,9 @@ import StageShell from "./StageShell";
 import InningsStage from "./InningsStage";
 import TeamNameWithFlag from "./TeamNameWithFlag";
 import MatchSummaryStages from "./MatchSummaryStages";
+import { selectOpponentField } from "../utils/opponentField";
 
-const buildInningsSituation = ({ innings, view, matchType, matchCondition, oversDisplay, target }) => {
+const buildInningsSituation = ({ innings, view, matchType, matchTypeKey, matchCondition, oversDisplay, target }) => {
   const score = Number(innings?.score) || 0;
   const wickets = Number(innings?.wickets) || 0;
   const balls = Number(innings?.balls) || 0;
@@ -30,6 +31,9 @@ const buildInningsSituation = ({ innings, view, matchType, matchCondition, overs
         ? null
         : ((runsRemaining / ballsRemaining) * 6).toFixed(2),
     matchCondition: matchCondition || {},
+    opponentFieldPreset: view?.isUserBatting
+      ? selectOpponentField({ inningState: innings, matchType, matchTypeKey, target })
+      : undefined,
   };
 };
 
@@ -67,6 +71,7 @@ function LiveMatchStages(props) {
     innings: game.firstInnings,
     view: firstInningsView,
     matchType,
+    matchTypeKey: game.matchTypeKey,
     matchCondition: game.matchCondition,
     oversDisplay,
     target: null,
@@ -75,6 +80,7 @@ function LiveMatchStages(props) {
     innings: game.secondInnings,
     view: secondInningsView,
     matchType,
+    matchTypeKey: game.matchTypeKey,
     matchCondition: game.matchCondition,
     oversDisplay,
     target: Number(game.firstInnings?.score || 0) + 1,

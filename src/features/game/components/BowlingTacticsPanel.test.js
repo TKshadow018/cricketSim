@@ -2,6 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import BowlingTacticsPanel from './BowlingTacticsPanel';
 import { DEFAULT_BOWLING_TACTICS } from '../utils/bowlingTactics';
+import { fieldSettingList } from '../../../gameData/fieldSettingList';
 
 const makeProps = (overrides = {}) => ({
   tactics: DEFAULT_BOWLING_TACTICS,
@@ -55,6 +56,21 @@ const makeProps = (overrides = {}) => ({
 });
 
 describe('BowlingTacticsPanel', () => {
+  test('offers all 12 presets and shows the selected layout and description', () => {
+    const props = makeProps();
+    const { rerender } = render(<BowlingTacticsPanel {...props} />);
+    expect(fieldSettingList).toHaveLength(12);
+    fieldSettingList.forEach((setting) => {
+      fireEvent.click(screen.getByRole('button', { name: setting.label }));
+      expect(props.onTacticsChange).toHaveBeenLastCalledWith({ fieldPreset: setting.key });
+      rerender(<BowlingTacticsPanel {...props} tactics={{ ...props.tactics, fieldPreset: setting.key }} />);
+      expect(screen.getByRole('button', { name: setting.label })).toHaveAttribute('aria-pressed', 'true');
+      expect(screen.getByRole('img', { name: `${setting.label} layout with approximate fielder positions` }))
+        .toBeInTheDocument();
+      expect(screen.getByText(setting.description)).toBeInTheDocument();
+    });
+  });
+
   test('shows match pressure, current bowler, batter matchup, field and over tracker', () => {
     render(<BowlingTacticsPanel {...makeProps()} />);
 
@@ -85,6 +101,39 @@ describe('BowlingTacticsPanel', () => {
     expect(props.onTacticsChange).toHaveBeenNthCalledWith(3, { line: 'outside', length: 'yorker' });
     expect(props.onTacticsChange).toHaveBeenNthCalledWith(4, { variation: 'slower' });
     expect(props.onTacticsChange).toHaveBeenNthCalledWith(5, { specialDeliveryArmed: true });
+  });
+
+  test('allows fielders to be moved without choosing a preset and displays the custom map', () => {
+    const props = makeProps();
+    const { rerender } = render(<BowlingTacticsPanel {...props} />);
+    fireEvent.click(screen.getByText('Customize field positions'));
+    fireEvent.change(screen.getByLabelText('Fielder 1 position'), { target: { value: 'gully' } });
+    const patch = props.onTacticsChange.mock.calls[0][0];
+    expect(patch.fieldPreset).toBe('custom');
+    expect(patch.fieldPositions).toHaveLength(10);
+    expect(patch.fieldPositions).toContain('gully');
+    expect(patch.fieldPositions).not.toContain('slip');
+    rerender(<BowlingTacticsPanel {...props} tactics={{ ...props.tactics, ...patch }} />);
+    expect(screen.getByRole('img', { name: /Custom field layout/ })).toBeInTheDocument();
+    expect(screen.getByTestId('field-position-gully')).toBeInTheDocument();
+    expect(screen.getByLabelText('Fielder 2 position').querySelector('option[value="gully"]')).toBeDisabled();
+    expect(screen.getByText(/Closest preset: Balanced field/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Boundary field' }));
+    expect(props.onTacticsChange).toHaveBeenLastCalledWith({ fieldPreset: 'boundary' });
+  });
+
+  test('allows editing a new preset into a custom layout', () => {
+    const props = makeProps({ tactics: { ...DEFAULT_BOWLING_TACTICS, fieldPreset: 'newBall' } });
+    const { rerender } = render(<BowlingTacticsPanel {...props} />);
+    fireEvent.click(screen.getByText('Customize field positions'));
+    fireEvent.change(screen.getByLabelText('Fielder 2 position'), { target: { value: 'shortPoint' } });
+    const patch = props.onTacticsChange.mock.calls[0][0];
+    expect(patch.fieldPreset).toBe('custom');
+    expect(patch.fieldPositions).toContain('shortPoint');
+    expect(patch.fieldPositions).not.toContain('secondSlip');
+    rerender(<BowlingTacticsPanel {...props} tactics={{ ...props.tactics, ...patch }} />);
+    expect(screen.getByTestId('field-position-shortPoint')).toBeInTheDocument();
+    expect(screen.getByText(/Closest preset: New-ball field/)).toBeInTheDocument();
   });
 
   test('disables special deliveries and limits variations to the active bowling style', () => {

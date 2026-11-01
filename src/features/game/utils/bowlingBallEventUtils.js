@@ -1,4 +1,4 @@
-import { getEffectiveBowlingVariation } from './bowlingTactics';
+import { getEffectiveBowlingVariation, normalizeBowlingTactics } from './bowlingTactics';
 
 export const buildBowlingBallEvent = ({
   inningState,
@@ -8,6 +8,7 @@ export const buildBowlingBallEvent = ({
   battingTactics,
   bowlingTactics,
   isUserBowling,
+  opponentFieldPreset,
 }) => {
   const completedBalls = Number(inningState?.balls) || 0;
   const isLegalDelivery = Boolean(outcome?.isLegalDelivery);
@@ -19,6 +20,9 @@ export const buildBowlingBallEvent = ({
       : token === 'nb'
         ? `NB +${Number(outcome?.extraRuns) || 1}`
         : String(Number(outcome?.runs) || 0);
+  const fieldTactics = bowlingTactics?.fieldPreset === 'custom'
+    ? normalizeBowlingTactics(bowlingTactics)
+    : bowlingTactics;
 
   return {
     overNumber: Math.floor(completedBalls / 6) + 1,
@@ -29,12 +33,17 @@ export const buildBowlingBallEvent = ({
     runs: Number(outcome?.runs) || 0,
     extras: Number(outcome?.extraRuns) || 0,
     isWicket: Boolean(outcome?.isWicket),
+    ...(outcome?.dismissal ? { dismissal: { ...outcome.dismissal } } : {}),
     bowler: bowler?.name || '',
     striker: striker?.name || '',
+    ...(opponentFieldPreset ? { opponentFieldPreset } : {}),
     tactics: isUserBowling && bowlingTactics
       ? {
           overPlan: bowlingTactics.overPlan,
-          fieldPreset: bowlingTactics.fieldPreset,
+          fieldPreset: fieldTactics.fieldPreset,
+          ...(fieldTactics.fieldPreset === 'custom'
+            ? { fieldPositions: [...fieldTactics.fieldPositions] }
+            : {}),
           line: bowlingTactics.line,
           length: bowlingTactics.length,
           variation: getEffectiveBowlingVariation(bowlingTactics, bowler),
@@ -62,6 +71,7 @@ export const buildNextBallHistory = ({
   isUserBatting,
   isUserBowling,
   specialShot,
+  opponentFieldPreset,
 }) => [
   ...(Array.isArray(inningState?.ballHistory) ? inningState.ballHistory : []),
   buildBowlingBallEvent({
@@ -72,5 +82,6 @@ export const buildNextBallHistory = ({
     battingTactics: isUserBatting && battingTactics ? { ...battingTactics, specialShot } : null,
     bowlingTactics,
     isUserBowling,
+    opponentFieldPreset,
   }),
 ].slice(-60);

@@ -31,6 +31,7 @@ jest.mock('./InningsStage', () => ({
       <span data-testid="bowling-plan">{props.bowlingTactics?.overPlan || 'legacy'}</span>
       <button onClick={() => props.onBowlingTacticsChange?.({ overPlan: 'attack' })}>Change bowling plan</button>
       <span data-testid="batting-approach">{props.battingTactics?.approach || 'legacy'}</span>
+      <span data-testid="opponent-field">{props.battingContext?.opponentFieldPreset}</span>
       <button onClick={() => props.onBattingTacticsChange?.({ approach: 'attack' })}>Change batting approach</button>
       {props.showScoreboard ? (
         <button onClick={props.onCloseScoreboard}>Close Scoreboard</button>
@@ -80,6 +81,7 @@ const makeProps = (overrides = {}) => ({
     secondInnings: { balls: 0, score: 0, wickets: 0, lastEvent: '', needsOpeners: false, openerSelections: [], waitingForNextBatter: false, waitingForNextBowler: false, commentary: [] },
     battingIntent: 'normal',
     bowlingIntent: 'normal',
+    matchTypeKey: 't20',
     bowlingTactics: {
       overPlan: 'balanced',
       fieldPreset: 'balanced',
@@ -197,6 +199,30 @@ const makeProps = (overrides = {}) => ({
 });
 
 describe('LiveMatchStages', () => {
+  test('provides the same situation-based opponent field before a batting delivery', () => {
+    const props = makeProps();
+    const { rerender } = render(<LiveMatchStages {...props} />);
+    expect(screen.getByTestId('opponent-field')).toHaveTextContent('powerplay');
+    const next = {
+      ...props,
+      game: { ...props.game, firstInnings: { ...props.game.firstInnings, balls: 36 } },
+    };
+    rerender(<LiveMatchStages {...next} />);
+    expect(screen.getByTestId('opponent-field')).toHaveTextContent('middleOvers');
+    const chase = {
+      ...props,
+      stage: matchStatusEnum.TeamTwoBat,
+      secondInningsView: { ...props.secondInningsView, isUserBatting: true, isUserBowling: false },
+      game: {
+        ...props.game,
+        firstInnings: { ...props.game.firstInnings, score: 99 },
+        secondInnings: { ...props.game.secondInnings, balls: 115, score: 99 },
+      },
+    };
+    rerender(<LiveMatchStages {...chase} />);
+    expect(screen.getByTestId('opponent-field')).toHaveTextContent('defendSingle');
+  });
+
   test('routes both innings stages and passes delivery, opener, scoreboard, and simulation actions', () => {
     const first = makeProps();
     const { rerender } = render(<LiveMatchStages {...first} />);

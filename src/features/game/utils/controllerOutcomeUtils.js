@@ -4,6 +4,8 @@ import { skillApplyTimeEnum } from '../../../gameData/skillApplyTimeEnum';
 import { skillList } from '../../../gameData/skillList';
 import { getBattingTacticShift } from './battingTactics';
 import { getBowlingTacticShift } from './bowlingTactics';
+import { getFieldingTacticShift } from './opponentField';
+import { sampleDismissal } from './dismissalSampling';
 
 const skillByName = new Map(skillList.map((skill) => [skill.name, skill]));
 
@@ -82,6 +84,7 @@ const normalizeOutcomeWeights = (weights, outcomes, freeHitArmed) => {
 
   if (freeHitArmed) {
     normalized.W = 0;
+    normalized.runOut = 1;
   }
 
   const nonDotTotal = outcomes
@@ -138,11 +141,12 @@ const calculateOutcomeDistribution = ({
   battingTactics,
   bowlingIntent,
   bowlingTactics,
+  opponentFieldPreset,
   locationCountry,
   battingSide = [],
   bowlingSide = [],
 }) => {
-  const outcomes = ['0', '1', '2', '3', '4', '6', 'wide', 'nb', 'W'];
+  const outcomes = ['0', 'runOut', '1', '2', '3', '4', '6', 'wide', 'nb', 'W'];
   const weatherKey = matchCondition.weather;
   const pitchProfile = pitchType[matchCondition.pitch] || pitchType.sporting;
   const outfieldProfile = outfieldType[matchCondition.outfield] || outfieldType.lushGreen;
@@ -188,10 +192,10 @@ const calculateOutcomeDistribution = ({
     }
   })();
   const isInPowerPlay = completedOvers < powerPlayOvers;
-  const abilityForPaceBase = (striker?.abilityToPlayPaceBall || 50) + pitchProfile.goodForBatting;
-  const abilityForSpinBase = (striker?.abilityToPlaySpinBall || 50) + pitchProfile.goodForBatting;
-  const bowlerPaceBase = (bowler?.paceAbility || 40) + pitchProfile.goodForPaceBowling;
-  const bowlerSpinBase = (bowler?.spinAbility || 35) + pitchProfile.goodForSpinBowling;
+  const abilityForPaceBase = (striker?.abilityToPlayPaceBall ?? 50) + pitchProfile.goodForBatting;
+  const abilityForSpinBase = (striker?.abilityToPlaySpinBall ?? 50) + pitchProfile.goodForBatting;
+  const bowlerPaceBase = (bowler?.paceAbility ?? 40) + pitchProfile.goodForPaceBowling;
+  const bowlerSpinBase = (bowler?.spinAbility ?? 35) + pitchProfile.goodForSpinBowling;
 
   let battingPaceAbility = abilityForPaceBase;
   let battingSpinAbility = abilityForSpinBase;
@@ -270,6 +274,7 @@ const calculateOutcomeDistribution = ({
   }
 
   if (isUserBatting) {
+    applyDelta(weights, getFieldingTacticShift(opponentFieldPreset, battingTactics));
     if (battingTactics && typeof battingTactics === 'object') {
       applyDelta(weights, getBattingTacticShift(battingTactics, bowlingTactics));
       if (appliedBattingIntent === battingAction.superShot) {
@@ -352,7 +357,7 @@ const calculateOutcomeDistribution = ({
   applySkillImpacts(Array.isArray(battingSide) ? battingSide : [], 'fullTeamBatting');
   applySkillImpacts(Array.isArray(bowlingSide) ? bowlingSide : [], 'fullTeamBowling');
 
-  const isFreeHit = appliedBattingIntent === battingAction.freeHit;
+  const isFreeHit = Boolean(inningState.freeHitArmed) || appliedBattingIntent === battingAction.freeHit;
   const normalized = normalizeOutcomeWeights(weights, outcomes, isFreeHit);
   const normalizedWithoutSkills = normalizeOutcomeWeights(
     weightsWithoutSkills,
@@ -389,9 +394,19 @@ export const resolveOutcome = (input) => {
     }
   });
 
-  const selected = outcomePossibilityArray[Math.floor(Math.random() * 100)] || '0';
-  if (selected === 'W') {
-    return { token: selected, isWicket: true, runs: 0, isLegalDelivery: true, extraRuns: 0 };
+  const roll = Math.random() * 100;
+  const selected = outcomePossibilityArray[Math.floor(roll)] || '0';
+  if (selected === 'W' || selected === 'runOut') {
+    const freeHitRunOut = selected === 'runOut';
+    const fraction = freeHitRunOut ? roll - weights['0'] : (roll - (100 - weights.W)) / weights.W;
+    return {
+      token: 'W',
+      isWicket: true,
+      runs: 0,
+      isLegalDelivery: true,
+      extraRuns: 0,
+      dismissal: sampleDismissal({ fraction, freeHitRunOut, inningState: input.inningState, bowlingSide: input.bowlingSide, bowler: input.bowler }),
+    };
   }
   if (selected === 'wide') {
     return { token: selected, isWicket: false, runs: 0, isLegalDelivery: false, extraRuns: 1 };

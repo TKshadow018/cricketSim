@@ -1,6 +1,7 @@
 import React from 'react';
 import PlayerNameWithType from './PlayerNameWithType';
 import BattingTargetMap from './BattingTargetMap';
+import OpponentFieldPanel from './OpponentFieldPanel';
 import { battingAction } from '../../../gameData/actionType';
 import {
   BATTING_APPROACHES,
@@ -199,11 +200,12 @@ function BattingTacticsPanel({
           </div>
           <span>{getBattingTarget(tactics?.target).label}</span>
         </div>
-        <div className="sim-batting-target-layout">
+        <div className={`sim-batting-target-layout${safeContext.opponentFieldPreset ? ' sim-batting-target-layout--field' : ''}`}>
           <BattingTargetMap
             target={tactics?.target}
             onTargetChange={(target) => updateTactics({ target })}
           />
+          <OpponentFieldPanel preset={safeContext.opponentFieldPreset} target={tactics?.target} />
         </div>
         <label className="sim-batting-retain-choice">
           <input

@@ -1,5 +1,6 @@
 import { collectTeamStatsForInnings, formatOvers } from './controllerCommonUtils';
 import { buildScorecard } from './controllerCommonUtils';
+import { formatDismissal } from './deliveryDismissalUtils';
 
 export const buildTopRunScorers = (statsList = []) =>
   [...statsList]
@@ -163,7 +164,7 @@ const buildCareerInningsRows = ({ inningsState, battingPlayers, bowlingPlayers }
       balls: stat.balls,
       strikeRate,
       dismissal: stat.isOut
-        ? `b ${stat.outByBowler || 'Unknown'} @ ${stat.outAtScore || '-'} (${stat.outAtBall || '-'})`
+        ? formatDismissal(stat)
         : stat.balls > 0 || isCurrent
           ? 'Not Out'
           : 'Yet to bat',

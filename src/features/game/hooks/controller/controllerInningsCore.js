@@ -183,7 +183,12 @@ export const handleSelectNextBatter = ({
       return previous;
     }
 
-    const occupied = [previous.nonStrikerIndex];
+    const strikerVacant = previous.strikerIndex === null || previous.outBatterIndices.includes(previous.strikerIndex);
+    const nonStrikerVacant = previous.nonStrikerIndex === null || previous.outBatterIndices.includes(previous.nonStrikerIndex);
+    const occupied = [
+      strikerVacant ? null : previous.strikerIndex,
+      nonStrikerVacant ? null : previous.nonStrikerIndex,
+    ];
     const nextBatterIndex = getNextBatterIndex(battingSide, previous.outBatterIndices, [
       ...occupied,
       batterIndex,
@@ -194,7 +199,8 @@ export const handleSelectNextBatter = ({
     return {
       ...previous,
       waitingForNextBatter: false,
-      strikerIndex: batterIndex,
+      strikerIndex: strikerVacant ? batterIndex : previous.strikerIndex,
+      nonStrikerIndex: nonStrikerVacant ? batterIndex : previous.nonStrikerIndex,
       nextBatterIndex,
       battingOrderIndices: previous.battingOrderIndices.includes(batterIndex)
         ? previous.battingOrderIndices
