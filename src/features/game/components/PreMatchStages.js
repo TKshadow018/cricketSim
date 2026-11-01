@@ -25,6 +25,7 @@ function PreMatchStages({
   confirmTournamentFixtures,
   randomizeTournamentFixtures,
   updateTournamentFixture,
+  setRuleset,
   setMatchTypeKey,
   setOwnTeam,
   setOpponentTeam,
@@ -263,6 +264,7 @@ function PreMatchStages({
         tournamentOpponentTeams={tournamentOpponentTeams}
         toggleTournamentOpponent={toggleTournamentOpponent}
         prepareTournamentFixtures={prepareTournamentFixtures}
+        setRuleset={setRuleset}
         setMatchTypeKey={setMatchTypeKey}
         setOwnTeam={setOwnTeam}
         setOpponentTeam={setOpponentTeam}

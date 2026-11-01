@@ -1,6 +1,6 @@
 # Opponent fielding system
 
-## Plan and behavior
+## Arcade behavior
 
 - Before a user-controlled batting delivery, the computer selects a preset from the current
   innings, match format and chase target. Selection is deterministic and independent of the
@@ -20,8 +20,8 @@
   in ball history. No new required save state or random draws are introduced. The field only
   affects user batting; existing user bowling and computer-only matches retain their behavior.
 
-The diagram and scoring sectors are approximate. There is no ball trajectory, individual
-fielder skill, handedness, catch simulation, or fielding-restriction enforcement. A deep
-fielder does not prevent a ball that actually clears the rope; the six/wicket adjustment
-represents aerial shots that could be caught before reaching it. Presets are illustrative and
-may not comply with the powerplay or other competition-specific fielding restrictions.
+In **Realism**, both sides use actual preset or custom coordinates, an executed shot sector,
+optional fielder ability and batter handedness. The computer selects a legal field before the
+shot, and the displayed field is the one used by the engine. The model approximates coverage
+rather than physically simulating a trajectory. See [match-outcome-model.md](./match-outcome-model.md)
+for restrictions, calibration, and limitations.

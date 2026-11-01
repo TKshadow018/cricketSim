@@ -174,6 +174,14 @@ export const buildCareerStandings = (careerTeam, schedule = [], domesticTeams = 
     standings[teamA].played += 1;
     standings[teamB].played += 1;
 
+    if (match.result.winner === 'Draw') {
+      standings[teamA].draws = (standings[teamA].draws || 0) + 1;
+      standings[teamB].draws = (standings[teamB].draws || 0) + 1;
+      standings[teamA].points += 1;
+      standings[teamB].points += 1;
+      return;
+    }
+
     if (match.result.winner === 'Tie') {
       standings[teamA].ties += 1;
       standings[teamB].ties += 1;

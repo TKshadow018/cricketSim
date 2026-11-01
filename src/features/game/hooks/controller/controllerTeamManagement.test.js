@@ -73,6 +73,8 @@ const makeHandlers = (overrides = {}) => {
     opponentCustomPlayers: [],
     ownXIReady: false,
     opponentXIReady: false,
+    ownBowlingRolesReady: false,
+    opponentBowlingRolesReady: false,
     ownRolesReady: false,
     opponentRolesReady: false,
     firstBattingSide: 'own',
@@ -117,6 +119,8 @@ describe('toss and match-start handling', () => {
       opponentXIReady: true,
       ownRolesReady: true,
       opponentRolesReady: true,
+      ownBowlingRolesReady: true,
+      opponentBowlingRolesReady: true,
       firstBattingSide: 'opponent',
     });
     ready.handlers.startMatchWithSelectedXI();

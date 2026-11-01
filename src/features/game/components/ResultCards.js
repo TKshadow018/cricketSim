@@ -4,6 +4,7 @@ import AppButton from '../../../components/ui/AppButton';
 import TeamNameWithFlag from './TeamNameWithFlag';
 import PlayerNameWithType from './PlayerNameWithType';
 import ScoreboardModal from './ScoreboardModal';
+import InningsScoreboard from './InningsScoreboard';
 
 export function TossResultCard({
   winner,
@@ -107,99 +108,47 @@ export function MatchResultCard({
     onPrimaryAction?.();
   };
 
-  const renderInningsScoreboard = (inningsData, keyPrefix) => {
-    if (!inningsData) {
-      return null;
-    }
-
-    return (
-      <div className="sim-scoreboard-block">
-        <p className="sim-section-title">{inningsData.title}</p>
-        <p>{inningsData.line} ({inningsData.overs})</p>
-
-        <div className="sim-scoreboard-table-wrap">
-          <p className="sim-section-title">Batting</p>
-          <table className="sim-scoreboard-table">
-            <thead>
-              <tr>
-                <th>Batsman</th>
-                <th>Runs</th>
-                <th>Balls</th>
-                <th>SR</th>
-                <th>Dismissal</th>
-              </tr>
-            </thead>
-            <tbody>
-              {inningsData.battingRows.map((row) => (
-                <tr key={`${keyPrefix}-bat-${row.name}`} className={row.isNotOut ? 'sim-scoreboard-row-notout' : ''}>
-                  <td><PlayerNameWithType player={row} /></td>
-                  <td>{row.runs}</td>
-                  <td>{row.balls}</td>
-                  <td>{row.strikeRate}</td>
-                  <td>{row.dismissal}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <p className="sim-section-title">Bowling</p>
-          <table className="sim-scoreboard-table">
-            <thead>
-              <tr>
-                <th>Bowler</th>
-                <th>Overs</th>
-                <th>Runs</th>
-                <th>Economy</th>
-                <th>Avg/Wk</th>
-                <th>Wkts</th>
-              </tr>
-            </thead>
-            <tbody>
-              {inningsData.bowlingRows.map((row) => (
-                <tr key={`${keyPrefix}-bowl-${row.name}`} className={row.isCurrent ? 'sim-scoreboard-row-current' : ''}>
-                  <td><PlayerNameWithType player={row} /></td>
-                  <td>{row.overs}</td>
-                  <td>{row.runsConceded}</td>
-                  <td>{row.economy}</td>
-                  <td>{row.avgPerWicket}</td>
-                  <td>{row.wickets}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  };
-
   const scoreboardTables = (
     <>
-      {renderInningsScoreboard(scorecard?.currentInnings, 'current')}
-      {scorecard?.previousInnings ? renderInningsScoreboard(scorecard.previousInnings, 'previous') : null}
+      {scorecard?.innings?.length
+        ? scorecard.innings.map((entry, index) => (
+          <InningsScoreboard key={`${entry.team}-${index}`} inningsData={entry.scorecard} keyPrefix={`innings-${index}`} />
+        ))
+        : (
+          <>
+            <InningsScoreboard inningsData={scorecard?.currentInnings} keyPrefix="current" />
+            <InningsScoreboard inningsData={scorecard?.previousInnings} keyPrefix="previous" />
+          </>
+        )}
     </>
   );
+  const hasMultipleInnings = Boolean(scorecard?.innings?.length);
+  const teamInnings = (team) => scorecard.innings
+    .filter((entry) => entry.team === team)
+    .map((entry) => `${entry.score}/${entry.wickets}${entry.reason === 'declared' ? 'd' : ''}`)
+    .join(' & ') || 'Yet to bat';
 
   return (
     <div className="sim-final-grid">
       <div className="sim-final-card">
-        <span className="sim-card-kicker">First Innings</span>
+        <span className="sim-card-kicker">{hasMultipleInnings ? 'Team innings' : 'First Innings'}</span>
         <h4>
           {teamOneName ? <TeamNameWithFlag teamName={teamOneName} /> : null}{' '}
-          {Number.isFinite(teamOneScore) && Number.isFinite(teamOneWickets)
+          {hasMultipleInnings && teamOneName ? teamInnings(teamOneName) : Number.isFinite(teamOneScore) && Number.isFinite(teamOneWickets)
             ? `${teamOneScore}/${teamOneWickets}`
             : teamOneLine}
         </h4>
-        <p>Overs: {teamOneOvers}</p>
+        <p>{hasMultipleInnings ? 'Total overs' : 'Overs'}: {teamOneOvers}</p>
       </div>
       <div className="sim-final-card">
-        <span className="sim-card-kicker">Second Innings</span>
+        <span className="sim-card-kicker">{hasMultipleInnings ? 'Team innings' : 'Second Innings'}</span>
         <h4>
           {teamTwoName ? <TeamNameWithFlag teamName={teamTwoName} /> : null}{' '}
-          {Number.isFinite(teamTwoScore) && Number.isFinite(teamTwoWickets)
+          {hasMultipleInnings && teamTwoName ? teamInnings(teamTwoName) : Number.isFinite(teamTwoScore) && Number.isFinite(teamTwoWickets)
             ? `${teamTwoScore}/${teamTwoWickets}`
             : teamTwoLine}
         </h4>
-        <p>Overs: {teamTwoOvers}</p>
+        <p>{hasMultipleInnings ? 'Total overs' : 'Overs'}: {teamTwoOvers}</p>
       </div>
       <motion.h3
         className="sim-winner-line"

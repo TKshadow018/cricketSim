@@ -3,6 +3,8 @@ import PlayerNameWithType from './PlayerNameWithType';
 import BowlingFieldMap from './BowlingFieldMap';
 import BowlingFieldEditor from './BowlingFieldEditor';
 import { getFieldPositions } from '../utils/bowlingField';
+import { getFieldViolations } from '../utils/fieldingRules';
+import { getBallEventLabel } from '../utils/ballEventLabel';
 import {
   BOWLING_FIELD_PRESETS,
   BOWLING_LENGTHS,
@@ -20,13 +22,6 @@ const formatConditionLabel = (value) => {
     .replace(/[_-]+/g, ' ')
     .toLowerCase();
   return words.charAt(0).toUpperCase() + words.slice(1);
-};
-
-const getBallLabel = (event) => {
-  if (event?.isWicket) return 'W';
-  if (event?.token === 'wide') return `WD +${formatNumber(event.extras || 1)}`;
-  if (event?.token === 'nb') return `NB +${formatNumber(event.extras || 1)}`;
-  return String(Number(event?.runs) || 0);
 };
 
 function BowlingTacticsPanel({
@@ -47,7 +42,14 @@ function BowlingTacticsPanel({
   const nextBall = completedBalls < 6 ? completedBalls + 1 : null;
   const special = safeContext.specialDelivery || {};
   const selectedField = BOWLING_FIELD_PRESETS.find(({ key }) => key === tactics?.fieldPreset);
-  const isSpecialArmed = Boolean(tactics?.specialDeliveryArmed);
+  const fieldViolations = safeContext.ruleset === 'realism' ? getFieldViolations({
+    positions: getFieldPositions(tactics),
+    matchTypeKey: safeContext.matchTypeKey,
+    matchType: safeContext.matchType,
+    balls: safeContext.balls,
+    battingHand: safeContext.striker?.player?.battingHand,
+  }) : [];
+  const isSpecialArmed = safeContext.ruleset !== 'realism' && Boolean(tactics?.specialDeliveryArmed);
   const runRateTarget = safeContext.target !== null && safeContext.target !== undefined;
   const bowlerStyle = Number(bowler?.paceAbility || 0) > Number(bowler?.spinAbility || 0)
     ? 'PACE'
@@ -62,8 +64,10 @@ function BowlingTacticsPanel({
   const batterAbility = batterStyle
     ? Number(safeContext.striker?.player?.[batterStyle]) || 0
     : null;
-  const specialDisabled = !isSpecialArmed && (!special.available || Number(special.remaining) <= 0);
-  const specialAvailability = Number(special.remaining) <= 0
+  const specialDisabled = safeContext.ruleset === 'realism' || (!isSpecialArmed && (!special.available || Number(special.remaining) <= 0));
+  const specialAvailability = safeContext.ruleset === 'realism'
+    ? 'Available in arcade mode'
+    : Number(special.remaining) <= 0
     ? 'No credits remaining this innings'
     : Number(special.usedThisOver) >= 1
       ? 'One special delivery per over'
@@ -212,8 +216,11 @@ function BowlingTacticsPanel({
           <p className="sim-bowling-field-description">
             {selectedField ? selectedField.description : 'Adjust the numbered fielders below to customize your field.'}
           </p>
+          {fieldViolations.length ? (
+            <p className="sim-field-restriction" role="alert">Illegal field: {fieldViolations.join(' ')} Change the field before bowling.</p>
+          ) : null}
           <BowlingFieldMap preset={tactics?.fieldPreset} fieldPositions={getFieldPositions(tactics)} />
-          <BowlingFieldEditor tactics={tactics} onChange={updateTactics} />
+          <BowlingFieldEditor tactics={tactics} onChange={updateTactics} ruleset={safeContext.ruleset} />
         </section>
 
         <section className="sim-bowling-control-section" aria-labelledby="bowling-call-heading">
@@ -303,14 +310,14 @@ function BowlingTacticsPanel({
                   className={`${event ? 'has-result' : ''}${isNext ? ' next-ball' : ''}`}
                 >
                   <span>{ballNumber}</span>
-                  <strong>{event ? getBallLabel(event) : '—'}</strong>
+                  <strong>{event ? getBallEventLabel(event) : '—'}</strong>
                 </li>
               );
             })}
           </ol>
           {extraEvents.length ? (
             <p className="sim-bowling-over-extras">
-              Extras: {extraEvents.map((event) => getBallLabel(event)).join(' · ')}
+              Extras: {extraEvents.map((event) => getBallEventLabel(event)).join(' · ')}
             </p>
           ) : null}
         </section>

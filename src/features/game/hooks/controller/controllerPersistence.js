@@ -14,6 +14,7 @@ import { hydrateGameState } from '../../gameSlice';
 import { speak } from '../../../../utils/speechUtils';
 import { MODE_SERIES, MODE_TOURNAMENT, MODE_CAREER } from '../../utils/controllerCommonUtils';
 import { matchStatusEnum } from '../../../../gameData/matchStatusEnum';
+import { getFirstInningsLeader, getTestWinner } from '../../utils/testMatch';
 
 export const useControllerPersistence = ({
   authUser,
@@ -174,11 +175,13 @@ export const useControllerPersistence = ({
     }
 
     const timer = setTimeout(() => {
-      persistAutoSaveSnapshot(game, authUser.uid).catch(() => {});
+      persistAutoSaveSnapshot(game, authUser.uid).catch((error) => {
+        setSaveMessage(`Autosave failed: ${error?.message || 'Unable to save the match.'}`);
+      });
     }, 800);
 
     return () => clearTimeout(timer);
-  }, [authUser?.uid, game, isGameInProgress]);
+  }, [authUser?.uid, game, isGameInProgress, setSaveMessage]);
 
   useEffect(() => {
     const flushAutoSave = () => {
@@ -186,7 +189,9 @@ export const useControllerPersistence = ({
         return;
       }
 
-      persistAutoSaveSnapshot(gameSnapshotRef.current, authUidRef.current).catch(() => {});
+      persistAutoSaveSnapshot(gameSnapshotRef.current, authUidRef.current).catch((error) => {
+        setSaveMessage(`Autosave failed: ${error?.message || 'Unable to save the match.'}`);
+      });
     };
 
     window.addEventListener('beforeunload', flushAutoSave);
@@ -195,12 +200,15 @@ export const useControllerPersistence = ({
       flushAutoSave();
       window.removeEventListener('beforeunload', flushAutoSave);
     };
-  }, [inProgressRef, authUidRef, gameSnapshotRef]);
+  }, [inProgressRef, authUidRef, gameSnapshotRef, setSaveMessage]);
 
   useEffect(() => {
     if (!authUser?.uid || stage !== matchStatusEnum.MatchEnd) {
       return;
     }
+    const testResult = game.testMatch?.result;
+    const tied = testResult ? testResult.type === 'tie' : firstInnings.score === secondInnings.score;
+    if (gameMode === MODE_TOURNAMENT && tied && game.tournamentTiebreak?.phase !== 'resolved') return;
 
     const summaryLine = String(resultSummary || '').trim();
     const signature = [
@@ -218,6 +226,7 @@ export const useControllerPersistence = ({
       secondInnings.wickets,
       secondInnings.balls,
       summaryLine,
+      game.tournamentTiebreak?.winnerTeam || '',
     ].join('|');
 
     if (savedHistorySignatureRef.current === signature) {
@@ -227,12 +236,18 @@ export const useControllerPersistence = ({
     savedHistorySignatureRef.current = signature;
 
     let winnerTeam = 'Tie';
-    if (secondInnings.score > firstInnings.score) {
+    if (testResult) {
+      winnerTeam = getTestWinner(game.testMatch, { ownTeam, opponentTeam });
+    } else if (secondInnings.score > firstInnings.score) {
       winnerTeam = secondInningsTeamName;
     } else if (secondInnings.score < firstInnings.score) {
       winnerTeam = firstInningsTeamName;
     }
 
+    const advancementWinner = game.tournamentTiebreak?.winnerTeam ||
+      (gameMode === MODE_TOURNAMENT && testResult?.type === 'draw'
+        ? getFirstInningsLeader(game.testMatch, { ownTeam, opponentTeam })
+        : '');
     createMatchHistoryEntry(authUser.uid, {
       ownTeam,
       opponentTeam,
@@ -254,8 +269,19 @@ export const useControllerPersistence = ({
       secondInningsBalls: secondInnings.balls,
       summary: summaryLine,
       winnerTeam,
-    }).catch(() => {
+      ...(advancementWinner ? { advancementWinner } : {}),
+      ...(Array.isArray(game.testMatch?.innings) ? {
+        innings: game.testMatch.innings.map((entry) => ({
+          team: entry.side === 'own' ? ownTeam : opponentTeam,
+          score: entry.innings.score,
+          wickets: entry.innings.wickets,
+          balls: entry.innings.balls,
+          declared: entry.reason === 'declared',
+        })),
+      } : {}),
+    }).catch((error) => {
       savedHistorySignatureRef.current = '';
+      setSaveMessage(`Match history failed: ${error?.message || 'Unable to save the result.'}`);
     });
   }, [
     authUser?.uid,
@@ -280,7 +306,10 @@ export const useControllerPersistence = ({
     selectedStadium,
     tossWinner,
     game.tossDecision,
+    game.testMatch,
+    game.tournamentTiebreak,
     savedHistorySignatureRef,
+    setSaveMessage,
   ]);
 
   return {

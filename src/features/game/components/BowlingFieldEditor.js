@@ -7,7 +7,7 @@ const selectablePositions = fieldPositionList.filter(
   ({ key }) => key !== 'wicketkeeper' && key !== 'bowler'
 );
 
-function BowlingFieldEditor({ tactics, onChange }) {
+function BowlingFieldEditor({ tactics, onChange, ruleset }) {
   const positions = getFieldPositions(tactics);
   const closestPreset = fieldSettingList.find(({ key }) => key === getClosestFieldPreset(positions));
 
@@ -40,8 +40,9 @@ function BowlingFieldEditor({ tactics, onChange }) {
         ))}
       </div>
       <p>
-        Closest preset: {closestPreset.label}. Custom fields use its outcome effects;
-        ball trajectories and fielding legality are not modeled.
+        Closest preset: {closestPreset.label}. {ruleset === 'realism'
+          ? 'Coverage uses the chosen positions, subject to the fielding restrictions above.'
+          : 'Custom fields use its outcome effects; ball trajectories and fielding legality are not modeled.'}
       </p>
     </details>
   );

@@ -376,7 +376,8 @@ describe('delivery outcome resolution', () => {
     });
 
     jest.restoreAllMocks();
-    expect(resolveAt(100).token).toBe('0');
+    expect(() => resolveOutcome({ ...basePlay, random: () => 1 }))
+      .toThrow('Random draw must be in [0, 1).');
   });
 
   test('returns a valid outcome for high-ability and attacking intent', () => {

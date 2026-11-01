@@ -1,4 +1,5 @@
 import { buildOutcomeWeights, resolveOutcome } from './controllerOutcomeUtils';
+import { battingAction } from '../../../gameData/actionType';
 
 const input = {
   striker: { abilityToPlayPaceBall: 70, abilityToPlaySpinBall: 70 },
@@ -15,6 +16,16 @@ const input = {
 
 test('an armed free hit protects the computer batter from ordinary wickets', () => {
   expect(buildOutcomeWeights(input).W).toBe(0);
+});
+
+test('a stale free-hit intent cannot protect a batter when the innings flag is clear', () => {
+  const weights = buildOutcomeWeights({
+    ...input,
+    isUserBatting: true,
+    inningState: { ...input.inningState, freeHitArmed: false },
+    battingIntent: battingAction.freeHit,
+  });
+  expect(weights.W).toBeGreaterThan(0);
 });
 
 test('a zero ability is not replaced by the missing-value default', () => {

@@ -162,7 +162,8 @@ function DashboardPage() {
           {isAdmin && isMatrixStage ? (
             <>
               <h3>Admin Matrix</h3>
-              <p>Role: {adminMatrix?.isOwnBatting ? 'User Batting' : 'User Bowling'}</p>
+              <p>Role: {adminMatrix?.isUserBatting ? 'User Batting' : adminMatrix?.isUserBowling ? 'User Bowling' : 'Computer'}</p>
+              {adminMatrix?.analysisMode === 'realism' ? <p>Estimated plan probabilities before additional extras.</p> : null}
               <p>Striker: <PlayerNameWithType player={adminMatrix?.strikerPlayer} name={adminMatrix?.strikerName} /></p>
               <p>Bowler: <PlayerNameWithType player={adminMatrix?.bowlerPlayer} name={adminMatrix?.bowlerName} /></p>
               <p>Bat Intent: {adminMatrix?.battingIntentLabel}</p>
@@ -172,10 +173,10 @@ function DashboardPage() {
                   <div key={row.key} className="admin-matrix-row">
                     <span>{row.key}</span>
                     <strong className="admin-matrix-outcome-value">
-                      <span>{row.value}%</span>
+                      <span>{Number.isInteger(row.value) ? row.value : Number(row.value.toFixed(2))}%</span>
                       {adminMatrix?.hasSkillImpacts && (
                         <small className="admin-matrix-skill-impact">
-                          (skill impact {row.skillImpact}%)
+                          (skill impact {Number.isInteger(row.skillImpact) ? row.skillImpact : Number(row.skillImpact.toFixed(2))}%)
                         </small>
                       )}
                     </strong>
@@ -445,9 +446,16 @@ function DashboardPage() {
                           <TeamNameWithFlag teamName={entry.opponentTeam} showDashForEmpty />
                         </strong>
                         <p>
-                          {entry.firstInningsTeamName}: {entry.firstInningsScore}/{entry.firstInningsWickets}
-                          {' '}({oversFromBalls(entry.firstInningsBalls)}) • {entry.secondInningsTeamName}: {entry.secondInningsScore}/
-                          {entry.secondInningsWickets} ({oversFromBalls(entry.secondInningsBalls)})
+                          {entry.innings?.length
+                            ? entry.innings.map((innings, index) => (
+                              <React.Fragment key={`${innings.team}-${index}`}>
+                                {index ? ' • ' : ''}{innings.team}: {innings.score}/{innings.wickets}
+                                {innings.declared ? 'd' : ''} ({oversFromBalls(innings.balls)})
+                              </React.Fragment>
+                            ))
+                            : <>{entry.firstInningsTeamName}: {entry.firstInningsScore}/{entry.firstInningsWickets}
+                              {' '}({oversFromBalls(entry.firstInningsBalls)}) • {entry.secondInningsTeamName}: {entry.secondInningsScore}/
+                              {entry.secondInningsWickets} ({oversFromBalls(entry.secondInningsBalls)})</>}
                         </p>
                         <p>{entry.summary || 'Result saved'}</p>
                         <small>{formatHistoryDate(entry.updatedAt)}</small>

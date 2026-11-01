@@ -61,6 +61,30 @@ test('skips previously completed fixtures between simulated and user matches', (
     expect(run.dispatch).toHaveBeenCalledWith({ type: 'setStageAction', payload: matchStatusEnum.TossTime });
   });
 
+test('reports an invalid unattended fixture and retains previously simulated results', () => {
+    const simulation = jest.requireMock('../../utils/controllerCareerScheduleUtils').simulateCareerFixture;
+    simulation.mockImplementationOnce(({ match, existingStats, domesticTeams: teams }) => ({
+      result: { winner: match.teamA, summary: 'simulated fixture' },
+      updatedStats: existingStats,
+      updatedDomesticTeams: teams,
+    })).mockImplementationOnce(() => { throw new Error('Both teams need eleven players.'); });
+    const setSaveMessage = jest.fn();
+    const run = makeFlow({
+      setSaveMessage,
+      careerSchedule: [
+        { id: 'one', teamA: 'Ravens', teamB: 'Hawks', isComplete: false },
+        { id: 'two', teamA: 'Hawks', teamB: 'Owls', isComplete: false },
+      ],
+    });
+    run.flow.handleCareerStartNextMatch();
+    expect(setSaveMessage).toHaveBeenCalledWith(expect.stringContaining('Both teams need eleven players.'));
+    expect(run.dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'setCareerScheduleAction',
+      payload: [expect.objectContaining({ id: 'one', isComplete: true }), expect.objectContaining({ id: 'two', isComplete: false })],
+    }));
+    expect(run.dispatch).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'setStageAction' }));
+  });
+
 test('commits career results, handles score ties, and suppresses duplicates and invalid stages', () => {
     const { flow, input, dispatch } = makeFlow({ stage: matchStatusEnum.MatchEnd });
     const invalid = makeFlow({ stage: matchStatusEnum.TossTime });

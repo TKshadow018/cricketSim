@@ -16,9 +16,10 @@ export const buildInningsViewModel = ({
   getContext,
   matchType,
   maxBalls,
+  ruleset,
 }) => {
   const { isUserBatting, isUserBowling, battingSide, bowlingSide } = getContext(isFirstInnings);
-  const maxOversPerBowler = getMaxOversPerBowler(matchType.over);
+  const maxOversPerBowler = getMaxOversPerBowler(matchType.over, matchType);
   const striker =
     inningState.strikerIndex === null || inningState.strikerIndex === undefined
       ? null
@@ -27,13 +28,13 @@ export const buildInningsViewModel = ({
     inningState.currentBowlerIndex === null || inningState.currentBowlerIndex === undefined
       ? null
       : bowlingSide[inningState.currentBowlerIndex];
-  const canUseCurrentSuperShot = canUseSuperShot({
+  const canUseCurrentSuperShot = ruleset !== 'realism' && canUseSuperShot({
     striker,
     bowler: currentBowler,
     inningState,
     strikerIndex: inningState.strikerIndex,
   });
-  const canUseCurrentSpecialBall = canUseSpecialBall({
+  const canUseCurrentSpecialBall = ruleset !== 'realism' && canUseSpecialBall({
     bowler: currentBowler,
     inningState,
   });
@@ -73,7 +74,9 @@ export const buildInningsViewModel = ({
       economy: currentBowlerBalls > 0
         ? (Number(currentBowlerStat.runsConceded || 0) / (currentBowlerBalls / 6)).toFixed(2)
         : '0.00',
-      oversRemaining: `${Math.floor(oversRemainingBalls / 6)}.${oversRemainingBalls % 6}`,
+      oversRemaining: Number.isFinite(oversRemainingBalls)
+        ? `${Math.floor(oversRemainingBalls / 6)}.${oversRemainingBalls % 6}`
+        : 'Unlimited',
       oversLimit: maxOversPerBowler,
     },
     striker: {
@@ -123,7 +126,9 @@ export const buildInningsViewModel = ({
       return {
         ...action,
         disabled: !canUseCurrentSuperShot,
-        reason: canUseCurrentSuperShot ? '' : 'Needs ability > 70, max 1 per over, and available credits',
+        reason: canUseCurrentSuperShot ? '' : ruleset === 'realism'
+          ? 'Available in arcade mode'
+          : 'Needs ability > 70, max 1 per over, and available credits',
       };
     }
 
@@ -135,7 +140,9 @@ export const buildInningsViewModel = ({
       return {
         ...action,
         disabled: !canUseCurrentSpecialBall,
-        reason: canUseCurrentSpecialBall ? '' : 'Needs pace/spin > 70, max 1 per over, and available credits',
+        reason: canUseCurrentSpecialBall ? '' : ruleset === 'realism'
+          ? 'Available in arcade mode'
+          : 'Needs pace/spin > 70, max 1 per over, and available credits',
       };
     }
 

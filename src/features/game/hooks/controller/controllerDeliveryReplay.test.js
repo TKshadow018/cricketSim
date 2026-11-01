@@ -78,3 +78,25 @@ test('a saved random state reproduces deliveries, bowler changes and scorecards'
   expect(resumed.deliveryEvents).toHaveLength(18);
   expect(resumed.randomState).not.toBe(12345);
 });
+
+test('the random state advances after every delivery, not only after an over', () => {
+  const first = play(initial(), 1);
+  const second = play(first, 1);
+  expect(first.randomState).not.toBe(initial().randomState);
+  expect(second.randomState).not.toBe(first.randomState);
+  expect(play(JSON.parse(JSON.stringify(first)), 1)).toEqual(second);
+});
+
+test.each([1, 42, 777, 12345, 99821])('seed %s preserves innings and bowling totals', (seed) => {
+  const innings = play({ ...initial(), randomState: seed }, 60);
+  const batterRuns = innings.battingStats.reduce((sum, stat) => sum + stat.runs, 0);
+  const dismissed = innings.battingStats.filter((stat) => stat.isOut);
+  const bowlerWickets = innings.bowlingStats.reduce((sum, stat) => sum + stat.wickets, 0);
+  const credited = dismissed.filter((stat) => stat.dismissal?.type !== 'runOut').length;
+  expect(innings.score).toBe(batterRuns + innings.wides + innings.noBalls + innings.byes + innings.legByes);
+  expect(innings.wickets).toBe(dismissed.length);
+  expect(bowlerWickets).toBe(credited);
+  expect(innings.bowlingStats.reduce((sum, stat) => sum + stat.balls, 0)).toBe(innings.balls);
+  expect(innings.bowlingStats.reduce((sum, stat) => sum + stat.runsConceded, 0))
+    .toBe(innings.score - innings.byes - innings.legByes);
+});

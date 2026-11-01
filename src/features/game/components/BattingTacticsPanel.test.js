@@ -61,6 +61,17 @@ const makeProps = (overrides = {}) => ({
 });
 
 describe('BattingTacticsPanel', () => {
+  test('shows illegal-delivery extras in the over tracker', () => {
+    const props = makeProps({
+      context: {
+        ...makeProps().context,
+        currentOverEvents: [{ overNumber: 6, ballNumber: null, token: 'nb', runs: 4, extras: 1, resultLabel: 'NB +1 · 4 bat' }],
+      },
+    });
+    render(<BattingTacticsPanel {...props} />);
+    expect(screen.getByText(/Extras do not use a legal-ball slot: NB \+1 · 4 bat/)).toBeInTheDocument();
+  });
+
   test('shows the opponent field and coverage for the selected scoring lane', () => {
     const props = makeProps({
       tactics: { ...DEFAULT_BATTING_TACTICS, target: 'cover', shot: 'drive' },

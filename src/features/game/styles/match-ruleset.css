@@ -1,0 +1,49 @@
+.sim-ruleset {
+  border: 0;
+  margin: 0 0 1.5rem;
+  padding: 0;
+}
+
+.sim-ruleset legend {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.65rem;
+  text-transform: uppercase;
+}
+
+.sim-ruleset-options {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+}
+
+.sim-ruleset-option {
+  align-items: flex-start;
+  border: 1px solid rgba(135, 156, 140, 0.4);
+  border-radius: 0.65rem;
+  cursor: pointer;
+  display: flex;
+  gap: 0.7rem;
+  padding: 0.9rem;
+}
+
+.sim-ruleset-option.is-selected {
+  background: rgba(165, 201, 111, 0.13);
+  border-color: #9dc56f;
+}
+
+.sim-ruleset-option input {
+  accent-color: #7d9e50;
+  margin-top: 0.2rem;
+}
+
+.sim-ruleset-option strong,
+.sim-ruleset-option small {
+  display: block;
+}
+
+.sim-ruleset-option small {
+  line-height: 1.4;
+  margin-top: 0.25rem;
+}

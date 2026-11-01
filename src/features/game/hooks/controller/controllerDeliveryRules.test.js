@@ -1,4 +1,5 @@
 import { battingAction, bowlingAction } from '../../../../gameData/actionType';
+import { fieldSettingList } from '../../../../gameData/fieldSettingList';
 import { createBattingStats, createBowlingStats } from '../../../../utils/simulatorUtils';
 import { buildInitialInnings } from '../../gameState';
 import { resolveOutcome } from '../../utils/controllerOutcomeUtils';
@@ -42,13 +43,15 @@ const makeInnings = (patch = {}) => ({
   ...patch,
 });
 
-const play = (innings, outcome, isUserBatting = true) => {
+const play = (innings, outcome, isUserBatting = true, options = {}) => {
   resolveOutcome.mockReturnValue(outcome);
   const setFirstInnings = jest.fn();
+  const setSecondInnings = jest.fn();
+  const isFirstInnings = options.isFirstInnings !== false;
   processDelivery({
-    isFirstInnings: true,
-    firstInnings: innings,
-    secondInnings: makeInnings(),
+    isFirstInnings,
+    firstInnings: isFirstInnings ? innings : makeInnings(),
+    secondInnings: isFirstInnings ? makeInnings() : innings,
     getContext: () => ({
       isOwnBatting: isUserBatting,
       isUserBatting,
@@ -56,11 +59,14 @@ const play = (innings, outcome, isUserBatting = true) => {
       battingSide,
       bowlingSide,
     }),
-    matchType: { over: 20 },
-    matchTypeKey: 't20',
-    maxBalls: 120,
+    matchType: options.matchType || { over: 20 },
+    matchTypeKey: options.matchTypeKey || 't20',
+    maxBalls: options.maxBalls || 120,
     battingIntent: battingAction.normal,
     bowlingIntent: bowlingAction.normal,
+    ruleset: options.ruleset,
+    battingTactics: options.battingTactics,
+    bowlingTactics: options.bowlingTactics,
     ownSanitizedRoles: {},
     opponentSanitizedRoles: {},
     ownTeam: 'Batting',
@@ -71,10 +77,11 @@ const play = (innings, outcome, isUserBatting = true) => {
     setBowlingIntentAction: (payload) => ({ type: 'bowling', payload }),
     setBowlingTacticsAction: (payload) => ({ type: 'tactics', payload }),
     setFirstInnings,
-    setSecondInnings: jest.fn(),
+    setSecondInnings,
+    firstInningsScore: 999,
     setStageAction: (payload) => ({ type: 'stage', payload }),
   });
-  return setFirstInnings.mock.calls[0][0];
+  return (isFirstInnings ? setFirstInnings : setSecondInnings).mock.calls[0][0];
 };
 
 const wide = { token: 'wide', runs: 0, extraRuns: 1, isWicket: false, isLegalDelivery: false };
@@ -103,11 +110,46 @@ test.each([true, false])('free hits survive wides and repeated no-balls with use
   expect(afterLegalBall.battingStats[0].balls).toBe(3);
 });
 
+test.each([true, false])('second-innings free-hit chains obey the same rules with user batting %s', (userBatting) => {
+  const options = { isFirstInnings: false };
+  const armed = play(makeInnings(), noBall, userBatting, options);
+  const afterWide = play(armed, wide, userBatting, options);
+  const afterLegal = play(afterWide, dot, userBatting, options);
+  expect(afterWide.freeHitArmed).toBe(true);
+  expect(afterLegal).toMatchObject({ freeHitArmed: false, balls: 1, score: 2 });
+});
+
 test('a no-ball can include bat runs and changes strike based on completed runs', () => {
   const next = play(makeInnings(), { ...noBall, runs: 1 });
   expect(next).toMatchObject({ score: 2, balls: 0, noBalls: 1, freeHitArmed: true, strikerIndex: 1 });
   expect(next.battingStats[0]).toMatchObject({ runs: 1, balls: 1 });
   expect(next.bowlingStats[0]).toMatchObject({ balls: 0, runsConceded: 2 });
+  expect(next.lastEvent).toContain('1 run off the bat');
+});
+
+test('a realism Test no-ball does not arm a limited-overs free hit', () => {
+  const next = play(makeInnings(), noBall, false, {
+    ruleset: 'realism',
+    matchTypeKey: 'test',
+    matchType: { over: 90, unlimitedBowling: true },
+  });
+  expect(next).toMatchObject({ noBalls: 1, freeHitArmed: false });
+  expect(next.lastEvent).not.toContain('free hit');
+});
+
+test.each(['bye', 'legBye'])('a %s changes strike without being charged to the bowler', (type) => {
+  const next = play(makeInnings(), {
+    token: type,
+    runs: 0,
+    extraRuns: 1,
+    extras: { [type]: 1 },
+    isWicket: false,
+    isLegalDelivery: true,
+  });
+  expect(next).toMatchObject({ score: 1, balls: 1, strikerIndex: 1, nonStrikerIndex: 0 });
+  expect(next.battingStats[0]).toMatchObject({ runs: 0, balls: 1 });
+  expect(next.bowlingStats[0]).toMatchObject({ balls: 1, runsConceded: 0 });
+  expect(next.ballHistory[0].extraBreakdown[type]).toBe(1);
 });
 
 test('a non-striker run-out is attributed to the dismissed batter, not the bowler', () => {
@@ -136,6 +178,7 @@ test('a run-out is possible on a no-ball without crediting the bowler', () => {
   expect(next).toMatchObject({ score: 1, balls: 0, wickets: 1, noBalls: 1, freeHitArmed: true });
   expect(next.battingStats[0]).toMatchObject({ balls: 1, isOut: true });
   expect(next.bowlingStats[0]).toMatchObject({ balls: 0, runsConceded: 1, wickets: 0 });
+  expect(next.lastEvent).toContain('No ball');
 });
 
 test('a sixth-ball wicket completes the over before the replacement batter is selected', () => {
@@ -166,6 +209,16 @@ test('a sixth-ball wicket completes the over before the replacement batter is se
   });
 });
 
+test('a Super Over innings ends at two wickets without requesting another batter', () => {
+  const next = play(
+    makeInnings({ wickets: 1, outBatterIndices: [5] }),
+    wicket,
+    true,
+    { matchType: { over: 1, maxWickets: 2 }, maxBalls: 6 }
+  );
+  expect(next).toMatchObject({ wickets: 2, waitingForNextBatter: false, strikerIndex: null });
+});
+
 test('retains the complete delivery ledger separately from the compact recent history', () => {
   let innings = makeInnings();
   for (let index = 0; index < 61; index += 1) {
@@ -174,4 +227,33 @@ test('retains the complete delivery ledger separately from the compact recent hi
   expect(innings.ballHistory).toHaveLength(60);
   expect(innings.deliveryEvents).toHaveLength(61);
   expect(JSON.parse(JSON.stringify(innings)).deliveryEvents).toEqual(innings.deliveryEvents);
+});
+
+test('realism passes the actual user field and a computer batting plan to the shared resolver', () => {
+  const positions = [...fieldSettingList.find(({ key }) => key === 'newBall').positions];
+  const next = play(makeInnings(), dot, false, {
+    ruleset: 'realism',
+    bowlingTactics: { fieldPreset: 'custom', fieldPositions: positions },
+  });
+
+  const delivery = resolveOutcome.mock.calls[0][0].realismDelivery;
+  expect(delivery.fieldPositions).toEqual(positions);
+  expect(delivery.batting).toMatchObject({ approach: 'balanced', target: 'straight' });
+  expect(next.deliveryEvents[0].execution).toMatchObject({
+    fieldPositions: positions,
+    batting: delivery.batting,
+    bowling: delivery.bowling,
+  });
+});
+
+test('an illegal realism field is reported without delivering a ball', () => {
+  const positions = [...fieldSettingList.find(({ key }) => key === 'boundary').positions];
+  const innings = makeInnings();
+  const next = play(innings, dot, false, {
+    ruleset: 'realism',
+    bowlingTactics: { fieldPreset: 'custom', fieldPositions: positions },
+  });
+  expect(next.balls).toBe(0);
+  expect(next.lastEvent).toContain('outside the circle');
+  expect(resolveOutcome).not.toHaveBeenCalled();
 });

@@ -44,5 +44,5 @@ export const resolveWinnerFromScores = ({ firstInnings, secondInnings, firstInni
   if (secondInnings.score < firstInnings.score) {
     return firstInningsTeamName;
   }
-  return tieAs || firstInningsTeamName;
+  return tieAs || 'Tie';
 };

@@ -3,6 +3,7 @@ import AppButton from '../../../components/ui/AppButton';
 import { battingAction } from '../../../gameData/actionType';
 import PlayerNameWithType from './PlayerNameWithType';
 import ScoreboardModal from './ScoreboardModal';
+import InningsScoreboard from './InningsScoreboard';
 import BattingTacticsPanel from './BattingTacticsPanel';
 import BowlingTacticsPanel from './BowlingTacticsPanel';
 
@@ -65,71 +66,6 @@ function InningsStage({
   commentary,
   onCloseScoreboard,
 }) {
-  const renderInningsScoreboard = (inningsData, keyPrefix) => {
-    if (!inningsData) {
-      return null;
-    }
-
-    return (
-      <div className="sim-scoreboard-block">
-        <p className="sim-section-title">{inningsData.title}</p>
-        <p>{inningsData.line} ({inningsData.overs})</p>
-
-        <div className="sim-scoreboard-table-wrap">
-          <p className="sim-section-title">Batting</p>
-          <table className="sim-scoreboard-table">
-            <thead>
-              <tr>
-                <th>Batsman</th>
-                <th>Runs</th>
-                <th>Balls</th>
-                <th>SR</th>
-                <th>Dismissal</th>
-              </tr>
-            </thead>
-            <tbody>
-              {inningsData.battingRows.map((row) => (
-                <tr key={`${keyPrefix}-bat-${row.name}`} className={row.isNotOut ? 'sim-scoreboard-row-notout' : ''}>
-                  <td><PlayerNameWithType player={row} /></td>
-                  <td>{row.runs}</td>
-                  <td>{row.balls}</td>
-                  <td>{row.strikeRate}</td>
-                  <td>{row.dismissal}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <p className="sim-section-title">Bowling</p>
-          <table className="sim-scoreboard-table">
-            <thead>
-              <tr>
-                <th>Bowler</th>
-                <th>Overs</th>
-                <th>Runs</th>
-                <th>Economy</th>
-                <th>Avg/Wk</th>
-                <th>Wkts</th>
-              </tr>
-            </thead>
-            <tbody>
-              {inningsData.bowlingRows.map((row) => (
-                <tr key={`${keyPrefix}-bowl-${row.name}`} className={row.isCurrent ? 'sim-scoreboard-row-current' : ''}>
-                  <td><PlayerNameWithType player={row} /></td>
-                  <td>{row.overs}</td>
-                  <td>{row.runsConceded}</td>
-                  <td>{row.economy}</td>
-                  <td>{row.avgPerWicket}</td>
-                  <td>{row.wickets}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  };
-
   const safeOnBattingIntent = typeof onBattingIntent === 'function' ? onBattingIntent : () => {};
   const safeOnBattingTacticsChange =
     typeof onBattingTacticsChange === 'function' ? onBattingTacticsChange : () => {};
@@ -147,8 +83,8 @@ function InningsStage({
     <>
       {showScoreboard ? (
         <ScoreboardModal onClose={onCloseScoreboard}>
-          {renderInningsScoreboard(scorecard.currentInnings, 'current')}
-          {scorecard.previousInnings ? renderInningsScoreboard(scorecard.previousInnings, 'previous') : null}
+          <InningsScoreboard inningsData={scorecard.currentInnings} keyPrefix="current" />
+          <InningsScoreboard inningsData={scorecard.previousInnings} keyPrefix="previous" />
         </ScoreboardModal>
       ) : null}
       <div className="sim-score-row">

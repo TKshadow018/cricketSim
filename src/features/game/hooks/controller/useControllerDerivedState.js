@@ -28,6 +28,7 @@ export function useControllerDerivedState({
   stage,
   gameMode,
   tournamentUserTeam,
+  tournamentTiebreak,
   matchTypeKey,
   ownTeam,
   opponentTeam,
@@ -165,6 +166,7 @@ const isGameInProgress =
     stage === matchStatusEnum.TeamOneBat ||
     stage === matchStatusEnum.TeamTwoBat ||
     stage === matchStatusEnum.TossResult ||
+    (stage === matchStatusEnum.MatchEnd && Boolean(tournamentTiebreak)) ||
     stage === matchStatusEnum.ChooseOwnPlayingXI ||
     stage === matchStatusEnum.ChooseOpponentPlayingXI ||
     stage === matchStatusEnum.CareerSeasonSchedule;

@@ -22,3 +22,12 @@ test('uses a balanced field for malformed custom delivery data', () => {
   expect(event.tactics.fieldPreset).toBe('balanced');
   expect(event.tactics).not.toHaveProperty('fieldPositions');
 });
+
+test.each([
+  [{ token: 'bye', runs: 0, extraRuns: 1, extras: { bye: 1 }, isLegalDelivery: true }, 'B +1'],
+  [{ token: 'legBye', runs: 0, extraRuns: 2, extras: { legBye: 2 }, isLegalDelivery: true }, 'LB +2'],
+  [{ token: 'nb', runs: 4, extraRuns: 1, isLegalDelivery: false }, 'NB +1 · 4 bat'],
+  [{ token: 'wide', runs: 0, extraRuns: 2, isLegalDelivery: false, isWicket: true }, 'W · WD +2'],
+])('records an informative label for extras and dismissals', (outcome, label) => {
+  expect(buildBowlingBallEvent({ inningState: { balls: 0 }, outcome }).resultLabel).toBe(label);
+});

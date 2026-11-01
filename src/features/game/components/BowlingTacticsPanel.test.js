@@ -136,6 +136,26 @@ describe('BowlingTacticsPanel', () => {
     expect(screen.getByText(/Closest preset: New-ball field/)).toBeInTheDocument();
   });
 
+  test('explains an illegal field in realism mode and removes the warning after a legal choice', () => {
+    const props = makeProps({
+      tactics: { ...DEFAULT_BOWLING_TACTICS, fieldPreset: 'boundary' },
+      context: { ...makeProps().context, ruleset: 'realism', matchTypeKey: 't20', matchType: { over: 20 }, balls: 0 },
+    });
+
+    const { rerender } = render(<BowlingTacticsPanel {...props} />);
+    expect(screen.getByRole('alert')).toHaveTextContent('At most 2 fielders may be outside the circle.');
+    expect(screen.getByText(/Coverage uses the chosen positions/)).toBeInTheDocument();
+    rerender(<BowlingTacticsPanel {...props} tactics={{ ...props.tactics, fieldPreset: 'powerplay' }} />);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  test('realism marks special deliveries as arcade-only', () => {
+    const props = makeProps({ context: { ...makeProps().context, ruleset: 'realism', matchTypeKey: 't20', matchType: { over: 20 }, balls: 0 } });
+    render(<BowlingTacticsPanel {...props} />);
+    expect(screen.getByRole('button', { name: /Use special delivery/ })).toBeDisabled();
+    expect(screen.getByText(/Available in arcade mode/)).toBeInTheDocument();
+  });
+
   test('disables special deliveries and limits variations to the active bowling style', () => {
     render(
       <BowlingTacticsPanel

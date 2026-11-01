@@ -7,9 +7,13 @@ import { buildCareerTransferOffers } from "./controllerCareerMarketUtils";
 import { syncCareerPlayerProfile } from "./controllerCareerSetupUtils";
 import { getLatestCompletedFixtureForTeam } from "./controllerCareerFixtureUtils";
 import { buildTeamContributionsFromInnings } from "./controllerCareerSeasonUtils";
+import { getTestWinner } from '../../utils/testMatch';
+import { buildTestInningsScorecards } from '../../utils/testScorecards';
 
 export const createCareerMatchHandlers = ({
   dispatch,
+  game,
+  setSaveMessage,
   gameMode,
   stage,
   careerTeam,
@@ -46,6 +50,7 @@ const handleCareerStartNextMatch = () => {
     if (careerRetired) return;
     let schedule = [...(careerSchedule || [])];
     if (!schedule.length) return;
+    if (typeof setSaveMessage === 'function') setSaveMessage('');
 
     let updatedStats = { ...(careerPlayerStats || {}) };
     let updatedDomesticTeams = careerDomesticTeams;
@@ -78,15 +83,29 @@ const handleCareerStartNextMatch = () => {
         [match.teamB]: getLatestCompletedFixtureForTeam(schedule, match.teamB, index),
       };
 
-      const { result, updatedStats: statsAfterMatch, updatedDomesticTeams: teamsAfterMatch } = simulateCareerFixture({
-        match,
-        careerTeam,
-        careerPlayerProfile,
-        domesticTeams: updatedDomesticTeams,
-        existingStats: updatedStats,
-        seasonNumber: careerSeason,
-        previousFixturesByTeam,
-      });
+      let simulated;
+      try {
+        simulated = simulateCareerFixture({
+          match,
+          careerTeam,
+          careerPlayerProfile,
+          domesticTeams: updatedDomesticTeams,
+          existingStats: updatedStats,
+          seasonNumber: careerSeason,
+          previousFixturesByTeam,
+          ruleset: game?.ruleset,
+        });
+      } catch (error) {
+        if (typeof setSaveMessage !== 'function') throw error;
+        dispatch(setCareerScheduleAction(schedule));
+        dispatch(setCareerPlayerStatsAction(updatedStats));
+        dispatch(setCareerDomesticTeamsAction(updatedDomesticTeams));
+        dispatch(setCareerStandingsAction(buildCareerStandings(careerTeam, schedule, updatedDomesticTeams)));
+        dispatch(setCareerMatchIndexAction(index));
+        setSaveMessage(`Could not simulate ${match.teamA} vs ${match.teamB}: ${error?.message || 'Unknown error.'}`);
+        return;
+      }
+      const { result, updatedStats: statsAfterMatch, updatedDomesticTeams: teamsAfterMatch } = simulated;
       updatedStats = statsAfterMatch;
       updatedDomesticTeams = teamsAfterMatch;
       schedule[index] = { ...match, isComplete: true, result };
@@ -185,7 +204,9 @@ const commitCareerMatchResult = () => {
     }
 
     let winner = 'Tie';
-    if (secondInnings.score > firstInnings.score) {
+    if (game?.testMatch?.result) {
+      winner = getTestWinner(game.testMatch, { ownTeam, opponentTeam });
+    } else if (secondInnings.score > firstInnings.score) {
       winner = secondInningsTeamName;
     } else if (secondInnings.score < firstInnings.score) {
       winner = firstInningsTeamName;
@@ -202,6 +223,11 @@ const commitCareerMatchResult = () => {
       firstInningsTeamName,
       secondInningsTeamName,
     });
+    if (game?.testMatch?.result) {
+      scorecard.innings = buildTestInningsScorecards({
+        state: game.testMatch, ownPlayers, opponentPlayers, ownTeam, opponentTeam,
+      });
+    }
 
     const momShortlist = buildMomRecommendations({
       firstBattingSide,
@@ -213,6 +239,7 @@ const commitCareerMatchResult = () => {
       opponentTeam,
       firstInningsTeamName,
       secondInningsTeamName,
+      matchWinner: winner,
       ownSanitizedRoles: {
         captainId: ownPlayers[0]?.id ?? null,
         viceCaptainId: ownPlayers[1]?.id ?? ownPlayers[0]?.id ?? null,

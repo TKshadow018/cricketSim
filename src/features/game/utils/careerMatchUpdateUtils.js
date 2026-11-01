@@ -15,6 +15,7 @@ export const applyDomesticMatchPlayerUpdates = ({
   momShortlist = [],
   matchContributionsByTeam = {},
   injuryChance = INJURY_CHANCE_PER_PLAYER,
+  random = Math.random,
 }) => {
   const shortlistedKeys = new Set(
     (momShortlist || []).map((entry) => `${entry.team}::${entry.playerId ?? ''}::${entry.name || ''}`)
@@ -75,7 +76,7 @@ export const applyDomesticMatchPlayerUpdates = ({
         let nextConfidence = Number(player.confidence ?? 50);
 
         if (participated) {
-          nextFitness = clampMetric(nextFitness - randomInt(10, 30));
+          nextFitness = clampMetric(nextFitness - randomInt(10, 30, random));
           nextMorale += 1;
           nextConfidence += 1;
           if (madeImpact) {
@@ -114,7 +115,7 @@ export const applyDomesticMatchPlayerUpdates = ({
           }
         }
 
-        const injuryAbilityDelta = Math.random() < injuryChance ? -randomInt(10, 25) : 0;
+        const injuryAbilityDelta = random() < injuryChance ? -randomInt(10, 25, random) : 0;
         if (injuryAbilityDelta < 0) {
           nextForm -= 5;
           nextConfidence -= 5;
@@ -174,8 +175,9 @@ const mergeSimulatedPlayerContribution = ({
   const contribution = {
     runs: Number(battingRow?.runs || 0),
     balls: Number(battingRow?.balls || 0),
-    outs:
-      battingRow &&
+    outs: Number.isInteger(battingRow?.dismissalCount)
+      ? battingRow.dismissalCount
+      : battingRow &&
       battingRow.dismissal !== 'Not Out' &&
       battingRow.dismissal !== 'Yet to bat' &&
       Number(battingRow?.balls || 0) > 0

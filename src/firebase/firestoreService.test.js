@@ -88,6 +88,36 @@ describe('firestoreService debug mode', () => {
     });
   });
 
+  test('large manual and automatic saves round-trip across both save collections', async () => {
+    const webStreams = require('stream/web');
+    const { TextEncoder, TextDecoder } = require('util');
+    const originals = {
+      CompressionStream: global.CompressionStream,
+      DecompressionStream: global.DecompressionStream,
+      TextEncoder: global.TextEncoder,
+      TextDecoder: global.TextDecoder,
+    };
+    Object.assign(global, { CompressionStream: webStreams.CompressionStream, DecompressionStream: webStreams.DecompressionStream, TextEncoder, TextDecoder });
+    try {
+      const service = loadModule();
+      const gameState = { innings: Array.from({ length: 7000 }, (_, index) => ({ ball: index, text: 'Repeated delivery event' })) };
+      await service.createGameSave('debug-local-user', { title: 'Manual', gameState });
+      await service.upsertAutoGameSave('debug-local-user', { title: 'Auto', gameState });
+      await service.createCareerSave('debug-local-user', { title: 'Career', gameState });
+      await service.upsertCareerAutoSave('debug-local-user', { title: 'Career auto', gameState });
+      expect((await service.listGameSaves('debug-local-user'))[0].gameState).toEqual(gameState);
+      expect((await service.getAutoGameSave('debug-local-user')).gameState).toEqual(gameState);
+      expect((await service.listCareerSaves('debug-local-user'))[0].gameState).toEqual(gameState);
+      expect((await service.getCareerAutoSave('debug-local-user')).gameState).toEqual(gameState);
+      const stored = JSON.parse(window.localStorage.getItem('cricket-sim-debug-storage'));
+      expect(stored.users['debug-local-user'].gameSaves.autosave.compressedGameState.encoding).toBe('gzip-base64-v1');
+      await service.upsertAutoGameSave('debug-local-user', { title: 'Small', gameState: { score: 4 } });
+      expect((await service.getAutoGameSave('debug-local-user')).gameState).toEqual({ score: 4 });
+    } finally {
+      Object.assign(global, originals);
+    }
+  });
+
   test('stores match history locally during debug mode', async () => {
     const service = loadModule();
 

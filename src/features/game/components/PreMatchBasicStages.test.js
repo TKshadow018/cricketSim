@@ -246,6 +246,15 @@ describe('PreMatchBasicStages', () => {
     expect(location.setSelectedStadium).toHaveBeenCalledWith('');
   });
 
+  test('distinguishes the full realism Test from simplified arcade Test formats', () => {
+    const props = makeProps({ stage: matchStatusEnum.ChooseMatchType });
+    const { rerender } = render(<PreMatchBasicStages {...props} />);
+    expect(screen.getAllByText(/Simplified Test-style match/).length).toBeGreaterThan(0);
+    expect(screen.getByRole('button', { name: /PRACTICE TEST MINI/ })).toHaveTextContent('1 innings per team');
+    rerender(<PreMatchBasicStages {...props} game={{ ...props.game, ruleset: 'realism' }} />);
+    expect(screen.getByText(/Up to four innings, declarations and follow-on/)).toBeInTheDocument();
+  });
+
   test('selects tournament opponents and fixtures and rejects invalid team counts', () => {
     const props = makeProps({
       stage: matchStatusEnum.ChooseOpponent,

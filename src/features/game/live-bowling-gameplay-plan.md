@@ -1,5 +1,9 @@
 # Bowling-only live gameplay plan
 
+> Historical design notes: Realism now uses the actual selected positions and
+> enforces field restrictions. See [match-outcome-model.md](./match-outcome-model.md)
+> for current ruleset behavior.
+
 **Status:** First playable bowling cockpit implemented. This document remains the design
 contract and roadmap for balancing and future spatial-fielding work. It expands the bowling portion of the
 [live match gameplay plan](./live-match-gameplay-plan.md).

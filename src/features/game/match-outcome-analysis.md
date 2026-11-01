@@ -1,5 +1,9 @@
 # Match outcome system: analysis and realism roadmap
 
+> Historical audit: this report describes the engine before the subsequent
+> implementation. See [match-outcome-model.md](./match-outcome-model.md) for
+> current behavior, calibration evidence, and remaining limitations.
+
 ## Scope and evidence
 
 This is an analysis of the current code, not an implementation plan that has already

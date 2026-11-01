@@ -1,5 +1,5 @@
 import { buildInitialInnings } from '../../gameSlice';
-import { battingAction } from '../../../../gameData/actionType';
+import { battingAction, bowlingAction } from '../../../../gameData/actionType';
 import { buildInningsViewModel } from './controllerInningsViewModel';
 
 const battingSide = [
@@ -27,6 +27,29 @@ const getContext = () => ({
 });
 
 describe('innings view model', () => {
+  test('realism disables arcade-only batting and bowling powers', () => {
+    const inningState = {
+      ...buildInitialInnings(),
+      strikerIndex: 0,
+      nonStrikerIndex: 1,
+      currentBowlerIndex: 0,
+      battingStats: [{ superShotPaceUnlocked: 3 }],
+      bowlingStats: [{ balls: 0 }],
+    };
+    const model = buildInningsViewModel({
+      isFirstInnings: true,
+      inningState,
+      getContext,
+      matchType: { over: 20 },
+      maxBalls: 120,
+      ruleset: 'realism',
+    });
+    expect(model.battingActionOptions.find(({ key }) => key === battingAction.superShot))
+      .toMatchObject({ disabled: true, reason: 'Available in arcade mode' });
+    expect(model.bowlingActionOptions.find(({ key }) => key === bowlingAction.specialBowl))
+      .toMatchObject({ disabled: true, reason: 'Available in arcade mode' });
+  });
+
   test('builds ordered score rows, eligible selection options, and action availability', () => {
     const inningState = {
       ...buildInitialInnings(),

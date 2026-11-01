@@ -40,6 +40,10 @@ export const scoreDelivery = ({
   usedSpecialBall,
   deliveryIsPaceBowler,
   deliveryMaxSuperShot,
+  random = Math.random,
+  maxWickets = 10,
+  silent = false,
+  allowFreeHit = true,
 }) => {
   const strikerIndex = inningState.strikerIndex;
   const nonStrikerIndex = inningState.nonStrikerIndex;
@@ -50,7 +54,9 @@ export const scoreDelivery = ({
   const extras = outcome.extras || {};
   const isWide = outcome.token === 'wide';
   const isNoBall = outcome.token === 'nb';
-  const completedRuns = outcome.completedRuns ?? (isWide ? Math.max(0, extraRuns - 1) : batRuns);
+  const completedRuns = outcome.completedRuns ?? (
+    isWide ? Math.max(0, extraRuns - 1) : batRuns + (Number(extras.bye) || 0) + (Number(extras.legBye) || 0)
+  );
   const nextBalls = inningState.balls + (outcome.isLegalDelivery ? 1 : 0);
   const nextScore = inningState.score + batRuns + extraRuns;
   const ballTag = formatBallProgress(nextBalls);
@@ -109,16 +115,22 @@ export const scoreDelivery = ({
     if (!(dismissal.type in dismissalVoiceIndex) || ![strikerIndex, nonStrikerIndex].includes(dismissedIndex)) {
       throw new Error('Invalid dismissal in delivery outcome');
     }
-    if ((isNoBall || inningState.freeHitArmed) && dismissal.type !== 'runOut') {
+    if ((isNoBall || (allowFreeHit && inningState.freeHitArmed)) && dismissal.type !== 'runOut') {
       throw new Error('This dismissal is not permitted on a no-ball or free hit');
+    }
+    if (isWide && !['runOut', 'stumped', 'hitWicket'].includes(dismissal.type)) {
+      throw new Error('This dismissal is not permitted on a wide.');
     }
     const dismissed = battingSide[dismissedIndex];
     const creditedToBowler = dismissal.type !== 'runOut';
     const outType = dismissalVoiceIndex[dismissal.type];
     eventLine = dismissal.type === 'runOut'
       ? `${dismissed?.name || 'Batter'} is run out${dismissal.fielderName ? ` by ${dismissal.fielderName}` : ''}.`
-      : ballByBallCommentry(dismissed?.name, outType, false, partner?.name) ||
-        replaceName(randomFrom(outVoice[outType]), dismissed?.name, partner?.name);
+      : ballByBallCommentry(dismissed?.name, outType, false, partner?.name, random, !silent) ||
+        replaceName(randomFrom(outVoice[outType], random), dismissed?.name, partner?.name);
+    if (isNoBall) eventLine = `No ball. ${eventLine}`;
+    if (isWide) eventLine = `Wide ball. ${eventLine}`;
+    if (batRuns) eventLine = `${eventLine} ${batRuns} run${batRuns === 1 ? '' : 's'} off the bat.`;
     wickets += 1;
     outBatterIndices.push(dismissedIndex);
     battingStats[dismissedIndex] = {
@@ -141,7 +153,7 @@ export const scoreDelivery = ({
     else nextNonStrikerIndex = null;
     const remaining = dismissedIndex === strikerIndex ? nonStrikerIndex : strikerIndex;
     const replacementIndex = getNextBatterIndex(battingSide, outBatterIndices, [remaining]);
-    if (replacementIndex !== -1 && wickets < 10) {
+    if (replacementIndex !== -1 && wickets < maxWickets) {
       if (isUserBatting) {
         waitingForNextBatter = true;
         nextBatterIndex = replacementIndex;
@@ -152,22 +164,27 @@ export const scoreDelivery = ({
         if (!battingOrderIndices.includes(replacementIndex)) battingOrderIndices.push(replacementIndex);
         nextBatterIndex = getNextBatterIndex(battingSide, outBatterIndices, [remaining, replacementIndex]);
       }
-    } else {
-      wickets = 10;
+    } else if (replacementIndex === -1) {
+      wickets = maxWickets;
     }
   } else if (isWide) {
     eventLine = `${striker?.name || 'Batsman'} leaves it. Wide ball signaled.`;
   } else if (isNoBall) {
-    eventLine = `${bowler?.name || 'Bowler'} oversteps. No ball and free hit next.`;
+    eventLine = allowFreeHit
+      ? `${bowler?.name || 'Bowler'} oversteps. No ball and free hit next.`
+      : `${bowler?.name || 'Bowler'} oversteps. No ball signaled.`;
+    if (batRuns) eventLine = `${eventLine} ${batRuns} run${batRuns === 1 ? '' : 's'} off the bat.`;
+  } else if (nonBowlerExtras > 0) {
+    eventLine = `${nonBowlerExtras} ${extras.legBye ? 'leg-bye' : 'bye'}${nonBowlerExtras === 1 ? '' : 's'}.`;
   } else {
-    eventLine = ballByBallCommentry(striker?.name, batRuns, true, partner?.name) ||
-      replaceName(randomFrom(runVoice[batRuns]), striker?.name, partner?.name);
+    eventLine = ballByBallCommentry(striker?.name, batRuns, true, partner?.name, random, !silent) ||
+      replaceName(randomFrom(runVoice[batRuns === 6 ? 5 : batRuns], random), striker?.name, partner?.name);
   }
 
   if (completedRuns % 2 === 1) {
     [nextStrikerIndex, nextNonStrikerIndex] = [nextNonStrikerIndex, nextStrikerIndex];
   }
-  const freeHitArmed = isNoBall || (inningState.freeHitArmed && !outcome.isLegalDelivery);
+  const freeHitArmed = allowFreeHit && (isNoBall || (inningState.freeHitArmed && !outcome.isLegalDelivery));
 
   return {
     ...inningState,
@@ -176,6 +193,8 @@ export const scoreDelivery = ({
     balls: nextBalls,
     wides: (inningState.wides || 0) + (isWide ? extraRuns : 0),
     noBalls: (inningState.noBalls || 0) + (isNoBall ? (Number(extras.noBall) || 1) : 0),
+    byes: (inningState.byes || 0) + (Number(extras.bye) || 0),
+    legByes: (inningState.legByes || 0) + (Number(extras.legBye) || 0),
     strikerIndex: nextStrikerIndex,
     nonStrikerIndex: nextNonStrikerIndex,
     nextBatterIndex,

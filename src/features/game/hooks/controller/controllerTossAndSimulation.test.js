@@ -1,7 +1,6 @@
 import React from 'react';
 import { act, render } from '@testing-library/react';
 import { matchStatusEnum } from '../../../../gameData/matchStatusEnum';
-import * as commonUtils from '../../utils/controllerCommonUtils';
 import * as simulatorUtils from '../../../../utils/simulatorUtils';
 import { MODE_CAREER, MODE_TOURNAMENT } from '../../utils/controllerCommonUtils';
 import { useTossAndSimulationHandlers } from './controllerTossAndSimulation';
@@ -91,7 +90,7 @@ describe('stadium and toss controls', () => {
       payload: { weather: 'cloudy', pitch: 'dusty', outfield: 'wetWithDew' },
     });
 
-    jest.spyOn(commonUtils, 'randomKey').mockReturnValue('');
+    jest.spyOn(Math, 'random').mockReturnValue(0);
     const noVenues = makeProps({ venueStadiums: null });
     const { handlersRef: noVenueHandlers } = renderHookHarness(noVenues);
     expect(noVenues.resolveStadiumConditionRef.current('Unknown')).toEqual({
@@ -99,6 +98,28 @@ describe('stadium and toss controls', () => {
       pitch: 'sporting',
       outfield: 'lushGreen',
     });
+
+  });
+
+  test('a saved match seed reproduces the toss and advances its persisted state', () => {
+    const saved = { seed: 123, state: 123, algorithm: 'mulberry32-v1', engineVersion: 'match-engine-v1' };
+    const makeSeededProps = () => makeProps({
+      game: { matchRandom: saved },
+      setMatchRandomAction: createAction('match-random'),
+    });
+    const first = makeSeededProps();
+    const second = makeSeededProps();
+    const firstHook = renderHookHarness(first);
+    const secondHook = renderHookHarness(second);
+    const random = jest.spyOn(Math, 'random');
+    random.mockReturnValue(0.1);
+    act(() => firstHook.handlersRef.current.handleTossCall('crown'));
+    random.mockReturnValue(0.9);
+    act(() => secondHook.handlersRef.current.handleTossCall('crown'));
+    expect(first.dispatch.mock.calls).toEqual(second.dispatch.mock.calls);
+    const savedState = first.dispatch.mock.calls.map(([action]) => action).find(({ type }) => type === 'match-random');
+    expect(savedState.payload.state).not.toBe(saved.state);
+    random.mockRestore();
   });
 
   test('records user wins and opponent wins with the correct toss decision and first batting side', () => {

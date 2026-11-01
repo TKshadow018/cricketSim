@@ -49,6 +49,8 @@ function CricketSimulator() {
     isUserWinner,
     firstInningsView,
     secondInningsView,
+    ownPlayers,
+    opponentPlayers,
     savedGames,
     isSavingGame,
     isGlobalSaving,
@@ -72,6 +74,7 @@ function CricketSimulator() {
     simulateCurrentOver,
     simulateFullMatch,
     toggleScoreboard,
+    setRuleset,
     setMatchTypeKey,
     setOwnTeam,
     setOpponentTeam,
@@ -230,6 +233,8 @@ function CricketSimulator() {
               secondInningsTeamName={secondInningsTeamName}
               firstInningsView={firstInningsView}
               secondInningsView={secondInningsView}
+              ownPlayers={ownPlayers}
+              opponentPlayers={opponentPlayers}
               setBattingIntent={setBattingIntent}
               setBattingTactics={setBattingTactics}
               setBowlingIntent={setBowlingIntent}
@@ -312,6 +317,7 @@ function CricketSimulator() {
             confirmTournamentFixtures={confirmTournamentFixtures}
             randomizeTournamentFixtures={randomizeTournamentFixtures}
             updateTournamentFixture={updateTournamentFixture}
+            setRuleset={setRuleset}
             setMatchTypeKey={setMatchTypeKey}
             setOwnTeam={setOwnTeam}
             setOpponentTeam={setOpponentTeam}
