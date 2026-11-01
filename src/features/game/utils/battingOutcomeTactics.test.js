@@ -132,7 +132,7 @@ describe('batting tactic outcome effects', () => {
     expect(outcomeTotal(aggressive)).toBe(100);
   });
 
-  test('still guarantees no wicket on an armed free hit', () => {
+  test('allows only the run-out wicket slot on an armed free hit', () => {
     const freeHit = countOutcomes({
       battingIntent: battingAction.freeHit,
       battingTactics: {
@@ -144,7 +144,7 @@ describe('batting tactic outcome effects', () => {
       inningState: { ...basePlay.inningState, freeHitArmed: true },
     });
 
-    expect(freeHit.W || 0).toBe(0);
+    expect(freeHit.W || 0).toBe(1);
     expect(outcomeTotal(freeHit)).toBe(100);
   });
 });

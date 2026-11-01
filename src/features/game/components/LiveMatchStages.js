@@ -5,8 +5,11 @@ import StageShell from "./StageShell";
 import InningsStage from "./InningsStage";
 import TeamNameWithFlag from "./TeamNameWithFlag";
 import MatchSummaryStages from "./MatchSummaryStages";
+import TestMatchStage from "./TestMatchStage";
+import { selectOpponentField } from "../utils/opponentField";
+import { selectLegalOpponentField } from "../utils/fieldingRules";
 
-const buildInningsSituation = ({ innings, view, matchType, matchCondition, oversDisplay, target }) => {
+const buildInningsSituation = ({ innings, view, matchType, matchTypeKey, matchCondition, oversDisplay, target, ruleset }) => {
   const score = Number(innings?.score) || 0;
   const wickets = Number(innings?.wickets) || 0;
   const balls = Number(innings?.balls) || 0;
@@ -30,10 +33,22 @@ const buildInningsSituation = ({ innings, view, matchType, matchCondition, overs
         ? null
         : ((runsRemaining / ballsRemaining) * 6).toFixed(2),
     matchCondition: matchCondition || {},
+    matchType,
+    matchTypeKey,
+    ruleset,
+    opponentFieldPreset: view?.isUserBatting
+      ? ruleset === 'realism'
+        ? selectLegalOpponentField({ inningState: innings, matchType, matchTypeKey, target, battingHand: view.strikerPlayer?.battingHand })
+        : selectOpponentField({ inningState: innings, matchType, matchTypeKey, target })
+      : undefined,
   };
 };
 
 function LiveMatchStages(props) {
+  if (props.game.testMatch && !props.game.tournamentTiebreak &&
+      [matchStatusEnum.TeamOneBat, matchStatusEnum.MatchEnd].includes(props.stage)) {
+    return <TestMatchStage {...props} />;
+  }
   const {
     stage,
     stageCommonProps,
@@ -67,7 +82,9 @@ function LiveMatchStages(props) {
     innings: game.firstInnings,
     view: firstInningsView,
     matchType,
+    matchTypeKey: game.matchTypeKey,
     matchCondition: game.matchCondition,
+    ruleset: game.ruleset,
     oversDisplay,
     target: null,
   });
@@ -75,7 +92,9 @@ function LiveMatchStages(props) {
     innings: game.secondInnings,
     view: secondInningsView,
     matchType,
+    matchTypeKey: game.matchTypeKey,
     matchCondition: game.matchCondition,
+    ruleset: game.ruleset,
     oversDisplay,
     target: Number(game.firstInnings?.score || 0) + 1,
   });

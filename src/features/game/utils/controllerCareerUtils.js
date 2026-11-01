@@ -1,5 +1,6 @@
 import { collectTeamStatsForInnings, formatOvers } from './controllerCommonUtils';
 import { buildScorecard } from './controllerCommonUtils';
+import { formatDismissal } from './deliveryDismissalUtils';
 
 export const buildTopRunScorers = (statsList = []) =>
   [...statsList]
@@ -162,8 +163,9 @@ const buildCareerInningsRows = ({ inningsState, battingPlayers, bowlingPlayers }
       runs: stat.runs,
       balls: stat.balls,
       strikeRate,
+      ...(Number.isInteger(stat.outs) ? { dismissalCount: stat.outs } : {}),
       dismissal: stat.isOut
-        ? `b ${stat.outByBowler || 'Unknown'} @ ${stat.outAtScore || '-'} (${stat.outAtBall || '-'})`
+        ? formatDismissal(stat)
         : stat.balls > 0 || isCurrent
           ? 'Not Out'
           : 'Yet to bat',
@@ -201,6 +203,14 @@ const buildCareerInningsRows = ({ inningsState, battingPlayers, bowlingPlayers }
 
   return { battingRows, bowlingRows };
 };
+
+export const buildCareerInningsScorecard = ({ teamName, inningsState, battingPlayers, bowlingPlayers }) =>
+  buildScorecard(
+    `${teamName} Innings`,
+    inningsState,
+    buildCareerInningsRows({ inningsState, battingPlayers, bowlingPlayers }),
+    formatOvers(inningsState.balls || 0)
+  );
 
 export const buildCareerMatchScorecard = ({
   firstBattingSide,

@@ -339,6 +339,56 @@ describe('processDelivery guards and bowler selection', () => {
     ]);
   });
 
+  test('passes custom field positions into the outcome and records them for the ball', () => {
+    const fieldPositions = [
+      'wicketkeeper', 'gully', 'point', 'cover', 'midOff',
+      'midOn', 'midWicket', 'squareLeg', 'fineLeg', 'longOn',
+    ];
+    const props = makeProps({
+      bowlingTactics: { fieldPreset: 'custom', fieldPositions },
+      getContext: jest.fn(() => ({
+        isOwnBatting: false,
+        isUserBatting: false,
+        isUserBowling: true,
+        battingSide,
+        bowlingSide,
+      })),
+    });
+
+    processDelivery(props);
+
+    expect(resolveOutcome).toHaveBeenCalledWith(expect.objectContaining({
+      bowlingTactics: expect.objectContaining({ fieldPreset: 'custom', fieldPositions }),
+      isUserBowling: true,
+    }));
+    expect(props.setFirstInnings.mock.calls[0][0].ballHistory[0].tactics)
+      .toMatchObject({ fieldPreset: 'custom', fieldPositions });
+  });
+
+  test('passes the visible opponent field to batting resolution and ball history', () => {
+    const props = makeProps({
+      battingTactics: { approach: 'balanced', shot: 'drive', target: 'cover' },
+      firstInnings: makeInnings({ balls: 36, score: 50, wickets: 2 }),
+    });
+    processDelivery(props);
+    expect(resolveOutcome).toHaveBeenCalledWith(expect.objectContaining({
+      opponentFieldPreset: 'middleOvers',
+      isUserBatting: true,
+    }));
+    expect(props.setFirstInnings.mock.calls[0][0].ballHistory[0].opponentFieldPreset).toBe('middleOvers');
+    const chase = makeProps({
+      isFirstInnings: false,
+      firstInningsScore: 99,
+      secondInnings: makeInnings({ balls: 115, score: 99 }),
+      battingTactics: { approach: 'balanced', shot: 'drive', target: 'cover' },
+    });
+    processDelivery(chase);
+    expect(resolveOutcome).toHaveBeenLastCalledWith(expect.objectContaining({
+      opponentFieldPreset: 'defendSingle',
+    }));
+    expect(chase.setSecondInnings.mock.calls[0][0].ballHistory[0].opponentFieldPreset).toBe('defendSingle');
+  });
+
   test('passes batting tactics to resolution, records the shot, and resets one-ball choices', () => {
     const battingTactics = {
       approach: 'attack',

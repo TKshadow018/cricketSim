@@ -17,6 +17,7 @@ export const prepareTournamentMatchState = ({
   setShowScoreboardAction,
   setTournamentCurrentMatchIdAction,
   tournamentResultCommitSignatureRef,
+  setMatchRandomAction,
 }) => {
   if (!match?.teamA || !match?.teamB) {
     return;
@@ -34,5 +35,6 @@ export const prepareTournamentMatchState = ({
   dispatch(setSecondInningsAction(buildInitialInnings()));
   dispatch(setShowScoreboardAction(false));
   dispatch(setTournamentCurrentMatchIdAction(match.id));
+  if (setMatchRandomAction) dispatch(setMatchRandomAction(null));
   tournamentResultCommitSignatureRef.current = '';
 };

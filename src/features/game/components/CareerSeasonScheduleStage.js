@@ -24,6 +24,7 @@ function CareerSeasonScheduleStage({
   careerDomesticTeams,
   careerPlayerProfile,
   careerRetired,
+  errorMessage,
   handleCareerStartNextMatch,
   handleViewCareerHistory,
 }) {
@@ -98,6 +99,7 @@ function CareerSeasonScheduleStage({
         </>
       }
     >
+      {errorMessage ? <p role="status">{errorMessage}</p> : null}
       <div className="sim-scoreboard-panel">
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap' }}>
           <h4 className="sim-section-title" style={{ margin: 0 }}>
@@ -223,6 +225,7 @@ function CareerSeasonScheduleStage({
                     <th style={{ textAlign: 'center', padding: '4px' }}>W</th>
                     <th style={{ textAlign: 'center', padding: '4px' }}>L</th>
                     <th style={{ textAlign: 'center', padding: '4px' }}>T</th>
+                    {format === 'firstClass' ? <th aria-label="Draws" style={{ textAlign: 'center', padding: '4px' }}>D</th> : null}
                     <th style={{ textAlign: 'center', padding: '4px' }}>Pts</th>
                   </tr>
                 </thead>
@@ -234,6 +237,7 @@ function CareerSeasonScheduleStage({
                       <td style={{ textAlign: 'center', padding: '4px' }}>{row.wins}</td>
                       <td style={{ textAlign: 'center', padding: '4px' }}>{row.losses}</td>
                       <td style={{ textAlign: 'center', padding: '4px' }}>{row.ties}</td>
+                      {format === 'firstClass' ? <td style={{ textAlign: 'center', padding: '4px' }}>{row.draws || 0}</td> : null}
                       <td style={{ textAlign: 'center', padding: '4px', fontWeight: 'bold' }}>{row.points}</td>
                     </tr>
                   ))}

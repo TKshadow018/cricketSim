@@ -33,7 +33,7 @@ export const buildMomShortlistFromScorecards = ({ cards = [] }) => {
     return performanceMap.get(key);
   };
 
-  (cards || []).forEach(({ team, scorecard }) => {
+  (cards || []).forEach(({ team, bowlingTeam = team, scorecard }) => {
     (scorecard?.battingRows || []).forEach((row) => {
       const entry = ensureEntry(team, row);
       entry.runs += Number(row?.runs || 0);
@@ -42,7 +42,7 @@ export const buildMomShortlistFromScorecards = ({ cards = [] }) => {
     });
 
     (scorecard?.bowlingRows || []).forEach((row) => {
-      const entry = ensureEntry(team, row);
+      const entry = ensureEntry(bowlingTeam, row);
       entry.wickets += Number(row?.wickets || 0);
       entry.runsConceded += Number(row?.runsConceded || 0);
       entry.ballsBowled += parseOversToBalls(row?.overs || '0.0');
@@ -88,6 +88,7 @@ export const buildMomRecommendations = ({
   secondInningsTeamName,
   ownSanitizedRoles,
   opponentSanitizedRoles,
+  matchWinner,
 }) => {
   const firstBattingPlayers = firstBattingSide === 'own' ? ownPlayers : opponentPlayers;
   const firstBowlingPlayers = firstBattingSide === 'own' ? opponentPlayers : ownPlayers;
@@ -266,7 +267,9 @@ export const buildMomRecommendations = ({
   });
 
   let winnerTeam = '';
-  if (secondInnings.score > firstInnings.score) {
+  if (matchWinner !== undefined) {
+    winnerTeam = [ownTeam, opponentTeam].includes(matchWinner) ? matchWinner : '';
+  } else if (secondInnings.score > firstInnings.score) {
     winnerTeam = secondInningsTeamName;
   } else if (secondInnings.score < firstInnings.score) {
     winnerTeam = firstInningsTeamName;

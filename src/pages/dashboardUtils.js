@@ -4,6 +4,8 @@ import { outfieldType, pitchType } from '../gameData/matchCondition';
 import { battingAction, bowlingAction } from '../gameData/actionType';
 import { matchStatusEnum } from '../gameData/matchStatusEnum';
 import { buildOutcomeAnalysis } from '../features/game/utils/controllerOutcomeUtils';
+import { selectOpponentFieldForDelivery } from '../features/game/utils/opponentField';
+import { buildExpectedRealismAnalysis } from '../features/game/utils/realismOutcomeAnalysis';
 
 const battingLabels = {
   [battingAction.defence]: 'Defend',
@@ -94,7 +96,11 @@ export const buildBattingOrderPreview = (selectedPlayers = []) =>
     }));
 
 export const buildAdminMatrix = (gameState) => {
-  const matchType = matchTypeList[gameState.matchTypeKey] || matchTypeList.t20;
+  const testState = gameState.testMatch?.phase === 'batting' ? gameState.testMatch : null;
+  const completedTestBalls = testState?.innings.reduce((sum, entry) => sum + entry.innings.balls, 0) || 0;
+  const matchType = testState
+    ? { over: testState.oversPerDay, unlimitedBowling: true, matchBallsRemaining: testState.totalBalls - completedTestBalls }
+    : matchTypeList[gameState.matchTypeKey] || matchTypeList.t20;
   const { ownPlayers: fullOwnPlayers, opponentPlayers: fullOpponentPlayers } = getPlayersForNations(
     gameState.ownTeam,
     gameState.opponentTeam
@@ -116,9 +122,9 @@ export const buildAdminMatrix = (gameState) => {
     [...fullOpponentPlayers, ...((gameState.opponentCustomPlayers || []))],
     gameState.opponentPlayingXI
   );
-  const isFirst = gameState.stage !== matchStatusEnum.TeamTwoBat;
-  const innings = isFirst ? gameState.firstInnings : gameState.secondInnings;
-  const isOwnBatting = isFirst ? gameState.firstBattingSide === 'own' : gameState.firstBattingSide !== 'own';
+  const isFirst = testState ? true : gameState.stage !== matchStatusEnum.TeamTwoBat;
+  const innings = testState ? testState.currentInnings : isFirst ? gameState.firstInnings : gameState.secondInnings;
+  const isOwnBatting = testState ? testState.currentSide === 'own' : isFirst ? gameState.firstBattingSide === 'own' : gameState.firstBattingSide !== 'own';
   const battingSide = isOwnBatting ? ownPlayers : opponentPlayers;
   const bowlingSide = isOwnBatting ? opponentPlayers : ownPlayers;
   const striker = battingSide[innings?.strikerIndex ?? -1];
@@ -134,10 +140,10 @@ export const buildAdminMatrix = (gameState) => {
 
   const toPercentAdjusted = (value, percent) => value + value * percent;
 
-  const abilityForPaceBase = (striker?.abilityToPlayPaceBall || 50) + (pitchProfile.goodForBatting || 0);
-  const abilityForSpinBase = (striker?.abilityToPlaySpinBall || 50) + (pitchProfile.goodForBatting || 0);
-  const bowlerPaceBase = (bowler?.paceAbility || 40) + (pitchProfile.goodForPaceBowling || 0);
-  const bowlerSpinBase = (bowler?.spinAbility || 35) + (pitchProfile.goodForSpinBowling || 0);
+  const abilityForPaceBase = (striker?.abilityToPlayPaceBall ?? 50) + (pitchProfile.goodForBatting || 0);
+  const abilityForSpinBase = (striker?.abilityToPlaySpinBall ?? 50) + (pitchProfile.goodForBatting || 0);
+  const bowlerPaceBase = (bowler?.paceAbility ?? 40) + (pitchProfile.goodForPaceBowling || 0);
+  const bowlerSpinBase = (bowler?.spinAbility ?? 35) + (pitchProfile.goodForSpinBowling || 0);
 
   let battingPaceAbility = abilityForPaceBase;
   let battingSpinAbility = abilityForSpinBase;
@@ -170,10 +176,17 @@ export const buildAdminMatrix = (gameState) => {
   const bowlingAbility = bowler ? (isPaceBowler ? bowlingPaceAbility : bowlingSpinAbility) : 0;
   const abilityDifference = battingAbility - bowlingAbility;
 
-  const isUserBatting = isOwnBatting;
-  const isUserBowling = !isOwnBatting;
+  const userTeamName = gameState.gameMode === 'tournament' ? gameState.tournamentUserTeam
+    : gameState.gameMode === 'career' ? gameState.careerTeam : gameState.ownTeam;
+  const battingTeamName = isOwnBatting ? gameState.ownTeam : gameState.opponentTeam;
+  const careerName = String(gameState.careerPlayerProfile?.name || '').trim().toLowerCase();
+  const isUserBatting = battingTeamName === userTeamName &&
+    (gameState.gameMode !== 'career' || String(striker?.name || '').trim().toLowerCase() === careerName);
+  const isUserBowling = bowlingTeamName === userTeamName &&
+    (gameState.gameMode !== 'career' || String(bowler?.name || '').trim().toLowerCase() === careerName);
   const appliedBattingIntent = isUserBatting && innings?.freeHitArmed ? battingAction.freeHit : gameState.battingIntent;
-  const outcomeAnalysis = buildOutcomeAnalysis({
+  const targetScore = testState ? testState.target : isFirst ? null : Number(gameState.firstInnings?.score || 0) + 1;
+  const analysisInput = {
     striker,
     bowler,
     inningState: innings || {},
@@ -191,12 +204,28 @@ export const buildAdminMatrix = (gameState) => {
     battingTactics: gameState.battingTactics,
     bowlingIntent: gameState.bowlingIntent,
     bowlingTactics: isUserBowling ? gameState.bowlingTactics : undefined,
+    opponentFieldPreset: isUserBatting && innings
+      ? selectOpponentFieldForDelivery({
+          isFirstInnings: isFirst,
+          inningState: innings,
+          matchType,
+          matchTypeKey: gameState.matchTypeKey,
+          firstInningsScore: gameState.firstInnings?.score,
+        })
+      : undefined,
     locationCountry: gameState.locationCountry,
-  });
+    ruleset: gameState.ruleset,
+  };
+  const outcomeAnalysis = gameState.ruleset === 'realism'
+    ? buildExpectedRealismAnalysis({ input: analysisInput, isFirstInnings: isFirst, firstInningsScore: gameState.firstInnings?.score, targetScore })
+    : buildOutcomeAnalysis(analysisInput);
   const { weights } = outcomeAnalysis;
 
   return {
     isOwnBatting,
+    isUserBatting,
+    isUserBowling,
+    analysisMode: gameState.ruleset === 'realism' ? 'realism' : 'arcade',
     strikerName: striker?.name || '-',
     bowlerName: bowler?.name || '-',
     strikerPlayer: striker || null,
@@ -222,8 +251,9 @@ export const buildAdminMatrix = (gameState) => {
     },
     rows: outcomeOrder.map((key) => ({
       key,
-      value: weights[key] || 0,
-      skillImpact: outcomeAnalysis.skillImpactDeltas[key] || 0,
+      value: (weights[key] || 0) + (key === 'W' ? weights.runOut || 0 : 0),
+      skillImpact: (outcomeAnalysis.skillImpactDeltas[key] || 0) +
+        (key === 'W' ? outcomeAnalysis.skillImpactDeltas.runOut || 0 : 0),
     })),
     skillImpacts: outcomeAnalysis.appliedSkillImpacts,
     hasSkillImpacts: outcomeAnalysis.appliedSkillImpacts.length > 0,

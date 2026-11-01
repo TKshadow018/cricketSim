@@ -1,6 +1,7 @@
 import React, { act } from 'react';
 import { render } from '@testing-library/react';
 import { useControllerPersistence } from './controllerPersistence';
+import { matchStatusEnum } from '../../../../gameData/matchStatusEnum';
 
 jest.mock('../../../../firebase/firestoreService', () => ({
   getCareerAutoSave: jest.fn(),
@@ -331,7 +332,7 @@ describe('useControllerPersistence', () => {
     expect(services.upsertAutoGameSave).toHaveBeenCalledTimes(1);
   });
 
-  test('absorbs failed autosave writes from debounce and unload handlers', async () => {
+  test('reports failed autosave writes from debounce and unload handlers', async () => {
     jest.useFakeTimers();
     const services = firestore();
     services.upsertAutoGameSave.mockRejectedValue(new Error('Autosave unavailable'));
@@ -346,6 +347,7 @@ describe('useControllerPersistence', () => {
     expect(services.upsertAutoGameSave).toHaveBeenCalledWith('user-1', expect.objectContaining({
       gameState: snapshot,
     }));
+    expect(debounce.setSaveMessage).toHaveBeenCalledWith('Autosave failed: Autosave unavailable');
     debounceHarness.unmount();
 
     const unload = makeProps({
@@ -360,9 +362,56 @@ describe('useControllerPersistence', () => {
       await Promise.resolve();
     });
     expect(services.upsertAutoGameSave).toHaveBeenCalledTimes(2);
+    expect(unload.setSaveMessage).toHaveBeenCalledWith('Autosave failed: Autosave unavailable');
     unload.inProgressRef.current = false;
     unloadHarness.unmount();
     jest.useRealTimers();
+  });
+
+  test('records a drawn Test without treating the higher aggregate as a winner', async () => {
+    const services = firestore();
+    const props = makeProps({
+      stage: matchStatusEnum.MatchEnd,
+      game: { ...baseGame, testMatch: {
+        result: { type: 'draw' },
+        innings: [{ side: 'own', innings: { score: 200, wickets: 10, balls: 300 }, reason: 'allOut' }],
+      } },
+      firstInnings: { score: 500, wickets: 10, balls: 600 },
+      secondInnings: { score: 350, wickets: 8, balls: 500 },
+      resultSummary: 'The match is drawn.',
+    });
+    makeHarness(props);
+    await act(async () => { await Promise.resolve(); });
+    expect(services.createMatchHistoryEntry).toHaveBeenCalledWith(
+      'user-1', expect.objectContaining({
+        winnerTeam: 'Draw',
+        summary: 'The match is drawn.',
+        innings: [expect.objectContaining({ team: 'Falcons', score: 200, wickets: 10, balls: 300 })],
+      })
+    );
+  });
+
+  test('waits for a tied tournament Super Over and stores its advancement winner', async () => {
+    const services = firestore();
+    const props = makeProps({
+      gameMode: 'tournament',
+      stage: matchStatusEnum.MatchEnd,
+      game: { ...baseGame, gameMode: 'tournament', tournamentTiebreak: null },
+      firstInnings: { score: 100, wickets: 5, balls: 120 },
+      secondInnings: { score: 100, wickets: 6, balls: 120 },
+    });
+    const { rerender, Harness } = makeHarness(props);
+    await act(async () => { await Promise.resolve(); });
+    expect(services.createMatchHistoryEntry).not.toHaveBeenCalled();
+    const resolved = {
+      ...props,
+      game: { ...props.game, tournamentTiebreak: { phase: 'resolved', winnerTeam: 'Ravens', round: 2 } },
+    };
+    rerender(<Harness props={resolved} />);
+    await act(async () => { await Promise.resolve(); });
+    expect(services.createMatchHistoryEntry).toHaveBeenCalledWith(
+      'user-1', expect.objectContaining({ winnerTeam: 'Tie', advancementWinner: 'Ravens' })
+    );
   });
 
   test('records match outcomes once per signature and retries after a failed history write', async () => {

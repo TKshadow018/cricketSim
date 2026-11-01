@@ -17,6 +17,39 @@ const buildInningsState = (bowlers, overrides = {}) => ({
   ...overrides,
 });
 
+test('a seeded innings preserves its generator state after selecting an opening bowler', () => {
+  const bowlers = buildBowlers();
+  const options = {
+    battingSide: [{ id: 'a' }, { id: 'b' }],
+    bowlingSide: bowlers,
+    isUserBatting: false,
+    isUserBowling: false,
+    overs: 20,
+    randomSeed: 456,
+  };
+  const first = buildPreparedInnings(options);
+  const second = buildPreparedInnings(options);
+  expect(first).toEqual(second);
+  expect(first).toMatchObject({ randomSeed: 456, randomAlgorithm: 'mulberry32-v1' });
+  expect(first.randomState).not.toBe(456);
+});
+
+test('a Test bowler remains eligible after bowling more than one fifth of the scheduled overs', () => {
+  const bowlers = buildBowlers();
+  const inningState = buildInningsState(bowlers, {
+    bowlingStats: bowlers.map((_, index) => ({ balls: index === 1 ? 180 : 0 })),
+  });
+  const selected = selectComputerBowler({
+    inningState,
+    bowlingSide: bowlers,
+    previousBowlerIndex: 0,
+    overs: 90,
+    unlimitedBowling: true,
+    random: () => 0,
+  });
+  expect(selected).toBe(1);
+});
+
 describe('eligible bowler selection', () => {
   test('ranks eligible bowlers and handles missing alternatives', () => {
     expect(getBestEligibleBowlerIndex()).toBeNull();

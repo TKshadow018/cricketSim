@@ -8,6 +8,7 @@ import { battingAction, bowlingAction } from '../gameData/actionType';
 import { matchStatusEnum } from '../gameData/matchStatusEnum';
 import { getPlayersForNations } from '../gameData/playerListForNation';
 import { DEFAULT_BATTING_TACTICS } from '../features/game/utils/battingTactics';
+import * as outcomeUtils from '../features/game/utils/controllerOutcomeUtils';
 
 jest.mock('../gameData/playerListForNation', () => ({
   getPlayersForNations: jest.fn(),
@@ -145,7 +146,7 @@ test('builds the first-innings admin matrix with conditions, roles, free hit, an
   });
   expect(matrix.factors.battingSupport).toBe(7);
   expect(matrix.rows).toHaveLength(9);
-  expect(matrix.rows.find(({ key }) => key === 'W').value).toBe(0);
+  expect(matrix.rows.find(({ key }) => key === 'W').value).toBe(1);
   expect(matrix.rows.reduce((total, { value }) => total + value, 0)).toBe(100);
 });
 
@@ -217,6 +218,41 @@ test('reflects live batting tactics in the existing admin matrix rows', () => {
   expect(valueFor(attacking, 'W')).toBeGreaterThan(valueFor(balanced, 'W'));
   expect(valueFor(attacking, '6')).toBeGreaterThan(valueFor(balanced, '6'));
   expect(attacking.battingIntentLabel).toBe('Normal');
+});
+
+test('uses the live opponent field in batting outcome analysis', () => {
+  const analysis = jest.spyOn(outcomeUtils, 'buildOutcomeAnalysis');
+  buildAdminMatrix(makeGameState({
+    firstInnings: { strikerIndex: 0, currentBowlerIndex: 0, balls: 36, score: 50, wickets: 2 },
+    battingTactics: { ...DEFAULT_BATTING_TACTICS, target: 'cover', shot: 'drive' },
+  }));
+  expect(analysis).toHaveBeenLastCalledWith(expect.objectContaining({
+    isUserBatting: true,
+    opponentFieldPreset: 'middleOvers',
+  }));
+  analysis.mockRestore();
+});
+
+test('realism analysis previews both tactical plans without consuming the saved random state', () => {
+  const analysis = jest.spyOn(outcomeUtils, 'buildOutcomeAnalysis');
+  const game = makeGameState({
+    ruleset: 'realism',
+    matchRandom: { seed: 1, state: 42, algorithm: 'mulberry32-v1', engineVersion: 'match-engine-v1' },
+    firstInnings: { strikerIndex: 0, currentBowlerIndex: 0, balls: 36, score: 50, wickets: 2 },
+    battingTactics: { ...DEFAULT_BATTING_TACTICS, target: 'cover', shot: 'drive' },
+  });
+  const matrix = buildAdminMatrix(game);
+  expect(analysis).toHaveBeenLastCalledWith(expect.objectContaining({
+    ruleset: 'realism',
+    realismDelivery: expect.objectContaining({
+      batting: expect.any(Object),
+      bowling: expect.any(Object),
+      fieldPositions: expect.any(Array),
+    }),
+  }));
+  expect(matrix.rows.reduce((total, { value }) => total + value, 0)).toBeCloseTo(100, 8);
+  expect(game.matchRandom.state).toBe(42);
+  analysis.mockRestore();
 });
 
 test('uses defaults for incomplete XIs and shifts outcomes for the second innings', () => {
@@ -311,7 +347,7 @@ test('uses safe defaults when innings, conditions, and custom player lists are a
   });
 });
 
-test('uses fallback abilities and spin bowling when the selected attributes are zero', () => {
+test('preserves zero abilities and identifies the relevant spin matchup', () => {
   getPlayersForNations.mockReturnValue({
     ownPlayers: ownPlayers.map((player, index) => index === 0
       ? makePlayer(player.id, { abilityToPlayPaceBall: 0, abilityToPlaySpinBall: 0 })
@@ -324,7 +360,7 @@ test('uses fallback abilities and spin bowling when the selected attributes are 
   const matrix = buildAdminMatrix(makeGameState());
 
   expect(matrix.bowlingType).toBe('Spin');
-  expect(matrix.battingAbility).toBe(57);
+  expect(matrix.battingAbility).toBe(7);
   expect(matrix.bowlingAbility).toBe(81);
 });
 

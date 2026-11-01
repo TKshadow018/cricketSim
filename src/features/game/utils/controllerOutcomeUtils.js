@@ -4,6 +4,13 @@ import { skillApplyTimeEnum } from '../../../gameData/skillApplyTimeEnum';
 import { skillList } from '../../../gameData/skillList';
 import { getBattingTacticShift } from './battingTactics';
 import { getBowlingTacticShift } from './bowlingTactics';
+import { getFieldingTacticShift } from './opponentField';
+import { sampleDismissal } from './dismissalSampling';
+import { getContinuousAbilityShift, getGeometricFieldShift, getShotFielder } from './realismTactics';
+import { normalizeRealismWeights } from './realismDistribution';
+import { getRealismBaseWeights } from './realismCalibration';
+import { sampleRealismExtra } from './realismExtras';
+import { supportsFreeHit } from './freeHitRules';
 
 const skillByName = new Map(skillList.map((skill) => [skill.name, skill]));
 
@@ -82,6 +89,7 @@ const normalizeOutcomeWeights = (weights, outcomes, freeHitArmed) => {
 
   if (freeHitArmed) {
     normalized.W = 0;
+    normalized.runOut = 1;
   }
 
   const nonDotTotal = outcomes
@@ -138,11 +146,14 @@ const calculateOutcomeDistribution = ({
   battingTactics,
   bowlingIntent,
   bowlingTactics,
+  opponentFieldPreset,
   locationCountry,
   battingSide = [],
   bowlingSide = [],
+  ruleset = 'arcade',
+  realismDelivery,
 }) => {
-  const outcomes = ['0', '1', '2', '3', '4', '6', 'wide', 'nb', 'W'];
+  const outcomes = ['0', 'runOut', '1', '2', '3', '4', '6', 'wide', 'nb', 'W'];
   const weatherKey = matchCondition.weather;
   const pitchProfile = pitchType[matchCondition.pitch] || pitchType.sporting;
   const outfieldProfile = outfieldType[matchCondition.outfield] || outfieldType.lushGreen;
@@ -151,13 +162,13 @@ const calculateOutcomeDistribution = ({
   const appliedBattingIntent = isUserBatting && inningState.freeHitArmed ? battingAction.freeHit : battingIntent;
   const appliedBowlingIntent = bowlingIntent;
 
-  const applyDelta = (weights, delta) => {
+  const applyDelta = (weights, delta, scale = 1) => {
     if (!delta) {
       return;
     }
 
     Object.entries(delta).forEach(([key, value]) => {
-      weights[key] += value;
+      weights[key] += value * scale;
     });
   };
 
@@ -188,10 +199,10 @@ const calculateOutcomeDistribution = ({
     }
   })();
   const isInPowerPlay = completedOvers < powerPlayOvers;
-  const abilityForPaceBase = (striker?.abilityToPlayPaceBall || 50) + pitchProfile.goodForBatting;
-  const abilityForSpinBase = (striker?.abilityToPlaySpinBall || 50) + pitchProfile.goodForBatting;
-  const bowlerPaceBase = (bowler?.paceAbility || 40) + pitchProfile.goodForPaceBowling;
-  const bowlerSpinBase = (bowler?.spinAbility || 35) + pitchProfile.goodForSpinBowling;
+  const abilityForPaceBase = (striker?.abilityToPlayPaceBall ?? 50) + pitchProfile.goodForBatting;
+  const abilityForSpinBase = (striker?.abilityToPlaySpinBall ?? 50) + pitchProfile.goodForBatting;
+  const bowlerPaceBase = (bowler?.paceAbility ?? 40) + pitchProfile.goodForPaceBowling;
+  const bowlerSpinBase = (bowler?.spinAbility ?? 35) + pitchProfile.goodForSpinBowling;
 
   let battingPaceAbility = abilityForPaceBase;
   let battingSpinAbility = abilityForSpinBase;
@@ -229,16 +240,23 @@ const calculateOutcomeDistribution = ({
     const order = ['micro', 'mini', 't10', 't20', 'ODI'];
     const currentIndex = Math.max(0, order.indexOf(matchTypeKey));
     const remainingOvers = Math.max(0, matchType.over - Math.floor(inningState.balls / 6));
-    if (remainingOvers < matchType.over * 0.15 && currentIndex > 0) {
+    if (ruleset !== 'realism' && remainingOvers < matchType.over * 0.15 && currentIndex > 0) {
       return order[currentIndex - 1];
     }
 
     return order[currentIndex];
   })();
 
-  const weights = { ...baseMatchWeights[activeMatchTypeKey] };
+  const calibratedWeights = ruleset === 'realism'
+    ? getRealismBaseWeights(activeMatchTypeKey, inningState.balls, matchType)
+    : null;
+  const weights = { ...(calibratedWeights || baseMatchWeights[activeMatchTypeKey]) };
 
-  if (outfieldProfile.boundaryScoring < 4) {
+  if (ruleset === 'realism') {
+    const groundBoundaryShift = (outfieldProfile.boundaryScoring - 6) * 0.2;
+    weights['4'] += groundBoundaryShift;
+    weights['0'] -= groundBoundaryShift;
+  } else if (outfieldProfile.boundaryScoring < 4) {
     weights['6'] -= 1;
     weights['4'] -= 1;
     weights['0'] += 2;
@@ -254,22 +272,33 @@ const calculateOutcomeDistribution = ({
   const battingAbility = isPaceBowler ? battingPaceAbility : battingSpinAbility;
   const bowlingMatchAbility = isPaceBowler ? bowlingPaceAbility : bowlingSpinAbility;
   const abilityDifference = battingAbility - bowlingMatchAbility;
-  applyDelta(weights, abilityShiftByDiff(abilityDifference));
+  applyDelta(weights, ruleset === 'realism' ? getContinuousAbilityShift(abilityDifference) : abilityShiftByDiff(abilityDifference));
 
-  if (striker?.id && battingRoles?.captainId === striker.id) {
+  if (ruleset !== 'realism' && striker?.id && battingRoles?.captainId === striker.id) {
     applyDelta(weights, { 0: -3, 1: 3 });
   }
-  if (striker?.id && battingRoles?.viceCaptainId === striker.id) {
+  if (ruleset !== 'realism' && striker?.id && battingRoles?.viceCaptainId === striker.id) {
     applyDelta(weights, { 0: -1, 1: 1 });
   }
-  if (bowler?.id && bowlingRoles?.captainId === bowler.id) {
+  if (ruleset !== 'realism' && bowler?.id && bowlingRoles?.captainId === bowler.id) {
     applyDelta(weights, { 0: 3, 1: -3 });
   }
-  if (bowler?.id && bowlingRoles?.viceCaptainId === bowler.id) {
+  if (ruleset !== 'realism' && bowler?.id && bowlingRoles?.viceCaptainId === bowler.id) {
     applyDelta(weights, { 0: 1, 1: -1 });
   }
 
-  if (isUserBatting) {
+  if (ruleset === 'realism' && realismDelivery) {
+    const bowlingPlan = { ...realismDelivery.bowling, fieldPreset: 'balanced' };
+    applyDelta(weights, getBattingTacticShift(realismDelivery.batting, bowlingPlan, { includeTargetShift: false }), 0.4);
+    applyDelta(weights, getBowlingTacticShift(bowlingPlan, bowler), 0.4);
+    applyDelta(weights, getGeometricFieldShift({
+      positions: realismDelivery.fieldPositions,
+      shot: realismDelivery.batting,
+      handedness: striker?.battingHand,
+      bowlingSide: bowlingSide.filter((player) => player !== bowler),
+    }));
+  } else if (isUserBatting) {
+    applyDelta(weights, getFieldingTacticShift(opponentFieldPreset, battingTactics));
     if (battingTactics && typeof battingTactics === 'object') {
       applyDelta(weights, getBattingTacticShift(battingTactics, bowlingTactics));
       if (appliedBattingIntent === battingAction.superShot) {
@@ -281,7 +310,7 @@ const calculateOutcomeDistribution = ({
       applyDelta(weights, battingIntentShift[appliedBattingIntent]);
     }
   }
-  if (isUserBowling) {
+  if (isUserBowling && !(ruleset === 'realism' && realismDelivery)) {
     if (bowlingTactics && typeof bowlingTactics === 'object') {
       applyDelta(weights, getBowlingTacticShift(bowlingTactics, bowler));
       if (bowlingTactics.specialDeliveryArmed) {
@@ -347,14 +376,17 @@ const calculateOutcomeDistribution = ({
   };
 
   const weightsWithoutSkills = { ...weights };
-  applySkillImpacts(striker ? [striker] : [], 'batting');
-  applySkillImpacts(bowler ? [bowler] : [], 'bowling');
-  applySkillImpacts(Array.isArray(battingSide) ? battingSide : [], 'fullTeamBatting');
-  applySkillImpacts(Array.isArray(bowlingSide) ? bowlingSide : [], 'fullTeamBowling');
+  if (ruleset !== 'realism') {
+    applySkillImpacts(striker ? [striker] : [], 'batting');
+    applySkillImpacts(bowler ? [bowler] : [], 'bowling');
+    applySkillImpacts(Array.isArray(battingSide) ? battingSide : [], 'fullTeamBatting');
+    applySkillImpacts(Array.isArray(bowlingSide) ? bowlingSide : [], 'fullTeamBowling');
+  }
 
-  const isFreeHit = appliedBattingIntent === battingAction.freeHit;
-  const normalized = normalizeOutcomeWeights(weights, outcomes, isFreeHit);
-  const normalizedWithoutSkills = normalizeOutcomeWeights(
+  const isFreeHit = supportsFreeHit(ruleset, matchTypeKey) && Boolean(inningState.freeHitArmed);
+  const normalize = ruleset === 'realism' ? normalizeRealismWeights : normalizeOutcomeWeights;
+  const normalized = normalize(weights, outcomes, isFreeHit);
+  const normalizedWithoutSkills = normalize(
     weightsWithoutSkills,
     outcomes,
     isFreeHit
@@ -382,16 +414,51 @@ export const buildOutcomeWeights = (input) => calculateOutcomeDistribution(input
 
 export const resolveOutcome = (input) => {
   const { outcomes, weights, battingAbility, bowlingAbility } = calculateOutcomeDistribution(input);
-  const outcomePossibilityArray = [];
-  outcomes.forEach((token) => {
-    for (let index = 0; index < weights[token]; index += 1) {
-      outcomePossibilityArray.push(token);
-    }
+  const draw = (input.random || Math.random)();
+  if (!Number.isFinite(draw) || draw < 0 || draw >= 1) throw new RangeError('Random draw must be in [0, 1).');
+  const total = outcomes.reduce((sum, token) => sum + weights[token], 0);
+  const roll = draw * total;
+  let cumulative = 0;
+  const selected = outcomes.find((token) => {
+    cumulative += weights[token];
+    return roll < cumulative;
   });
-
-  const selected = outcomePossibilityArray[Math.floor(Math.random() * 100)] || '0';
-  if (selected === 'W') {
-    return { token: selected, isWicket: true, runs: 0, isLegalDelivery: true, extraRuns: 0 };
+  if (!selected) throw new Error('Could not sample the outcome distribution.');
+  if (input.ruleset === 'realism' && ['0', 'wide', 'nb'].includes(selected)) {
+    const extra = sampleRealismExtra({
+      token: selected,
+      matchTypeKey: input.matchTypeKey,
+      inningState: supportsFreeHit(input.ruleset, input.matchTypeKey)
+        ? input.inningState
+        : { ...input.inningState, freeHitArmed: false },
+      bowlingSide: input.bowlingSide,
+      bowler: input.bowler,
+      random: input.random || Math.random,
+    });
+    if (extra) return extra;
+  }
+  if (selected === 'W' || selected === 'runOut') {
+    const freeHitRunOut = selected === 'runOut';
+    const fraction = freeHitRunOut ? (roll - weights['0']) / weights.runOut : (roll - (total - weights.W)) / weights.W;
+    let dismissal = sampleDismissal({ fraction, freeHitRunOut, inningState: input.inningState, bowlingSide: input.bowlingSide, bowler: input.bowler });
+    if (input.ruleset === 'realism' && input.realismDelivery && ['caught', 'runOut'].includes(dismissal.type)) {
+      const fielder = getShotFielder({
+        positions: input.realismDelivery.fieldPositions,
+        shot: input.realismDelivery.batting,
+        handedness: input.striker?.battingHand,
+        bowlingSide: input.bowlingSide,
+        bowler: input.bowler,
+      });
+      if (fielder) dismissal = { ...dismissal, fielderName: fielder.player.name, fielderPosition: fielder.position };
+    }
+    return {
+      token: 'W',
+      isWicket: true,
+      runs: 0,
+      isLegalDelivery: true,
+      extraRuns: 0,
+      dismissal,
+    };
   }
   if (selected === 'wide') {
     return { token: selected, isWicket: false, runs: 0, isLegalDelivery: false, extraRuns: 1 };

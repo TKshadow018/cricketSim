@@ -105,7 +105,7 @@ function CareerHistoryStage({
                     <small key={`season-${season.season}-${entry.format}`}>
                       {formatCareerMatchLabel(entry.format)}: {entry.leader ? `Leader ${entry.leader.team} (${entry.leader.points} pts)` : 'No results'}
                       {entry.userRow
-                        ? ` | ${season.careerTeam}: ${entry.userRow.wins}W/${entry.userRow.losses}L/${entry.userRow.ties}T (${entry.userRow.points} pts)`
+                        ? ` | ${season.careerTeam}: ${entry.userRow.wins}W/${entry.userRow.losses}L/${entry.userRow.ties}T${entry.userRow.draws ? `/${entry.userRow.draws}D` : ''} (${entry.userRow.points} pts)`
                         : ''}
                     </small>
                   ))}

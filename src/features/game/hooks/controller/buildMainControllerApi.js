@@ -38,6 +38,7 @@ export const buildMainControllerApi = ({
     handleAutoPositionOpponentXI: autoPositionOpponentXI,
     handleStartMatchWithSelectedXI: startMatchWithSelectedXI,
     handlePlayFreshMatch: resetMatch,
+    setRuleset: mutations.setRuleset,
     setMatchTypeKey: mutations.setMatchTypeKey,
     setOwnTeam: mutations.setOwnTeam,
     setOpponentTeam: mutations.setOpponentTeam,

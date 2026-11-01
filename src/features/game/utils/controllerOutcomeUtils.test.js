@@ -1,6 +1,6 @@
 import { battingAction, bowlingAction } from '../../../gameData/actionType';
 import { outfieldType } from '../../../gameData/matchCondition';
-import { canUseSpecialBall, canUseSuperShot, resolveOutcome } from './controllerOutcomeUtils';
+import { buildOutcomeWeights, canUseSpecialBall, canUseSuperShot, resolveOutcome } from './controllerOutcomeUtils';
 
 const basePlay = {
   striker: { id: 'striker', abilityToPlayPaceBall: 70, abilityToPlaySpinBall: 70 },
@@ -31,6 +31,29 @@ const resolveAt = (randomIndex, overrides = {}) => {
   jest.spyOn(Math, 'random').mockReturnValue(randomIndex / 100);
   return resolveOutcome({ ...basePlay, ...overrides });
 };
+
+test('opponent deep coverage affects the targeted boundary and respects free hits', () => {
+  const input = {
+    ...basePlay,
+    isUserBatting: true,
+    battingTactics: { approach: 'balanced', shot: 'drive', target: 'cover' },
+  };
+  const uncovered = buildOutcomeWeights(input);
+  const covered = buildOutcomeWeights({ ...input, opponentFieldPreset: 'boundary' });
+  expect(covered['4']).toBe(uncovered['4'] - 2);
+  expect(covered['2']).toBe(uncovered['2'] + 1);
+  expect(covered['6']).toBe(uncovered['6']);
+  const computerPlay = { ...input, isUserBatting: false };
+  expect(buildOutcomeWeights({ ...computerPlay, opponentFieldPreset: 'boundary' }))
+    .toEqual(buildOutcomeWeights(computerPlay));
+  const freeHit = buildOutcomeWeights({
+    ...input,
+    inningState: { ...input.inningState, freeHitArmed: true },
+    battingTactics: { ...input.battingTactics, shot: 'loft' },
+    opponentFieldPreset: 'boundary',
+  });
+  expect(freeHit.W).toBe(0);
+});
 
 describe('special delivery eligibility', () => {
   test('checks super-shot ability, unlocked uses, and per-over limits', () => {
@@ -353,7 +376,8 @@ describe('delivery outcome resolution', () => {
     });
 
     jest.restoreAllMocks();
-    expect(resolveAt(100).token).toBe('0');
+    expect(() => resolveOutcome({ ...basePlay, random: () => 1 }))
+      .toThrow('Random draw must be in [0, 1).');
   });
 
   test('returns a valid outcome for high-ability and attacking intent', () => {

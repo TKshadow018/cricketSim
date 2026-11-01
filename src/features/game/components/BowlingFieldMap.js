@@ -6,10 +6,14 @@ const FIELD_POSITION_BY_KEY = Object.fromEntries(
   fieldPositionList.map((position) => [position.key, position])
 );
 
-function BowlingFieldMap({ preset = 'balanced' }) {
+function BowlingFieldMap({ preset = 'balanced', fieldPositions, flipVertical = false }) {
   const setting = fieldSettingList.find(({ key }) => key === preset)
     || fieldSettingList.find(({ key }) => key === 'balanced');
-  const positions = setting.positions.map((positionKey) => FIELD_POSITION_BY_KEY[positionKey]);
+  const custom = preset === 'custom' && Array.isArray(fieldPositions);
+  const label = custom ? 'Custom field' : setting.label;
+  const positions = (custom ? fieldPositions : setting.positions)
+    .map((positionKey) => FIELD_POSITION_BY_KEY[positionKey])
+    .filter(Boolean);
 
   return (
     <figure className="sim-bowling-field-figure">
@@ -17,7 +21,7 @@ function BowlingFieldMap({ preset = 'balanced' }) {
         className={`sim-bowling-field-map sim-bowling-field-map--${preset}`}
         viewBox={fieldPositionImage.viewBox}
         role="img"
-        aria-label={`${setting.label} layout with approximate fielder positions`}
+        aria-label={`${label} layout with approximate fielder positions`}
       >
         <image
           data-testid="cricket-field-artwork"
@@ -27,8 +31,9 @@ function BowlingFieldMap({ preset = 'balanced' }) {
           width={fieldPositionImage.width}
           height={fieldPositionImage.height}
           preserveAspectRatio="none"
+          transform={flipVertical ? `translate(0 ${fieldPositionImage.height}) scale(1 -1)` : undefined}
         />
-        <g data-testid="field-position-markers">
+        <g data-testid="field-position-markers" transform={flipVertical ? `translate(0 ${fieldPositionImage.height}) scale(1 -1)` : undefined}>
           {positions.map((position) => (
             <circle
               key={position.key}
@@ -44,8 +49,15 @@ function BowlingFieldMap({ preset = 'balanced' }) {
             </circle>
           ))}
         </g>
+        <g aria-hidden="true" pointerEvents="none">
+          {positions.slice(1).map((position, index) => (
+            <text key={position.key} x={position.x} y={(flipVertical ? fieldPositionImage.height - position.y : position.y) + 2.5} textAnchor="middle" fontSize="7" fontWeight="bold" fill="#102117">
+              {index + 1}
+            </text>
+          ))}
+        </g>
       </svg>
-      <figcaption>{setting.label} · approximate tactical coverage, not a legality check</figcaption>
+      <figcaption>{label} · approximate tactical coverage, not a legality check</figcaption>
     </figure>
   );
 }
