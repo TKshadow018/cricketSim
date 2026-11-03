@@ -98,9 +98,17 @@ function PreMatchStages({
     () => buildStadiumSelectionItems(venueStadiums),
     [venueStadiums]
   );
+  const isRedesignedDashboard = (process.env.REACT_APP_ABTEST || '').trim().toLowerCase() === 'b';
 
   const showSetupBackButton =
     (stage >= matchStatusEnum.ChooseMatchType && stage < matchStatusEnum.TeamOneBat) ||
+    (isRedesignedDashboard &&
+      [
+        matchStatusEnum.ChooseGameMode,
+        matchStatusEnum.CareerSetup,
+        matchStatusEnum.CareerAuction,
+        matchStatusEnum.CareerSeasonSchedule,
+      ].includes(stage)) ||
     stage === matchStatusEnum.ChooseSeriesLength ||
     stage === matchStatusEnum.SetupTournamentFixtures;
 

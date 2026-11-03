@@ -96,6 +96,26 @@ export const createNavigationHandlers = ({
   };
 
   const goToPreviousStage = () => {
+    if (stage === matchStatusEnum.ChooseGameMode) {
+      dispatch(setStageAction(matchStatusEnum.intro));
+      return;
+    }
+
+    if (stage === matchStatusEnum.CareerSetup) {
+      dispatch(setStageAction(matchStatusEnum.ChooseGameMode));
+      return;
+    }
+
+    if (stage === matchStatusEnum.CareerAuction) {
+      dispatch(setStageAction(matchStatusEnum.CareerSetup));
+      return;
+    }
+
+    if (stage === matchStatusEnum.CareerSeasonSchedule) {
+      dispatch(setStageAction(matchStatusEnum.CareerAuction));
+      return;
+    }
+
     if (stage === matchStatusEnum.ChooseMatchType) {
       if (gameMode === MODE_SERIES) {
         dispatch(setStageAction(matchStatusEnum.ChooseSeriesLength));

@@ -13,6 +13,7 @@ import TeamNameWithLogo from './TeamNameWithLogo';
 
 function CareerSeasonScheduleStage({
   stageCommonProps,
+  setupBackSlot,
   careerTeam,
   careerSeason,
   careerMatchIndex,
@@ -88,6 +89,7 @@ function CareerSeasonScheduleStage({
     <StageShell
       {...stageCommonProps}
       title={`Season ${careerSeason} Schedule`}
+      rightSlot={setupBackSlot}
       subtitle={
         <>
           <PlayerNameWithType player={careerPlayerProfile} name={careerPlayerProfile?.name || 'Career Player'} /> ({currentAge})

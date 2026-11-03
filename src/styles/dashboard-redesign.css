@@ -1,0 +1,612 @@
+.dashboard-page.dashboard-shell--redesign.apex-theme {
+  --redesign-ink: var(--apex-text);
+  --redesign-muted: var(--apex-text-muted);
+  --redesign-green: var(--apex-primary);
+  --redesign-green-bright: var(--apex-primary);
+  --redesign-panel: var(--apex-surface);
+  display: flex;
+  width: 100vw;
+  max-width: 100%;
+  min-height: 100vh;
+  flex-direction: column;
+  margin: 0;
+  padding: 0.15rem;
+  overflow: hidden;
+  border: 2px solid var(--apex-border-strong);
+  border-radius: 0.7rem;
+  background: var(--apex-background);
+  box-shadow: 0 0 0.9rem rgba(var(--apex-tertiary-rgb), 0.16);
+  color: var(--redesign-ink);
+}
+
+.dashboard-shell--redesign .dashboard-b-topbar {
+  min-height: 3.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.45rem 1rem;
+  border-bottom: 1px solid rgba(194, 203, 210, 0.12);
+  background: var(--apex-neutral-950);
+}
+
+.dashboard-shell--redesign .dashboard-b-brand {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #d9dee5;
+  font-family: var(--apex-font-label, monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.dashboard-shell--redesign .dashboard-b-mark {
+  width: 1.8rem;
+  height: 1.8rem;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(0, 223, 124, 0.28);
+  border-radius: 0.35rem;
+  background: rgba(0, 223, 124, 0.11);
+  color: var(--redesign-green);
+}
+
+.dashboard-shell--redesign .dashboard-b-mark svg {
+  width: 1rem;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.dashboard-shell--redesign .dashboard-b-brand-tag {
+  padding: 0.15rem 0.35rem;
+  border: 1px solid rgba(0, 223, 124, 0.24);
+  border-radius: 0.2rem;
+  background: rgba(0, 223, 124, 0.1);
+  color: var(--redesign-green);
+  font-size: 0.56rem;
+}
+
+.dashboard-shell--redesign .dashboard-b-topbar-divider {
+  width: 1px;
+  height: 1.2rem;
+  margin-inline: 0.15rem;
+  background: rgba(194, 203, 210, 0.18);
+}
+
+.dashboard-shell--redesign .dashboard-b-online-dot {
+  width: 0.42rem;
+  height: 0.42rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--redesign-green);
+  box-shadow: 0 0 0.5rem rgba(0, 223, 124, 0.7);
+}
+
+.dashboard-shell--redesign .dashboard-b-manager {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #a9b1bb;
+  font-size: 0.59rem;
+}
+
+.dashboard-shell--redesign .dashboard-b-manager strong,
+.dashboard-shell--redesign .dashboard-b-status {
+  color: #cbd2dc;
+}
+
+.dashboard-shell--redesign .dashboard-b-status {
+  margin-left: 0.25rem;
+  color: var(--redesign-green);
+  font-size: 0.57rem;
+}
+
+.dashboard-shell--redesign .dashboard-b-logout {
+  min-height: 2rem;
+  padding: 0.35rem 0.65rem;
+  border-color: rgba(194, 203, 210, 0.18);
+  background: rgba(255, 255, 255, 0.035);
+  color: #d9dee5;
+  font-size: 0.72rem;
+}
+
+.dashboard-shell--redesign .dashboard-b-hero {
+  min-height: clamp(34rem, calc(100svh - 7rem), 56rem);
+  display: flex;
+  align-items: flex-end;
+  margin: 0.65rem 0.8rem 0;
+  padding: clamp(1.2rem, 3vw, 2rem);
+  overflow: hidden;
+  border: 1px solid rgba(210, 218, 219, 0.17);
+  border-radius: 0.7rem;
+  background:
+    linear-gradient(90deg, rgba(3, 7, 10, 0.86) 0%, rgba(3, 7, 10, 0.66) 36%, rgba(3, 7, 10, 0.28) 76%, rgba(3, 7, 10, 0.42) 100%),
+    linear-gradient(0deg, rgba(3, 7, 10, 0.96) 0%, rgba(3, 7, 10, 0.48) 33%, rgba(3, 7, 10, 0.08) 74%),
+    url('/asset/img/bg/dashboard-hero.png') center 43% / cover;
+}
+
+.dashboard-shell--redesign .dashboard-b-hero-content {
+  width: min(100%, 46rem);
+}
+
+.dashboard-shell--redesign .dashboard-b-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  color: var(--redesign-green);
+  font-family: var(--apex-font-label, monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.dashboard-shell--redesign .dashboard-b-kicker svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  fill: rgba(0, 223, 124, 0.25);
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+.dashboard-shell--redesign .dashboard-b-hero h1 {
+  color: #f5f6f3;
+  font-family: var(--apex-font-headline, 'Arial Narrow', sans-serif);
+  font-size: clamp(2.25rem, 4.2vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 0.92;
+  white-space: nowrap;
+  text-shadow: 0 0.2rem 1.5rem rgba(0, 0, 0, 0.48);
+}
+
+.dashboard-shell--redesign .dashboard-b-hero h2 {
+  margin: 0.65rem 0 0.45rem;
+  color: var(--redesign-green);
+  font-family: var(--apex-font-body, sans-serif);
+  font-size: clamp(0.95rem, 1.6vw, 1.18rem);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.dashboard-shell--redesign .dashboard-b-description {
+  max-width: 40rem;
+  margin: 0;
+  color: #b8c1ca;
+  font-size: 0.83rem;
+  line-height: 1.55;
+}
+
+.dashboard-shell--redesign .dashboard-b-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(7rem, 8.8rem));
+  gap: 0.55rem;
+  margin-top: 1.15rem;
+}
+
+.dashboard-shell--redesign .dashboard-b-stat {
+  min-height: 3.45rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid rgba(192, 204, 211, 0.13);
+  border-radius: 0.38rem;
+  background: rgba(5, 8, 11, 0.76);
+}
+
+.dashboard-shell--redesign .dashboard-b-stat > span {
+  color: #737d86;
+  font-family: var(--apex-font-label, monospace);
+  font-size: 0.48rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.dashboard-shell--redesign .dashboard-b-stat strong {
+  color: #e1e5e7;
+  font-family: var(--apex-font-label, monospace);
+  font-size: 0.64rem;
+  line-height: 1.25;
+}
+
+.dashboard-shell--redesign .dashboard-b-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1.2rem;
+}
+
+.dashboard-shell--redesign .dashboard-b-cta {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.48rem;
+  font-family: var(--apex-font-label, monospace);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease;
+}
+
+.dashboard-shell--redesign .dashboard-b-cta:hover {
+  transform: translateY(-1px);
+}
+
+.dashboard-shell--redesign .dashboard-b-cta:focus-visible {
+  outline: 2px solid #90ffd0;
+  outline-offset: 3px;
+}
+
+.dashboard-shell--redesign .dashboard-b-cta svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.dashboard-shell--redesign .dashboard-b-cta--primary {
+  background: var(--redesign-green);
+  box-shadow: 0 0.25rem 1rem rgba(0, 223, 124, 0.2);
+  color: #06130d;
+}
+
+.dashboard-shell--redesign .dashboard-b-cta--primary:hover {
+  background: var(--redesign-green-bright);
+}
+
+.dashboard-shell--redesign .dashboard-b-cta--secondary {
+  border-color: rgba(192, 204, 211, 0.24);
+  background: rgba(11, 15, 20, 0.82);
+  color: #dce2e8;
+}
+
+.dashboard-shell--redesign .dashboard-b-cta--secondary:hover {
+  border-color: rgba(0, 223, 124, 0.54);
+  background: rgba(11, 15, 20, 0.96);
+}
+
+.dashboard-shell--redesign .dashboard-b-saved-count {
+  padding: 0.18rem 0.42rem;
+  border: 1px solid rgba(0, 223, 124, 0.32);
+  border-radius: 999px;
+  background: rgba(0, 223, 124, 0.12);
+  color: var(--redesign-green);
+  font-size: 0.52rem;
+}
+
+.dashboard-shell--redesign .dashboard-main-grid {
+  width: min(100%, 96rem);
+  margin-inline: auto;
+  gap: clamp(0.75rem, 1.5vw, 1.5rem);
+  padding: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+.dashboard-shell--redesign .dashboard-main-grid--landing {
+  display: none;
+}
+
+.dashboard-shell--redesign .dashboard-sidebar,
+.dashboard-shell--redesign .game-dashboard-card {
+  border: 1px solid rgba(180, 223, 197, 0.15);
+  border-radius: 1rem;
+  background: var(--redesign-panel);
+  box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.32);
+  color: var(--redesign-muted);
+  backdrop-filter: blur(14px);
+}
+
+.dashboard-shell--redesign .dashboard-sidebar h3,
+.dashboard-shell--redesign .dashboard-sidebar strong {
+  color: var(--redesign-ink);
+}
+
+.dashboard-shell--redesign .admin-matrix-row {
+  border-color: rgba(180, 223, 197, 0.12);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.dashboard-shell--redesign .admin-matrix-row strong {
+  color: var(--redesign-green);
+}
+
+.dashboard-b-saved-overlay,
+.dashboard-b-delete-overlay {
+  position: fixed;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(2, 5, 8, 0.82);
+  backdrop-filter: blur(10px);
+}
+
+.dashboard-b-saved-overlay {
+  inset: 0;
+}
+
+.dashboard-b-saved-dialog {
+  position: relative;
+  width: min(100%, 44rem);
+  max-height: min(85vh, 48rem);
+  overflow: auto;
+  padding: clamp(1rem, 3vw, 1.6rem);
+  border: 1px solid var(--apex-border-strong);
+  border-radius: 0.8rem;
+  background: #0a0e12;
+  box-shadow: 0 1.5rem 5rem rgba(0, 0, 0, 0.55);
+  color: #f7f8f5;
+}
+
+.dashboard-b-saved-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-b-saved-kicker {
+  margin: 0 0 0.35rem;
+  color: #00df7c;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.dashboard-b-saved-header h2 {
+  margin: 0;
+  color: #f7f8f5;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: clamp(1.7rem, 4vw, 2.2rem);
+  line-height: 1;
+}
+
+.dashboard-b-saved-close {
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  border: 1px solid rgba(192, 204, 211, 0.2);
+  border-radius: 0.4rem;
+  background: rgba(255, 255, 255, 0.04);
+  color: #dce2e8;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.dashboard-b-saved-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.dashboard-b-saved-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(192, 204, 211, 0.13);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.dashboard-b-saved-item h3 {
+  margin: 0;
+  color: #f7f8f5;
+  font-size: 0.92rem;
+}
+
+.dashboard-b-saved-item p,
+.dashboard-b-saved-item small {
+  display: block;
+  margin: 0.25rem 0 0;
+  color: #aeb9b7;
+  font-size: 0.75rem;
+}
+
+.dashboard-b-saved-item-actions,
+.dashboard-b-delete-dialog > div {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.4rem;
+}
+
+.dashboard-b-saved-item-actions button,
+.dashboard-b-delete-dialog button {
+  min-height: 2.15rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgba(0, 223, 124, 0.35);
+  border-radius: 0.35rem;
+  background: rgba(0, 223, 124, 0.12);
+  color: #00df7c;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dashboard-b-saved-item-actions .dashboard-b-saved-delete,
+.dashboard-b-delete-dialog .dashboard-b-saved-delete {
+  border-color: rgba(255, 127, 127, 0.3);
+  background: rgba(255, 127, 127, 0.08);
+  color: #ffaaa5;
+}
+
+.dashboard-b-saved-empty,
+.dashboard-b-saved-error {
+  margin: 0.8rem 0;
+  color: #aeb9b7;
+  font-size: 0.85rem;
+}
+
+.dashboard-b-saved-error {
+  color: #ffaaa5;
+}
+
+.dashboard-b-delete-overlay {
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.dashboard-b-delete-dialog {
+  width: min(100%, 25rem);
+  padding: 1.2rem;
+  border: 1px solid rgba(255, 127, 127, 0.35);
+  border-radius: 0.65rem;
+  background: #11161b;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
+}
+
+.dashboard-b-delete-dialog h3 {
+  margin: 0;
+  color: #f7f8f5;
+  font-size: 1rem;
+}
+
+.dashboard-b-delete-dialog p {
+  color: #aeb9b7;
+  font-size: 0.82rem;
+}
+
+.dashboard-b-delete-dialog > div {
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-page.dashboard-shell--redesign.apex-theme {
+    width: 100vw;
+    max-width: 100%;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-topbar {
+    min-height: 3rem;
+    padding-inline: 0.65rem;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-hero {
+    min-height: clamp(34rem, calc(100svh - 6rem), 52rem);
+    margin-inline: 0.45rem;
+    background-position: 55% center;
+  }
+
+  .dashboard-shell--redesign .dashboard-main-grid {
+    padding: 0.75rem;
+  }
+
+  .dashboard-shell--redesign .dashboard-center .game-dashboard-card {
+    border-radius: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-shell--redesign .dashboard-b-brand {
+    gap: 0.35rem;
+    font-size: 0.59rem;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-brand-tag,
+  .dashboard-shell--redesign .dashboard-b-topbar-divider {
+    display: none;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-manager {
+    display: none;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-hero {
+    min-height: clamp(37rem, calc(100svh - 5.25rem), 48rem);
+    align-items: flex-end;
+    margin-top: 0.45rem;
+    padding: 1rem;
+    background-position: 57% center;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-hero h1 {
+    font-size: clamp(2.2rem, 10vw, 3.2rem);
+    white-space: normal;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-kicker {
+    font-size: 0.57rem;
+    letter-spacing: 0.08em;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-description {
+    font-size: 0.75rem;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-stat {
+    min-height: 3.4rem;
+    padding-inline: 0.4rem;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-stat > span {
+    font-size: 0.4rem;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-stat strong {
+    font-size: 0.52rem;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-cta {
+    min-height: 2.8rem;
+    justify-content: flex-start;
+    font-size: 0.58rem;
+  }
+
+  .dashboard-shell--redesign .dashboard-b-cta--secondary {
+    flex-wrap: wrap;
+  }
+
+  .dashboard-b-saved-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-shell--redesign *,
+  .dashboard-shell--redesign *::before,
+  .dashboard-shell--redesign *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

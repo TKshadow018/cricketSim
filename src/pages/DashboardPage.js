@@ -5,8 +5,10 @@ import { getEffectiveAuthUser } from '../config/runtimeConfig';
 import { logoutUser } from '../features/auth/authThunks';
 import { useLocalization } from '../localization/LocalizationProvider';
 import CricketSimulator from '../features/game/CricketSimulator';
+import { setStage } from '../features/game/gameSlice';
 import { matchTypeList } from '../gameData/matchTypeList';
 import { getPlayersForNations } from '../gameData/playerListForNation';
+import { playerListForNation } from '../gameData/playerListForNation';
 import { matchStatusEnum } from '../gameData/matchStatusEnum';
 import TeamNameWithFlag from '../features/game/components/TeamNameWithFlag';
 import PlayerNameWithType from '../features/game/components/PlayerNameWithType';
@@ -18,14 +20,25 @@ import {
   buildBattingOrderPreview,
 } from './dashboardUtils';
 
+const globalTeamCount = Object.keys(playerListForNation).length;
+const globalPlayerCount = Object.values(playerListForNation).reduce(
+  (total, players) => total + players.length,
+  0
+);
+const matchFormatCount = Object.keys(matchTypeList).length;
+
 function DashboardPage() {
   const dispatch = useDispatch();
   const { user: authStateUser, isLoading } = useSelector((state) => state.auth);
   const user = getEffectiveAuthUser(authStateUser);
   const game = useSelector((state) => state.game);
   const { t } = useLocalization();
+  const isRedesignedDashboard = (process.env.REACT_APP_ABTEST || '').trim().toLowerCase() === 'b';
   const [recentMatchHistory, setRecentMatchHistory] = React.useState([]);
   const [isHistoryLoading, setIsHistoryLoading] = React.useState(false);
+  const [savedGameCount, setSavedGameCount] = React.useState(0);
+  const [isSavedGamesDialogOpen, setIsSavedGamesDialogOpen] = React.useState(false);
+  const simulatorRef = React.useRef(null);
 
   const adminEmail = (process.env.REACT_APP_FIREBASE_ADMIN_EMAIL || '').trim().toLowerCase();
   const isAdmin = !!adminEmail && (user?.email || '').toLowerCase() === adminEmail;
@@ -34,6 +47,18 @@ function DashboardPage() {
     matchStatusEnum.ChooseOwnPlayingXI,
     matchStatusEnum.ChooseOpponentPlayingXI,
   ].includes(game.stage);
+  const isDashboardLanding = isRedesignedDashboard && game.stage === matchStatusEnum.intro;
+  const isGameModeStage = isRedesignedDashboard && game.stage === matchStatusEnum.ChooseGameMode;
+  const isSetupFlowStage =
+    isRedesignedDashboard &&
+    [
+      matchStatusEnum.ChooseGameMode,
+      matchStatusEnum.ChooseMatchType,
+      matchStatusEnum.ChooseOwnTeam,
+      matchStatusEnum.ChooseOpponent,
+      matchStatusEnum.ChooseMatchLocation,
+      matchStatusEnum.ChooseStadium,
+    ].includes(game.stage);
   const adminMatrix = React.useMemo(() => (isAdmin ? buildAdminMatrix(game) : null), [game, isAdmin]);
   const selectedMatchType = matchTypeList[game.matchTypeKey];
   const { ownPlayers: ownNationPlayers, opponentPlayers: opponentNationPlayers } = getPlayersForNations(
@@ -107,6 +132,15 @@ function DashboardPage() {
     dispatch(logoutUser());
   };
 
+  const onStartMatchSetup = () => {
+    dispatch(setStage(matchStatusEnum.ChooseGameMode));
+    simulatorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const onViewSavedGames = () => {
+    setIsSavedGamesDialogOpen(true);
+  };
+
   const renderAdminBattingOrder = (teamName, preview) => {
     if (!isAdmin || !preview.length) {
       return null;
@@ -129,24 +163,116 @@ function DashboardPage() {
   };
 
   return (
-    <main className="dashboard-page game-dashboard-page dashboard-shell">
-      <header className="dashboard-navbar">
-        <div>
-          <p className="dashboard-kicker">{t('dashboard.kicker')}</p>
-          <h1 className="dashboard-title">
-            {t('dashboard.welcome', { name: user?.displayName || t('dashboard.fallbackName') })}
-          </h1>
-        </div>
-        <AppButton
-          text={t('dashboard.logout')}
-          variant="secondary"
-          onClick={onLogout}
-          isLoading={isLoading}
-          fullWidth={false}
-        />
-      </header>
+    <main
+      className={`dashboard-page game-dashboard-page dashboard-shell${isRedesignedDashboard ? ' dashboard-shell--redesign apex-theme' : ''}${isGameModeStage ? ' dashboard-shell--game-mode' : ''}${isSetupFlowStage ? ' dashboard-shell--setup-flow' : ''}`}
+    >
+      {isRedesignedDashboard ? (
+        <>
+          <header className="dashboard-b-topbar">
+            <div className="dashboard-b-brand">
+              <span className="dashboard-b-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M5 18.5 18.5 5M7.5 6.5l10 10M4.5 19.5l3-3M16.5 7.5l3-3" />
+                  <circle cx="18.5" cy="5.5" r="2" />
+                  <circle cx="5.5" cy="18.5" r="2" />
+                </svg>
+              </span>
+              <strong>APEX CRICKET</strong>
+              <span className="dashboard-b-brand-tag">SIMULATOR</span>
+              <span className="dashboard-b-topbar-divider" aria-hidden="true" />
+              <span className="dashboard-b-online-dot" aria-hidden="true" />
+              <span className="dashboard-b-manager">
+                MANAGER <strong>{user?.displayName || 'PLAYER'}</strong>
+                <span className="dashboard-b-status">[TACTICAL DUG-OUT ACTIVE]</span>
+              </span>
+            </div>
+            <AppButton
+              text={t('dashboard.logout')}
+              variant="secondary"
+              onClick={onLogout}
+              isLoading={isLoading}
+              fullWidth={false}
+              className="dashboard-b-logout"
+            />
+          </header>
 
-      <div className="dashboard-main-grid">
+          {isDashboardLanding ? (
+            <section className="dashboard-b-hero" aria-labelledby="dashboard-b-title">
+              <div className="dashboard-b-hero-content">
+                <p className="dashboard-b-kicker">
+                  <svg viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M3 14V2m1 1h8l-2.5 3L12 9H4" />
+                  </svg>
+                  REAL-TIME PITCHSIDE TACTICAL WORKSHOP
+                </p>
+                <h1 id="dashboard-b-title">CRICKET SIMULATION ARENA</h1>
+                <h2>Next-Gen Tactical Ball-by-Ball Match Engine</h2>
+                <p className="dashboard-b-description">
+                  Control batting aggression, tailor bowler spell decay, formulate boundary field
+                  coordinates, and simulate multi-format international cricket fixtures.
+                </p>
+
+                <div className="dashboard-b-stats" aria-label="Game content">
+                  <div className="dashboard-b-stat">
+                    <span>TEAMS IN GAME</span>
+                    <strong>{globalTeamCount} Global Teams</strong>
+                  </div>
+                  <div className="dashboard-b-stat">
+                    <span>PLAYERS IN GAME</span>
+                    <strong>{globalPlayerCount.toLocaleString()} Cricketers</strong>
+                  </div>
+                  <div className="dashboard-b-stat">
+                    <span>MATCH FORMATS</span>
+                    <strong>{matchFormatCount} Formats</strong>
+                  </div>
+                </div>
+
+                <div className="dashboard-b-actions">
+                  <button
+                    type="button"
+                    className="dashboard-b-cta dashboard-b-cta--primary"
+                    onClick={onStartMatchSetup}
+                  >
+                    <svg viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M3 5h14M6 10h8m-5 5h2M7 3v4m6 1v4m-4 2v4" />
+                    </svg>
+                    START MATCH SETUP
+                  </button>
+                  <button
+                    type="button"
+                    className="dashboard-b-cta dashboard-b-cta--secondary"
+                    onClick={onViewSavedGames}
+                  >
+                    <svg viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M4 4h12v13H4zM7 2h6v4H7zm0 8h6m-6 3h6" />
+                    </svg>
+                    VIEW SAVED MATCHES &amp; SESSIONS
+                    <span className="dashboard-b-saved-count">{savedGameCount} SAVED</span>
+                  </button>
+                </div>
+              </div>
+            </section>
+          ) : null}
+        </>
+      ) : (
+        <header className="dashboard-navbar">
+          <div>
+            <p className="dashboard-kicker">{t('dashboard.kicker')}</p>
+            <h1 className="dashboard-title">
+              {t('dashboard.welcome', { name: user?.displayName || t('dashboard.fallbackName') })}
+            </h1>
+          </div>
+          <AppButton
+            text={t('dashboard.logout')}
+            variant="secondary"
+            onClick={onLogout}
+            isLoading={isLoading}
+            fullWidth={false}
+          />
+        </header>
+      )}
+
+      <div className={`dashboard-main-grid${isDashboardLanding ? ' dashboard-main-grid--landing' : ''}`}>
         <aside className="dashboard-sidebar dashboard-sidebar-left">
           {isAdmin && isMatrixStage ? (
             <>
@@ -377,9 +503,13 @@ function DashboardPage() {
           )}
         </aside>
 
-        <section className="dashboard-center">
+        <section className="dashboard-center" ref={simulatorRef}>
           <section className="dashboard-card game-dashboard-card">
-            <CricketSimulator />
+            <CricketSimulator
+              onSavedGamesCountChange={setSavedGameCount}
+              showSavedGamesDialog={isSavedGamesDialogOpen}
+              onCloseSavedGamesDialog={() => setIsSavedGamesDialogOpen(false)}
+            />
           </section>
         </section>
 

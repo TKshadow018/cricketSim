@@ -26,6 +26,7 @@ const PLAYER_TYPE_OPTIONS = [
 
 function CareerSetupStage({
   stageCommonProps,
+  setupBackSlot,
   countryList,
   game,
   beginCareer,
@@ -66,7 +67,12 @@ function CareerSetupStage({
   };
 
   return (
-    <StageShell {...stageCommonProps} title="Career Mode Setup" subtitle="Create your player and begin a full player career journey.">
+    <StageShell
+      {...stageCommonProps}
+      title="Career Mode Setup"
+      subtitle="Create your player and begin a full player career journey."
+      rightSlot={setupBackSlot}
+    >
       <h4 className="sim-section-title">Create Your Player</h4>
       <div className="sim-scoreboard-panel sim-career-create-panel sim-career-reveal">
         <div className="sim-career-create-grid">

@@ -1,0 +1,42 @@
+.apex-theme {
+  color-scheme: dark;
+
+  --apex-primary: #00e575;
+  --apex-primary-rgb: 0, 229, 117;
+  --apex-secondary: #10b981;
+  --apex-secondary-rgb: 16, 185, 129;
+  --apex-tertiary: #38bdf8;
+  --apex-tertiary-rgb: 56, 189, 248;
+
+  --apex-neutral-950: #0b0f17;
+  --apex-neutral-900: #11151e;
+  --apex-neutral-850: #171b24;
+  --apex-neutral-800: #1c2029;
+  --apex-neutral-750: #222731;
+  --apex-neutral-700: #292e38;
+  --apex-neutral-600: #414752;
+  --apex-neutral-500: #6c7280;
+  --apex-neutral-400: #a6acb8;
+  --apex-neutral-300: #c9ced8;
+  --apex-neutral-200: #e1e5ee;
+  --apex-neutral-100: #f4f6fb;
+
+  --apex-background: var(--apex-neutral-950);
+  --apex-surface: var(--apex-neutral-800);
+  --apex-surface-raised: var(--apex-neutral-750);
+  --apex-surface-inset: var(--apex-neutral-900);
+  --apex-border: rgba(201, 206, 216, 0.12);
+  --apex-border-strong: rgba(201, 206, 216, 0.24);
+  --apex-text: var(--apex-neutral-100);
+  --apex-text-muted: var(--apex-neutral-400);
+  --apex-text-subtle: var(--apex-neutral-500);
+  --apex-on-primary: #06140d;
+  --apex-on-tertiary: #06131a;
+  --apex-danger: #ffaaa5;
+  --apex-danger-surface: #402427;
+  --apex-success: var(--apex-primary);
+  --apex-focus-ring: rgba(var(--apex-tertiary-rgb), 0.72);
+
+  --apex-gradient-primary: linear-gradient(135deg, #00e575, #10b981);
+  --apex-gradient-tertiary: linear-gradient(135deg, #38bdf8, #8bdcff);
+}

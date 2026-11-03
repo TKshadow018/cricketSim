@@ -1,0 +1,448 @@
+.app-shell--b {
+  width: 100vw;
+  max-width: 100%;
+  min-height: 100vh;
+  background: var(--apex-background);
+  color: var(--apex-text);
+}
+
+.app-shell--b .auth-layout,
+.app-shell--b .dashboard-page {
+  width: 100vw;
+  max-width: 100%;
+  min-height: 100vh;
+}
+
+.app-shell--b .auth-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  background:
+    radial-gradient(ellipse at 12% 8%, rgba(var(--apex-primary-rgb), 0.1), transparent 42%),
+    var(--apex-background);
+  color: var(--apex-text);
+}
+
+.app-shell--b .auth-brand-panel {
+  border-color: var(--apex-border);
+  background: linear-gradient(130deg, rgba(var(--apex-primary-rgb), 0.13), var(--apex-surface));
+  color: var(--apex-text);
+}
+
+.app-shell--b .auth-brand-kicker {
+  color: var(--apex-primary);
+}
+
+.app-shell--b .auth-brand-title,
+.app-shell--b .auth-card-title,
+.app-shell--b .app-input-label {
+  color: var(--apex-text);
+}
+
+.app-shell--b .auth-brand-copy,
+.app-shell--b .auth-card-subtitle,
+.app-shell--b .auth-footnote {
+  color: var(--apex-text-muted);
+}
+
+.app-shell--b .auth-content-panel {
+  max-width: 34rem;
+}
+
+.app-shell--b .auth-card,
+.app-shell--b .dashboard-card {
+  border-color: var(--apex-border);
+  background: var(--apex-surface);
+  color: var(--apex-text);
+  box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.26);
+}
+
+.app-shell--b .app-input {
+  border-color: var(--apex-border-strong);
+  background: var(--apex-surface-raised);
+  color: var(--apex-text);
+}
+
+.app-shell--b .app-input:focus {
+  border-color: var(--apex-tertiary);
+  box-shadow: 0 0 0 3px rgba(var(--apex-tertiary-rgb), 0.18);
+}
+
+.app-shell--b .app-button {
+  border-radius: var(--apex-radius-sm);
+  background: var(--apex-primary);
+  color: var(--apex-on-primary);
+  transition:
+    background-color var(--apex-transition-fast),
+    border-color var(--apex-transition-fast),
+    color var(--apex-transition-fast),
+    transform var(--apex-transition-fast);
+}
+
+.app-shell--b .app-button:hover:not(:disabled) {
+  background: var(--apex-secondary);
+}
+
+.app-shell--b .app-button-secondary {
+  border: 1px solid var(--apex-border-strong);
+  background: var(--apex-surface-raised);
+  color: var(--apex-text);
+}
+
+.app-shell--b .app-button-secondary:hover:not(:disabled) {
+  border-color: var(--apex-secondary);
+  background: rgba(var(--apex-secondary-rgb), 0.16);
+}
+
+.app-shell--b .dashboard-shell--game-mode .dashboard-main-grid {
+  width: 100vw;
+  max-width: 100%;
+  min-height: calc(100vh - 3.15rem);
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+  padding: clamp(1rem, 4vw, 3.5rem);
+}
+
+.app-shell--b .dashboard-shell--game-mode .dashboard-sidebar {
+  display: none;
+}
+
+.app-shell--b .dashboard-shell--game-mode .dashboard-center {
+  width: 100%;
+  max-width: 78rem;
+  margin-inline: auto;
+}
+
+.app-shell--b .dashboard-shell--game-mode .game-dashboard-card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell--b .dashboard-shell--game-mode .sim-stage--game-mode {
+  width: 100%;
+  padding: clamp(1rem, 3vw, 2.25rem);
+  border-color: var(--apex-border);
+  border-radius: var(--apex-radius-lg);
+  background: var(--apex-surface-inset);
+  box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.28);
+}
+
+.app-shell--b .dashboard-shell--game-mode .sim-stage--game-mode::after {
+  background: radial-gradient(
+    circle at 92% 0%,
+    rgba(var(--apex-primary-rgb), 0.1),
+    transparent 36%
+  );
+}
+
+.app-shell--b .dashboard-shell--game-mode .sim-stage--game-mode .sim-stage-step {
+  color: var(--apex-tertiary) !important;
+  font-family: var(--apex-font-label);
+}
+
+.app-shell--b .dashboard-shell--game-mode .sim-stage--game-mode .sim-wave-title {
+  color: var(--apex-text);
+  font-family: var(--apex-font-headline);
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  line-height: 1;
+  text-shadow: none;
+}
+
+.app-shell--b .dashboard-shell--game-mode .sim-stage--game-mode .sim-stage-header p {
+  color: var(--apex-text-muted);
+}
+
+.app-shell--b .dashboard-shell--game-mode .sim-series-mode-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.app-shell--b .dashboard-shell--game-mode .sim-series-mode-card {
+  min-height: 10rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1.25rem;
+  border-color: var(--apex-border);
+  border-radius: var(--apex-radius-lg);
+  background: var(--apex-surface);
+  color: var(--apex-text);
+  text-align: left;
+}
+
+.app-shell--b .dashboard-shell--game-mode .sim-series-mode-card h4 {
+  color: var(--apex-text);
+  font-family: var(--apex-font-headline);
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+  line-height: 1;
+}
+
+.app-shell--b .dashboard-shell--game-mode .sim-series-mode-card p {
+  color: var(--apex-text-muted);
+  font-family: var(--apex-font-body);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.app-shell--b .dashboard-shell--game-mode .sim-series-mode-card.active,
+.app-shell--b .dashboard-shell--game-mode .sim-series-mode-card.apex-card--selected {
+  border-color: var(--apex-primary);
+  background: rgba(var(--apex-primary-rgb), 0.08);
+  box-shadow: inset 0 0 0 1px var(--apex-primary);
+}
+
+.app-shell--b .dashboard-shell--game-mode .sim-series-mode-card:hover {
+  border-color: var(--apex-secondary);
+}
+
+.app-shell--b .dashboard-shell--game-mode .sim-series-mode-card:focus-visible {
+  outline: 2px solid var(--apex-focus-ring);
+  outline-offset: 3px;
+}
+
+.app-shell--b .dashboard-shell--setup-flow .dashboard-main-grid {
+  width: 100vw;
+  max-width: 100%;
+  min-height: calc(100vh - 3.15rem);
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+  padding: clamp(1rem, 4vw, 3.5rem);
+}
+
+.app-shell--b .dashboard-shell--setup-flow .dashboard-sidebar {
+  display: none;
+}
+
+.app-shell--b .dashboard-shell--setup-flow .dashboard-center {
+  width: 100%;
+  max-width: 90rem;
+  margin-inline: auto;
+}
+
+.app-shell--b .dashboard-shell--setup-flow .game-dashboard-card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup {
+  width: 100%;
+  padding: clamp(1rem, 3vw, 2.25rem);
+  border-color: var(--apex-border);
+  border-radius: var(--apex-radius-lg);
+  background: var(--apex-surface-inset);
+  box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.28);
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup::after {
+  background: radial-gradient(
+    circle at 92% 0%,
+    rgba(var(--apex-primary-rgb), 0.1),
+    transparent 36%
+  );
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-stage-step {
+  color: var(--apex-tertiary) !important;
+  font-family: var(--apex-font-label);
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-wave-title {
+  color: var(--apex-text);
+  font-family: var(--apex-font-headline);
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  line-height: 1;
+  text-shadow: none;
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-stage-header p {
+  color: var(--apex-text-muted);
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-stage-content {
+  max-height: calc(100vh - 14rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--apex-border-strong) transparent;
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-card-grid,
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-flag-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 0.85rem;
+  overflow: visible;
+  padding: 0.15rem;
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--match-type .sim-card-grid,
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--stadium .sim-card-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-choice-card,
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-flag-card {
+  min-height: 9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 1rem;
+  border: 1px solid var(--apex-border);
+  border-radius: var(--apex-radius-lg);
+  background: var(--apex-surface);
+  box-shadow: none;
+  color: var(--apex-text);
+  text-align: left;
+  transition:
+    border-color var(--apex-transition-fast),
+    background-color var(--apex-transition-fast),
+    transform var(--apex-transition-fast);
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-choice-card:hover,
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-flag-card:not(.disabled):hover {
+  border-color: var(--apex-secondary);
+  background: var(--apex-surface-raised);
+  transform: translateY(-2px);
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-choice-card:focus-visible,
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-flag-card:focus-visible {
+  outline: 2px solid var(--apex-focus-ring);
+  outline-offset: 3px;
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-choice-card.active,
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-flag-card.active {
+  border-color: var(--apex-primary);
+  background: rgba(var(--apex-primary-rgb), 0.08);
+  box-shadow: inset 0 0 0 1px var(--apex-primary);
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-choice-card h4,
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-flag-card h4 {
+  margin: 0;
+  color: var(--apex-text);
+  font-family: var(--apex-font-headline);
+  font-size: 1.2rem;
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-choice-card p,
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-choice-card small,
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-flag-card p {
+  margin: 0;
+  color: var(--apex-text-muted);
+  font-family: var(--apex-font-body);
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-choice-visual {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--apex-radius-md);
+  background: rgba(var(--apex-primary-rgb), 0.1);
+  font-size: 1.4rem;
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-choice-badge {
+  border: 1px solid rgba(var(--apex-primary-rgb), 0.25);
+  background: rgba(var(--apex-primary-rgb), 0.1);
+  color: var(--apex-primary);
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-flag-card {
+  align-items: center;
+  text-align: center;
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-flag-holder {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 0 0.25rem;
+  border-color: var(--apex-border-strong);
+}
+
+.app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-flag-card.disabled {
+  opacity: 0.45;
+}
+
+@media (max-width: 760px) {
+  .app-shell--b .auth-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .app-shell--b .auth-brand-panel {
+    padding: 1.25rem;
+  }
+
+  .app-shell--b .auth-content-panel {
+    max-width: none;
+  }
+
+  .app-shell--b .dashboard-shell--game-mode .dashboard-main-grid {
+    min-height: calc(100vh - 3rem);
+    padding: 1rem;
+  }
+
+  .app-shell--b .dashboard-shell--setup-flow .dashboard-main-grid {
+    min-height: calc(100vh - 3rem);
+    padding: 1rem;
+  }
+
+  .app-shell--b .dashboard-shell--game-mode .sim-series-mode-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell--b .dashboard-shell--game-mode .sim-series-mode-card {
+    min-height: 8rem;
+    padding: 0.9rem;
+  }
+
+  .app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-stage-content {
+    max-height: calc(100vh - 12rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .app-shell--b .dashboard-shell--game-mode .sim-series-mode-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell--b .dashboard-shell--game-mode .sim-series-mode-card {
+    min-height: 5.5rem;
+  }
+
+  .app-shell--b .dashboard-shell--setup-flow .sim-stage--setup {
+    padding: 0.85rem;
+  }
+
+  .app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-wave-title {
+    font-size: clamp(1.8rem, 9vw, 2.5rem);
+  }
+
+  .app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-card-grid,
+  .app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-flag-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+  }
+
+  .app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-choice-card,
+  .app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-flag-card {
+    min-height: 7rem;
+    padding: 0.7rem;
+  }
+
+  .app-shell--b .dashboard-shell--setup-flow .sim-stage--setup .sim-flag-holder {
+    width: 3rem;
+    height: 3rem;
+  }
+}

@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from 'react-dom';
 import { AnimatePresence } from "framer-motion";
 import { useCricketSimulatorController } from "./hooks/useCricketSimulatorController";
 import { stageOrder } from "../../utils/simulatorUtils";
@@ -15,11 +16,18 @@ import {
   getCareerFormatStandings,
   sortStandings,
 } from './utils/controllerCareerScheduleUtils';
+import { buildSaveSummary } from './components/preMatchStageUtils';
 import "./simulator.css";
 
-function CricketSimulator() {
+function CricketSimulator({
+  onSavedGamesCountChange,
+  showSavedGamesDialog = false,
+  onCloseSavedGamesDialog,
+}) {
   const controller = useCricketSimulatorController();
   const [showDomesticStats, setShowDomesticStats] = React.useState(false);
+  const [savePendingDelete, setSavePendingDelete] = React.useState(null);
+  const [savedGamesActionError, setSavedGamesActionError] = React.useState('');
   const [careerPlayerModal, setCareerPlayerModal] = React.useState(null);
   const [domesticStatsFormatTab, setDomesticStatsFormatTab] = React.useState('t20');
   const [domesticStatsTeamTab, setDomesticStatsTeamTab] = React.useState('');
@@ -168,6 +176,10 @@ function CricketSimulator() {
     handleViewCareerHistory,
     handleBackToCareerSchedule,
   } = controller;
+
+  React.useEffect(() => {
+    onSavedGamesCountChange?.(Array.isArray(savedGames) ? savedGames.length : 0);
+  }, [onSavedGamesCountChange, savedGames]);
 
   const stageIndex = stageOrder.indexOf(game.stage) + 1;
   const stageCommonProps = {
@@ -673,6 +685,30 @@ function CricketSimulator() {
     const start = (normalizedGlobalSearchPage - 1) * 25;
     return filteredGlobalPlayers.slice(start, start + 25);
   }, [filteredGlobalPlayers, normalizedGlobalSearchPage]);
+
+  const loadSavedGameFromDialog = async (save) => {
+    setSavedGamesActionError('');
+    try {
+      await loadSavedGame(save);
+      onCloseSavedGamesDialog?.();
+    } catch (error) {
+      setSavedGamesActionError(error instanceof Error ? error.message : 'Unable to load this saved match.');
+    }
+  };
+
+  const deleteSavedGameFromDialog = async () => {
+    if (!savePendingDelete) {
+      return;
+    }
+
+    setSavedGamesActionError('');
+    try {
+      await deleteSavedGame(savePendingDelete);
+      setSavePendingDelete(null);
+    } catch (error) {
+      setSavedGamesActionError(error instanceof Error ? error.message : 'Unable to delete this saved match.');
+    }
+  };
 
   return (
     <div className="sim-shell">
@@ -1349,6 +1385,94 @@ function CricketSimulator() {
           />
         )}
       </AnimatePresence>
+
+      {showSavedGamesDialog
+        ? createPortal(
+          <div className="dashboard-b-saved-overlay apex-theme" role="dialog" aria-modal="true" aria-labelledby="dashboard-b-saved-title">
+            <section className="dashboard-b-saved-dialog">
+              <header className="dashboard-b-saved-header">
+                <div>
+                  <p className="dashboard-b-saved-kicker">MATCH VAULT</p>
+                  <h2 id="dashboard-b-saved-title">Saved Matches &amp; Sessions</h2>
+                </div>
+                <button
+                  type="button"
+                  className="dashboard-b-saved-close"
+                  aria-label="Close saved matches"
+                  onClick={() => {
+                    setSavedGamesActionError('');
+                    setSavePendingDelete(null);
+                    onCloseSavedGamesDialog?.();
+                  }}
+                >
+                  ×
+                </button>
+              </header>
+
+              {isSavesLoading ? <p className="dashboard-b-saved-empty">Loading saved matches...</p> : null}
+              {!isSavesLoading && !savedGames?.length ? (
+                <p className="dashboard-b-saved-empty">No saved matches yet. Save a match to see it here.</p>
+              ) : null}
+              {!isSavesLoading && savedGames?.length ? (
+                <div className="dashboard-b-saved-list">
+                  {savedGames.map((save) => {
+                    const updatedAt = save?.updatedAt?.toDate
+                      ? save.updatedAt.toDate()
+                      : save?.updatedAt
+                        ? new Date(save.updatedAt)
+                        : null;
+                    const updatedText = updatedAt && !Number.isNaN(updatedAt.getTime())
+                      ? updatedAt.toLocaleString()
+                      : 'Recently updated';
+
+                    return (
+                      <article key={save.id} className="dashboard-b-saved-item">
+                        <div>
+                          <h3>{save.title || 'Saved Match'}</h3>
+                          <p>{buildSaveSummary(save, matchStatusEnum)}</p>
+                          <small>{updatedText}</small>
+                        </div>
+                        <div className="dashboard-b-saved-item-actions">
+                          <button type="button" onClick={() => loadSavedGameFromDialog(save)}>
+                            LOAD MATCH
+                          </button>
+                          <button
+                            type="button"
+                            className="dashboard-b-saved-delete"
+                            onClick={() => setSavePendingDelete(save)}
+                          >
+                            DELETE
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              ) : null}
+              {savedGamesActionError ? (
+                <p className="dashboard-b-saved-error" role="alert">{savedGamesActionError}</p>
+              ) : null}
+              {saveMessage ? <p className="dashboard-b-saved-empty">{saveMessage}</p> : null}
+
+              {savePendingDelete ? (
+                <div className="dashboard-b-delete-overlay" role="alertdialog" aria-modal="true" aria-labelledby="dashboard-b-delete-title">
+                  <section className="dashboard-b-delete-dialog">
+                    <h3 id="dashboard-b-delete-title">Delete saved match?</h3>
+                    <p>This will permanently remove “{savePendingDelete.title || 'Saved Match'}”.</p>
+                    <div>
+                      <button type="button" onClick={() => setSavePendingDelete(null)}>CANCEL</button>
+                      <button type="button" className="dashboard-b-saved-delete" onClick={deleteSavedGameFromDialog}>
+                        DELETE MATCH
+                      </button>
+                    </div>
+                  </section>
+                </div>
+              ) : null}
+            </section>
+          </div>,
+          document.body
+        )
+        : null}
     </div>
   );
 }

@@ -123,16 +123,18 @@ The simulator progresses through these stages:
 	cp .env.example .env
 	```
 	(On Windows PowerShell: `Copy-Item .env.example .env`)
-3. Update `.env` values for your Firebase project. For local auth bypass, set `REACT_APP_DEBUG=true`.
+3. Update `.env` values for your Firebase project. For local auth bypass, set `REACT_APP_DEBUG=true`. Existing `REACT_APP_` variable names are supported by Vite.
 4. Start development server:
 	```bash
 	npm start
 	```
-5. Open app in browser (CRA default: `http://localhost:3000`).
+5. Open app in browser: `http://localhost:3000`.
+
+Create a production build with `npm run build`; the output is written to `build/` for Firebase Hosting. Run `npm run preview` to serve that build locally.
 
 ## Environment Variables
 
-Set these in `.env`:
+Set these in `.env`. Vite loads the existing `REACT_APP_` names for compatibility:
 
 - `REACT_APP_FIREBASE_API_KEY`
 - `REACT_APP_FIREBASE_AUTH_DOMAIN`

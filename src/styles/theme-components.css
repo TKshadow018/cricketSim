@@ -1,0 +1,237 @@
+.apex-theme {
+  --apex-control-height: 2.75rem;
+  --apex-radius-sm: 0.375rem;
+  --apex-radius-md: 0.75rem;
+  --apex-radius-lg: 1.125rem;
+  --apex-transition-fast: 140ms ease;
+}
+
+.apex-theme :where(button, input, select, textarea) {
+  font: inherit;
+}
+
+.apex-theme :where(button, [role='button']) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.apex-theme :where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--apex-focus-ring);
+  outline-offset: 3px;
+}
+
+.apex-theme .apex-button {
+  min-height: var(--apex-control-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.625rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--apex-radius-sm);
+  background: var(--apex-primary);
+  color: var(--apex-on-primary);
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--apex-transition-fast),
+    border-color var(--apex-transition-fast),
+    color var(--apex-transition-fast),
+    transform var(--apex-transition-fast);
+}
+
+.apex-theme .apex-button:hover:not(:disabled) {
+  background: #25f28b;
+  transform: translateY(-1px);
+}
+
+.apex-theme .apex-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.apex-theme .apex-button:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.apex-theme .apex-button--secondary {
+  border-color: var(--apex-border);
+  background: var(--apex-surface-raised);
+  color: var(--apex-text);
+}
+
+.apex-theme .apex-button--secondary:hover:not(:disabled) {
+  border-color: rgba(var(--apex-secondary-rgb), 0.6);
+  background: rgba(var(--apex-secondary-rgb), 0.16);
+}
+
+.apex-theme .apex-button--inverted {
+  background: var(--apex-neutral-200);
+  color: var(--apex-neutral-950);
+}
+
+.apex-theme .apex-button--outlined {
+  border-color: var(--apex-border-strong);
+  background: transparent;
+  color: var(--apex-text);
+}
+
+.apex-theme .apex-button--outlined:hover:not(:disabled) {
+  border-color: var(--apex-primary);
+  background: rgba(var(--apex-primary-rgb), 0.08);
+}
+
+.apex-theme .apex-icon-button {
+  width: var(--apex-control-height);
+  min-width: var(--apex-control-height);
+  height: var(--apex-control-height);
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--apex-radius-sm);
+  background: transparent;
+  color: var(--apex-text-muted);
+  cursor: pointer;
+  transition:
+    background-color var(--apex-transition-fast),
+    color var(--apex-transition-fast);
+}
+
+.apex-theme .apex-icon-button:hover {
+  background: var(--apex-surface-raised);
+  color: var(--apex-primary);
+}
+
+.apex-theme .apex-icon-button--primary {
+  background: var(--apex-primary);
+  color: var(--apex-on-primary);
+}
+
+.apex-theme .apex-icon-button--tertiary {
+  background: var(--apex-tertiary);
+  color: var(--apex-on-tertiary);
+}
+
+.apex-theme .apex-icon-button--danger {
+  background: #ffb4ad;
+  color: #351214;
+}
+
+.apex-theme .apex-field {
+  width: 100%;
+  min-height: var(--apex-control-height);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0 0.875rem;
+  border: 1px solid var(--apex-border-strong);
+  border-radius: var(--apex-radius-sm);
+  background: var(--apex-surface-raised);
+  color: var(--apex-text);
+  transition:
+    border-color var(--apex-transition-fast),
+    box-shadow var(--apex-transition-fast);
+}
+
+.apex-theme .apex-field:focus-within {
+  border-color: var(--apex-tertiary);
+  box-shadow: 0 0 0 3px rgba(var(--apex-tertiary-rgb), 0.14);
+}
+
+.apex-theme .apex-field input,
+.apex-theme .apex-field select,
+.apex-theme .apex-field textarea {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.apex-theme .apex-field input::placeholder,
+.apex-theme .apex-field textarea::placeholder {
+  color: var(--apex-text-muted);
+  opacity: 1;
+}
+
+.apex-theme .apex-card {
+  min-width: 0;
+  border: 1px solid var(--apex-border);
+  border-radius: var(--apex-radius-lg);
+  background: var(--apex-surface);
+  color: var(--apex-text);
+}
+
+.apex-theme .apex-card--interactive {
+  cursor: pointer;
+  transition:
+    border-color var(--apex-transition-fast),
+    background-color var(--apex-transition-fast),
+    transform var(--apex-transition-fast);
+}
+
+.apex-theme .apex-card--interactive:hover {
+  border-color: rgba(var(--apex-primary-rgb), 0.58);
+  transform: translateY(-2px);
+}
+
+.apex-theme .apex-card--selected {
+  border-color: var(--apex-primary);
+  box-shadow: inset 0 0 0 1px var(--apex-primary);
+}
+
+.apex-theme .apex-progress {
+  height: 0.375rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--apex-neutral-700);
+}
+
+.apex-theme .apex-progress__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--apex-primary);
+}
+
+.apex-theme .apex-progress__fill--secondary {
+  background: #34d399;
+}
+
+.apex-theme .apex-progress__fill--tertiary {
+  background: #bae6fd;
+}
+
+.apex-theme .apex-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--apex-border);
+  border-radius: 999px;
+  background: var(--apex-surface-raised);
+  color: var(--apex-text-muted);
+  font-family: var(--apex-font-label);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+}
+
+.apex-theme .apex-badge--live {
+  border-color: rgba(var(--apex-primary-rgb), 0.32);
+  background: rgba(var(--apex-primary-rgb), 0.12);
+  color: var(--apex-primary);
+}
+
+.apex-theme .apex-badge--info {
+  border-color: rgba(var(--apex-tertiary-rgb), 0.32);
+  background: rgba(var(--apex-tertiary-rgb), 0.12);
+  color: var(--apex-tertiary);
+}
+
+.apex-theme .apex-divider {
+  height: 1px;
+  border: 0;
+  background: var(--apex-border);
+}

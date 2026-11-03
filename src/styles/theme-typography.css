@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+.apex-theme {
+  --apex-font-headline: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --apex-font-body: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --apex-font-label: 'JetBrains Mono', 'Cascadia Code', monospace;
+
+  font-family: var(--apex-font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--apex-text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.apex-theme :where(h1, h2, h3, .apex-heading) {
+  margin: 0;
+  font-family: var(--apex-font-headline);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: 0.015em;
+}
+
+.apex-theme :where(h1, .apex-heading--display) {
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
+}
+
+.apex-theme :where(h2, .apex-heading--large) {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+}
+
+.apex-theme :where(h3, .apex-heading--medium) {
+  font-size: clamp(1.5rem, 2.4vw, 2.125rem);
+}
+
+.apex-theme :where(p, li) {
+  color: inherit;
+}
+
+.apex-theme :where(.apex-label, .apex-overline, .apex-data, .apex-shortcut) {
+  font-family: var(--apex-font-label);
+}
+
+.apex-theme :where(.apex-label, .apex-overline) {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.apex-theme :where(.apex-overline) {
+  color: var(--apex-text-muted);
+  text-transform: uppercase;
+}
+
+.apex-theme :where(.apex-data) {
+  font-variant-numeric: tabular-nums;
+}

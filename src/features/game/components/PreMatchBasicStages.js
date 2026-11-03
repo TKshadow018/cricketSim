@@ -19,8 +19,20 @@ import CareerSetupStage from './CareerSetupStage';
 import CareerAuctionStage from './CareerAuctionStage';
 import CareerSeasonScheduleStage from './CareerSeasonScheduleStage';
 
+function SetupStageShell({ title, isRedesignedDashboard, className = '', ...props }) {
+  return (
+    <StageShell
+      {...props}
+      title={title}
+      titleNode={isRedesignedDashboard ? title : null}
+      className={`${className} ${isRedesignedDashboard ? 'sim-stage--setup' : ''}`.trim()}
+    />
+  );
+}
+
 function PreMatchBasicStages(props) {
   const prefersReducedMotion = useReducedMotion();
+  const isRedesignedDashboard = (process.env.REACT_APP_ABTEST || '').trim().toLowerCase() === 'b';
   const {
     stage,
     stageCommonProps,
@@ -94,7 +106,7 @@ function PreMatchBasicStages(props) {
           {isSavesLoading ? <p className="sim-section-title">Loading saved games...</p> : null}
 
           {!isSavesLoading && savedGames?.length ? (
-            <div className="sim-scoreboard-panel">
+            <div className="sim-scoreboard-panel" id="dashboard-saved-games">
               <h4>Saved Games</h4>
               {savedGames.map((save) => {
                 const updatedAt = save?.updatedAt?.toDate ? save.updatedAt.toDate() : null;
@@ -169,7 +181,13 @@ function PreMatchBasicStages(props) {
       )}
 
       {stage === matchStatusEnum.ChooseMatchType && (
-        <StageShell {...stageCommonProps} title="Choose Match Type" subtitle="Select format, overs, innings and duration profile.">
+        <SetupStageShell
+          {...stageCommonProps}
+          isRedesignedDashboard={isRedesignedDashboard}
+          className="sim-stage--match-type"
+          title="Choose Match Type"
+          subtitle="Select format, overs, innings and duration profile."
+        >
           <SelectionGrid
             items={Object.entries(matchTypeList).map(([key, value]) => ({
               key,
@@ -188,25 +206,31 @@ function PreMatchBasicStages(props) {
             renderMeta={(item) => `${item.over} overs • ${item.innings} innings`}
             renderDescription={(item) => `${item.day} day format`}
           />
-        </StageShell>
+        </SetupStageShell>
       )}
 
       {stage === matchStatusEnum.ChooseGameMode && (
-        <StageShell {...stageCommonProps} title="Choose Game Mode" subtitle="Pick how you want to play.">
+        <StageShell
+          {...stageCommonProps}
+          title="Choose Game Mode"
+          titleNode={isRedesignedDashboard ? 'Choose Game Mode' : null}
+          subtitle="Pick how you want to play."
+          className="sim-stage--game-mode"
+        >
           <div className="sim-series-mode-grid">
-            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'quick' ? 'active' : ''}`} aria-pressed={game.gameMode === 'quick'} onClick={() => selectGameMode('quick')}>
+            <button type="button" className={`sim-series-mode-card apex-card apex-card--interactive ${game.gameMode === 'quick' ? 'active apex-card--selected' : ''}`} aria-pressed={game.gameMode === 'quick'} onClick={() => selectGameMode('quick')}>
               <h4>Quick Match</h4>
               <p>Single match experience.</p>
             </button>
-            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'series' ? 'active' : ''}`} aria-pressed={game.gameMode === 'series'} onClick={() => selectGameMode('series')}>
+            <button type="button" className={`sim-series-mode-card apex-card apex-card--interactive ${game.gameMode === 'series' ? 'active apex-card--selected' : ''}`} aria-pressed={game.gameMode === 'series'} onClick={() => selectGameMode('series')}>
               <h4>Play Series</h4>
               <p>Multiple matches vs same opponent.</p>
             </button>
-            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'tournament' ? 'active' : ''}`} aria-pressed={game.gameMode === 'tournament'} onClick={() => selectGameMode('tournament')}>
+            <button type="button" className={`sim-series-mode-card apex-card apex-card--interactive ${game.gameMode === 'tournament' ? 'active apex-card--selected' : ''}`} aria-pressed={game.gameMode === 'tournament'} onClick={() => selectGameMode('tournament')}>
               <h4>Tournament</h4>
               <p>4 / 8 / 16 team knockout.</p>
             </button>
-            <button type="button" className={`sim-series-mode-card ${game.gameMode === 'career' ? 'active' : ''}`} aria-pressed={game.gameMode === 'career'} onClick={() => selectGameMode('career')}>
+            <button type="button" className={`sim-series-mode-card apex-card apex-card--interactive ${game.gameMode === 'career' ? 'active apex-card--selected' : ''}`} aria-pressed={game.gameMode === 'career'} onClick={() => selectGameMode('career')}>
               <h4>Career</h4>
               <p>Create a player and play through domestic seasons.</p>
             </button>
@@ -239,7 +263,15 @@ function PreMatchBasicStages(props) {
       )}
 
       {stage === matchStatusEnum.ChooseOwnTeam && (
-        <StageShell {...stageCommonProps} title="Choose Your Team" subtitle="Pick your national side." rightSlot={setupBackSlot} dark>
+        <SetupStageShell
+          {...stageCommonProps}
+          isRedesignedDashboard={isRedesignedDashboard}
+          className="sim-stage--own-team"
+          title="Choose Your Team"
+          subtitle="Pick your national side."
+          rightSlot={setupBackSlot}
+          dark
+        >
           <FlagTeamGrid
             teams={countryList}
             selectedName={game.ownTeam}
@@ -249,11 +281,19 @@ function PreMatchBasicStages(props) {
               goToNextStage();
             }}
           />
-        </StageShell>
+        </SetupStageShell>
       )}
 
       {stage === matchStatusEnum.ChooseOpponent && (
-        <StageShell {...stageCommonProps} title="Choose Opponent" subtitle="Set the rival team for this showdown." rightSlot={setupBackSlot} dark>
+        <SetupStageShell
+          {...stageCommonProps}
+          isRedesignedDashboard={isRedesignedDashboard}
+          className="sim-stage--opponent"
+          title="Choose Opponent"
+          subtitle="Set the rival team for this showdown."
+          rightSlot={setupBackSlot}
+          dark
+        >
           {game.gameMode === 'tournament' ? (
             <>
               <p className="sim-section-title">
@@ -302,11 +342,19 @@ function PreMatchBasicStages(props) {
               }}
             />
           )}
-        </StageShell>
+        </SetupStageShell>
       )}
 
       {stage === matchStatusEnum.ChooseMatchLocation && (
-        <StageShell {...stageCommonProps} title="Choose Match Country" subtitle="Decide where the match will be hosted." rightSlot={setupBackSlot} dark>
+        <SetupStageShell
+          {...stageCommonProps}
+          isRedesignedDashboard={isRedesignedDashboard}
+          className="sim-stage--match-location"
+          title="Choose Match Country"
+          subtitle="Decide where the match will be hosted."
+          rightSlot={setupBackSlot}
+          dark
+        >
           <FlagTeamGrid
             teams={countryList}
             selectedName={game.locationCountry}
@@ -317,11 +365,18 @@ function PreMatchBasicStages(props) {
               goToNextStage();
             }}
           />
-        </StageShell>
+        </SetupStageShell>
       )}
 
       {stage === matchStatusEnum.ChooseStadium && (
-        <StageShell {...stageCommonProps} title="Choose Stadium" subtitle="Pick the exact ground and conditions." rightSlot={setupBackSlot}>
+        <SetupStageShell
+          {...stageCommonProps}
+          isRedesignedDashboard={isRedesignedDashboard}
+          className="sim-stage--stadium"
+          title="Choose Stadium"
+          subtitle="Pick the exact ground and conditions."
+          rightSlot={setupBackSlot}
+        >
           <SelectionGrid
             items={stadiumSelectionItems}
             selectedKey={game.selectedStadium}
@@ -346,7 +401,7 @@ function PreMatchBasicStages(props) {
             )}
             renderDescription={(item) => `${item.location} • Capacity ${item.capacity?.toLocaleString?.() || 'N/A'}`}
           />
-        </StageShell>
+        </SetupStageShell>
       )}
 
       {stage === matchStatusEnum.ChooseCommentator && (
@@ -421,6 +476,7 @@ function PreMatchBasicStages(props) {
       {stage === matchStatusEnum.CareerSetup && (
         <CareerSetupStage
           stageCommonProps={stageCommonProps}
+          setupBackSlot={setupBackSlot}
           countryList={countryList}
           game={game}
           beginCareer={beginCareer}
@@ -435,6 +491,7 @@ function PreMatchBasicStages(props) {
       {stage === matchStatusEnum.CareerAuction && (
         <CareerAuctionStage
           stageCommonProps={stageCommonProps}
+          setupBackSlot={setupBackSlot}
           careerSeason={careerSeason}
           careerPlayerProfile={careerPlayerProfile}
           careerDomesticCountry={careerDomesticCountry}
@@ -447,6 +504,7 @@ function PreMatchBasicStages(props) {
       {stage === matchStatusEnum.CareerSeasonSchedule && (
         <CareerSeasonScheduleStage
           stageCommonProps={stageCommonProps}
+          setupBackSlot={setupBackSlot}
           careerTeam={careerTeam}
           careerSeason={careerSeason}
           careerMatchIndex={careerMatchIndex}

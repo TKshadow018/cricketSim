@@ -6,6 +6,7 @@ import TeamNameWithLogo from './TeamNameWithLogo';
 
 function CareerAuctionStage({
   stageCommonProps,
+  setupBackSlot,
   careerSeason,
   careerPlayerProfile,
   careerDomesticCountry,
@@ -248,6 +249,7 @@ function CareerAuctionStage({
     <StageShell
       {...stageCommonProps}
       title={`Season ${careerSeason || 1} Auction`}
+      rightSlot={setupBackSlot}
       subtitle={
         <>
           <PlayerNameWithType player={careerPlayerProfile} name={profileName} />
