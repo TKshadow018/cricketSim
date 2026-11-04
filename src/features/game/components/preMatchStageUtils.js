@@ -86,7 +86,7 @@ const COMMENTATOR_NAME_BANK = {
   },
 };
 
-const hashText = (text = '') => {
+const hashText = (text) => {
   let value = 0;
   for (let index = 0; index < text.length; index += 1) {
     value = (value * 31 + text.charCodeAt(index)) >>> 0;
@@ -132,7 +132,7 @@ const inferCountryKey = (lang = '', voiceName = '') => {
   return 'Default';
 };
 
-const inferGender = (voice = {}) => {
+const inferGender = (voice) => {
   const explicit = String(voice.gender || '').toLowerCase();
   if (explicit === 'male' || explicit === 'female') {
     return explicit;
@@ -162,11 +162,11 @@ export const setCommentatorName = (voiceInput = {}) => {
       : (voiceInput || {});
 
   const countryKey = inferCountryKey(voice.lang, voice.name);
-  const bank = COMMENTATOR_NAME_BANK[countryKey] || COMMENTATOR_NAME_BANK.Default;
+  const bank = COMMENTATOR_NAME_BANK[countryKey];
   const gender = inferGender(voice);
-  const pool = bank[gender] || bank.male || bank.female || COMMENTATOR_NAME_BANK.Default.male;
+  const pool = bank[gender];
   const seed = hashText(`${voice.name || ''}::${voice.lang || ''}`);
-  return pool[seed % pool.length] || COMMENTATOR_NAME_BANK.Default.male[0];
+  return pool[seed % pool.length];
 };
 
 export const buildSaveSummary = (save, matchStatusEnum) => {

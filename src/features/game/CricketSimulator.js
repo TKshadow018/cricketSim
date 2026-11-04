@@ -4,9 +4,10 @@ import { AnimatePresence } from "framer-motion";
 import { useCricketSimulatorController } from "./hooks/useCricketSimulatorController";
 import { stageOrder } from "../../utils/simulatorUtils";
 import { matchStatusEnum } from "../../gameData/matchStatusEnum";
-import AppButton from '../../components/ui/AppButton';
+
 import PreMatchStages from "./components/PreMatchStages";
 import LiveMatchStages from "./components/LiveMatchStages";
+import CareerAnalyticsDashboard from "./components/CareerAnalyticsDashboard";
 import TeamNameWithFlag from './components/TeamNameWithFlag';
 import PlayerNameWithType from './components/PlayerNameWithType';
 import CareerPlayerProfileModal from './components/CareerPlayerProfileModal';
@@ -50,6 +51,7 @@ function CricketSimulator({
   const [runsPerMatchRange, setRunsPerMatchRange] = React.useState('');
   const [wicketsRange, setWicketsRange] = React.useState('');
   const [globalSearchPage, setGlobalSearchPage] = React.useState(1);
+  const simShellRef = React.useRef(null);
   const {
     game,
     gameMode,
@@ -115,7 +117,9 @@ function CricketSimulator({
     loadSavedGame,
     deleteSavedGame,
     setBattingIntent,
+    setBattingTactics,
     setBowlingIntent,
+    setBowlingTactics,
     processDelivery,
     handleSelectOpener,
     handleSelectNextBatter,
@@ -126,6 +130,8 @@ function CricketSimulator({
     opponentAvailablePool,
     ownSelectedXIIds,
     opponentSelectedXIIds,
+    ownBattingOrderIds,
+    opponentBattingOrderIds,
     ownSelectedXIPlayers,
     opponentSelectedXIPlayers,
     ownTeamRoles,
@@ -136,13 +142,17 @@ function CricketSimulator({
     opponentRolesReady,
     moveOwnPlayerToXI,
     removeOwnPlayerFromXI,
+    moveOwnPlayerInBattingOrder,
     moveOpponentPlayerToXI,
     removeOpponentPlayerFromXI,
+    moveOpponentPlayerInBattingOrder,
     setOwnRole,
     setOpponentRole,
     createCustomPlayer,
     autoPickOwnXI,
     autoPickOpponentXI,
+    autoPositionOwnXI,
+    autoPositionOpponentXI,
     startMatchWithSelectedXI,
     buildTeamOneScorecard,
     buildTeamTwoScorecard,
@@ -150,7 +160,6 @@ function CricketSimulator({
     oversDisplay,
     careerTeam,
     careerSeason,
-    careerSeasonLength,
     careerFormat,
     careerMatchIndex,
     careerSchedule,
@@ -180,6 +189,12 @@ function CricketSimulator({
   React.useEffect(() => {
     onSavedGamesCountChange?.(Array.isArray(savedGames) ? savedGames.length : 0);
   }, [onSavedGamesCountChange, savedGames]);
+
+  React.useLayoutEffect(() => {
+    if (simShellRef.current) {
+      simShellRef.current.scrollTop = 0;
+    }
+  }, [game.stage]);
 
   const stageIndex = stageOrder.indexOf(game.stage) + 1;
   const stageCommonProps = {
@@ -711,504 +726,21 @@ function CricketSimulator({
   };
 
   return (
-    <div className="sim-shell">
-      {isCareerMode ? (
-        <div className="sim-career-tools">
-          <AppButton
-            text="Domestic Teams Season Stats"
-            onClick={() => setShowDomesticStats(true)}
-            fullWidth={false}
-            variant="secondary"
-          />
-          <AppButton
-            text="My Current Stats/Ability"
-            onClick={() => openCareerPlayerProfile(currentUserSeasonStats, careerTeam, 'My Current Season Stats and Ability')}
-            fullWidth={false}
-            variant="secondary"
-            disabled={!currentUserSeasonStats}
-          />
-          <AppButton
-            text="See League Table"
-            onClick={() => setShowLeagueTable(true)}
-            fullWidth={false}
-            variant="secondary"
-          />
-          <AppButton
-            text="See League Player Statistics"
-            onClick={() => setShowLeaguePlayerStats(true)}
-            fullWidth={false}
-            variant="secondary"
-          />
-          <AppButton
-            text="Search Players Worldwide"
-            onClick={() => setShowGlobalPlayerSearch(true)}
-            fullWidth={false}
-            variant="secondary"
-          />
-        </div>
-      ) : null}
-
-      {showDomesticStats ? (
-        <div className="sim-confirm-overlay" role="dialog" aria-modal="true" aria-label="Domestic team season statistics">
-          <div className="sim-confirm-modal sim-career-stats-modal">
-            <button
-              type="button"
-              className="sim-modal-top-close"
-              aria-label="Close"
-              onClick={() => setShowDomesticStats(false)}
-            >
-              ×
-            </button>
-            <h4>Domestic Teams - Current Season Player Statistics</h4>
-            <div className="sim-career-format-tabs" role="tablist" aria-label="Domestic player stats format tabs">
-              {CAREER_FORMATS.map((format) => (
-                <button
-                  key={`domestic-player-tab-${format}`}
-                  type="button"
-                  className={`sim-career-format-tab ${domesticStatsFormatTab === format ? 'active' : ''}`}
-                  role="tab"
-                  aria-selected={domesticStatsFormatTab === format}
-                  onClick={() => setDomesticStatsFormatTab(format)}
-                >
-                  {formatCareerMatchLabel(format)}
-                </button>
-              ))}
-            </div>
-            <div className="sim-career-format-tabs" role="tablist" aria-label="Domestic teams tabs">
-              {domesticTeamsForSelectedFormat.map((entry) => (
-                <button
-                  key={`domestic-team-tab-${domesticStatsFormatTab}-${entry.teamName}`}
-                  type="button"
-                  className={`sim-career-format-tab ${domesticStatsTeamTab === entry.teamName ? 'active' : ''}`}
-                  role="tab"
-                  aria-selected={domesticStatsTeamTab === entry.teamName}
-                  onClick={() => setDomesticStatsTeamTab(entry.teamName)}
-                >
-                  {entry.teamName}
-                </button>
-              ))}
-            </div>
-            <div className="sim-career-stats-scroll">
-              {selectedDomesticTeamStats ? (
-                <div key={selectedDomesticTeamStats.teamName} className="sim-scoreboard-panel">
-                  <h4 className="sim-section-title">{selectedDomesticTeamStats.teamName}</h4>
-
-                  <h4 className="sim-section-title">Batting</h4>
-                  <table className="sim-scoreboard-table">
-                    <thead>
-                      <tr>
-                        <th>Player</th>
-                        <th>Mat</th>
-                        <th>Runs</th>
-                        <th>Balls</th>
-                        <th>Outs</th>
-                        <th>Avg</th>
-                        <th>SR</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[...selectedDomesticTeamStats.rows]
-                        .sort((left, right) => right.runs - left.runs || left.outs - right.outs || left.name.localeCompare(right.name))
-                        .map((player) => (
-                        <tr key={`${selectedDomesticTeamStats.teamName}-${player.id}`}>
-                          <td>
-                            <button
-                              type="button"
-                              className="sim-player-link-btn"
-                              onClick={() => openCareerPlayerProfile(player, selectedDomesticTeamStats.teamName)}
-                            >
-                              <PlayerNameWithType player={player} />
-                            </button>
-                          </td>
-                          <td>{player.matches}</td>
-                          <td>{player.runs}</td>
-                          <td>{player.balls}</td>
-                          <td>{player.outs}</td>
-                          <td>{player.battingAverage}</td>
-                          <td>{player.strikeRate}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-
-                  <h4 className="sim-section-title">Bowling</h4>
-                  <table className="sim-scoreboard-table">
-                    <thead>
-                      <tr>
-                        <th>Player</th>
-                        <th>Mat</th>
-                        <th>Overs</th>
-                        <th>Balls</th>
-                        <th>Runs</th>
-                        <th>Wkts</th>
-                        <th>Econ</th>
-                        <th>Avg</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[...selectedDomesticTeamStats.rows]
-                        .sort(
-                          (left, right) =>
-                            right.wickets - left.wickets ||
-                            Number(left.economy) - Number(right.economy) ||
-                            left.name.localeCompare(right.name)
-                        )
-                        .map((player) => (
-                        <tr key={`${selectedDomesticTeamStats.teamName}-${player.id}-bowl`}>
-                          <td>
-                            <button
-                              type="button"
-                              className="sim-player-link-btn"
-                              onClick={() => openCareerPlayerProfile(player, selectedDomesticTeamStats.teamName)}
-                            >
-                              <PlayerNameWithType player={player} />
-                            </button>
-                          </td>
-                          <td>{player.matches}</td>
-                          <td>{player.overs}</td>
-                          <td>{player.ballsBowled}</td>
-                          <td>{player.runsConceded}</td>
-                          <td>{player.wickets}</td>
-                          <td>{player.economy}</td>
-                          <td>{player.bowlingAverage}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <p>No team data available for this format yet.</p>
-              )}
-            </div>
-            <div className="sim-save-row-actions">
-              <AppButton text="Close" variant="secondary" fullWidth={false} onClick={() => setShowDomesticStats(false)} />
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {showLeagueTable ? (
-        <div className="sim-confirm-overlay" role="dialog" aria-modal="true" aria-label="League table by format">
-          <div className="sim-confirm-modal sim-career-stats-modal">
-            <button
-              type="button"
-              className="sim-modal-top-close"
-              aria-label="Close"
-              onClick={() => setShowLeagueTable(false)}
-            >
-              ×
-            </button>
-            <h4>League Table</h4>
-            <div className="sim-career-inline-fields">
-              <label htmlFor="league-table-country-select">Country</label>
-              <select
-                id="league-table-country-select"
-                className="sim-career-input"
-                value={selectedLeagueCountry}
-                onChange={(event) => setSelectedLeagueCountry(event.target.value)}
-              >
-                <option value="">Select country</option>
-                {availableLeagueCountries.map((country) => (
-                  <option key={`league-table-country-${country}`} value={country}>{country}</option>
-                ))}
-              </select>
-            </div>
-            <div className="sim-career-format-tabs" role="tablist" aria-label="League table format tabs">
-              {CAREER_FORMATS.map((format) => (
-                <button
-                  key={`league-table-tab-${format}`}
-                  type="button"
-                  className={`sim-career-format-tab ${leagueTableFormatTab === format ? 'active' : ''}`}
-                  role="tab"
-                  aria-selected={leagueTableFormatTab === format}
-                  onClick={() => setLeagueTableFormatTab(format)}
-                >
-                  {formatCareerMatchLabel(format)}
-                </button>
-              ))}
-            </div>
-            <div className="sim-career-stats-scroll">
-              <div className="sim-scoreboard-panel">
-                <h4 className="sim-section-title">{formatCareerMatchLabel(leagueTableFormatTab)} Standings ({selectedLeagueCountry || 'N/A'})</h4>
-                <table className="sim-scoreboard-table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Team</th>
-                      <th>P</th>
-                      <th>W</th>
-                      <th>L</th>
-                      <th>T</th>
-                      <th>Pts</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {leagueTableRowsForSelectedCountry.map((row, index) => (
-                      <tr key={`league-table-${leagueTableFormatTab}-${row.team}`}>
-                        <td>{index + 1}</td>
-                        <td>{row.team}</td>
-                        <td>{row.played}</td>
-                        <td>{row.wins}</td>
-                        <td>{row.losses}</td>
-                        <td>{row.ties}</td>
-                        <td><strong>{row.points}</strong></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div className="sim-save-row-actions">
-              <AppButton text="Close" variant="secondary" fullWidth={false} onClick={() => setShowLeagueTable(false)} />
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {showLeaguePlayerStats ? (
-        <div className="sim-confirm-overlay" role="dialog" aria-modal="true" aria-label="League player statistics by format">
-          <div className="sim-confirm-modal sim-career-stats-modal">
-            <button
-              type="button"
-              className="sim-modal-top-close"
-              aria-label="Close"
-              onClick={() => setShowLeaguePlayerStats(false)}
-            >
-              ×
-            </button>
-            <h4>League Player Statistics</h4>
-            <div className="sim-career-inline-fields">
-              <label htmlFor="league-player-country-select">Country</label>
-              <select
-                id="league-player-country-select"
-                className="sim-career-input"
-                value={selectedLeagueCountry}
-                onChange={(event) => setSelectedLeagueCountry(event.target.value)}
-              >
-                <option value="">Select country</option>
-                {availableLeagueCountries.map((country) => (
-                  <option key={`league-player-country-${country}`} value={country}>{country}</option>
-                ))}
-              </select>
-            </div>
-            <div className="sim-career-format-tabs" role="tablist" aria-label="League player stats format tabs">
-              {CAREER_FORMATS.map((format) => (
-                <button
-                  key={`league-player-tab-${format}`}
-                  type="button"
-                  className={`sim-career-format-tab ${leaguePlayerFormatTab === format ? 'active' : ''}`}
-                  role="tab"
-                  aria-selected={leaguePlayerFormatTab === format}
-                  onClick={() => setLeaguePlayerFormatTab(format)}
-                >
-                  {formatCareerMatchLabel(format)}
-                </button>
-              ))}
-            </div>
-            <div className="sim-career-stats-scroll">
-              <div className="sim-scoreboard-panel">
-                <h4 className="sim-section-title">Top 20 Scorers ({selectedLeagueCountry || 'N/A'} - {formatCareerMatchLabel(leaguePlayerFormatTab)})</h4>
-                <table className="sim-scoreboard-table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Player</th>
-                      <th>Team</th>
-                      <th>Mat</th>
-                      <th>Runs</th>
-                      <th>Balls</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(leaguePlayerStatsByFormat[leaguePlayerFormatTab]?.topScorers || []).map((entry, index) => (
-                      <tr key={`league-scorer-${leaguePlayerFormatTab}-${entry.key}`}>
-                        <td>{index + 1}</td>
-                        <td>
-                          <button
-                            type="button"
-                            className="sim-player-link-btn"
-                            onClick={() => openCareerPlayerProfile(entry, entry.team)}
-                          >
-                            <PlayerNameWithType player={entry} />
-                          </button>
-                        </td>
-                        <td>{entry.team}</td>
-                        <td>{entry.matches}</td>
-                        <td>{entry.runs}</td>
-                        <td>{entry.balls}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="sim-scoreboard-panel">
-                <h4 className="sim-section-title">Top 20 Wicket Takers ({selectedLeagueCountry || 'N/A'} - {formatCareerMatchLabel(leaguePlayerFormatTab)})</h4>
-                <table className="sim-scoreboard-table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Player</th>
-                      <th>Team</th>
-                      <th>Mat</th>
-                      <th>Wkts</th>
-                      <th>Overs</th>
-                      <th>Runs Conceded</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(leaguePlayerStatsByFormat[leaguePlayerFormatTab]?.topWicketTakers || []).map((entry, index) => (
-                      <tr key={`league-wicket-${leaguePlayerFormatTab}-${entry.key}`}>
-                        <td>{index + 1}</td>
-                        <td>
-                          <button
-                            type="button"
-                            className="sim-player-link-btn"
-                            onClick={() => openCareerPlayerProfile(entry, entry.team)}
-                          >
-                            <PlayerNameWithType player={entry} />
-                          </button>
-                        </td>
-                        <td>{entry.team}</td>
-                        <td>{entry.matches}</td>
-                        <td>{entry.wickets}</td>
-                        <td>{`${Math.floor((entry.ballsBowled || 0) / 6)}.${(entry.ballsBowled || 0) % 6}`}</td>
-                        <td>{entry.runsConceded}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div className="sim-save-row-actions">
-              <AppButton text="Close" variant="secondary" fullWidth={false} onClick={() => setShowLeaguePlayerStats(false)} />
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {showGlobalPlayerSearch ? (
-        <div className="sim-confirm-overlay" role="dialog" aria-modal="true" aria-label="Global player search">
-          <div className="sim-confirm-modal sim-career-stats-modal" style={{ width: '95vw', maxWidth: '1600px' }}>
-            <button
-              type="button"
-              className="sim-modal-top-close"
-              aria-label="Close"
-              onClick={() => setShowGlobalPlayerSearch(false)}
-            >
-              ×
-            </button>
-            <h4>Search Players Worldwide</h4>
-            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginTop: 8 }}>
-              <div style={{ maxWidth: '200px', width: '100%', flex: '0 0 200px' }}>
-                <div className="sim-career-inline-fields" style={{ display: 'grid', gap: 8 }}>
-                  <input
-                    className="sim-career-input"
-                    type="text"
-                    placeholder="Player Name"
-                    value={searchName}
-                    onChange={(event) => setSearchName(event.target.value)}
-                  />
-                  <select className="sim-career-input" value={searchPlayerType} onChange={(event) => setSearchPlayerType(event.target.value)}>
-                    <option value="">All Player Types</option>
-                    {globalPlayerTypeOptions.map((type) => (
-                      <option key={`search-player-type-${type}`} value={type}>{type}</option>
-                    ))}
-                  </select>
-                  <select className="sim-career-input" value={searchCountry} onChange={(event) => setSearchCountry(event.target.value)}>
-                    <option value="">All Countries</option>
-                    {availableLeagueCountries.map((country) => (
-                      <option key={`search-country-${country}`} value={country}>{country}</option>
-                    ))}
-                  </select>
-                  <input className="sim-career-input" type="text" placeholder="Bat vs Pace (e.g. 30-80)" value={batVsPaceRange} onChange={(event) => setBatVsPaceRange(event.target.value)} />
-                  <input className="sim-career-input" type="text" placeholder="Bat vs Spin (e.g. 30-80)" value={batVsSpinRange} onChange={(event) => setBatVsSpinRange(event.target.value)} />
-                  <input className="sim-career-input" type="text" placeholder="Pace Ability (e.g. 40-90)" value={paceAbilityRange} onChange={(event) => setPaceAbilityRange(event.target.value)} />
-                  <input className="sim-career-input" type="text" placeholder="Spin Ability (e.g. 20-70)" value={spinAbilityRange} onChange={(event) => setSpinAbilityRange(event.target.value)} />
-                  <input className="sim-career-input" type="text" placeholder="Aggression (e.g. 50-95)" value={aggressionRange} onChange={(event) => setAggressionRange(event.target.value)} />
-                  <input className="sim-career-input" type="text" placeholder="Matches (e.g. 5-20)" value={matchesRange} onChange={(event) => setMatchesRange(event.target.value)} />
-                  <input className="sim-career-input" type="text" placeholder="Total Runs (e.g. 200-900)" value={runsRange} onChange={(event) => setRunsRange(event.target.value)} />
-                  <input className="sim-career-input" type="text" placeholder="Runs/Match (e.g. 20-60)" value={runsPerMatchRange} onChange={(event) => setRunsPerMatchRange(event.target.value)} />
-                  <input className="sim-career-input" type="text" placeholder="Total Wickets (e.g. 5-30)" value={wicketsRange} onChange={(event) => setWicketsRange(event.target.value)} />
-                </div>
-              </div>
-
-              <div style={{ flex: '1 1 auto', minWidth: 0 }}>
-                <div className="sim-career-inline-fields" style={{ marginBottom: 8 }}>
-                  <span className="sim-series-length-card" style={{ padding: '6px 10px' }}>Players: {totalFilteredPlayers}</span>
-                </div>
-
-                <div className="sim-career-stats-scroll">
-                  <div className="sim-scoreboard-panel">
-                    <h4 className="sim-section-title">Players List ({totalFilteredPlayers})</h4>
-                    {!hasGlobalSearchFilters ? (
-                      <p>Enter at least one filter to load players.</p>
-                    ) : (
-                      <table className="sim-scoreboard-table">
-                        <thead>
-                          <tr>
-                            <th>Player</th>
-                            <th>Country</th>
-                            <th>Team</th>
-                            <th>Type</th>
-                            <th>Bat vs Pace</th>
-                            <th>Bat vs Spin</th>
-                            <th>Pace</th>
-                            <th>Spin</th>
-                            <th>Aggression</th>
-                            <th>Mat</th>
-                            <th>Runs</th>
-                            <th>Runs/Mat</th>
-                            <th>Wkts</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {paginatedGlobalPlayers.map((player) => (
-                            <tr key={`global-search-${player.id}`}>
-                              <td>{player.name}</td>
-                              <td>{player.country}</td>
-                              <td>{player.team}</td>
-                              <td>{player.playerType}</td>
-                              <td>{player.batVsPace}</td>
-                              <td>{player.batVsSpin}</td>
-                              <td>{player.paceAbility}</td>
-                              <td>{player.spinAbility}</td>
-                              <td>{player.aggression}</td>
-                              <td>{player.matches}</td>
-                              <td>{player.runs}</td>
-                              <td>{player.runsPerMatch.toFixed(2)}</td>
-                              <td>{player.wickets}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="sim-save-row-actions">
-              <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-                <span className="sim-series-length-card" style={{ padding: '6px 10px' }}>Page {normalizedGlobalSearchPage} of {totalSearchPages}</span>
-                <AppButton text="Prev" onClick={() => setGlobalSearchPage((previous) => Math.max(1, previous - 1))} fullWidth={false} variant="secondary" disabled={normalizedGlobalSearchPage <= 1} />
-                <AppButton text="Next" onClick={() => setGlobalSearchPage((previous) => Math.min(totalSearchPages, previous + 1))} fullWidth={false} variant="secondary" disabled={normalizedGlobalSearchPage >= totalSearchPages} />
-                <AppButton text="Close" variant="secondary" fullWidth={false} onClick={() => setShowGlobalPlayerSearch(false)} />
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      <CareerPlayerProfileModal
-        isOpen={!!careerPlayerModal?.player}
-        title={careerPlayerModal?.title || 'Player Season Stats and Ability'}
-        player={careerPlayerModal?.player || null}
-        onClose={() => setCareerPlayerModal(null)}
-      />
+    <div className="sim-shell" ref={simShellRef}>
+      <CareerAnalyticsDashboard
+      isCareerMode={isCareerMode}
+      careerTeam={careerTeam}
+      careerDomesticCountry={careerDomesticCountry}
+      careerDomesticTeams={careerDomesticTeams}
+      careerPlayerStats={careerPlayerStats}
+      careerPlayerProfile={careerPlayerProfile}
+      careerStandings={careerStandings}
+      careerGlobalPlayerPool={careerGlobalPlayerPool}
+    />
 
       {isGlobalSaving ? (
         <div className="sim-saving-overlay" role="status" aria-live="polite">
-          <div className="sim-saving-ball">🏏</div>
+          <span className="sim-saving-ball" aria-hidden="true" />
           <p>Saving match...</p>
         </div>
       ) : null}
@@ -1248,7 +780,9 @@ function CricketSimulator({
               firstInningsView={firstInningsView}
               secondInningsView={secondInningsView}
               setBattingIntent={setBattingIntent}
+              setBattingTactics={setBattingTactics}
               setBowlingIntent={setBowlingIntent}
+              setBowlingTactics={setBowlingTactics}
               onSaveGame={saveGame}
               isSavingGame={isSavingGame}
               saveMessage={saveMessage}
@@ -1284,7 +818,6 @@ function CricketSimulator({
               oversDisplay={oversDisplay}
               careerTeam={careerTeam}
               careerSeason={careerSeason}
-              careerSeasonLength={careerSeasonLength}
               careerFormat={careerFormat}
               careerMatchIndex={careerMatchIndex}
               careerSchedule={careerSchedule}
@@ -1348,6 +881,8 @@ function CricketSimulator({
             opponentAvailablePool={opponentAvailablePool}
             ownSelectedXIIds={ownSelectedXIIds}
             opponentSelectedXIIds={opponentSelectedXIIds}
+            ownBattingOrderIds={ownBattingOrderIds}
+            opponentBattingOrderIds={opponentBattingOrderIds}
             ownSelectedXIPlayers={ownSelectedXIPlayers}
             opponentSelectedXIPlayers={opponentSelectedXIPlayers}
             ownTeamRoles={ownTeamRoles}
@@ -1358,13 +893,17 @@ function CricketSimulator({
             opponentRolesReady={opponentRolesReady}
             moveOwnPlayerToXI={moveOwnPlayerToXI}
             removeOwnPlayerFromXI={removeOwnPlayerFromXI}
+            moveOwnPlayerInBattingOrder={moveOwnPlayerInBattingOrder}
             moveOpponentPlayerToXI={moveOpponentPlayerToXI}
             removeOpponentPlayerFromXI={removeOpponentPlayerFromXI}
+            moveOpponentPlayerInBattingOrder={moveOpponentPlayerInBattingOrder}
             setOwnRole={setOwnRole}
             setOpponentRole={setOpponentRole}
             createCustomPlayer={createCustomPlayer}
             autoPickOwnXI={autoPickOwnXI}
             autoPickOpponentXI={autoPickOpponentXI}
+            autoPositionOwnXI={autoPositionOwnXI}
+            autoPositionOpponentXI={autoPositionOpponentXI}
             startMatchWithSelectedXI={startMatchWithSelectedXI}
             beginCareer={beginCareer}
             careerTeam={careerTeam}

@@ -1,5 +1,6 @@
 import React from 'react';
 import AppButton from '../../../components/ui/AppButton';
+import { skillList } from '../../../gameData/skillList';
 import PlayerNameWithType from './PlayerNameWithType';
 
 const clampPercent = (value) => {
@@ -14,6 +15,8 @@ const abilityRows = [
   { key: 'spinAbility', label: 'Spin Ability' },
   { key: 'battingAggresion', label: 'Aggression' },
 ];
+
+const skillByName = new Map(skillList.map((skill) => [skill.name, skill]));
 
 function CareerPlayerProfileModal({ isOpen, title, player, onClose }) {
   if (!isOpen || !player) {
@@ -76,6 +79,31 @@ function CareerPlayerProfileModal({ isOpen, title, player, onClose }) {
             <p>Job: {player.job || 'Unknown'}</p>
             <p>Email: {player.email || 'N/A'}</p>
             <p>Phone: {player.phone || 'N/A'}</p>
+          </div>
+
+          <div className="sim-career-player-card sim-career-player-skills-card">
+            <h5>Skills</h5>
+            {Array.isArray(player.skills) && player.skills.length ? (
+              <ul className="sim-career-player-skills">
+                {player.skills.map((skillName) => {
+                  const skill = skillByName.get(skillName);
+                  if (!skill) {
+                    return null;
+                  }
+                  return (
+                    <li key={skill.name} className="sim-career-player-skill">
+                      <img src={skill.icon} alt={`${skill.name} skill icon`} />
+                      <span>
+                        <strong>{skill.name}</strong>
+                        <small>{skill.affects}</small>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p>No skills assigned.</p>
+            )}
           </div>
 
           <div className="sim-career-player-card">

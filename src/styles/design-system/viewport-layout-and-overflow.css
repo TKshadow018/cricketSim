@@ -1,0 +1,467 @@
+.dashboard-page.dashboard-shell {
+  display: grid;
+  width: 100%;
+  height: 100dvh;
+  min-height: 0;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.dashboard-navbar {
+  position: relative;
+  height: 72px;
+  min-height: 72px;
+}
+
+.dashboard-main-grid {
+  display: grid;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-height: 0;
+  grid-template-columns: minmax(220px, 17vw) minmax(0, 1fr) minmax(250px, 20vw);
+  align-items: stretch;
+  gap: clamp(0.75rem, 1.2vw, 1.25rem);
+  padding: clamp(0.75rem, 1.2vw, 1.25rem);
+  overflow: hidden;
+}
+
+.dashboard-sidebar {
+  height: 100%;
+  max-height: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.dashboard-history-list {
+  max-height: none;
+  overflow: visible;
+}
+
+.dashboard-center {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dashboard-center .game-dashboard-card {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow: hidden;
+}
+
+.dashboard-center .game-dashboard-card > .sim-shell {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-auto-rows: max-content;
+  align-content: start;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  overscroll-behavior: contain;
+}
+
+:where(
+  .dashboard-center,
+  .dashboard-center *,
+  .dashboard-mobile-nav,
+  .dashboard-mobile-nav *,
+  .sim-shell,
+  .sim-shell *
+) {
+  min-width: 0;
+}
+
+.sim-shell,
+.sim-shell > *,
+.sim-stage-card,
+.sim-stage-content,
+.sim-stage-content > *,
+.sim-innings-layout,
+.sim-innings-layout > *,
+.sim-match-action-layout,
+.sim-commentary-feed,
+.sim-card-grid,
+.sim-flag-grid,
+.sim-player-pick-grid,
+.sim-series-mode-grid,
+.sim-series-length-grid,
+.sim-series-summary-grid,
+.sim-final-grid,
+.sim-xi-dnd-layout,
+.sim-xi-column,
+.sim-xi-role-grid,
+.sim-role-option-list,
+.sim-career-create-grid,
+.sim-career-type-grid,
+.sim-custom-form-grid,
+.sim-career-player-grid,
+.sim-scoreboard-panel,
+.sim-scoreboard-table-wrap,
+.sim-table-scroll-shell,
+.sim-career-tools {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.sim-shell {
+  grid-auto-rows: max-content;
+  align-content: start;
+}
+
+.sim-stage-card {
+  width: 100%;
+  align-self: start;
+}
+
+.dashboard-center,
+.game-dashboard-card,
+.sim-shell > *,
+.sim-stage-card,
+.sim-stage-content,
+.sim-stage-content > *,
+.sim-stage-content :is(
+  .sim-card-grid,
+  .sim-flag-grid,
+  .sim-player-pick-grid,
+  .sim-series-mode-grid,
+  .sim-series-length-grid,
+  .sim-series-summary-grid,
+  .sim-final-grid,
+  .sim-innings-layout,
+  .sim-match-action-layout,
+  .sim-xi-dnd-layout,
+  .sim-xi-column,
+  .sim-xi-role-grid,
+  .sim-role-option-list,
+  .sim-career-create-grid,
+  .sim-career-type-grid,
+  .sim-custom-form-grid,
+  .sim-career-player-grid,
+  .sim-scoreboard-panel,
+  .sim-scoreboard-block,
+  .sim-scoreboard-table-wrap,
+  .sim-table-scroll-shell,
+  .sim-career-tools,
+  .sim-auction-momentum-grid,
+  .sim-auction-momentum-row
+) {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.sim-shell > * {
+  width: 100%;
+}
+
+.sim-stage-card {
+  align-self: start;
+  width: 100%;
+}
+
+.sim-stage-content,
+.sim-innings-layout > *,
+.sim-xi-dnd-layout > *,
+.sim-career-create-grid > *,
+.sim-custom-form-grid > *,
+.sim-auction-momentum-row > * {
+  min-width: 0;
+}
+
+.sim-scoreboard-panel {
+  overflow-x: clip;
+}
+
+.sim-scoreboard-table-wrap,
+.sim-table-scroll-shell {
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.sim-commentary-feed,
+.sim-role-option-list {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.sim-career-tools {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  align-items: stretch;
+  gap: 0.45rem;
+  overflow: visible;
+  padding: 0.3rem;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+}
+
+.sim-career-tools .app-button {
+  min-height: 42px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
+.sim-career-type-grid {
+  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+}
+
+.sim-career-type-pill {
+  min-width: 0;
+  max-width: 100%;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.sim-career-type-pill-label {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.sim-auction-momentum-row {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr) auto;
+}
+
+.sim-auction-momentum-label {
+  min-width: 0;
+}
+
+.dashboard-mobile-nav {
+  display: none;
+}
+
+.sim-saved-item .sim-delete-cross-btn {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  align-self: center;
+  margin: 0.5rem;
+  border: 1px solid rgba(255, 151, 142, 0.25);
+  border-radius: 11px;
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .dashboard-main-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(230px, 28vw);
+  }
+
+  .dashboard-sidebar-left {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .dashboard-page.dashboard-shell {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .dashboard-navbar {
+    min-height: 64px;
+    height: auto;
+    padding: max(0.6rem, env(safe-area-inset-top)) 0.8rem 0.6rem;
+  }
+
+  .dashboard-navbar .dashboard-kicker {
+    margin-bottom: 0.1rem;
+    font-size: 0.66rem;
+  }
+
+  .dashboard-navbar .dashboard-title {
+    font-size: 1rem;
+  }
+
+  .dashboard-navbar .app-button {
+    min-height: 44px;
+    padding-inline: 0.75rem;
+    font-size: 0.86rem;
+  }
+
+  .dashboard-main-grid {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .dashboard-main-grid > .dashboard-center,
+  .dashboard-main-grid > .dashboard-sidebar {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+  }
+
+  .dashboard-main-grid[data-mobile-view="play"] > .dashboard-sidebar,
+  .dashboard-main-grid[data-mobile-view="panel"] > .dashboard-sidebar-right,
+  .dashboard-main-grid[data-mobile-view="notes"] > .dashboard-sidebar-left,
+  .dashboard-main-grid[data-mobile-view="notes"] > .dashboard-center {
+    display: none;
+  }
+
+  .dashboard-main-grid[data-mobile-view="notes"] > .dashboard-sidebar-right {
+    display: block;
+  }
+
+  .dashboard-main-grid[data-mobile-view="panel"] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .dashboard-main-grid[data-mobile-view="panel"] > .dashboard-sidebar-left,
+  .dashboard-main-grid[data-mobile-view="panel"] > .dashboard-center {
+    display: block;
+    height: auto;
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+
+  .dashboard-main-grid[data-mobile-view="panel"] > .dashboard-center .game-dashboard-card {
+    height: auto;
+    overflow: visible;
+  }
+
+  .dashboard-main-grid[data-mobile-view="play"] .sim-career-tools {
+    display: none;
+  }
+
+  .dashboard-main-grid[data-mobile-view="panel"] .sim-shell {
+    display: grid;
+    height: auto;
+    min-height: 0;
+    flex: 0 0 auto;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .dashboard-main-grid[data-mobile-view="panel"] .sim-shell > :is(.sim-top-strip, .sim-stage-card) {
+    display: none;
+  }
+
+  .dashboard-main-grid[data-mobile-view="panel"] .sim-career-tools {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+    overflow: visible;
+    padding: 0.75rem;
+  }
+
+  .dashboard-main-grid[data-mobile-view="panel"] .sim-career-tools .app-button {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .dashboard-main-grid[data-mobile-view="play"] > .dashboard-center {
+    display: block;
+    overflow: hidden;
+  }
+
+  .dashboard-center .game-dashboard-card {
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .dashboard-center .game-dashboard-card > .sim-shell {
+    height: 100%;
+    padding: 0.75rem;
+  }
+
+  .dashboard-sidebar {
+    padding: 1rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .dashboard-mobile-nav {
+    z-index: 35;
+    display: grid;
+    min-height: 66px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.35rem;
+    padding: 0.4rem 0.6rem max(0.4rem, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border);
+    background: rgba(11, 17, 14, 0.97);
+  }
+
+  .dashboard-mobile-nav-item {
+    display: grid;
+    min-width: 0;
+    min-height: 48px;
+    place-items: center;
+    gap: 0.15rem;
+    padding: 0.35rem;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    color: var(--text-muted);
+    background: transparent;
+    font-size: 0.72rem;
+    font-weight: 650;
+    line-height: 1.1;
+  }
+
+  .dashboard-mobile-nav-item svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+  }
+
+  .dashboard-mobile-nav-item.active,
+  .dashboard-mobile-nav-item[aria-pressed="true"] {
+    border-color: rgba(199, 243, 107, 0.24);
+    color: var(--brand-primary);
+    background: rgba(199, 243, 107, 0.08);
+  }
+
+  .sim-auction-momentum-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) auto;
+  }
+
+  .sim-auction-broadcast-bar {
+    flex-wrap: wrap;
+  }
+
+  .sim-auction-broadcast-label {
+    min-width: 0;
+  }
+
+  .sim-auction-broadcast-score {
+    white-space: normal;
+  }
+
+  .sim-auction-broadcast-meter {
+    min-width: 0;
+    flex-basis: 100%;
+  }
+
+}

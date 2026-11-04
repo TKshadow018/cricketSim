@@ -64,8 +64,20 @@ Weak bowler ranking is based on:
 The selector keeps the XI balanced by preserving or restoring:
 
 - at least one wicketkeeper
+- at least five players classified as pace all-rounders, spin all-rounders, pacers, or spinners
 - batting depth when bench replacements are applied
 - valid 11-player selection
+
+National player types are assigned from abilities in this priority order:
+
+1. Wicketkeeper: `isWicketKeeper` is true.
+2. Pace all-rounder: batting ability total is greater than `70` and `paceAbility` is greater than `60`.
+3. Spin all-rounder: batting ability total is greater than `70` and `spinAbility` is greater than `60`.
+4. Batsman: either batting ability is greater than `70`, or their total is greater than `120`.
+5. Pacer: `paceAbility` is greater than `70`.
+6. Spinner: `spinAbility` is greater than `70`.
+
+The batting ability total is `abilityToPlayPaceBall + abilityToPlaySpinBall`. The first matching role wins; players not matching these thresholds use the generic bowler role, which does not count toward the five-player quota.
 
 ## Fallback Behavior
 

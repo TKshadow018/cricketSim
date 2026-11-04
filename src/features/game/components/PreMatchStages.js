@@ -45,6 +45,8 @@ function PreMatchStages({
   opponentAvailablePool,
   ownSelectedXIIds,
   opponentSelectedXIIds,
+  ownBattingOrderIds,
+  opponentBattingOrderIds,
   ownSelectedXIPlayers,
   opponentSelectedXIPlayers,
   ownTeamRoles,
@@ -55,13 +57,17 @@ function PreMatchStages({
   opponentRolesReady,
   moveOwnPlayerToXI,
   removeOwnPlayerFromXI,
+  moveOwnPlayerInBattingOrder,
   moveOpponentPlayerToXI,
   removeOpponentPlayerFromXI,
+  moveOpponentPlayerInBattingOrder,
   setOwnRole,
   setOpponentRole,
   createCustomPlayer,
   autoPickOwnXI,
   autoPickOpponentXI,
+  autoPositionOwnXI,
+  autoPositionOpponentXI,
   startMatchWithSelectedXI,
   beginCareer,
   careerTeam,
@@ -82,6 +88,7 @@ function PreMatchStages({
 }) {
   const [saveToDelete, setSaveToDelete] = useState(null);
   const [dragPayload, setDragPayload] = useState(null);
+  const [autoPositionError, setAutoPositionError] = useState('');
   const [customPlayerModal, setCustomPlayerModal] = useState({
     open: false,
     teamKey: 'own',
@@ -99,6 +106,19 @@ function PreMatchStages({
     [venueStadiums]
   );
   const isRedesignedDashboard = (process.env.REACT_APP_ABTEST || '').trim().toLowerCase() === 'b';
+
+  const runAutoPosition = (handler) => {
+    setAutoPositionError('');
+    try {
+      handler();
+    } catch (error) {
+      setAutoPositionError(
+        error instanceof Error
+          ? `Could not assign batting order: ${error.message}`
+          : 'Could not assign batting order. Please check the selected players and try again.'
+      );
+    }
+  };
 
   const showSetupBackButton =
     (stage >= matchStatusEnum.ChooseMatchType && stage < matchStatusEnum.TeamOneBat) ||
@@ -290,6 +310,7 @@ function PreMatchStages({
 
       <PreMatchSelectionStages
         stage={stage}
+        requireBowlingQuota={game?.gameMode !== 'career'}
         stageCommonProps={stageCommonProps}
         setupBackSlot={setupBackSlot}
         tournamentMatches={tournamentMatches}
@@ -300,6 +321,8 @@ function PreMatchStages({
         updateTournamentFixture={updateTournamentFixture}
         ownSelectedXIIds={ownSelectedXIIds}
         opponentSelectedXIIds={opponentSelectedXIIds}
+        ownBattingOrderIds={ownBattingOrderIds}
+        opponentBattingOrderIds={opponentBattingOrderIds}
         ownAvailablePool={ownAvailablePool}
         opponentAvailablePool={opponentAvailablePool}
         ownSelectedXIPlayers={ownSelectedXIPlayers}
@@ -314,10 +337,15 @@ function PreMatchStages({
         opponentRolesReady={opponentRolesReady}
         moveOwnPlayerToXI={moveOwnPlayerToXI}
         removeOwnPlayerFromXI={removeOwnPlayerFromXI}
+        moveOwnPlayerInBattingOrder={moveOwnPlayerInBattingOrder}
         moveOpponentPlayerToXI={moveOpponentPlayerToXI}
         removeOpponentPlayerFromXI={removeOpponentPlayerFromXI}
+        moveOpponentPlayerInBattingOrder={moveOpponentPlayerInBattingOrder}
         autoPickOwnXI={autoPickOwnXI}
         autoPickOpponentXI={autoPickOpponentXI}
+        autoPositionOwnXI={() => runAutoPosition(autoPositionOwnXI)}
+        autoPositionOpponentXI={() => runAutoPosition(autoPositionOpponentXI)}
+        autoPositionError={autoPositionError}
         openCustomModal={openCustomModal}
         startMatchWithSelectedXI={startMatchWithSelectedXI}
         goToNextStage={goToNextStage}

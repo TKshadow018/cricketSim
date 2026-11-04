@@ -45,14 +45,14 @@ export const bowlingActionList = [
 ];
 
 export const matchVisual = {
-  micro: '⚡',
-  mini: '🏃',
-  t10: '🎯',
-  t20: '🔥',
-  ODI: '🏆',
-  test: '👑',
-  practiceTestMicro: '🎓',
-  practiceTestMini: '🎓',
+  micro: 'MICRO',
+  mini: 'MINI',
+  t10: 'T10',
+  t20: 'T20',
+  ODI: 'ODI',
+  test: 'TEST',
+  practiceTestMicro: 'P-MIC',
+  practiceTestMini: 'P-MIN',
 };
 
 export const randomFrom = (arr = []) => arr[Math.floor(Math.random() * arr.length)];

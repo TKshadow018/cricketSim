@@ -1,6 +1,6 @@
 import { formatOvers, runMilestoneBonus, wicketMilestoneBonus } from './controllerCommonUtils';
 
-const parseOversToBalls = (oversText = '0.0') => {
+const parseOversToBalls = (oversText) => {
   const [oversPart, ballsPart] = String(oversText).split('.');
   const overs = Number(oversPart || 0);
   const balls = Number(ballsPart || 0);
@@ -233,7 +233,7 @@ export const buildMomRecommendations = ({
   const topSevenWicketTakers = byWickets.slice(0, 7).filter((entry) => entry.wickets > 0);
   const byLeastRunsPerWicket = [...topSevenWicketTakers].sort(
     (left, right) =>
-      (left.runsPerWicket ?? Number.POSITIVE_INFINITY) - (right.runsPerWicket ?? Number.POSITIVE_INFINITY) ||
+      left.runsPerWicket - right.runsPerWicket ||
       right.wickets - left.wickets ||
       left.name.localeCompare(right.name)
   );

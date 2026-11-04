@@ -1,89 +1,88 @@
-import React from 'react';
-import { matchStatusEnum } from '../../../gameData/matchStatusEnum';
-import AppButton from '../../../components/ui/AppButton';
-import StageShell from './StageShell';
-import InningsStage from './InningsStage';
-import { MatchResultCard } from './ResultCards';
-import TeamNameWithFlag from './TeamNameWithFlag';
-import PlayerNameWithType from './PlayerNameWithType';
-import CareerSeasonSummaryStage from './CareerSeasonSummaryStage';
-import CareerHistoryStage from './CareerHistoryStage';
+import React from "react";
+import { matchStatusEnum } from "../../../gameData/matchStatusEnum";
+import AppButton from "../../../components/ui/AppButton";
+import StageShell from "./StageShell";
+import InningsStage from "./InningsStage";
+import TeamNameWithFlag from "./TeamNameWithFlag";
+import MatchSummaryStages from "./MatchSummaryStages";
 
-function LiveMatchStages({
-  stage,
-  stageCommonProps,
-  game,
-  matchType,
-  firstInningsTeamName,
-  secondInningsTeamName,
-  firstInningsView,
-  secondInningsView,
-  setBattingIntent,
-  setBowlingIntent,
-  onSaveGame,
-  isSavingGame,
-  saveMessage,
-  processDelivery,
-  handleSelectOpener,
-  handleSelectNextBatter,
-  handleSelectBowler,
-  toggleScoreboard,
-  buildTeamOneScorecard,
-  buildTeamTwoScorecard,
-  teamOneFinal,
-  teamTwoFinal,
-  resultSummary,
-  momRecommendations,
-  onSelectManOfTheMatch,
-  gameMode,
-  seriesLength,
-  seriesCurrentMatch,
-  seriesResults,
-  seriesStanding,
-  seriesTopRunScorers,
-  seriesTopWicketTakers,
-  tournamentChampion,
-  tournamentResults,
-  tournamentTopRunScorers,
-  tournamentTopWicketTakers,
-  isCurrentMatchUserInvolved,
-  autoSimMode,
-  onMatchPrimaryAction,
-  onSimulateOver,
-  onSimulateMatch,
-  resetMatch,
-  oversDisplay,
-  careerTeam,
-  careerSeason,
-  careerSeasonLength,
-  careerFormat,
-  careerMatchIndex,
-  careerSchedule,
-  careerStandings,
-  careerPlayerStats,
-  careerSeasonHistory,
-  careerPlayerProfile,
-  careerDomesticCountry,
-  careerDomesticTeams,
-  careerOffers,
-  careerRetired,
-  careerTopRunScorers,
-  careerTopWicketTakers,
-  careerProgressLabel,
-  handleStartNextCareerSeason,
-  handleEndCareer,
-  handleRetireCareer,
-  handleViewCareerHistory,
-  handleBackToCareerSchedule,
-}) {
-  const isSeriesMode = gameMode === 'series';
-  const isTournamentMode = gameMode === 'tournament';
-  const isCareerMode = gameMode === 'career';
-  const isSeriesLastMatch = isSeriesMode && seriesCurrentMatch >= seriesLength;
+const buildInningsSituation = ({ innings, view, matchType, matchCondition, oversDisplay, target }) => {
+  const score = Number(innings?.score) || 0;
+  const wickets = Number(innings?.wickets) || 0;
+  const balls = Number(innings?.balls) || 0;
+  const maxBalls = Math.max(0, (Number(matchType?.over) || 0) * 6);
+  const ballsRemaining = Math.max(0, maxBalls - balls);
+  const runsRemaining = target === null ? null : Math.max(0, target - score);
+
+  return {
+    ...(view?.bowlingContext || {}),
+    ...(view?.battingContext || {}),
+    score,
+    wickets,
+    over: oversDisplay(balls),
+    oversLimit: Number(matchType?.over) || 0,
+    target,
+    runsRemaining,
+    ballsRemaining,
+    currentRunRate: balls > 0 ? ((score / balls) * 6).toFixed(2) : '0.00',
+    requiredRunRate:
+      runsRemaining === null || ballsRemaining <= 0
+        ? null
+        : ((runsRemaining / ballsRemaining) * 6).toFixed(2),
+    matchCondition: matchCondition || {},
+  };
+};
+
+function LiveMatchStages(props) {
+  const {
+    stage,
+    stageCommonProps,
+    game,
+    matchType,
+    firstInningsTeamName,
+    secondInningsTeamName,
+    firstInningsView,
+    secondInningsView,
+    setBattingIntent,
+    setBattingTactics,
+    setBowlingIntent,
+    setBowlingTactics,
+    onSaveGame,
+    isSavingGame,
+    saveMessage,
+    processDelivery,
+    handleSelectOpener,
+    handleSelectNextBatter,
+    handleSelectBowler,
+    toggleScoreboard,
+    buildTeamOneScorecard,
+    buildTeamTwoScorecard,
+    isCurrentMatchUserInvolved,
+    autoSimMode,
+    onSimulateOver,
+    onSimulateMatch,
+    oversDisplay,
+  } = props;
+  const firstInningsBowlingSituation = buildInningsSituation({
+    innings: game.firstInnings,
+    view: firstInningsView,
+    matchType,
+    matchCondition: game.matchCondition,
+    oversDisplay,
+    target: null,
+  });
+  const secondInningsBowlingSituation = buildInningsSituation({
+    innings: game.secondInnings,
+    view: secondInningsView,
+    matchType,
+    matchCondition: game.matchCondition,
+    oversDisplay,
+    target: Number(game.firstInnings?.score || 0) + 1,
+  });
 
   return (
     <>
-      {stage === matchStatusEnum.TeamOneBat && (
+{stage === matchStatusEnum.TeamOneBat && (
         <StageShell
           {...stageCommonProps}
           title={`${firstInningsTeamName} Innings`}
@@ -135,9 +134,15 @@ function LiveMatchStages({
             battingActions={firstInningsView.battingActionOptions}
             bowlingActions={firstInningsView.bowlingActionOptions}
             battingIntent={game.battingIntent}
+            battingTactics={game.battingTactics}
+            battingContext={firstInningsBowlingSituation}
             bowlingIntent={game.bowlingIntent}
+            bowlingTactics={game.bowlingTactics}
+            bowlingContext={firstInningsBowlingSituation}
             onBattingIntent={setBattingIntent}
+            onBattingTacticsChange={setBattingTactics}
             onBowlingIntent={setBowlingIntent}
+            onBowlingTacticsChange={setBowlingTactics}
             onBowlBall={() => processDelivery(true)}
             onSaveGame={onSaveGame}
             isSavingGame={isSavingGame}
@@ -150,11 +155,11 @@ function LiveMatchStages({
             showScoreboard={game.showScoreboard}
             scorecard={buildTeamOneScorecard()}
             commentary={game.firstInnings.commentary}
+            onCloseScoreboard={toggleScoreboard}
           />
         </StageShell>
       )}
-
-      {stage === matchStatusEnum.TeamTwoBat && (
+{stage === matchStatusEnum.TeamTwoBat && (
         <StageShell
           {...stageCommonProps}
           title={`${secondInningsTeamName} Chase`}
@@ -206,9 +211,15 @@ function LiveMatchStages({
             battingActions={secondInningsView.battingActionOptions}
             bowlingActions={secondInningsView.bowlingActionOptions}
             battingIntent={game.battingIntent}
+            battingTactics={game.battingTactics}
+            battingContext={secondInningsBowlingSituation}
             bowlingIntent={game.bowlingIntent}
+            bowlingTactics={game.bowlingTactics}
+            bowlingContext={secondInningsBowlingSituation}
             onBattingIntent={setBattingIntent}
+            onBattingTacticsChange={setBattingTactics}
             onBowlingIntent={setBowlingIntent}
+            onBowlingTacticsChange={setBowlingTactics}
             onBowlBall={() => processDelivery(false)}
             onSaveGame={onSaveGame}
             isSavingGame={isSavingGame}
@@ -221,301 +232,11 @@ function LiveMatchStages({
             showScoreboard={game.showScoreboard}
             scorecard={buildTeamTwoScorecard()}
             commentary={game.secondInnings.commentary}
+            onCloseScoreboard={toggleScoreboard}
           />
         </StageShell>
       )}
-
-      {stage === matchStatusEnum.MatchEnd && (
-        <StageShell
-          {...stageCommonProps}
-          title="Match End"
-          subtitle="Final result and scorecard snapshot."
-          rightSlot={
-            <AppButton
-              text={game.showScoreboard ? 'Hide Scoreboard' : 'Show Scoreboard'}
-              onClick={toggleScoreboard}
-              fullWidth={false}
-            />
-          }
-        >
-          <MatchResultCard
-            teamOneLine={teamOneFinal}
-            teamTwoLine={teamTwoFinal}
-            teamOneName={firstInningsTeamName}
-            teamTwoName={secondInningsTeamName}
-            teamOneScore={game.firstInnings.score}
-            teamOneWickets={game.firstInnings.wickets}
-            teamTwoScore={game.secondInnings.score}
-            teamTwoWickets={game.secondInnings.wickets}
-            teamOneOvers={oversDisplay(game.firstInnings.balls)}
-            teamTwoOvers={oversDisplay(game.secondInnings.balls)}
-            summary={resultSummary}
-            momRecommendations={momRecommendations}
-            onSelectManOfTheMatch={onSelectManOfTheMatch}
-            showScoreboard={game.showScoreboard}
-            scorecard={buildTeamTwoScorecard()}
-            onPrimaryAction={onMatchPrimaryAction}
-            autoSelectTopMomOnPrimaryAction={isCareerMode}
-            primaryActionLabel={
-              isCareerMode
-                ? 'Back to Schedule'
-                : isSeriesMode
-                  ? (isSeriesLastMatch ? 'View Series Summary' : `Start Match ${seriesCurrentMatch + 1}`)
-                  : isTournamentMode
-                    ? 'Next Knockout Match'
-                    : 'Play New Match'
-            }
-          />
-        </StageShell>
-      )}
-
-      {stage === matchStatusEnum.SeriesSummary && (
-        <StageShell
-          {...stageCommonProps}
-          title="Series Summary"
-          subtitle={`${seriesLength}-match series completed.`}
-        >
-          <div className="sim-series-summary-grid">
-            <div className="sim-scoreboard-panel">
-              <h4>Series Score</h4>
-              <p>
-                <TeamNameWithFlag teamName={game.ownTeam} /> {seriesStanding.ownWins} - {seriesStanding.opponentWins}{' '}
-                <TeamNameWithFlag teamName={game.opponentTeam} />
-              </p>
-              <p>Tied matches: {seriesStanding.ties}</p>
-            </div>
-
-            <div className="sim-scoreboard-panel">
-              <h4>Match Results</h4>
-              <table className="sim-scoreboard-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Winner</th>
-                    <th>Summary</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {seriesResults.map((match) => (
-                    <tr key={`series-result-${match.matchNumber}`}>
-                      <td>{match.matchNumber}</td>
-                      <td>{match.winnerTeam}</td>
-                      <td>{match.summary}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="sim-scoreboard-panel">
-              <h4>Top 10 Scorers</h4>
-              <table className="sim-scoreboard-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Player</th>
-                    <th>Team</th>
-                    <th>Runs</th>
-                    <th>Balls</th>
-                    <th>Avg</th>
-                    <th>SR</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {seriesTopRunScorers.map((entry, index) => (
-                    <tr key={`series-runs-${entry.key}`}>
-                      <td>{index + 1}</td>
-                      <td><PlayerNameWithType player={entry} /></td>
-                      <td>{entry.team}</td>
-                      <td>{entry.runs}</td>
-                      <td>{entry.balls}</td>
-                      <td>{entry.battingAverage}</td>
-                      <td>{entry.strikeRate}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="sim-scoreboard-panel">
-              <h4>Top 10 Wicket Takers</h4>
-              <table className="sim-scoreboard-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Player</th>
-                    <th>Team</th>
-                    <th>Overs</th>
-                    <th>Runs</th>
-                    <th>Wickets</th>
-                    <th>Avg/Wkt</th>
-                    <th>Economy</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {seriesTopWicketTakers.map((entry, index) => (
-                    <tr key={`series-wickets-${entry.key}`}>
-                      <td>{index + 1}</td>
-                      <td><PlayerNameWithType player={entry} /></td>
-                      <td>{entry.team}</td>
-                      <td>{entry.overs}</td>
-                      <td>{entry.runsConceded}</td>
-                      <td>{entry.wickets}</td>
-                      <td>{entry.bowlingAverage}</td>
-                      <td>{entry.economy}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <AppButton text="Start Fresh Match" onClick={resetMatch} />
-          </div>
-        </StageShell>
-      )}
-
-      {stage === matchStatusEnum.TournamentChampion && (
-        <StageShell
-          {...stageCommonProps}
-          title="Tournament Champion"
-          subtitle="Knockout completed. Celebrate the winner and review tournament leaders."
-        >
-          <div className="sim-series-summary-grid">
-            <div className="sim-scoreboard-panel">
-              <h4>Grand Congratulations</h4>
-              <p className="sim-winner-line">
-                {tournamentChampion === game.tournamentUserTeam
-                  ? `🏆 Congratulations! ${tournamentChampion} wins the tournament!`
-                  : `🏆 ${tournamentChampion} wins the tournament.`}
-              </p>
-            </div>
-
-            <div className="sim-scoreboard-panel">
-              <h4>Knockout Results</h4>
-              <table className="sim-scoreboard-table">
-                <thead>
-                  <tr>
-                    <th>Round</th>
-                    <th>Match</th>
-                    <th>Winner</th>
-                    <th>Summary</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(tournamentResults || []).map((match) => (
-                    <tr key={`tour-result-${match.id}`}>
-                      <td>{match.round}</td>
-                      <td>{match.matchNumber}</td>
-                      <td>{match.winnerTeam}</td>
-                      <td>{match.summary}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="sim-scoreboard-panel">
-              <h4>Top 10 Tournament Scorers</h4>
-              <table className="sim-scoreboard-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Player</th>
-                    <th>Team</th>
-                    <th>Runs</th>
-                    <th>Balls</th>
-                    <th>Avg</th>
-                    <th>SR</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tournamentTopRunScorers.map((entry, index) => (
-                    <tr key={`tour-runs-${entry.key}`}>
-                      <td>{index + 1}</td>
-                      <td><PlayerNameWithType player={entry} /></td>
-                      <td>{entry.team}</td>
-                      <td>{entry.runs}</td>
-                      <td>{entry.balls}</td>
-                      <td>{entry.battingAverage}</td>
-                      <td>{entry.strikeRate}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="sim-scoreboard-panel">
-              <h4>Top 10 Tournament Wicket Takers</h4>
-              <table className="sim-scoreboard-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Player</th>
-                    <th>Team</th>
-                    <th>Overs</th>
-                    <th>Runs</th>
-                    <th>Wickets</th>
-                    <th>Avg/Wkt</th>
-                    <th>Economy</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tournamentTopWicketTakers.map((entry, index) => (
-                    <tr key={`tour-wickets-${entry.key}`}>
-                      <td>{index + 1}</td>
-                      <td><PlayerNameWithType player={entry} /></td>
-                      <td>{entry.team}</td>
-                      <td>{entry.overs}</td>
-                      <td>{entry.runsConceded}</td>
-                      <td>{entry.wickets}</td>
-                      <td>{entry.bowlingAverage}</td>
-                      <td>{entry.economy}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <AppButton text="Start Fresh Match" onClick={resetMatch} />
-          </div>
-        </StageShell>
-      )}
-
-      {stage === matchStatusEnum.CareerSeasonSummary && (
-        <CareerSeasonSummaryStage
-          stageCommonProps={stageCommonProps}
-          careerTeam={careerTeam}
-          careerSeason={careerSeason}
-          careerSchedule={careerSchedule}
-          careerStandings={careerStandings}
-          careerPlayerStats={careerPlayerStats}
-          careerTopRunScorers={careerTopRunScorers}
-          careerTopWicketTakers={careerTopWicketTakers}
-          careerPlayerProfile={careerPlayerProfile}
-          careerDomesticCountry={careerDomesticCountry}
-          careerDomesticTeams={careerDomesticTeams}
-          careerOffers={careerOffers}
-          careerRetired={careerRetired}
-          handleStartNextCareerSeason={handleStartNextCareerSeason}
-          handleEndCareer={handleEndCareer}
-          handleRetireCareer={handleRetireCareer}
-        />
-      )}
-
-      {stage === matchStatusEnum.CareerHistory && (
-        <CareerHistoryStage
-          stageCommonProps={stageCommonProps}
-          careerTeam={careerTeam}
-          careerSeason={careerSeason}
-          careerTopRunScorers={careerTopRunScorers}
-          careerTopWicketTakers={careerTopWicketTakers}
-          careerSeasonHistory={careerSeasonHistory}
-          careerPlayerProfile={careerPlayerProfile}
-          careerDomesticCountry={careerDomesticCountry}
-          careerRetired={careerRetired}
-          handleBackToCareerSchedule={handleBackToCareerSchedule}
-        />
-      )}
+      <MatchSummaryStages {...props} />
     </>
   );
 }

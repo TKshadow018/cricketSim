@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "skills": {
+    "algorithmic-art": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/algorithmic-art/SKILL.md",
+      "computedHash": "5c2804e8f0d4944c7ce6939a2e4afdcf0cb69c966a505481ed8b96e20bb32eee"
+    },
+    "apple-design": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "skillPath": "skills/apple-design/SKILL.md",
+      "computedHash": "0190417d092a0df447b000154e39733ea6d97efad6d3bec8a6ce3845aeb88914"
+    },
+    "canvas-design": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/canvas-design/SKILL.md",
+      "computedHash": "a2fe47d24b3fd8e52faef731fff099c557e698083cd644b2e5695cc4dd8c7715"
+    },
+    "ckm:banner-design": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/mrgoonie-banner-design/SKILL.md",
+      "computedHash": "7bbf0f48704f5c40436e3466d7ef9bcbafe35a84eb8c3e9d0ab76408a57bac5c"
+    },
+    "ckm:brand": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/mrgoonie-brand/SKILL.md",
+      "computedHash": "89c8579d232e6e14152a8b898d49eb94f59aa7288ed8ca103cd3b38cb082e00a"
+    },
+    "ckm:design": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/mrgoonie-design/SKILL.md",
+      "computedHash": "2020e511bb6fbc1dbc233d1da335ec7e8cb553d6e321d34cec4555efcc9ec8f1"
+    },
+    "ckm:design-system": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/mrgoonie-design-system/SKILL.md",
+      "computedHash": "49b8308dc428c66b0983f4b3d102c522c495f62538121064d1e82a040b1afd2c"
+    },
+    "ckm:slides": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/mrgoonie-slides/SKILL.md",
+      "computedHash": "6d753831914ed6703b7222153f2710efc2f195f0ab24fd2119c76c2b6d1a6ba1"
+    },
+    "ckm:ui-styling": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/mrgoonie-ui-styling/SKILL.md",
+      "computedHash": "9ae38e4e201f338b6150e462b98a2db0f2ae7c180c77e8cfb1d33eba9d33bf33"
+    },
+    "d3-viz": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/d3js-viz/SKILL.md",
+      "computedHash": "f16b782976ac2df47f91839385b4458944d90f23f109ff32a8f450bbdaf6431d"
+    },
+    "design-router": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/design-router/SKILL.md",
+      "computedHash": "c93d36206188a5df6f9ccb2b10ebde07de22b9f405709787dd4cddb65482b442"
+    },
+    "design-taste-frontend": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill/SKILL.md",
+      "computedHash": "9d1e82c5c409d2b0247245a005bc0f7e4447c0999b78dcea60f568c1ba4a6694"
+    },
+    "frontend-design": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "063a0e6448123cd359ad0044cc46b0e490cc7964d45ef4bb9fd842bd2ffbca67"
+    },
+    "frontend-slides": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-slides/SKILL.md",
+      "computedHash": "da5a1495d8a7eeda172704e3e2442062f1810d120b43fe73480bf25dbc70184c"
+    },
+    "full-output-enforcement": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/output-skill/SKILL.md",
+      "computedHash": "26bd29ce4c5e02c7666b2d503609bf466bd32290822e91f0e984147048dbb924"
+    },
+    "high-end-visual-design": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/soft-skill/SKILL.md",
+      "computedHash": "7db385e4c5370e5a7fca9704a1361b056e4504ea6a03924bb86f33a4f00b5c73"
+    },
+    "industrial-brutalist-ui": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/brutalist-skill/SKILL.md",
+      "computedHash": "8fc355c4aadb7d29c53ca28bc41be3cd6eea765d121e3737c4dc2d0f90a8effa"
+    },
+    "minimalist-ui": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/minimalist-skill/SKILL.md",
+      "computedHash": "08873a3131d3be27bef9bf3304b310b16b44ca6e3561aebe532797be3443f6bd"
+    },
+    "redesign-existing-projects": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/redesign-skill/SKILL.md",
+      "computedHash": "b405eee0e0e80fc243f731d9aa368bca307e356db7e6157d27101d369dac6726"
+    },
+    "stitch-design-taste": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/stitch-skill/SKILL.md",
+      "computedHash": "3aa58992f0fd9673b975cd48cd4f8ae4b4976fd5cdd9f20e26d3d447aee317fb"
+    },
+    "theme-factory": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/theme-factory/SKILL.md",
+      "computedHash": "93e78aa44f8fa00bb2c0608f400de1e1dcd6494611dd8ea27c867654240c7bcd"
+    },
+    "ui-ux-pro-max": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/mrgoonie-ui-ux-pro-max/SKILL.md",
+      "computedHash": "8cd1b83a60e8d0a95c332d2baeffad9053617b286beb96bbe13e818507343f47"
+    },
+    "web-asset-generator": {
+      "source": "Payoss/UIUX-high-taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/web-asset-generator/SKILL.md",
+      "computedHash": "28eba3d584c40155d5eecb0c75103c07a7ea1eb9fc326612517064ad471c0973"
+    }
+  }
+}

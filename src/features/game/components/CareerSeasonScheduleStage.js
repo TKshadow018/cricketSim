@@ -11,6 +11,8 @@ import {
 import PlayerNameWithType from './PlayerNameWithType';
 import TeamNameWithLogo from './TeamNameWithLogo';
 
+const EMPTY_FIXTURES = [];
+
 function CareerSeasonScheduleStage({
   stageCommonProps,
   setupBackSlot,
@@ -26,7 +28,7 @@ function CareerSeasonScheduleStage({
   handleCareerStartNextMatch,
   handleViewCareerHistory,
 }) {
-  const allFixtures = careerSchedule || [];
+  const allFixtures = careerSchedule || EMPTY_FIXTURES;
   const leagueTeamNames = React.useMemo(() => {
     const teams = (careerDomesticTeams || []).filter((team) => !careerDomesticCountry || team.country === careerDomesticCountry);
     return new Set(teams.map((team) => team.name).filter(Boolean));
@@ -115,8 +117,8 @@ function CareerSeasonScheduleStage({
           const isCompleted = !!match.isComplete;
           const resultText = match.isComplete && match.result
             ? match.isUserMatch
-              ? `${match.result.winner === careerTeam ? '✅ Won' : match.result.winner === 'Tie' ? '🤝 Tie' : '❌ Lost'} — ${match.result.summary}`
-              : `🧮 Auto-simulated — ${match.result.summary}`
+                ? `${match.result.winner === careerTeam ? 'Won' : match.result.winner === 'Tie' ? 'Tie' : 'Lost'} — ${match.result.summary}`
+                : `Auto-simulated — ${match.result.summary}`
             : isCurrent
             ? '▶ Your next match'
             : match === nextScheduledMatch
@@ -185,6 +187,7 @@ function CareerSeasonScheduleStage({
                   onPrimaryAction={() => setSelectedCompletedMatch(null)}
                   primaryActionLabel="Close Scoreboard"
                   showScoreboard
+                  scoreboardInParentDialog
                   scorecard={selectedCompletedMatch.result.scorecard}
                 />
               </div>
@@ -206,7 +209,7 @@ function CareerSeasonScheduleStage({
 
       {showPointsTable ? (
         CAREER_FORMATS.map((format) => {
-          const standingsList = leagueStandingsByFormat[format] || [];
+          const standingsList = leagueStandingsByFormat[format];
           if (!standingsList.length) {
             return null;
           }

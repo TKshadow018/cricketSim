@@ -1,13 +1,16 @@
+
 const PakistanPlayers = [
   {
     "id": 1,
     "name": "Babar Azam",
+    "skills": ['Anchor', 'CoverDriveArtist', 'ClutchPerformer'],
     "abilityToPlayPaceBall": 89,
     "abilityToPlaySpinBall": 88,
     "battingAggresion": 76,
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 8,
+    "battingOrderPreference": 835,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -20,12 +23,14 @@ const PakistanPlayers = [
   {
     "id": 2,
     "name": "Mohammad Rizwan",
+    "skills": ['Anchor', 'WicketWall', 'SafeHands'],
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 82,
     "battingAggresion": 81,
     "isWicketKeeper": true,
     "spinAbility": 3,
     "paceAbility": 3,
+    "battingOrderPreference": 758,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -38,12 +43,14 @@ const PakistanPlayers = [
   {
     "id": 3,
     "name": "Fakhar Zaman",
+    "skills": ['PowerplaySpecialist', 'HardHitter'],
     "abilityToPlayPaceBall": 86,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 90,
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 11,
+    "battingOrderPreference": 984,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -56,12 +63,14 @@ const PakistanPlayers = [
   {
     "id": 4,
     "name": "Imam-ul-Haq",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 70,
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 7,
+    "battingOrderPreference": 976,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -74,12 +83,14 @@ const PakistanPlayers = [
   {
     "id": 5,
     "name": "Saim Ayub",
+    "skills": [],
     "abilityToPlayPaceBall": 84,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 88,
     "isWicketKeeper": false,
     "spinAbility": 6,
     "paceAbility": 10,
+    "battingOrderPreference": 982,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -92,12 +103,14 @@ const PakistanPlayers = [
   {
     "id": 6,
     "name": "Saud Shakeel",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 70,
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 7,
+    "battingOrderPreference": 751,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -110,12 +123,14 @@ const PakistanPlayers = [
   {
     "id": 7,
     "name": "Iftikhar Ahmed",
+    "skills": [],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 74,
     "isWicketKeeper": false,
     "spinAbility": 73,
     "paceAbility": 15,
+    "battingOrderPreference": 601,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -128,12 +143,14 @@ const PakistanPlayers = [
   {
     "id": 8,
     "name": "Shadab Khan",
+    "skills": ['GooglyGenius', 'SafeHands'],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 83,
     "battingAggresion": 72,
     "isWicketKeeper": false,
     "spinAbility": 82,
     "paceAbility": 16,
+    "battingOrderPreference": 528,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -146,12 +163,14 @@ const PakistanPlayers = [
   {
     "id": 9,
     "name": "Mohammad Nawaz",
+    "skills": [],
     "abilityToPlayPaceBall": 76,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 74,
     "isWicketKeeper": false,
     "spinAbility": 73,
     "paceAbility": 15,
+    "battingOrderPreference": 526,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -164,12 +183,14 @@ const PakistanPlayers = [
   {
     "id": 10,
     "name": "Agha Salman",
+    "skills": [],
     "abilityToPlayPaceBall": 72,
     "abilityToPlaySpinBall": 77,
     "battingAggresion": 70,
     "isWicketKeeper": false,
     "spinAbility": 71,
     "paceAbility": 13,
+    "battingOrderPreference": 673,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -182,12 +203,14 @@ const PakistanPlayers = [
   {
     "id": 11,
     "name": "Shaheen Shah Afridi",
+    "skills": ['SwingMaster', 'YorkerKing'],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 93,
+    "battingOrderPreference": 347,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -200,12 +223,14 @@ const PakistanPlayers = [
   {
     "id": 12,
     "name": "Haris Rauf",
+    "skills": ['SeamSpecialist', 'YorkerKing'],
     "abilityToPlayPaceBall": 55,
     "abilityToPlaySpinBall": 44,
     "battingAggresion": 41,
     "isWicketKeeper": false,
     "spinAbility": 8,
     "paceAbility": 93,
+    "battingOrderPreference": 272,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -218,12 +243,14 @@ const PakistanPlayers = [
   {
     "id": 13,
     "name": "Naseem Shah",
+    "skills": ['SwingMaster', 'SeamSpecialist'],
     "abilityToPlayPaceBall": 53,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 39,
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 92,
+    "battingOrderPreference": 345,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -236,12 +263,14 @@ const PakistanPlayers = [
   {
     "id": 14,
     "name": "Hasan Ali",
+    "skills": [],
     "abilityToPlayPaceBall": 53,
     "abilityToPlaySpinBall": 43,
     "battingAggresion": 39,
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 84,
+    "battingOrderPreference": 345,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -254,12 +283,14 @@ const PakistanPlayers = [
   {
     "id": 15,
     "name": "Mohammad Wasim Jr",
+    "skills": [],
     "abilityToPlayPaceBall": 56,
     "abilityToPlaySpinBall": 45,
     "battingAggresion": 42,
     "isWicketKeeper": false,
     "spinAbility": 9,
     "paceAbility": 86,
+    "battingOrderPreference": 348,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -272,12 +303,14 @@ const PakistanPlayers = [
   {
     "id": 16,
     "name": "Usama Mir",
+    "skills": [],
     "abilityToPlayPaceBall": 49,
     "abilityToPlaySpinBall": 57,
     "battingAggresion": 37,
     "isWicketKeeper": false,
     "spinAbility": 84,
     "paceAbility": 7,
+    "battingOrderPreference": 423,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -290,12 +323,14 @@ const PakistanPlayers = [
   {
     "id": 17,
     "name": "Abrar Ahmed",
+    "skills": ['GooglyGenius', 'MagicHand'],
     "abilityToPlayPaceBall": 52,
     "abilityToPlaySpinBall": 59,
     "battingAggresion": 40,
     "isWicketKeeper": false,
     "spinAbility": 86,
     "paceAbility": 9,
+    "battingOrderPreference": 276,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -308,12 +343,14 @@ const PakistanPlayers = [
   {
     "id": 18,
     "name": "Abdullah Shafique",
+    "skills": [],
     "abilityToPlayPaceBall": 80,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 71,
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 7,
+    "battingOrderPreference": 827,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -326,12 +363,14 @@ const PakistanPlayers = [
   {
     "id": 19,
     "name": "Kamran Ghulam",
+    "skills": [],
     "abilityToPlayPaceBall": 79,
     "abilityToPlaySpinBall": 79,
     "battingAggresion": 70,
     "isWicketKeeper": false,
     "spinAbility": 7,
     "paceAbility": 7,
+    "battingOrderPreference": 751,
     "currentMatch": {
       "run": 0,
       "ball": 0,
@@ -344,12 +383,14 @@ const PakistanPlayers = [
   {
     "id": 20,
     "name": "Irfan Khan Niazi",
+    "skills": [],
     "abilityToPlayPaceBall": 85,
     "abilityToPlaySpinBall": 76,
     "battingAggresion": 89,
     "isWicketKeeper": false,
     "spinAbility": 6,
     "paceAbility": 10,
+    "battingOrderPreference": 608,
     "currentMatch": {
       "run": 0,
       "ball": 0,

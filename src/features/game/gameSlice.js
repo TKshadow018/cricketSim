@@ -1,113 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { outfieldType, pitchType, weather } from '../../gameData/matchCondition';
 import { battingAction, bowlingAction } from '../../gameData/actionType';
 import { matchStatusEnum } from '../../gameData/matchStatusEnum';
+import {
+  DEFAULT_BATTING_TACTICS,
+  mergeBattingTactics,
+  migrateLegacyBattingTactics,
+  normalizeBattingTactics,
+} from './utils/battingTactics';
+import {
+  DEFAULT_BOWLING_TACTICS,
+  getLegacyBowlingIntent,
+  mergeBowlingTactics,
+  migrateLegacyBowlingTactics,
+  normalizeBowlingTactics,
+} from './utils/bowlingTactics';
 
-const randomKey = (obj) => Object.keys(obj)[Math.floor(Math.random() * Object.keys(obj).length)];
-
-export const buildInitialInnings = () => ({
-  score: 0,
-  wickets: 0,
-  balls: 0,
-  wides: 0,
-  noBalls: 0,
-  commentary: [],
-  strikerIndex: null,
-  nonStrikerIndex: null,
-  nextBatterIndex: 0,
-  battingOrderIndices: [],
-  needsOpeners: false,
-  openerSelections: [],
-  outBatterIndices: [],
-  waitingForNextBatter: false,
-  currentBowlerIndex: null,
-  lastOverBowlerIndex: null,
-  completedOverBowlerIndices: [],
-  waitingForNextBowler: false,
-  battingStats: [],
-  bowlingStats: [],
-  freeHitArmed: false,
-  superShotUsedInOver: 0,
-  superShotUsedMatch: 0,
-  superShotBonus: 0,
-  specialBallUsedInOver: 0,
-  specialBallUsedMatch: 0,
-  specialBallBonus: 0,
-  lastEvent: 'Ready for first delivery.',
-});
-
-export const buildRandomMatchCondition = () => ({
-  weather: randomKey(weather),
-  pitch: randomKey(pitchType),
-  outfield: randomKey(outfieldType),
-});
-
-export const buildEmptyMatchCondition = () => ({
-  weather: '',
-  pitch: '',
-  outfield: '',
-});
-
-const initialState = {
-  stage: matchStatusEnum.intro,
-  gameMode: 'quick',
-  seriesLength: 1,
-  seriesCurrentMatch: 1,
-  seriesResults: [],
-  seriesPlayerStats: {},
-  tournamentUserTeam: '',
-  tournamentOpponentTeams: [],
-  tournamentMatches: [],
-  tournamentCurrentMatchId: '',
-  tournamentChampion: '',
-  tournamentPlayerStats: {},
-  careerTeam: '',
-  careerPlayerProfile: null,
-  careerDomesticCountry: '',
-  careerDomesticTeams: [],
-  careerGlobalPlayerPool: [],
-  careerAuctionSummary: null,
-  careerOffers: [],
-  careerRetired: false,
-  careerSeason: 0,
-  careerSeasonLength: 'standard',
-  careerFormat: 't20',
-  careerMatchIndex: 0,
-  careerSchedule: [],
-  careerStandings: {},
-  careerPlayerStats: {},
-  careerSeasonHistory: [],
-  matchTypeKey: '',
-  ownTeam: '',
-  opponentTeam: '',
-  ownPlayingXI: [],
-  opponentPlayingXI: [],
-  ownCustomPlayers: [],
-  opponentCustomPlayers: [],
-  ownTeamRoles: {
-    captainId: null,
-    viceCaptainId: null,
-    wicketKeeperId: null,
-  },
-  opponentTeamRoles: {
-    captainId: null,
-    viceCaptainId: null,
-    wicketKeeperId: null,
-  },
-  locationCountry: '',
-  selectedStadium: '',
-  commentator: '',
-  tossWinner: '',
-  tossDecision: '',
-  tossCall: '',
-  firstBattingSide: '',
-  matchCondition: buildEmptyMatchCondition(),
-  battingIntent: battingAction.normal,
-  bowlingIntent: bowlingAction.normal,
-  firstInnings: buildInitialInnings(),
-  secondInnings: buildInitialInnings(),
-  showScoreboard: false,
-};
+import { buildInitialInnings, buildEmptyMatchCondition, initialState } from "./gameState";
+export { buildInitialInnings, buildRandomMatchCondition, buildEmptyMatchCondition } from "./gameState";
 
 const gameSlice = createSlice({
   name: 'game',
@@ -203,6 +112,7 @@ const gameSlice = createSlice({
     setOwnTeam: (state, action) => {
       state.ownTeam = action.payload;
       state.ownPlayingXI = [];
+      state.ownBattingOrderIds = [];
       state.ownCustomPlayers = [];
       state.ownTeamRoles = {
         captainId: null,
@@ -213,6 +123,7 @@ const gameSlice = createSlice({
     setOpponentTeam: (state, action) => {
       state.opponentTeam = action.payload;
       state.opponentPlayingXI = [];
+      state.opponentBattingOrderIds = [];
       state.opponentCustomPlayers = [];
       state.opponentTeamRoles = {
         captainId: null,
@@ -222,9 +133,17 @@ const gameSlice = createSlice({
     },
     setOwnPlayingXI: (state, action) => {
       state.ownPlayingXI = Array.isArray(action.payload) ? action.payload : [];
+      state.ownBattingOrderIds = [];
     },
     setOpponentPlayingXI: (state, action) => {
       state.opponentPlayingXI = Array.isArray(action.payload) ? action.payload : [];
+      state.opponentBattingOrderIds = [];
+    },
+    setOwnBattingOrderIds: (state, action) => {
+      state.ownBattingOrderIds = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setOpponentBattingOrderIds: (state, action) => {
+      state.opponentBattingOrderIds = Array.isArray(action.payload) ? action.payload : [];
     },
     setOwnCustomPlayers: (state, action) => {
       state.ownCustomPlayers = Array.isArray(action.payload) ? action.payload : [];
@@ -275,8 +194,20 @@ const gameSlice = createSlice({
     setBattingIntent: (state, action) => {
       state.battingIntent = action.payload;
     },
+    setBattingTactics: (state, action) => {
+      state.battingTactics = mergeBattingTactics(state.battingTactics, action.payload);
+    },
     setBowlingIntent: (state, action) => {
       state.bowlingIntent = action.payload;
+      const legacyTactics = migrateLegacyBowlingTactics(action.payload);
+      state.bowlingTactics = mergeBowlingTactics(state.bowlingTactics, {
+        overPlan: legacyTactics.overPlan,
+        specialDeliveryArmed: action.payload === bowlingAction.specialBowl,
+      });
+    },
+    setBowlingTactics: (state, action) => {
+      state.bowlingTactics = mergeBowlingTactics(state.bowlingTactics, action.payload);
+      state.bowlingIntent = getLegacyBowlingIntent(state.bowlingTactics.overPlan);
     },
     setFirstInnings: (state, action) => {
       state.firstInnings = action.payload;
@@ -298,11 +229,26 @@ const gameSlice = createSlice({
         hasLegacyNoXI && Number.isInteger(stageValue) && stageValue >= 9 && stageValue <= 11
           ? stageValue + 2
           : stageValue;
+      const bowlingTactics = payload.bowlingTactics && typeof payload.bowlingTactics === 'object'
+        ? normalizeBowlingTactics(payload.bowlingTactics)
+        : migrateLegacyBowlingTactics(payload.bowlingIntent);
+      const hasBattingTactics =
+        payload.battingTactics && typeof payload.battingTactics === 'object' && !Array.isArray(payload.battingTactics);
+      const battingTactics = hasBattingTactics
+        ? normalizeBattingTactics(payload.battingTactics)
+        : migrateLegacyBattingTactics(payload.battingIntent);
+      const battingIntent = hasBattingTactics || [battingAction.superShot, battingAction.freeHit].includes(payload.battingIntent)
+        ? payload.battingIntent ?? state.battingIntent
+        : battingAction.normal;
       return {
         ...state,
         ...payload,
         stage: migratedStage ?? state.stage,
         gameMode: payload.gameMode || state.gameMode,
+        battingTactics,
+        battingIntent,
+        bowlingTactics,
+        bowlingIntent: getLegacyBowlingIntent(bowlingTactics.overPlan),
         seriesLength: Number(payload.seriesLength) > 0 ? Number(payload.seriesLength) : state.seriesLength,
         seriesCurrentMatch:
           Number(payload.seriesCurrentMatch) > 0 ? Number(payload.seriesCurrentMatch) : state.seriesCurrentMatch,
@@ -362,6 +308,12 @@ const gameSlice = createSlice({
         opponentPlayingXI: Array.isArray(payload.opponentPlayingXI)
           ? payload.opponentPlayingXI
           : state.opponentPlayingXI,
+        ownBattingOrderIds: Array.isArray(payload.ownBattingOrderIds)
+          ? payload.ownBattingOrderIds
+          : state.ownBattingOrderIds,
+        opponentBattingOrderIds: Array.isArray(payload.opponentBattingOrderIds)
+          ? payload.opponentBattingOrderIds
+          : state.opponentBattingOrderIds,
         ownCustomPlayers: Array.isArray(payload.ownCustomPlayers)
           ? payload.ownCustomPlayers
           : state.ownCustomPlayers,
@@ -405,6 +357,8 @@ const gameSlice = createSlice({
       state.firstBattingSide = '';
       state.ownPlayingXI = [];
       state.opponentPlayingXI = [];
+      state.ownBattingOrderIds = [];
+      state.opponentBattingOrderIds = [];
       state.ownCustomPlayers = [];
       state.opponentCustomPlayers = [];
       state.ownTeamRoles = {
@@ -419,7 +373,9 @@ const gameSlice = createSlice({
       };
       state.matchCondition = buildEmptyMatchCondition();
       state.battingIntent = battingAction.normal;
+      state.battingTactics = { ...DEFAULT_BATTING_TACTICS };
       state.bowlingIntent = bowlingAction.normal;
+      state.bowlingTactics = { ...DEFAULT_BOWLING_TACTICS };
       state.firstInnings = buildInitialInnings();
       state.secondInnings = buildInitialInnings();
       state.showScoreboard = false;
@@ -452,6 +408,8 @@ const gameSlice = createSlice({
       state.firstBattingSide = '';
       state.ownPlayingXI = [];
       state.opponentPlayingXI = [];
+      state.ownBattingOrderIds = [];
+      state.opponentBattingOrderIds = [];
       state.ownCustomPlayers = [];
       state.opponentCustomPlayers = [];
       state.ownTeamRoles = {
@@ -466,7 +424,9 @@ const gameSlice = createSlice({
       };
       state.matchCondition = buildEmptyMatchCondition();
       state.battingIntent = battingAction.normal;
+      state.battingTactics = { ...DEFAULT_BATTING_TACTICS };
       state.bowlingIntent = bowlingAction.normal;
+      state.bowlingTactics = { ...DEFAULT_BOWLING_TACTICS };
       state.firstInnings = buildInitialInnings();
       state.secondInnings = buildInitialInnings();
       state.showScoreboard = false;
@@ -492,6 +452,8 @@ export const {
   setOpponentTeam,
   setOwnPlayingXI,
   setOpponentPlayingXI,
+  setOwnBattingOrderIds,
+  setOpponentBattingOrderIds,
   setOwnCustomPlayers,
   setOpponentCustomPlayers,
   setOwnTeamRoles,
@@ -505,7 +467,9 @@ export const {
   setFirstBattingSide,
   setMatchCondition,
   setBattingIntent,
+  setBattingTactics,
   setBowlingIntent,
+  setBowlingTactics,
   setFirstInnings,
   setSecondInnings,
   setShowScoreboard,

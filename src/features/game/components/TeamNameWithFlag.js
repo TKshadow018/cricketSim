@@ -3,7 +3,7 @@ import { countries } from '../../../gameData/countries';
 import TeamNameWithLogo from './TeamNameWithLogo';
 
 const normalize = (value = '') => String(value).toLowerCase().replace(/[^a-z0-9]/g, '');
-const toPublicPath = (value = '') => String(value).replace('./', '/');
+const toPublicPath = (value) => String(value).replace('./', '/');
 
 const countryByNormalizedName = Object.values(countries || {}).reduce((accumulator, country) => {
   const key = normalize(country?.name);

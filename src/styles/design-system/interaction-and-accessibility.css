@@ -1,0 +1,77 @@
+.auth-layout-register {
+  align-content: start;
+  align-items: start;
+}
+
+.sim-choice-visual svg,
+.sim-commentator-test-btn svg,
+.sim-delete-cross-btn svg,
+.sim-mom-select-btn svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: block;
+  margin: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.dashboard-sidebar-empty {
+  padding: 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: 11px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.025);
+  font-size: 0.86rem;
+}
+
+.sim-intent-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: 0.6rem;
+}
+
+.sim-intent-btn {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 0.3rem;
+  text-align: left;
+  line-height: 1.35;
+}
+
+.sim-intent-btn small {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.sim-commentary-feed .sim-commentary-empty {
+  min-height: 8rem;
+  display: grid;
+  place-items: center;
+  margin: auto;
+  padding: 1rem;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  list-style: none;
+}
+
+@media (min-width: 1025px) {
+  .sim-stage-card {
+    min-height: min(62vh, 40rem);
+  }
+}
+
+@media (max-width: 600px) {
+  .sim-stage-card {
+    min-height: 0;
+  }
+
+  .sim-intent-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

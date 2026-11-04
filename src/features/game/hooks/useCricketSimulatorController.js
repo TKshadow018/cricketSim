@@ -1,19 +1,21 @@
 import { useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
 import { getEffectiveAuthUser } from '../../../config/runtimeConfig';
-import { battingAction, bowlingAction } from '../../../gameData/actionType';
-import { countries } from '../../../gameData/countries';
-import { stadiums } from '../../../gameData/stadiums';
-import { getPlayersForNations, playerListForNation } from '../../../gameData/playerListForNation';
-import { matchTypeList } from '../../../gameData/matchTypeList';
-import { matchStatusEnum } from '../../../gameData/matchStatusEnum';
+
+
+
+
+
+
+
 import {
   resetMatchRuntime,
   resetMatchForCareer,
   setGameMode as setGameModeAction,
   setBattingIntent as setBattingIntentAction,
+  setBattingTactics as setBattingTacticsAction,
   setBowlingIntent as setBowlingIntentAction,
+  setBowlingTactics as setBowlingTacticsAction,
   setCommentator as setCommentatorAction,
   setFirstBattingSide as setFirstBattingSideAction,
   setFirstInnings as setFirstInningsAction,
@@ -21,10 +23,12 @@ import {
   setMatchCondition as setMatchConditionAction,
   setMatchTypeKey as setMatchTypeKeyAction,
   setOpponentCustomPlayers as setOpponentCustomPlayersAction,
+  setOpponentBattingOrderIds as setOpponentBattingOrderIdsAction,
   setOpponentPlayingXI as setOpponentPlayingXIAction,
   setOpponentTeamRoles as setOpponentTeamRolesAction,
   setOpponentTeam as setOpponentTeamAction,
   setOwnCustomPlayers as setOwnCustomPlayersAction,
+  setOwnBattingOrderIds as setOwnBattingOrderIdsAction,
   setOwnPlayingXI as setOwnPlayingXIAction,
   setOwnTeamRoles as setOwnTeamRolesAction,
   setOwnTeam as setOwnTeamAction,
@@ -67,38 +71,23 @@ import {
   setPreferredVoice,
   speak,
 } from '../../../utils/speechUtils';
-import {
-  resolveResultSummary,
-  stageOrder,
-} from '../../../utils/simulatorUtils';
-import {
-  MODE_SERIES,
-  MODE_TOURNAMENT,
-  MODE_CAREER,
-  buildPlayingXI,
-  normalizePlayingXIIds,
-  pickDefaultRoles,
-  sanitizeRoles,
-} from '../utils/controllerCommonUtils';
+import { resolveResultSummary } from '../../../utils/simulatorUtils';
+import { pickDefaultRoles, sanitizeRoles } from '../utils/controllerCommonUtils';
 import { createNavigationHandlers } from './controller/controllerNavigation';
 import { useControllerRuntimeFromContext } from './controller/useControllerRuntimeFromContext';
 import { buildMainControllerApi } from './controller/buildMainControllerApi';
+import { useControllerDerivedState } from './controller/useControllerDerivedState';
+import { buildControllerInningsActions } from './controller/controllerInningsActions';
 import { useControllerBootstrap } from './controller/useControllerBootstrap';
 import { prepareTournamentMatchState } from './controller/controllerTournamentMatchPrep';
-import {
-  getInningsContext as getInningsContextHelper,
-  handleSelectBowler as handleSelectBowlerHelper,
-  handleSelectNextBatter as handleSelectNextBatterHelper,
-  handleSelectOpener as handleSelectOpenerHelper,
-  openInnings as openInningsHelper,
-  updateInningsState as updateInningsStateHelper,
-} from './controller/controllerInningsCore';
-import { processDelivery as processDeliveryHelper } from './controller/controllerDeliveryEngine';
-import { buildInningsViewModel as buildInningsViewModelHelper } from './controller/controllerInningsViewModel';
+
+
+
+
+
 
 export function useCricketSimulatorController() {
   const dispatch = useDispatch();
-  const location = useLocation();
   const game = useSelector((state) => state.game);
   const authUser = useSelector((state) => getEffectiveAuthUser(state.auth.user));
   const {
@@ -119,6 +108,8 @@ export function useCricketSimulatorController() {
     opponentTeam,
     ownPlayingXI,
     opponentPlayingXI,
+    ownBattingOrderIds,
+    opponentBattingOrderIds,
     ownCustomPlayers,
     opponentCustomPlayers,
     ownTeamRoles,
@@ -130,7 +121,9 @@ export function useCricketSimulatorController() {
     firstBattingSide,
     matchCondition,
     battingIntent,
+    battingTactics,
     bowlingIntent,
+    bowlingTactics,
     firstInnings,
     secondInnings,
     careerTeam,
@@ -159,7 +152,6 @@ export function useCricketSimulatorController() {
   const [saveMessage, setSaveMessage] = useState('');
   const inProgressRef = useRef(false);
   const savedHistorySignatureRef = useRef('');
-  const seriesResultCommitSignatureRef = useRef('');
   const tournamentResultCommitSignatureRef = useRef('');
   const careerResultCommitSignatureRef = useRef('');
   const processDeliveryRef = useRef(null);
@@ -169,89 +161,56 @@ export function useCricketSimulatorController() {
   const authUidRef = useRef(authUser?.uid || '');
   const [autoSimMode, setAutoSimMode] = useState(null);
 
-  const countryList = useMemo(
-    () => Object.values(countries).sort((a, b) => a.current_ranking - b.current_ranking),
-    []
-  );
-  const fallbackPlayers = useMemo(
-    () => Object.values(playerListForNation).find((players) => Array.isArray(players) && players.length > 0) || [],
-    []
-  );
-  const matchType = matchTypeList[matchTypeKey] || matchTypeList.t20;
-  const maxBalls = matchType.over * 6;
-  const careerDomesticRosterMap = useMemo(() => {
-    const map = {};
-    (careerDomesticTeams || []).forEach((team) => {
-      if (team?.name) {
-        map[team.name] = Array.isArray(team.players) ? team.players : [];
-      }
-    });
-    return map;
-  }, [careerDomesticTeams]);
-  const countryRoster = getPlayersForNations(ownTeam, opponentTeam);
-  const careerOwnPlayers = careerDomesticRosterMap[ownTeam] || [];
-  const careerOpponentPlayers = careerDomesticRosterMap[opponentTeam] || [];
-  const fullOwnPlayers = gameMode === MODE_CAREER && careerOwnPlayers.length > 0 ? careerOwnPlayers : countryRoster.ownPlayers;
-  const fullOpponentPlayers =
-    gameMode === MODE_CAREER && careerOpponentPlayers.length > 0
-      ? careerOpponentPlayers
-      : countryRoster.opponentPlayers;
-
-  const availableOwnPlayers =
-    fullOwnPlayers.length > 0
-      ? [...fullOwnPlayers, ...(Array.isArray(ownCustomPlayers) ? ownCustomPlayers : [])]
-      : fallbackPlayers;
-  const availableOpponentPlayers =
-    fullOpponentPlayers.length > 0
-      ? [...fullOpponentPlayers, ...(Array.isArray(opponentCustomPlayers) ? opponentCustomPlayers : [])]
-      : fallbackPlayers;
-
-  const ownPlayers = buildPlayingXI(availableOwnPlayers, ownPlayingXI);
-  const opponentPlayers = buildPlayingXI(availableOpponentPlayers, opponentPlayingXI);
-
-  const ownSelectedXIIds = normalizePlayingXIIds(availableOwnPlayers, ownPlayingXI);
-  const opponentSelectedXIIds = normalizePlayingXIIds(availableOpponentPlayers, opponentPlayingXI);
-
-  const ownSelectedXIPlayers = availableOwnPlayers.filter((player) => ownSelectedXIIds.includes(player.id));
-  const opponentSelectedXIPlayers = availableOpponentPlayers.filter((player) =>
-    opponentSelectedXIIds.includes(player.id)
-  );
-
-  const ownAvailablePool = availableOwnPlayers.filter((player) => !ownSelectedXIIds.includes(player.id));
-  const opponentAvailablePool = availableOpponentPlayers.filter(
-    (player) => !opponentSelectedXIIds.includes(player.id)
-  );
-
-  const ownSanitizedRoles = sanitizeRoles(ownTeamRoles, ownSelectedXIIds);
-  const opponentSanitizedRoles = sanitizeRoles(opponentTeamRoles, opponentSelectedXIIds);
-
-  const ownXIReady = ownSelectedXIIds.length === 11;
-  const opponentXIReady = opponentSelectedXIIds.length === 11;
-  const ownRolesReady =
-    !!ownSanitizedRoles.captainId &&
-    !!ownSanitizedRoles.viceCaptainId &&
-    !!ownSanitizedRoles.wicketKeeperId &&
-    ownSanitizedRoles.captainId !== ownSanitizedRoles.viceCaptainId;
-  const opponentRolesReady =
-    !!opponentSanitizedRoles.captainId &&
-    !!opponentSanitizedRoles.viceCaptainId &&
-    !!opponentSanitizedRoles.wicketKeeperId &&
-    opponentSanitizedRoles.captainId !== opponentSanitizedRoles.viceCaptainId;
-  const venueStadiums = stadiums[locationCountry] || [];
-
-  const userTeamName = gameMode === MODE_TOURNAMENT ? tournamentUserTeam : gameMode === MODE_CAREER ? careerTeam : ownTeam;
-  const isCurrentMatchUserInvolved =
-    !!userTeamName && (ownTeam === userTeamName || opponentTeam === userTeamName);
-  const isUserWinner = tossWinner === userTeamName;
-  const firstInningsTeamName = firstBattingSide === 'own' ? ownTeam : opponentTeam;
-  const secondInningsTeamName = firstBattingSide === 'own' ? opponentTeam : ownTeam;
-  const isGameInProgress =
-    stage === matchStatusEnum.TeamOneBat ||
-    stage === matchStatusEnum.TeamTwoBat ||
-    stage === matchStatusEnum.TossResult ||
-    stage === matchStatusEnum.ChooseOwnPlayingXI ||
-    stage === matchStatusEnum.ChooseOpponentPlayingXI ||
-    stage === matchStatusEnum.CareerSeasonSchedule;
+  const {
+  countryList,
+  matchType,
+  maxBalls,
+  availableOwnPlayers,
+  availableOpponentPlayers,
+  ownPlayers,
+  opponentPlayers,
+  ownSelectedXIIds,
+  opponentSelectedXIIds,
+  ownSelectedXIPlayers,
+  opponentSelectedXIPlayers,
+  ownAvailablePool,
+  opponentAvailablePool,
+  ownSanitizedRoles,
+  opponentSanitizedRoles,
+  ownXIReady,
+  opponentXIReady,
+  ownBowlingRolesReady,
+  opponentBowlingRolesReady,
+  ownRolesReady,
+  opponentRolesReady,
+  venueStadiums,
+  userTeamName,
+  isCurrentMatchUserInvolved,
+  isUserWinner,
+  firstInningsTeamName,
+  secondInningsTeamName,
+  isGameInProgress,
+} = useControllerDerivedState({
+  stage,
+  gameMode,
+  tournamentUserTeam,
+  matchTypeKey,
+  ownTeam,
+  opponentTeam,
+  ownPlayingXI,
+  opponentPlayingXI,
+  ownBattingOrderIds,
+  opponentBattingOrderIds,
+  ownCustomPlayers,
+  opponentCustomPlayers,
+  ownTeamRoles,
+  opponentTeamRoles,
+  locationCountry,
+  tossWinner,
+  firstBattingSide,
+  careerTeam,
+  careerDomesticTeams,
+});
 
   useControllerBootstrap({
     authUser,
@@ -269,34 +228,50 @@ export function useCricketSimulatorController() {
     setSaveMessage,
   });
 
-  const getInningsContext = (isFirstInnings, firstSide = firstBattingSide, inningStateOverride = null) =>
-    getInningsContextHelper({
-      isFirstInnings,
-      firstSide,
-      firstBattingSide,
-      ownPlayers,
-      opponentPlayers,
-      ownTeam,
-      opponentTeam,
-      isCurrentMatchUserInvolved,
-      userTeamName,
-      gameMode,
-      careerPlayerProfile,
-      inningState: inningStateOverride || (isFirstInnings ? firstInnings : secondInnings),
-    });
-
-  const setFirstInnings = (value) => dispatch(setFirstInningsAction(value));
-  const setSecondInnings = (value) => dispatch(setSecondInningsAction(value));
-
-  const updateInningsState = (isFirstInnings, updater) =>
-    updateInningsStateHelper({
-      isFirstInnings,
-      firstInnings,
-      secondInnings,
-      setFirstInnings,
-      setSecondInnings,
-      updater,
-    });
+  const {
+  openInnings,
+  handleSelectOpener,
+  handleSelectNextBatter,
+  handleSelectBowler,
+  processDelivery,
+  firstInningsView,
+  secondInningsView,
+} = buildControllerInningsActions({
+  firstBattingSide,
+  ownPlayers,
+  opponentPlayers,
+  ownTeam,
+  opponentTeam,
+  isCurrentMatchUserInvolved,
+  userTeamName,
+  gameMode,
+  careerPlayerProfile,
+  firstInnings,
+  secondInnings,
+  dispatch,
+  setFirstInningsAction,
+  setSecondInningsAction,
+  matchType,
+  setShowScoreboardAction,
+  firstInningsTeamName,
+  setStageAction,
+  maxBalls,
+  battingIntent,
+  battingTactics,
+  bowlingIntent,
+  bowlingTactics,
+  ownSanitizedRoles,
+  opponentSanitizedRoles,
+  matchCondition,
+  matchTypeKey,
+  locationCountry,
+  setBattingIntentAction,
+  setBattingTacticsAction,
+  setBowlingIntentAction,
+  setBowlingTacticsAction,
+});
+openInningsRef.current = openInnings;
+processDeliveryRef.current = processDelivery;
 
   let prepareTournamentMatch = (match) =>
     prepareTournamentMatchState({
@@ -365,88 +340,6 @@ export function useCricketSimulatorController() {
     setCareerSeasonHistoryAction,
   });
 
-  const openInnings = (firstSide = firstBattingSide) =>
-    openInningsHelper({
-      firstSide,
-      firstBattingSide,
-      getContext: getInningsContext,
-      setFirstInnings,
-      setSecondInnings,
-      matchType,
-      dispatch,
-      setShowScoreboardAction,
-      firstInningsTeamName,
-      setStageAction,
-      matchStatusEnum,
-    });
-  openInningsRef.current = openInnings;
-
-  const handleSelectOpener = (isFirstInnings, selectedIndex) =>
-    handleSelectOpenerHelper({
-      isFirstInnings,
-      selectedIndex,
-      getContext: getInningsContext,
-      updateState: updateInningsState,
-    });
-
-  const handleSelectNextBatter = (isFirstInnings, batterIndex) =>
-    handleSelectNextBatterHelper({
-      isFirstInnings,
-      batterIndex,
-      getContext: getInningsContext,
-      updateState: updateInningsState,
-    });
-
-  const handleSelectBowler = (isFirstInnings, bowlerIndex) =>
-    handleSelectBowlerHelper({
-      isFirstInnings,
-      bowlerIndex,
-      getContext: getInningsContext,
-      matchType,
-      updateState: updateInningsState,
-    });
-
-  const processDelivery = (isFirstInnings) =>
-    processDeliveryHelper({
-      isFirstInnings,
-      firstInnings,
-      secondInnings,
-      getContext: getInningsContext,
-      matchType,
-      maxBalls,
-      battingIntent,
-      bowlingIntent,
-      ownSanitizedRoles,
-      opponentSanitizedRoles,
-      ownTeam,
-      opponentTeam,
-      matchCondition,
-      matchTypeKey,
-      locationCountry,
-      dispatch,
-      setBattingIntentAction,
-      setBowlingIntentAction,
-      setFirstInnings,
-      setSecondInnings,
-      firstInningsScore: firstInnings.score,
-      setStageAction,
-    });
-
-  processDeliveryRef.current = processDelivery;
-
-  const buildInningsViewModel = (isFirstInnings, inningState) =>
-    buildInningsViewModelHelper({
-      isFirstInnings,
-      inningState,
-      getContext: (inningsFlag, side, explicitInningsState) =>
-        getInningsContext(inningsFlag, side, explicitInningsState || inningState),
-      matchType,
-      maxBalls,
-    });
-
-  const firstInningsView = buildInningsViewModel(true, firstInnings);
-  const secondInningsView = buildInningsViewModel(false, secondInnings);
-
   const resultSummary = useMemo(
     () =>
       resolveResultSummary({
@@ -457,8 +350,8 @@ export function useCricketSimulatorController() {
         secondInningsTeamName,
       }),
     [
-      firstInnings.score,
       firstInningsTeamName,
+      firstInnings.score,
       secondInnings.score,
       secondInnings.wickets,
       secondInningsTeamName,
@@ -476,7 +369,9 @@ export function useCricketSimulatorController() {
       matchType, matchTypeKey, firstBattingSide, firstInnings, secondInnings,
       firstInningsTeamName, secondInningsTeamName, ownPlayers, opponentPlayers,
       ownSelectedXIIds, opponentSelectedXIIds, availableOwnPlayers, availableOpponentPlayers,
+      ownBattingOrderIds, opponentBattingOrderIds,
       ownSelectedXIPlayers, opponentSelectedXIPlayers, ownCustomPlayers, opponentCustomPlayers,
+      ownBowlingRolesReady, opponentBowlingRolesReady,
       ownSanitizedRoles, opponentSanitizedRoles, ownXIReady, opponentXIReady, ownRolesReady,
       opponentRolesReady, isCurrentMatchUserInvolved, selectedStadium, venueStadiums,
       matchCondition, resultSummary, autoSimMode, maxBalls, userTeamName, isSavingGame,
@@ -506,7 +401,10 @@ export function useCricketSimulatorController() {
       resetMatchForCareerAction: resetMatchForCareer,
       resetMatchRuntimeAction: resetMatchRuntime,
       setBattingIntentAction, setBowlingIntentAction, setTossDecisionAction, setFirstBattingSideAction,
-      setStageAction, setOwnPlayingXIAction, setOwnTeamRolesAction, setOpponentPlayingXIAction,
+      setBattingTacticsAction,
+      setBowlingTacticsAction,
+      setStageAction, setOwnPlayingXIAction, setOwnBattingOrderIdsAction, setOwnTeamRolesAction,
+      setOpponentPlayingXIAction, setOpponentBattingOrderIdsAction,
       setOpponentTeamRolesAction, setOwnCustomPlayersAction, setOpponentCustomPlayersAction,
       setTournamentMatchesAction, setTournamentPlayerStatsAction, setSeriesResultsAction,
       setSeriesPlayerStatsAction, setTossWinnerAction, setTossCallAction, setMatchConditionAction,
@@ -534,6 +432,8 @@ export function useCricketSimulatorController() {
       availableOpponentPlayers, ownAvailablePool, opponentAvailablePool,
       ownSelectedXIIds, opponentSelectedXIIds, ownSelectedXIPlayers,
       opponentSelectedXIPlayers, ownSanitizedRoles, opponentSanitizedRoles,
+      ownBowlingRolesReady, opponentBowlingRolesReady,
+      ownBattingOrderIds, opponentBattingOrderIds,
       ownXIReady, opponentXIReady, ownRolesReady, opponentRolesReady,
       processDelivery, handleSelectOpener, handleSelectNextBatter, handleSelectBowler,
       setPreferredVoice, speak,

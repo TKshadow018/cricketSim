@@ -18,8 +18,9 @@ import OmanPlayers from './players/Oman';
 import NamibiaPlayers from './players/Namibia';
 import CanadaPlayers from './players/Canada';
 import KenyaPlayers from './players/Kenya';
+import { classifyPlayerType } from './playerTypes';
 
-const playerListForNation = {
+const nationalRosters = {
   'India': IndiaPlayers,
   'Australia': AustraliaPlayers,
   'England': EnglandPlayers,
@@ -41,6 +42,17 @@ const playerListForNation = {
   'Canada': CanadaPlayers,
   'Kenya': KenyaPlayers,
 };
+
+const playerListForNation = Object.fromEntries(
+  Object.entries(nationalRosters).map(([country, players]) => [
+    country,
+    players.map((player) => ({
+      ...player,
+      skills: Array.isArray(player.skills) ? player.skills : [],
+      playerType: classifyPlayerType(player),
+    })),
+  ])
+);
 
 const getPlayersForNations = (ownTeam, opponentTeam) => ({
   ownPlayers: playerListForNation[ownTeam] || [],

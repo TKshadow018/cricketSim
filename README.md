@@ -6,6 +6,7 @@ You set up match conditions (teams, stadium, commentator, toss, XI), then contro
 ## Table of Contents
 
 - [What You Can Do](#what-you-can-do)
+- [Interface Design](#interface-design)
 - [How to Play (Full Match Flow)](#how-to-play-full-match-flow)
 - [Gameplay Controls](#gameplay-controls)
 - [Man of the Match (MoM)](#man-of-the-match-mom)
@@ -31,6 +32,25 @@ You set up match conditions (teams, stadium, commentator, toss, XI), then contro
 - Save/load match states (manual + autosave when applicable).
 - View full scoreboard tables for batting and bowling.
 - Get top-5 MoM suggestions and select winner with announcement.
+
+## Interface Design
+
+The auth screens, dashboard, match setup, live innings, results, and career views share the
+stadium-inspired theme in `src/styles/design-system.css`. Its semantic CSS variables define the
+ink-green surfaces, high-contrast text, and lime primary action color. Desktop uses a full-height
+workbench with a primary stage between context panels. Phones use a focused main view with
+Panel/Play/Notes bottom tabs. Long stages scroll inside the main stage viewport, and stage changes
+return that viewport to its top. Career analytics actions and player-type choices wrap inside
+their panels rather than extending the page width. Keep page-specific styles on the shared tokens,
+maintain visible keyboard focus and 44px+ controls, and keep detailed scorecards in dismissible
+dialogs. Styles are grouped by area in `src/styles/design-system/`: foundation/auth,
+dashboard/choices, gameplay surfaces/data, match states/breakpoints, interaction/accessibility,
+viewport layout/overflow, and scoreboard modal.
+
+Career creation is a four-step flow: Player Details, Playing Style, Domestic League, and Review
+& Start. The club pool must be generated before continuing. National players are randomly
+distributed among their country's clubs, with at least one per club; squad limits are preserved
+and career seasons use one cycle.
 
 ## How to Play (Full Match Flow)
 
@@ -64,10 +84,10 @@ The simulator progresses through these stages:
 	Winner decides bat/bowl. If opponent wins, follow prompted continuation choice.
 
 10. **Select Your XI**  
-	 Choose exactly 11 players, assign captain/vice-captain/wicketkeeper.
+	 Choose exactly 11 players, assign a captain, a different vice-captain, and a wicketkeeper. At least 5 players must be pace all-rounders, spin all-rounders, pacers, or spinners.
 
 11. **Select Opponent XI**  
-	 Choose opponent XI and roles (or auto-pick).
+	 Choose opponent XI and roles (or auto-pick); the same XI and role requirements apply.
 
 12. **Team One Bat**  
 	 Ball-by-ball first innings.
@@ -82,8 +102,13 @@ The simulator progresses through these stages:
 
 ### During Innings
 
-- **Batting Intent** (when your side is batting): Defend, Normal, Hit Big, Super Shot, Free Hit (when armed).
-- **Bowling Intent** (when your side is bowling): Normal, Wicket Ball, Save Run, Special Ball.
+- **Batting tactics** (when your side is batting): set a persistent Defend, Balanced, or Attack approach; choose a shot intent and select one of nine target sectors directly on the interactive field map.
+- Shot and target calls reset after a delivery by default. Enable **Keep shot & target for next ball** to retain them; a new batter or free-hit situation always gets a fresh call.
+- **Super Shot** and **Free Hit** remain contextual actions and follow their existing ability, credit, and dismissal rules.
+- **Bowling Plan** (when your side is bowling): choose Balanced, Attack, Build Pressure, or Protect Boundaries.
+- Set a field preset and call line, length, and a bowler-compatible variation for the next ball.
+- Arm a Special Delivery explicitly; the cockpit shows eligibility, remaining credits, and over use.
+- Use the over ball tracker to review legal deliveries and extras alongside the selected plan.
 - **Play Next Ball** advances simulation one delivery.
 - **Choose Openers / Next Batsman / Next Bowler** appears contextually when required.
 - **Show/Hide Scoreboard** toggles detailed innings tables.
@@ -97,6 +122,12 @@ The simulator progresses through these stages:
 - Wicketkeeper must be set.
 - You can create custom players and auto-pick XIs.
 
+### Planned Engine Improvements
+
+The [settings and fielding impact plan](src/features/game/match-engine-settings-impact-plan.md)
+compares three approaches to deeper batting, bowling, and field-placement interactions, with
+a recommended design and validation roadmap. It is a proposal only; gameplay is unchanged.
+
 ## Man of the Match (MoM)
 
 - At match end, simulator generates **Top 5** MoM recommendations.
@@ -108,11 +139,13 @@ The simulator progresses through these stages:
 
 ### Prerequisites
 
-- Node.js 18+ (recommended)
+- Node.js 26.12.1 or newer (the project runtime is pinned in `.nvmrc`)
 - npm 9+
 - Firebase project (for auth + saves)
 
 ### Install & Run
+
+If you use nvm, select the project Node.js version with `nvm use`.
 
 1. Install dependencies:
 	```bash
@@ -192,6 +225,15 @@ Current rules scope user data to authenticated owner paths under:
 ```bash
 npm run firebase:deploy
 ```
+
+### 5) Automatically Deploy Hosting
+
+The GitHub Actions workflow deploys the production site to Firebase Hosting after every push to `main`. In the repository's **Settings → Secrets and variables → Actions**, add:
+
+- `FIREBASE_PROJECT_ID` — the Firebase project ID.
+- `FIREBASE_SERVICE_ACCOUNT` — the full JSON key for a service account with the **Firebase Hosting Admin** role on that project.
+
+Keep the service account key in GitHub Secrets; do not commit it to the repository.
 
 ## Available Scripts
 
@@ -283,5 +325,10 @@ src/
   npm install
   npm run build
   ```
+
+### Firebase `auth/invalid-api-key`
+
+- For Firebase authentication, set a valid `REACT_APP_FIREBASE_API_KEY` and the other Firebase values in `.env`, then restart the development server.
+- To run locally without Firebase credentials, set `REACT_APP_DEBUG=true` in `.env` and restart. Debug mode skips Firebase initialization and stores game data in browser local storage.
 
 ---

@@ -1,0 +1,80 @@
+.sim-player-order-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.sim-player-order-row > .sim-player-pick-btn {
+  width: 100%;
+  min-width: 0;
+}
+
+.sim-batting-order-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(42px, auto));
+  align-content: center;
+  justify-items: stretch;
+  gap: 0.25rem;
+}
+
+.sim-batting-order-position {
+  grid-column: 1 / -1;
+  color: var(--text-muted);
+  font-size: 0.63rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.sim-batting-order-controls button {
+  min-width: 42px;
+  min-height: 42px;
+  padding: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text-main);
+  background: var(--surface-raised);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+.sim-batting-order-controls button:hover:not(:disabled) {
+  border-color: var(--brand-primary);
+  background: var(--surface-high);
+}
+
+.sim-batting-order-controls button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.sim-batting-order-controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+@media (max-width: 600px) {
+  .sim-player-order-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.25rem;
+  }
+
+  .sim-batting-order-controls {
+    grid-template-columns: 1fr;
+    align-content: center;
+  }
+
+  .sim-batting-order-position {
+    grid-column: auto;
+    max-width: 3.25rem;
+    white-space: normal;
+  }
+
+  .sim-batting-order-controls button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

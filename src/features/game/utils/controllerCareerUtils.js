@@ -84,9 +84,9 @@ export const mergePlayerStatsForCurrentMatch = ({
       spinAbility: entry.spinAbility || 0,
       abilityToPlayPaceBall: entry.abilityToPlayPaceBall || 0,
       abilityToPlaySpinBall: entry.abilityToPlaySpinBall || 0,
-      fitness: entry.fitness ?? 100,
-      morale: entry.morale ?? 50,
-      battingOrderCoeff: entry.battingOrderCoeff ?? 0,
+      fitness: entry.fitness,
+      morale: entry.morale,
+      battingOrderCoeff: entry.battingOrderCoeff,
       runs: 0,
       outs: 0,
       wickets: 0,
@@ -105,8 +105,8 @@ export const mergePlayerStatsForCurrentMatch = ({
       spinAbility: previous.spinAbility || entry.spinAbility || 0,
       abilityToPlayPaceBall: previous.abilityToPlayPaceBall || entry.abilityToPlayPaceBall || 0,
       abilityToPlaySpinBall: previous.abilityToPlaySpinBall || entry.abilityToPlaySpinBall || 0,
-      fitness: previous.fitness ?? entry.fitness ?? 100,
-      morale: previous.morale ?? entry.morale ?? 50,
+      fitness: previous.fitness ?? entry.fitness,
+      morale: previous.morale ?? entry.morale,
       battingOrderCoeff: previous.battingOrderCoeff || entry.battingOrderCoeff || 0,
       runs: previous.runs + entry.runs,
       outs: previous.outs + entry.outs,
@@ -133,7 +133,7 @@ export const mergePlayerStatsForCurrentMatch = ({
   return merged;
 };
 
-const buildCareerInningsRows = ({ inningsState, battingPlayers = [], bowlingPlayers = [] }) => {
+const buildCareerInningsRows = ({ inningsState, battingPlayers, bowlingPlayers }) => {
   const battingRows = (battingPlayers || []).map((player, index) => {
     if (!player) {
       return null;
@@ -197,7 +197,7 @@ const buildCareerInningsRows = ({ inningsState, battingPlayers = [], bowlingPlay
       wickets: stat.wickets,
       isCurrent: index === inningsState?.currentBowlerIndex,
     };
-  }).filter((row) => row.overs !== '0.0');
+  }).filter((row) => row && row.overs !== '0.0');
 
   return { battingRows, bowlingRows };
 };
@@ -218,9 +218,7 @@ export const buildCareerMatchScorecard = ({
   const secondBattingPlayers = firstBattingSide === 'own' ? opponentPlayers : ownPlayers;
   const secondBowlingPlayers = firstBattingSide === 'own' ? ownPlayers : opponentPlayers;
   const firstBattingTeam = firstBattingSide === 'own' ? ownTeam : opponentTeam;
-  const firstBowlingTeam = firstBattingSide === 'own' ? opponentTeam : ownTeam;
   const secondBattingTeam = firstBattingSide === 'own' ? opponentTeam : ownTeam;
-  const secondBowlingTeam = firstBattingSide === 'own' ? ownTeam : opponentTeam;
 
   const firstRows = buildCareerInningsRows({
     inningsState: firstInnings,

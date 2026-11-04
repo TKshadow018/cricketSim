@@ -1,0 +1,8 @@
+@import './design-system/foundation-and-auth.css';
+@import './design-system/dashboard-and-choices.css';
+@import './design-system/admin-skill-impacts.css';
+@import './design-system/gameplay-surfaces-and-data.css';
+@import './design-system/match-states-and-breakpoints.css';
+@import './design-system/interaction-and-accessibility.css';
+@import './design-system/viewport-layout-and-overflow.css';
+@import './design-system/scoreboard-modal.css';

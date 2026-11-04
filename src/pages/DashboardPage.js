@@ -13,12 +13,14 @@ import { matchStatusEnum } from '../gameData/matchStatusEnum';
 import TeamNameWithFlag from '../features/game/components/TeamNameWithFlag';
 import PlayerNameWithType from '../features/game/components/PlayerNameWithType';
 import { listRecentMatchHistory } from '../firebase/firestoreService';
+import DashboardMobileNav from '../components/layout/DashboardMobileNav';
 import {
   normalizeSelectedXIPlayers,
   buildComposition,
   buildAdminMatrix,
   buildBattingOrderPreview,
 } from './dashboardUtils';
+import AdminSkillImpactPanel from './AdminSkillImpactPanel';
 
 const globalTeamCount = Object.keys(playerListForNation).length;
 const globalPlayerCount = Object.values(playerListForNation).reduce(
@@ -39,6 +41,7 @@ function DashboardPage() {
   const [savedGameCount, setSavedGameCount] = React.useState(0);
   const [isSavedGamesDialogOpen, setIsSavedGamesDialogOpen] = React.useState(false);
   const simulatorRef = React.useRef(null);
+  const [mobileView, setMobileView] = React.useState('play');
 
   const adminEmail = (process.env.REACT_APP_FIREBASE_ADMIN_EMAIL || '').trim().toLowerCase();
   const isAdmin = !!adminEmail && (user?.email || '').toLowerCase() === adminEmail;
@@ -61,6 +64,14 @@ function DashboardPage() {
     ].includes(game.stage);
   const adminMatrix = React.useMemo(() => (isAdmin ? buildAdminMatrix(game) : null), [game, isAdmin]);
   const selectedMatchType = matchTypeList[game.matchTypeKey];
+  const hasMatchNotes = [
+    selectedMatchType?.nameKey,
+    game.ownTeam,
+    game.opponentTeam,
+    game.locationCountry,
+    game.selectedStadium,
+    game.tossWinner,
+  ].some(Boolean);
   const { ownPlayers: ownNationPlayers, opponentPlayers: opponentNationPlayers } = getPlayersForNations(
     game.ownTeam,
     game.opponentTeam
@@ -272,7 +283,10 @@ function DashboardPage() {
         </header>
       )}
 
-      <div className={`dashboard-main-grid${isDashboardLanding ? ' dashboard-main-grid--landing' : ''}`}>
+      <div
+        className={`dashboard-main-grid${isDashboardLanding ? ' dashboard-main-grid--landing' : ''}`}
+        data-mobile-view={mobileView}
+      >
         <aside className="dashboard-sidebar dashboard-sidebar-left">
           {isAdmin && isMatrixStage ? (
             <>
@@ -286,10 +300,18 @@ function DashboardPage() {
                 {adminMatrix?.rows.map((row) => (
                   <div key={row.key} className="admin-matrix-row">
                     <span>{row.key}</span>
-                    <strong>{row.value}%</strong>
+                    <strong className="admin-matrix-outcome-value">
+                      <span>{row.value}%</span>
+                      {adminMatrix?.hasSkillImpacts && (
+                        <small className="admin-matrix-skill-impact">
+                          (skill impact {row.skillImpact}%)
+                        </small>
+                      )}
+                    </strong>
                   </div>
                 ))}
               </div>
+              <AdminSkillImpactPanel impacts={adminMatrix?.skillImpacts} />
 
               <h3 className="admin-matrix-subhead">Ability Snapshot</h3>
               <div className="admin-matrix-table">
@@ -515,6 +537,11 @@ function DashboardPage() {
 
         <aside className="dashboard-sidebar dashboard-sidebar-right">
           <h3>Match Notes</h3>
+          {!hasMatchNotes && game.stage !== matchStatusEnum.intro ? (
+            <p className="dashboard-sidebar-empty">
+              Choose a format, teams, and venue to build your match notes.
+            </p>
+          ) : null}
           {selectedMatchType?.nameKey ? <p>Format: {selectedMatchType.nameKey.toUpperCase()}</p> : null}
           {game.ownTeam || game.opponentTeam ? (
             <p>
@@ -566,6 +593,7 @@ function DashboardPage() {
           ) : null}
         </aside>
       </div>
+      <DashboardMobileNav activeView={mobileView} onChange={setMobileView} />
     </main>
   );
 }
