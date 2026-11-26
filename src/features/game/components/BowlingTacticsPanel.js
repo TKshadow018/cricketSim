@@ -49,7 +49,7 @@ function BowlingTacticsPanel({
     balls: safeContext.balls,
     battingHand: safeContext.striker?.player?.battingHand,
   }) : [];
-  const isSpecialArmed = safeContext.ruleset !== 'realism' && Boolean(tactics?.specialDeliveryArmed);
+  const isSpecialArmed = Boolean(tactics?.specialDeliveryArmed);
   const runRateTarget = safeContext.target !== null && safeContext.target !== undefined;
   const bowlerStyle = Number(bowler?.paceAbility || 0) > Number(bowler?.spinAbility || 0)
     ? 'PACE'
@@ -64,10 +64,8 @@ function BowlingTacticsPanel({
   const batterAbility = batterStyle
     ? Number(safeContext.striker?.player?.[batterStyle]) || 0
     : null;
-  const specialDisabled = safeContext.ruleset === 'realism' || (!isSpecialArmed && (!special.available || Number(special.remaining) <= 0));
-  const specialAvailability = safeContext.ruleset === 'realism'
-    ? 'Available in arcade mode'
-    : Number(special.remaining) <= 0
+  const specialDisabled = !isSpecialArmed && (!special.available || Number(special.remaining) <= 0);
+  const specialAvailability = Number(special.remaining) <= 0
     ? 'No credits remaining this innings'
     : Number(special.usedThisOver) >= 1
       ? 'One special delivery per over'

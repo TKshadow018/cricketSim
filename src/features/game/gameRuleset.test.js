@@ -1,13 +1,14 @@
 import reducer, { hydrateGameState, resetMatchRuntime, setMatchRandom, setRuleset } from './gameSlice';
 
-test('ruleset selection persists and legacy saves load with arcade rules', () => {
+test('new games and legacy saves use the single unified ruleset', () => {
   const initial = reducer(undefined, { type: '@@init' });
-  expect(initial.ruleset).toBe('arcade');
+  expect(initial.ruleset).toBe('realism');
   const realism = reducer(initial, setRuleset('realism'));
   expect(realism.ruleset).toBe('realism');
   expect(reducer(initial, hydrateGameState(realism)).ruleset).toBe('realism');
-  expect(reducer(realism, hydrateGameState({ stage: 0 })).ruleset).toBe('arcade');
-  expect(reducer(realism, setRuleset('arcade')).ruleset).toBe('arcade');
+  expect(reducer(realism, hydrateGameState({ stage: 0 })).ruleset).toBe('realism');
+  expect(reducer(realism, hydrateGameState({ ruleset: 'arcade' })).ruleset).toBe('realism');
+  expect(reducer(realism, setRuleset('arcade')).ruleset).toBe('realism');
 });
 
 test('invalid ruleset choices are rejected rather than silently changed', () => {

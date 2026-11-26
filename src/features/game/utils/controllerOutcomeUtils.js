@@ -274,16 +274,16 @@ const calculateOutcomeDistribution = ({
   const abilityDifference = battingAbility - bowlingMatchAbility;
   applyDelta(weights, ruleset === 'realism' ? getContinuousAbilityShift(abilityDifference) : abilityShiftByDiff(abilityDifference));
 
-  if (ruleset !== 'realism' && striker?.id && battingRoles?.captainId === striker.id) {
+  if (striker?.id && battingRoles?.captainId === striker.id) {
     applyDelta(weights, { 0: -3, 1: 3 });
   }
-  if (ruleset !== 'realism' && striker?.id && battingRoles?.viceCaptainId === striker.id) {
+  if (striker?.id && battingRoles?.viceCaptainId === striker.id) {
     applyDelta(weights, { 0: -1, 1: 1 });
   }
-  if (ruleset !== 'realism' && bowler?.id && bowlingRoles?.captainId === bowler.id) {
+  if (bowler?.id && bowlingRoles?.captainId === bowler.id) {
     applyDelta(weights, { 0: 3, 1: -3 });
   }
-  if (ruleset !== 'realism' && bowler?.id && bowlingRoles?.viceCaptainId === bowler.id) {
+  if (bowler?.id && bowlingRoles?.viceCaptainId === bowler.id) {
     applyDelta(weights, { 0: 1, 1: -1 });
   }
 
@@ -297,6 +297,15 @@ const calculateOutcomeDistribution = ({
       handedness: striker?.battingHand,
       bowlingSide: bowlingSide.filter((player) => player !== bowler),
     }));
+    if (isUserBatting && appliedBattingIntent === battingAction.superShot) {
+      applyDelta(weights, battingIntentShift[battingAction.superShot]);
+    }
+    if (
+      isUserBowling &&
+      (bowlingTactics?.specialDeliveryArmed || appliedBowlingIntent === bowlingAction.specialBowl)
+    ) {
+      applyDelta(weights, bowlingIntentShift[bowlingAction.specialBowl]);
+    }
   } else if (isUserBatting) {
     applyDelta(weights, getFieldingTacticShift(opponentFieldPreset, battingTactics));
     if (battingTactics && typeof battingTactics === 'object') {
@@ -376,12 +385,10 @@ const calculateOutcomeDistribution = ({
   };
 
   const weightsWithoutSkills = { ...weights };
-  if (ruleset !== 'realism') {
-    applySkillImpacts(striker ? [striker] : [], 'batting');
-    applySkillImpacts(bowler ? [bowler] : [], 'bowling');
-    applySkillImpacts(Array.isArray(battingSide) ? battingSide : [], 'fullTeamBatting');
-    applySkillImpacts(Array.isArray(bowlingSide) ? bowlingSide : [], 'fullTeamBowling');
-  }
+  applySkillImpacts(striker ? [striker] : [], 'batting');
+  applySkillImpacts(bowler ? [bowler] : [], 'bowling');
+  applySkillImpacts(Array.isArray(battingSide) ? battingSide : [], 'fullTeamBatting');
+  applySkillImpacts(Array.isArray(bowlingSide) ? bowlingSide : [], 'fullTeamBowling');
 
   const isFreeHit = supportsFreeHit(ruleset, matchTypeKey) && Boolean(inningState.freeHitArmed);
   const normalize = ruleset === 'realism' ? normalizeRealismWeights : normalizeOutcomeWeights;

@@ -25,7 +25,6 @@ function PreMatchStages({
   confirmTournamentFixtures,
   randomizeTournamentFixtures,
   updateTournamentFixture,
-  setRuleset,
   setMatchTypeKey,
   setOwnTeam,
   setOpponentTeam,
@@ -264,7 +263,6 @@ function PreMatchStages({
         tournamentOpponentTeams={tournamentOpponentTeams}
         toggleTournamentOpponent={toggleTournamentOpponent}
         prepareTournamentFixtures={prepareTournamentFixtures}
-        setRuleset={setRuleset}
         setMatchTypeKey={setMatchTypeKey}
         setOwnTeam={setOwnTeam}
         setOpponentTeam={setOpponentTeam}
@@ -335,8 +333,8 @@ function PreMatchStages({
         moveOpponentPlayerToXI={moveOpponentPlayerToXI}
         removeOpponentPlayerFromXI={removeOpponentPlayerFromXI}
         moveOpponentPlayerInBattingOrder={moveOpponentPlayerInBattingOrder}
-        autoPickOwnXI={autoPickOwnXI}
-        autoPickOpponentXI={autoPickOpponentXI}
+        autoPickOwnXI={() => runAutoPosition(autoPickOwnXI)}
+        autoPickOpponentXI={() => runAutoPosition(autoPickOpponentXI)}
         autoPositionOwnXI={() => runAutoPosition(autoPositionOwnXI)}
         autoPositionOpponentXI={() => runAutoPosition(autoPositionOpponentXI)}
         autoPositionError={autoPositionError}

@@ -14,6 +14,7 @@ const basePlay = {
   matchCondition: { weather: 'cloudy', pitch: 'sporting', outfield: 'dryAndPatchy' },
   matchType: { over: 20 },
   matchTypeKey: 't20',
+  ruleset: 'arcade',
   locationCountry: '',
 };
 
@@ -56,6 +57,20 @@ describe('skill impact activation', () => {
       freeHitWithHardHitter.weights.W - freeHitBaseline.weights.W
     );
     expect(freeHitWithHardHitter.skillImpactDeltas.W).toBe(0);
+  });
+
+  test('applies skill impacts with the unified realistic engine', () => {
+    const baseline = buildOutcomeAnalysis({ ...basePlay, ruleset: 'realism' });
+    const withHardHitter = buildOutcomeAnalysis({
+      ...basePlay,
+      ruleset: 'realism',
+      striker: { ...basePlay.striker, skills: ['HardHitter'] },
+    });
+
+    expect(withHardHitter.appliedSkillImpacts).toEqual([
+      expect.objectContaining({ skillName: 'HardHitter', scope: 'batting' }),
+    ]);
+    expect(withHardHitter.weights['6']).toBeGreaterThan(baseline.weights['6']);
   });
 
   test('applies individual impacts only when the skill holder is batting or bowling', () => {

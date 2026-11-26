@@ -27,7 +27,7 @@ const getContext = () => ({
 });
 
 describe('innings view model', () => {
-  test('realism disables arcade-only batting and bowling powers', () => {
+  test('unified rules allow batting and bowling powers', () => {
     const inningState = {
       ...buildInitialInnings(),
       strikerIndex: 0,
@@ -45,9 +45,9 @@ describe('innings view model', () => {
       ruleset: 'realism',
     });
     expect(model.battingActionOptions.find(({ key }) => key === battingAction.superShot))
-      .toMatchObject({ disabled: true, reason: 'Available in arcade mode' });
+      .toMatchObject({ disabled: false, reason: '' });
     expect(model.bowlingActionOptions.find(({ key }) => key === bowlingAction.specialBowl))
-      .toMatchObject({ disabled: true, reason: 'Available in arcade mode' });
+      .toMatchObject({ disabled: false, reason: '' });
   });
 
   test('builds ordered score rows, eligible selection options, and action availability', () => {

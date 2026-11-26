@@ -119,7 +119,7 @@ export const processDelivery = ({
 
   const hasUserBowlingTactics = Boolean(isUserBowling && bowlingTactics && typeof bowlingTactics === 'object');
   const hasArmedSpecial = hasUserBowlingTactics && Boolean(bowlingTactics.specialDeliveryArmed);
-  const usedSpecialBall = isUserBowling && ruleset !== 'realism' && (
+  const usedSpecialBall = isUserBowling && (
     hasUserBowlingTactics
       ? hasArmedSpecial && canUseSpecialBall({ bowler, inningState })
       : bowlingIntent === bowlingAction.specialBowl
@@ -134,7 +134,7 @@ export const processDelivery = ({
   );
   const allowFreeHit = supportsFreeHit(ruleset, matchTypeKey);
   const wasFreeHit = allowFreeHit && Boolean(inningState.freeHitArmed);
-  const usedSuperShot = isUserBatting && ruleset !== 'realism' && battingIntent === battingAction.superShot;
+  const usedSuperShot = isUserBatting && battingIntent === battingAction.superShot;
   const battingRoles = isOwnBatting ? ownSanitizedRoles : opponentSanitizedRoles;
   const bowlingRoles = isOwnBatting ? opponentSanitizedRoles : ownSanitizedRoles;
   const bowlingTeamName = isOwnBatting ? opponentTeam : ownTeam;

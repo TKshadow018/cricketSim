@@ -22,6 +22,7 @@ const basePlay = {
   matchCondition: { weather: 'cloudy', pitch: 'sporting', outfield: 'dryAndPatchy' },
   matchType: { over: 20 },
   matchTypeKey: 't20',
+  ruleset: 'arcade',
   battingIntent: battingAction.normal,
   bowlingIntent: bowlingAction.normal,
   locationCountry: '',

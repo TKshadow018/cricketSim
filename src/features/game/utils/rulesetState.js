@@ -1,6 +1,7 @@
 export const resolveRuleset = (value) => {
-  if (value === undefined || value === null) return 'arcade';
-  if (value === 'arcade' || value === 'realism') return value;
+  if (value === undefined || value === null || value === 'arcade' || value === 'realism') {
+    return 'realism';
+  }
   throw new RangeError(`Unknown match ruleset: ${value}`);
 };
 

@@ -16,7 +16,6 @@ export const buildInningsViewModel = ({
   getContext,
   matchType,
   maxBalls,
-  ruleset,
 }) => {
   const { isUserBatting, isUserBowling, battingSide, bowlingSide } = getContext(isFirstInnings);
   const maxOversPerBowler = getMaxOversPerBowler(matchType.over, matchType);
@@ -28,13 +27,13 @@ export const buildInningsViewModel = ({
     inningState.currentBowlerIndex === null || inningState.currentBowlerIndex === undefined
       ? null
       : bowlingSide[inningState.currentBowlerIndex];
-  const canUseCurrentSuperShot = ruleset !== 'realism' && canUseSuperShot({
+  const canUseCurrentSuperShot = canUseSuperShot({
     striker,
     bowler: currentBowler,
     inningState,
     strikerIndex: inningState.strikerIndex,
   });
-  const canUseCurrentSpecialBall = ruleset !== 'realism' && canUseSpecialBall({
+  const canUseCurrentSpecialBall = canUseSpecialBall({
     bowler: currentBowler,
     inningState,
   });
@@ -126,9 +125,7 @@ export const buildInningsViewModel = ({
       return {
         ...action,
         disabled: !canUseCurrentSuperShot,
-        reason: canUseCurrentSuperShot ? '' : ruleset === 'realism'
-          ? 'Available in arcade mode'
-          : 'Needs ability > 70, max 1 per over, and available credits',
+        reason: canUseCurrentSuperShot ? '' : 'Needs ability > 70, max 1 per over, and available credits',
       };
     }
 
@@ -140,9 +137,7 @@ export const buildInningsViewModel = ({
       return {
         ...action,
         disabled: !canUseCurrentSpecialBall,
-        reason: canUseCurrentSpecialBall ? '' : ruleset === 'realism'
-          ? 'Available in arcade mode'
-          : 'Needs pace/spin > 70, max 1 per over, and available credits',
+        reason: canUseCurrentSpecialBall ? '' : 'Needs pace/spin > 70, max 1 per over, and available credits',
       };
     }
 

@@ -146,7 +146,7 @@ test('a caught shot credits the fielder positioned near its actual sector', () =
   });
 });
 
-test('realism excludes arcade skills, captain bonuses and super-shot boosts', () => {
+test('unified rules combine realistic plans with arcade skills, captain bonuses, and powers', () => {
   const batting = { approach: 'balanced', shot: 'rotate', target: 'straight' };
   const bowling = { overPlan: 'balanced', fieldPreset: 'balanced', line: 'stumps', length: 'good', variation: 'stock' };
   const striker = { id: 'batter', abilityToPlayPaceBall: 70, abilityToPlaySpinBall: 70 };
@@ -170,5 +170,20 @@ test('realism excludes arcade skills, captain bonuses and super-shot boosts', ()
     battingRoles: { captainId: 'batter' },
     battingIntent: battingAction.superShot,
   });
-  expect(arcadeBoosts).toEqual(normal);
+  expect(arcadeBoosts).not.toEqual(normal);
+  expect(arcadeBoosts['6']).toBeGreaterThan(normal['6']);
+
+  const normalBowling = buildOutcomeWeights({
+    ...input,
+    isUserBatting: false,
+    isUserBowling: true,
+    bowlingTactics: { specialDeliveryArmed: false },
+  });
+  const specialBowling = buildOutcomeWeights({
+    ...input,
+    isUserBatting: false,
+    isUserBowling: true,
+    bowlingTactics: { specialDeliveryArmed: true },
+  });
+  expect(specialBowling.W).toBeGreaterThan(normalBowling.W);
 });

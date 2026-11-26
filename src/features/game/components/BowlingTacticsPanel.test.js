@@ -149,11 +149,13 @@ describe('BowlingTacticsPanel', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  test('realism marks special deliveries as arcade-only', () => {
+  test('unified rules allow special deliveries alongside realistic field rules', () => {
     const props = makeProps({ context: { ...makeProps().context, ruleset: 'realism', matchTypeKey: 't20', matchType: { over: 20 }, balls: 0 } });
     render(<BowlingTacticsPanel {...props} />);
-    expect(screen.getByRole('button', { name: /Use special delivery/ })).toBeDisabled();
-    expect(screen.getByText(/Available in arcade mode/)).toBeInTheDocument();
+    const specialDelivery = screen.getByRole('button', { name: /Use special delivery/ });
+    expect(specialDelivery).toBeEnabled();
+    fireEvent.click(specialDelivery);
+    expect(props.onTacticsChange).toHaveBeenCalledWith({ specialDeliveryArmed: true });
   });
 
   test('disables special deliveries and limits variations to the active bowling style', () => {

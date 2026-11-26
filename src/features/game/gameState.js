@@ -59,7 +59,7 @@ export const buildEmptyMatchCondition = () => ({
 export const initialState = {
   stage: matchStatusEnum.intro,
   gameMode: 'quick',
-  ruleset: 'arcade',
+  ruleset: 'realism',
   matchRandom: null,
   seriesLength: 1,
   seriesCurrentMatch: 1,

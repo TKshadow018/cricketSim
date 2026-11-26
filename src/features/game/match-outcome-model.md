@@ -1,19 +1,14 @@
 # Match outcome models
 
-## Choosing a ruleset
+## Unified match rules
 
-On **Choose Game Mode**, select **Arcade** or **Realism** before choosing the
-match or career mode. The choice is saved with the game. Saves made before this
-setting existed load as Arcade.
-
-- **Arcade** retains the original discrete outcome weights, player and team
-  skill bonuses, captain bonuses, Super Shots, and Special Deliveries. Its Test
-  selections remain simplified one-innings-per-team matches.
-- **Realism** uses continuous, format- and phase-specific probabilities,
-  two-sided tactical plans, approximate field geometry, and the restrictions
-  below. Arcade skills, captain bonuses, Super Shots, and Special Deliveries
-  are disabled in this mode. It is an approximation, not an official cricket
-  rules engine or a prediction service.
+All new and saved matches use one ruleset; legacy Arcade and Realism save values
+are migrated to it. The unified rules combine the continuous, format- and
+phase-specific outcome engine, two-sided tactical plans, approximate field
+geometry, and field restrictions below with player skills, captain bonuses,
+Super Shots, and Special Deliveries. Test matches use the multi-innings format.
+This is an approximation, not an official cricket rules engine or a prediction
+service.
 
 The original [outcome analysis](./match-outcome-analysis.md) is a historical
 audit of the earlier engine. This document describes the current implementation.
@@ -38,7 +33,7 @@ simulation. The data used for calibration does not contain field coordinates,
 so field and execution effects are heuristic and have not been independently
 fitted.
 
-In Realism, an illegal user field is explained in the bowling panel and a ball
+An illegal user field is explained in the bowling panel and a ball
 is not delivered until the field is corrected. The computer selects a legal
 preset before the shot. The implementation uses the inner ellipse shown on the
 field map and enforces:
@@ -54,15 +49,15 @@ field map and enforces:
 
 These are a simplified implementation of common restrictions. Other competition
 conditions, substitutions, delayed starts, penalties, and unusual fielding
-scenarios are not modeled. In Arcade, custom fields continue to use their
-closest preset's abstract modifiers and are not restricted.
+scenarios are not modeled. Legacy Arcade simulations use their closest preset's
+abstract modifiers; the unified mode uses actual field positions and restrictions.
 
 An event records bat runs, extras, legal-ball status, completed runs, tactics,
 and structured dismissal information. No-balls count as balls faced but not
-legal deliveries. Wides and no-balls can include additional runs; Realism also
-samples byes, leg-byes, and selected run-outs or stumpings. A free hit survives
+legal deliveries. Wides and no-balls can include additional runs; the unified
+engine also samples byes, leg-byes, and selected run-outs or stumpings. A free hit survives
 wides and further no-balls, protects either side from ordinary dismissals, and
-still permits run-outs. Realism Test and first-class matches do not award a
+still permits run-outs. Test and first-class matches do not award a
 free hit after a no-ball. The engine does not yet generate every legal
 combination, including byes or leg-byes on a no-ball.
 
@@ -73,7 +68,7 @@ shortlists are estimates, not official adjudications.
 
 ## Formats, tournaments, and careers
 
-- A Realism Test has up to four innings, a five-day limit of 90 legal overs per
+- A Test match has up to four innings, a five-day limit of 90 legal overs per
   day, declarations, a follow-on decision, aggregate targets, innings wins,
   ties, and time-expiry draws. The user controls declarations and follow-on
   decisions for their team; the computer uses a simple declaration heuristic

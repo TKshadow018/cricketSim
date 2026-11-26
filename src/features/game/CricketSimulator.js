@@ -74,7 +74,6 @@ function CricketSimulator() {
     simulateCurrentOver,
     simulateFullMatch,
     toggleScoreboard,
-    setRuleset,
     setMatchTypeKey,
     setOwnTeam,
     setOpponentTeam,
@@ -317,7 +316,6 @@ function CricketSimulator() {
             confirmTournamentFixtures={confirmTournamentFixtures}
             randomizeTournamentFixtures={randomizeTournamentFixtures}
             updateTournamentFixture={updateTournamentFixture}
-            setRuleset={setRuleset}
             setMatchTypeKey={setMatchTypeKey}
             setOwnTeam={setOwnTeam}
             setOpponentTeam={setOpponentTeam}
