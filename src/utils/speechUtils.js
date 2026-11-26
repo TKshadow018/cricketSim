@@ -53,7 +53,7 @@ const getLocalizedText = (key, fallbackValue) => {
 
 class SpeechHandler {
   constructor() {
-    this.msg = new SpeechSynthesisUtterance();
+    this.msg = typeof SpeechSynthesisUtterance === 'function' ? new SpeechSynthesisUtterance() : null;
     this.preferredVoiceName = '';
   }
 
@@ -139,19 +139,19 @@ class SpeechHandler {
       }));
   }
 
-  ballByBallCommentry(batsman, runOrOutType, isRun, nonStriker = "") {
+  ballByBallCommentry(batsman, runOrOutType, isRun, nonStriker = "", random = Math.random, shouldSpeak = true) {
     let data = isRun && runOrOutType === 6 ? 5 : runOrOutType;
     let message = "";
     getLocalizedText('runVoice', runVoice);
 
     let listTobeUsed = isRun ? runVoice : outVoice;
-    let randomNumber = this.randomNumberGenerator(20);
+    let randomNumber = Math.floor(random() * 20);
     
     if (listTobeUsed[data] && listTobeUsed[data][randomNumber]) {
       message = listTobeUsed[data][randomNumber]
         .replace(/\$\$\$\$\$/g, batsman)
         .replace(/#####/g, nonStriker);
-      this.speechHandler(message);
+      if (shouldSpeak) this.speechHandler(message);
     }
 
     return message;
@@ -180,7 +180,7 @@ class SpeechHandler {
 
   // Check if speech synthesis is available
   isSpeechAvailable() {
-    return 'speechSynthesis' in window;
+    return typeof window !== 'undefined' && 'speechSynthesis' in window && this.msg !== null;
   }
 }
 

@@ -7,12 +7,18 @@ import TeamNameWithFlag from "./TeamNameWithFlag";
 import PlayerNameWithType from "./PlayerNameWithType";
 import CareerSeasonSummaryStage from "./CareerSeasonSummaryStage";
 import CareerHistoryStage from "./CareerHistoryStage";
+import SuperOverStage from "./SuperOverStage";
 
 function MatchSummaryStages(props) {
   const {
     stage,
     stageCommonProps,
     game,
+    ownPlayers,
+    opponentPlayers,
+    onSaveGame,
+    isSavingGame,
+    saveMessage,
     firstInningsTeamName,
     secondInningsTeamName,
     toggleScoreboard,
@@ -65,7 +71,19 @@ function MatchSummaryStages(props) {
 
   return (
     <>
-{stage === matchStatusEnum.MatchEnd && (
+{stage === matchStatusEnum.MatchEnd && game.tournamentTiebreak && (
+        <SuperOverStage
+          game={game}
+          ownPlayers={ownPlayers}
+          opponentPlayers={opponentPlayers}
+          stageCommonProps={stageCommonProps}
+          onMatchPrimaryAction={onMatchPrimaryAction}
+          onSaveGame={onSaveGame}
+          isSavingGame={isSavingGame}
+          saveMessage={saveMessage}
+        />
+      )}
+{stage === matchStatusEnum.MatchEnd && !game.tournamentTiebreak && (
         <StageShell
           {...stageCommonProps}
           title="Match End"
@@ -103,7 +121,7 @@ function MatchSummaryStages(props) {
                 : isSeriesMode
                   ? (isSeriesLastMatch ? 'View Series Summary' : `Start Match ${seriesCurrentMatch + 1}`)
                   : isTournamentMode
-                    ? 'Next Knockout Match'
+                    ? (game.firstInnings.score === game.secondInnings.score ? 'Play Super Over' : 'Next Knockout Match')
                     : 'Play New Match'
             }
           />
@@ -123,6 +141,7 @@ function MatchSummaryStages(props) {
                 <TeamNameWithFlag teamName={game.opponentTeam} />
               </p>
               <p>Tied matches: {seriesStanding.ties}</p>
+              {seriesStanding.draws ? <p>Drawn matches: {seriesStanding.draws}</p> : null}
             </div>
 
             <div className="sim-scoreboard-panel">

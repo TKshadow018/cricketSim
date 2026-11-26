@@ -13,6 +13,8 @@ import {
 } from 'firebase/firestore';
 import { isDebugAuthBypassEnabled } from '../utils/runtimeFlags';
 import { db } from './config';
+import { decodeSavePayload, encodeSavePayload } from './saveCompression';
+import { queueAutoSave } from './autoSaveQueue';
 
 const usersCollection = 'users';
 const gameSavesCollection = 'gameSaves';
@@ -181,18 +183,20 @@ const mapCareerSave = (save) =>
 export const listGameSaves = async (uid) => {
   if (shouldUseDebugStorage()) {
     const { userStore } = getDebugUserStore(readDebugStore(), uid);
-    return sortByUpdatedAtDesc(Object.values(userStore?.[gameSavesCollection] || {}))
+    const saves = sortByUpdatedAtDesc(Object.values(userStore?.[gameSavesCollection] || {}))
       .filter((save) => save.id !== autoSaveId)
       .slice(0, maxManualGameSaves);
+    return Promise.all(saves.map(decodeSavePayload));
   }
 
   const savesRef = collection(db, usersCollection, uid, gameSavesCollection);
   const savesQuery = query(savesRef, orderBy('updatedAt', 'desc'), limit(gameSavesQueryLimit));
   const result = await getDocs(savesQuery);
-  return result.docs.map(mapSaveDoc).filter((save) => save.id !== autoSaveId).slice(0, maxManualGameSaves);
+  return Promise.all(result.docs.map(mapSaveDoc).filter((save) => save.id !== autoSaveId).slice(0, maxManualGameSaves).map(decodeSavePayload));
 };
 
 export const createGameSave = async (uid, payload) => {
+  const storedPayload = await encodeSavePayload(payload);
   if (shouldUseDebugStorage()) {
     const { store, userStore } = getDebugUserStore(readDebugStore(), uid);
     if (!userStore) {
@@ -203,7 +207,7 @@ export const createGameSave = async (uid, payload) => {
     const timestamp = toDebugTimestamp();
     userStore[gameSavesCollection][id] = {
       id,
-      ...payload,
+      ...storedPayload,
       createdAt: timestamp,
       updatedAt: timestamp,
     };
@@ -213,7 +217,7 @@ export const createGameSave = async (uid, payload) => {
 
   const savesRef = collection(db, usersCollection, uid, gameSavesCollection);
   return addDoc(savesRef, {
-    ...payload,
+    ...storedPayload,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
@@ -238,7 +242,7 @@ export const removeGameSave = async (uid, saveId) => {
 export const getAutoGameSave = async (uid) => {
   if (shouldUseDebugStorage()) {
     const { userStore } = getDebugUserStore(readDebugStore(), uid);
-    return userStore?.[gameSavesCollection]?.[autoSaveId] || null;
+    return decodeSavePayload(userStore?.[gameSavesCollection]?.[autoSaveId] || null);
   }
 
   const saveRef = doc(db, usersCollection, uid, gameSavesCollection, autoSaveId);
@@ -247,10 +251,11 @@ export const getAutoGameSave = async (uid) => {
     return null;
   }
 
-  return mapSaveDoc(saveDoc);
+  return decodeSavePayload(mapSaveDoc(saveDoc));
 };
 
-export const upsertAutoGameSave = async (uid, payload) => {
+export const upsertAutoGameSave = (uid, payload) => queueAutoSave(`game:${uid}`, async () => {
+  const storedPayload = await encodeSavePayload(payload);
   if (shouldUseDebugStorage()) {
     const { store, userStore } = getDebugUserStore(readDebugStore(), uid);
     if (!userStore) {
@@ -261,7 +266,7 @@ export const upsertAutoGameSave = async (uid, payload) => {
     userStore[gameSavesCollection][autoSaveId] = {
       id: autoSaveId,
       ...existing,
-      ...payload,
+      ...storedPayload,
       isAutoSave: true,
       createdAt: existing?.createdAt || toDebugTimestamp(),
       updatedAt: toDebugTimestamp(),
@@ -274,14 +279,14 @@ export const upsertAutoGameSave = async (uid, payload) => {
   await setDoc(
     saveRef,
     {
-      ...payload,
+      ...storedPayload,
       isAutoSave: true,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     },
     { merge: true }
   );
-};
+});
 
 export const createMatchHistoryEntry = async (uid, payload) => {
   if (shouldUseDebugStorage()) {
@@ -327,19 +332,21 @@ export const listRecentMatchHistory = async (uid, maxEntries = 10) => {
 export const listCareerSaves = async (uid) => {
   if (shouldUseDebugStorage()) {
     const { userStore } = getDebugUserStore(readDebugStore(), uid);
-    return sortByUpdatedAtDesc(Object.values(userStore?.[careerSavesCollection] || {}))
+    const saves = sortByUpdatedAtDesc(Object.values(userStore?.[careerSavesCollection] || {}))
       .filter((save) => save.id !== autoSaveId)
       .map(mapCareerSave)
       .slice(0, maxCareerSaves);
+    return Promise.all(saves.map(decodeSavePayload));
   }
 
   const savesRef = collection(db, usersCollection, uid, careerSavesCollection);
   const savesQuery = query(savesRef, orderBy('updatedAt', 'desc'), limit(maxCareerSaves));
   const result = await getDocs(savesQuery);
-  return result.docs.map(mapSaveDoc).filter((save) => save.id !== autoSaveId).map(mapCareerSave);
+  return Promise.all(result.docs.map(mapSaveDoc).filter((save) => save.id !== autoSaveId).map(mapCareerSave).map(decodeSavePayload));
 };
 
 export const createCareerSave = async (uid, payload) => {
+  const storedPayload = await encodeSavePayload(payload);
   if (shouldUseDebugStorage()) {
     const { store, userStore } = getDebugUserStore(readDebugStore(), uid);
     if (!userStore) {
@@ -350,7 +357,7 @@ export const createCareerSave = async (uid, payload) => {
     const timestamp = toDebugTimestamp();
     userStore[careerSavesCollection][id] = {
       id,
-      ...payload,
+      ...storedPayload,
       createdAt: timestamp,
       updatedAt: timestamp,
     };
@@ -360,7 +367,7 @@ export const createCareerSave = async (uid, payload) => {
 
   const savesRef = collection(db, usersCollection, uid, careerSavesCollection);
   return addDoc(savesRef, {
-    ...payload,
+    ...storedPayload,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
@@ -385,7 +392,7 @@ export const removeCareerSave = async (uid, saveId) => {
 export const getCareerAutoSave = async (uid) => {
   if (shouldUseDebugStorage()) {
     const { userStore } = getDebugUserStore(readDebugStore(), uid);
-    return mapCareerAutoSave(userStore?.[careerSavesCollection]?.[autoSaveId] || null);
+    return decodeSavePayload(mapCareerAutoSave(userStore?.[careerSavesCollection]?.[autoSaveId] || null));
   }
 
   const saveRef = doc(db, usersCollection, uid, careerSavesCollection, autoSaveId);
@@ -394,10 +401,11 @@ export const getCareerAutoSave = async (uid) => {
     return null;
   }
 
-  return mapCareerAutoSave(mapSaveDoc(saveDoc));
+  return decodeSavePayload(mapCareerAutoSave(mapSaveDoc(saveDoc)));
 };
 
-export const upsertCareerAutoSave = async (uid, payload) => {
+export const upsertCareerAutoSave = (uid, payload) => queueAutoSave(`career:${uid}`, async () => {
+  const storedPayload = await encodeSavePayload(payload);
   if (shouldUseDebugStorage()) {
     const { store, userStore } = getDebugUserStore(readDebugStore(), uid);
     if (!userStore) {
@@ -408,7 +416,7 @@ export const upsertCareerAutoSave = async (uid, payload) => {
     userStore[careerSavesCollection][autoSaveId] = {
       id: autoSaveId,
       ...existing,
-      ...payload,
+      ...storedPayload,
       isAutoSave: true,
       createdAt: existing?.createdAt || toDebugTimestamp(),
       updatedAt: toDebugTimestamp(),
@@ -421,14 +429,14 @@ export const upsertCareerAutoSave = async (uid, payload) => {
   await setDoc(
     saveRef,
     {
-      ...payload,
+      ...storedPayload,
       isAutoSave: true,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     },
     { merge: true }
   );
-};
+});
 
 export const saveCareerSeasonHistory = async (uid, payload) => {
   if (shouldUseDebugStorage()) {

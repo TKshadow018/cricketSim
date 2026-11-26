@@ -8,6 +8,7 @@ export const selectAIPlayingXI = ({
   lastMatchPerformanceById = {},
   lastMatchPerformanceByName = {},
   requireBowlingQuota = false,
+  random = Math.random,
 }) => {
   const players = (roster || []).map((player) => ensurePlayerMeta(player));
   const byId = new Map(players.map((player) => [String(player.id), player]));
@@ -219,7 +220,7 @@ export const selectAIPlayingXI = ({
     (bowlingAlternativesByRole.bowler?.length || 0) + (bowlingAlternativesByRole.allrounder?.length || 0);
 
   if (currentBowlerIndices.length && totalRoleAlternatives) {
-    const replacementCount = Math.min(currentBowlerIndices.length, totalRoleAlternatives, Math.floor(Math.random() * 3) + 1);
+    const replacementCount = Math.min(currentBowlerIndices.length, totalRoleAlternatives, Math.floor(random() * 3) + 1);
     const worstCurrent = [...currentBowlerIndices]
       .sort((left, right) => {
         const leftPerf = getPerformanceForPlayer({ player: left.player, byId: lastMatchPerformanceById, byName: lastMatchPerformanceByName });

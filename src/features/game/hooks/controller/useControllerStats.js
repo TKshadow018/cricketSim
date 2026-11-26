@@ -5,6 +5,7 @@ import { buildMomRecommendations } from '../../utils/controllerMomUtils';
 import { buildTopRunScorers, buildTopWicketTakers } from '../../utils/controllerCareerUtils';
 import { resolveSeriesStanding } from '../../utils/controllerCommonUtils';
 import { matchStatusEnum } from '../../../../gameData/matchStatusEnum';
+import { getTestWinner } from '../../utils/testMatch';
 
 export const useControllerStats = ({
   firstBattingSide,
@@ -33,6 +34,7 @@ export const useControllerStats = ({
   careerSeasonHistory,
   stage,
   resultSummary,
+  game,
 }) => {
   const momRecommendations = useMemo(() => {
     return buildMomRecommendations({
@@ -47,6 +49,7 @@ export const useControllerStats = ({
       secondInningsTeamName,
       ownSanitizedRoles,
       opponentSanitizedRoles,
+      matchWinner: game?.testMatch?.result ? getTestWinner(game.testMatch, { ownTeam, opponentTeam }) : undefined,
     });
   }, [
     firstBattingSide,
@@ -60,6 +63,7 @@ export const useControllerStats = ({
     secondInningsTeamName,
     ownSanitizedRoles,
     opponentSanitizedRoles,
+    game?.testMatch,
   ]);
 
   const seriesStanding = useMemo(() => resolveSeriesStanding(seriesResults, ownTeam, opponentTeam), [
@@ -120,7 +124,10 @@ export const useControllerStats = ({
     }
 
     let winnerTeam = '';
-    if (secondInnings.score > firstInnings.score) {
+    if (game?.testMatch?.result) {
+      const winner = getTestWinner(game.testMatch, { ownTeam, opponentTeam });
+      winnerTeam = [ownTeam, opponentTeam].includes(winner) ? winner : '';
+    } else if (secondInnings.score > firstInnings.score) {
       winnerTeam = secondInningsTeamName;
     } else if (secondInnings.score < firstInnings.score) {
       winnerTeam = firstInningsTeamName;
@@ -129,7 +136,9 @@ export const useControllerStats = ({
     const pointsSummary = Array.isArray(selected.notes) ? selected.notes.slice(0, 5).join(', ') : '';
     const congratsLine = winnerTeam
       ? `Congratulations to ${winnerTeam} for winning the match.`
-      : 'The match is tied. Congratulations to both teams for a great game.';
+      : game?.testMatch?.result?.type === 'draw'
+        ? 'The match was drawn. Congratulations to both teams for a great game.'
+        : 'The match is tied. Congratulations to both teams for a great game.';
 
     const announcement = [
       `Man of the Match is ${selected.name} from ${selected.team}.`,

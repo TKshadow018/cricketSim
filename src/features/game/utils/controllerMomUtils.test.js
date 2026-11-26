@@ -77,6 +77,26 @@ describe('man-of-the-match scorecard shortlist', () => {
     expect(shortlist.find((entry) => entry.name === 'Partial Over')).toBeDefined();
     expect(shortlist.find((entry) => entry.name === 'Partial Ball')).toBeDefined();
   });
+
+  test('credits bowlers to the bowling team rather than the batting team on each innings card', () => {
+    const shortlist = buildMomShortlistFromScorecards({
+      cards: [
+        {
+          team: 'A',
+          bowlingTeam: 'B',
+          scorecard: { battingRows: [{ playerId: 'a', name: 'A Player', runs: 40 }], bowlingRows: [{ playerId: 'b', name: 'B Player', wickets: 3, overs: '4.0' }] },
+        },
+        {
+          team: 'B',
+          bowlingTeam: 'A',
+          scorecard: { battingRows: [{ playerId: 'b', name: 'B Player', runs: 10 }], bowlingRows: [{ playerId: 'a', name: 'A Player', wickets: 1, overs: '4.0' }] },
+        },
+      ],
+    });
+    expect(shortlist).toHaveLength(2);
+    expect(shortlist.find(({ playerId }) => playerId === 'b')).toMatchObject({ team: 'B', recommended: true });
+    expect(shortlist.find(({ playerId }) => playerId === 'a')).toMatchObject({ team: 'A' });
+  });
 });
 
 describe('man-of-the-match recommendations', () => {
@@ -172,6 +192,26 @@ describe('man-of-the-match recommendations', () => {
       ownSanitizedRoles: {},
       opponentSanitizedRoles: {},
     })).toEqual([]);
+  });
+
+  test('a drawn Test does not award winning-team bonuses based on aggregate totals', () => {
+    const ownPlayers = [makePlayer('a', 'A Player')];
+    const opponentPlayers = [makePlayer('b', 'B Player')];
+    const recommendations = buildMomRecommendations({
+      firstBattingSide: 'own',
+      ownPlayers,
+      opponentPlayers,
+      ownTeam: 'A',
+      opponentTeam: 'B',
+      firstInningsTeamName: 'A',
+      secondInningsTeamName: 'B',
+      firstInnings: { score: 500, battingStats: [{ runs: 40, balls: 60 }], bowlingStats: [] },
+      secondInnings: { score: 350, battingStats: [{ runs: 30, balls: 50 }], bowlingStats: [] },
+      ownSanitizedRoles: { captainId: 'a' },
+      opponentSanitizedRoles: { captainId: 'b' },
+      matchWinner: 'Draw',
+    });
+    expect(recommendations.every((entry) => !entry.notes.some((note) => note.startsWith('Winning team')))).toBe(true);
   });
 
   test('supports sparse player profiles and awards role points to a winning own team', () => {

@@ -198,7 +198,7 @@ export const collectTeamStatsForInnings = ({ teamName, players = [], battingStat
     const batting = battingStats[index] || {};
     const bowling = bowlingStats[index] || {};
     targetMap[statKey].runs += batting.runs || 0;
-    targetMap[statKey].outs += batting.isOut ? 1 : 0;
+    targetMap[statKey].outs += batting.outs ?? (batting.isOut ? 1 : 0);
     targetMap[statKey].balls += batting.balls || 0;
     targetMap[statKey].wickets += bowling.wickets || 0;
     targetMap[statKey].ballsBowled += bowling.balls || 0;
@@ -214,6 +214,8 @@ export const resolveSeriesStanding = (results = [], ownTeamName = '', opponentTe
         acc.ownWins += 1;
       } else if (result.winnerTeam === opponentTeamName) {
         acc.opponentWins += 1;
+      } else if (result.winnerTeam === 'Draw') {
+        acc.draws = (acc.draws || 0) + 1;
       } else {
         acc.ties += 1;
       }

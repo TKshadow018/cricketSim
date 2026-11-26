@@ -32,7 +32,7 @@ function BattingOrderControls({
       {children}
       <div className="sim-batting-order-controls" aria-label={`${player.name} batting order controls`}>
         <span className="sim-batting-order-position">
-          Position {position} of {positionCount}
+          {position} of {positionCount}
         </span>
         <button
           type="button"
@@ -40,7 +40,7 @@ function BattingOrderControls({
           onClick={() => onMove(-1)}
           disabled={position <= 1}
         >
-          Up
+          ⇑  
         </button>
         <button
           type="button"
@@ -48,7 +48,7 @@ function BattingOrderControls({
           onClick={() => onMove(1)}
           disabled={position >= positionCount}
         >
-          Down
+          ⇓ 
         </button>
       </div>
     </div>

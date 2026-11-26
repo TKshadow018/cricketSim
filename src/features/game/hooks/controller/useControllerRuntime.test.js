@@ -63,6 +63,8 @@ describe('useControllerRuntime', () => {
       processDeliveryRef: { current: jest.fn() },
       resolveStadiumConditionRef: { current: jest.fn() },
       careerResultCommitSignatureRef: { current: '' },
+      tournamentResultCommitSignatureRef: { current: '' },
+      seriesResultCommitSignatureRef: { current: '' },
     };
     const base = {
       prepareTournamentMatch: jest.fn(),
@@ -92,6 +94,8 @@ describe('useControllerRuntime', () => {
 
     const runtime = useControllerRuntime({ dispatch, base, refs, actions });
 
+    expect(bundleArgs.competitionArgs.tournamentResultCommitSignatureRef).toBe(refs.tournamentResultCommitSignatureRef);
+    expect(bundleArgs.competitionArgs.seriesResultCommitSignatureRef).toBe(refs.seriesResultCommitSignatureRef);
     expect(runtime.matchPrimaryAction).toBe(competitionHandlers.handleMatchPrimaryAction);
     expect(runtime.resetMatch).toBe(competitionHandlers.handlePlayFreshMatch);
     expect(runtime.announceManOfTheMatch).toBe(stats.announceManOfTheMatch);

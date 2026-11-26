@@ -273,7 +273,7 @@ export const AI_PLAYER_TYPE_DISTRIBUTION = [
   { key: 'spin allrounder', weight: 15 },
 ];
 
-export const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+export const randomInt = (min, max, random = Math.random) => Math.floor(random() * (max - min + 1)) + min;
 
 export const formatLabelMap = { t20: 'T20', odi: 'ODI', firstClass: 'First Class' };
 

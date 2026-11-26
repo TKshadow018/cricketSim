@@ -1,5 +1,6 @@
 import { bowlingAction } from '../../../gameData/actionType';
 import { fieldSettingList } from '../../../gameData/fieldSettingList';
+import { getClosestFieldPreset, isValidFieldPositions } from './bowlingField';
 
 export const DEFAULT_BOWLING_TACTICS = {
   overPlan: 'balanced',
@@ -17,10 +18,11 @@ export const BOWLING_OVER_PLANS = [
   { key: 'contain', label: 'Protect boundaries', description: 'Guard the rope and accept some singles.' },
 ];
 
-export const BOWLING_FIELD_PRESETS = fieldSettingList.map(({ key, label, shortLabel }) => ({
+export const BOWLING_FIELD_PRESETS = fieldSettingList.map(({ key, label, shortLabel, description }) => ({
   key,
   label,
   shortLabel,
+  description,
 }));
 
 export const BOWLING_LINES = [
@@ -37,7 +39,7 @@ export const BOWLING_LENGTHS = [
 ];
 
 const VALID_PLANS = new Set(BOWLING_OVER_PLANS.map(({ key }) => key));
-const VALID_FIELDS = new Set(BOWLING_FIELD_PRESETS.map(({ key }) => key));
+const VALID_FIELDS = new Set([...BOWLING_FIELD_PRESETS.map(({ key }) => key), 'custom']);
 const VALID_LINES = new Set(BOWLING_LINES.map(({ key }) => key));
 const VALID_LENGTHS = new Set(BOWLING_LENGTHS.map(({ key }) => key));
 const VALID_VARIATIONS = new Set(['stock', 'slower', 'cutter', 'flighted', 'quicker']);
@@ -49,10 +51,24 @@ const planShifts = {
   contain: { 1: 1, 4: -3, 6: -2, nb: -1, W: -1 },
 };
 
+const pressureFieldShift = { 1: -1, 4: -1, W: 1 };
+const ringFieldShift = { 1: -2, 4: 1, W: 1 };
+const attackingFieldShift = { 4: 1, 6: 1, W: 2 };
+const boundaryFieldShift = { 1: 1, 4: -2, 6: -2, W: -1 };
+
 const fieldShifts = {
   balanced: {},
-  attacking: { 4: 1, 6: 1, W: 2 },
-  boundary: { 1: 1, 4: -2, 6: -2, W: -1 },
+  attacking: attackingFieldShift,
+  boundary: boundaryFieldShift,
+  newBall: attackingFieldShift,
+  spinAttack: attackingFieldShift,
+  powerplay: pressureFieldShift,
+  ring: ringFieldShift,
+  middleOvers: pressureFieldShift,
+  deathOvers: boundaryFieldShift,
+  offSide: pressureFieldShift,
+  legSide: pressureFieldShift,
+  defendSingle: ringFieldShift,
 };
 
 const lineShifts = {
@@ -93,17 +109,28 @@ export const normalizeBowlingTactics = (value, fallback = DEFAULT_BOWLING_TACTIC
       ? fallback
       : DEFAULT_BOWLING_TACTICS;
 
+  const requestedField = isValidValue(VALID_FIELDS, source.fieldPreset)
+    ? source.fieldPreset
+    : isValidValue(VALID_FIELDS, safeFallback.fieldPreset)
+      ? safeFallback.fieldPreset
+      : DEFAULT_BOWLING_TACTICS.fieldPreset;
+  const fieldPositions = isValidFieldPositions(source.fieldPositions)
+    ? source.fieldPositions
+    : isValidFieldPositions(safeFallback.fieldPositions)
+      ? safeFallback.fieldPositions
+      : null;
+  const fieldPreset = requestedField === 'custom' && !fieldPositions
+    ? DEFAULT_BOWLING_TACTICS.fieldPreset
+    : requestedField;
+
   return {
     overPlan: isValidValue(VALID_PLANS, source.overPlan)
       ? source.overPlan
       : isValidValue(VALID_PLANS, safeFallback.overPlan)
         ? safeFallback.overPlan
         : DEFAULT_BOWLING_TACTICS.overPlan,
-    fieldPreset: isValidValue(VALID_FIELDS, source.fieldPreset)
-      ? source.fieldPreset
-      : isValidValue(VALID_FIELDS, safeFallback.fieldPreset)
-        ? safeFallback.fieldPreset
-        : DEFAULT_BOWLING_TACTICS.fieldPreset,
+    fieldPreset,
+    ...(fieldPreset === 'custom' ? { fieldPositions: [...fieldPositions] } : {}),
     line: isValidValue(VALID_LINES, source.line)
       ? source.line
       : isValidValue(VALID_LINES, safeFallback.line)
@@ -186,7 +213,9 @@ export const getBowlingTacticShift = (input, bowler) => {
 
   return addShifts(
     planShifts[tactics.overPlan],
-    fieldShifts[tactics.fieldPreset],
+    fieldShifts[tactics.fieldPreset === 'custom'
+      ? getClosestFieldPreset(tactics.fieldPositions)
+      : tactics.fieldPreset],
     lineShifts[tactics.line],
     lengthShifts[tactics.length],
     variationShifts[variation]

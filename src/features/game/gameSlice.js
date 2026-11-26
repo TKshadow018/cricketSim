@@ -14,10 +14,11 @@ import {
   migrateLegacyBowlingTactics,
   normalizeBowlingTactics,
 } from './utils/bowlingTactics';
-
+import { resolveRuleset, setRulesetReducer } from './utils/rulesetState';
+import { gameCareerReducers } from './utils/gameCareerReducers';
+import { hydrateInnings } from './utils/inningsMigration';
 import { buildInitialInnings, buildEmptyMatchCondition, initialState } from "./gameState";
 export { buildInitialInnings, buildRandomMatchCondition, buildEmptyMatchCondition } from "./gameState";
-
 const gameSlice = createSlice({
   name: 'game',
   initialState,
@@ -27,6 +28,10 @@ const gameSlice = createSlice({
     },
     setGameMode: (state, action) => {
       state.gameMode = action.payload;
+    },
+    setRuleset: setRulesetReducer,
+    setMatchRandom: (state, action) => {
+      state.matchRandom = action.payload;
     },
     setSeriesLength: (state, action) => {
       state.seriesLength = Math.max(1, Number(action.payload) || 1);
@@ -52,60 +57,21 @@ const gameSlice = createSlice({
     setTournamentCurrentMatchId: (state, action) => {
       state.tournamentCurrentMatchId = action.payload || '';
     },
+    setTournamentTiebreak: (state, action) => {
+      state.tournamentTiebreak = action.payload === null
+        ? null
+        : { ...(state.tournamentTiebreak || {}), ...action.payload };
+    },
+    setTestMatch: (state, action) => {
+      state.testMatch = action.payload;
+    },
     setTournamentChampion: (state, action) => {
       state.tournamentChampion = action.payload || '';
     },
     setTournamentPlayerStats: (state, action) => {
       state.tournamentPlayerStats = action.payload && typeof action.payload === 'object' ? action.payload : {};
     },
-    setCareerTeam: (state, action) => {
-      state.careerTeam = action.payload || '';
-    },
-    setCareerPlayerProfile: (state, action) => {
-      state.careerPlayerProfile = action.payload && typeof action.payload === 'object' ? action.payload : null;
-    },
-    setCareerDomesticCountry: (state, action) => {
-      state.careerDomesticCountry = action.payload || '';
-    },
-    setCareerDomesticTeams: (state, action) => {
-      state.careerDomesticTeams = Array.isArray(action.payload) ? action.payload : [];
-    },
-    setCareerGlobalPlayerPool: (state, action) => {
-      state.careerGlobalPlayerPool = Array.isArray(action.payload) ? action.payload : [];
-    },
-    setCareerAuctionSummary: (state, action) => {
-      state.careerAuctionSummary = action.payload && typeof action.payload === 'object' ? action.payload : null;
-    },
-    setCareerOffers: (state, action) => {
-      state.careerOffers = Array.isArray(action.payload) ? action.payload : [];
-    },
-    setCareerRetired: (state, action) => {
-      state.careerRetired = !!action.payload;
-    },
-    setCareerSeason: (state, action) => {
-      state.careerSeason = Number(action.payload) || 0;
-    },
-    setCareerSeasonLength: (state, action) => {
-      state.careerSeasonLength = action.payload || 'standard';
-    },
-    setCareerFormat: (state, action) => {
-      state.careerFormat = action.payload || 't20';
-    },
-    setCareerMatchIndex: (state, action) => {
-      state.careerMatchIndex = Number(action.payload) || 0;
-    },
-    setCareerSchedule: (state, action) => {
-      state.careerSchedule = Array.isArray(action.payload) ? action.payload : [];
-    },
-    setCareerStandings: (state, action) => {
-      state.careerStandings = action.payload && typeof action.payload === 'object' ? action.payload : {};
-    },
-    setCareerPlayerStats: (state, action) => {
-      state.careerPlayerStats = action.payload && typeof action.payload === 'object' ? action.payload : {};
-    },
-    setCareerSeasonHistory: (state, action) => {
-      state.careerSeasonHistory = Array.isArray(action.payload) ? action.payload : [];
-    },
+    ...gameCareerReducers,
     setMatchTypeKey: (state, action) => {
       state.matchTypeKey = action.payload;
     },
@@ -245,6 +211,8 @@ const gameSlice = createSlice({
         ...payload,
         stage: migratedStage ?? state.stage,
         gameMode: payload.gameMode || state.gameMode,
+        ruleset: resolveRuleset(payload.ruleset),
+        matchRandom: payload.matchRandom || null,
         battingTactics,
         battingIntent,
         bowlingTactics,
@@ -265,6 +233,8 @@ const gameSlice = createSlice({
           ? payload.tournamentMatches
           : state.tournamentMatches,
         tournamentCurrentMatchId: payload.tournamentCurrentMatchId || state.tournamentCurrentMatchId,
+        tournamentTiebreak: payload.tournamentTiebreak || null,
+        testMatch: payload.testMatch || null,
         tournamentChampion: payload.tournamentChampion || state.tournamentChampion,
         tournamentPlayerStats:
           payload.tournamentPlayerStats && typeof payload.tournamentPlayerStats === 'object'
@@ -322,14 +292,8 @@ const gameSlice = createSlice({
           : state.opponentCustomPlayers,
         ownTeamRoles: payload.ownTeamRoles || state.ownTeamRoles,
         opponentTeamRoles: payload.opponentTeamRoles || state.opponentTeamRoles,
-        firstInnings: {
-          ...buildInitialInnings(),
-          ...(payload.firstInnings || state.firstInnings),
-        },
-        secondInnings: {
-          ...buildInitialInnings(),
-          ...(payload.secondInnings || state.secondInnings),
-        },
+        firstInnings: hydrateInnings(payload.firstInnings || state.firstInnings),
+        secondInnings: hydrateInnings(payload.secondInnings || state.secondInnings),
       };
     },
     resetMatchRuntime: (state) => {
@@ -343,6 +307,9 @@ const gameSlice = createSlice({
       state.tournamentOpponentTeams = [];
       state.tournamentMatches = [];
       state.tournamentCurrentMatchId = '';
+      state.tournamentTiebreak = null;
+      state.testMatch = null;
+      state.matchRandom = null;
       state.tournamentChampion = '';
       state.tournamentPlayerStats = {};
       state.matchTypeKey = '';
@@ -397,6 +364,8 @@ const gameSlice = createSlice({
       state.careerSeasonHistory = [];
     },
     resetMatchForCareer: (state) => {
+      state.testMatch = null;
+      state.matchRandom = null;
       state.matchTypeKey = '';
       state.ownTeam = state.careerTeam;
       state.opponentTeam = '';
@@ -437,6 +406,8 @@ const gameSlice = createSlice({
 export const {
   setStage,
   setGameMode,
+  setRuleset,
+  setMatchRandom,
   setSeriesLength,
   setSeriesCurrentMatch,
   setSeriesResults,
@@ -445,6 +416,8 @@ export const {
   setTournamentOpponentTeams,
   setTournamentMatches,
   setTournamentCurrentMatchId,
+  setTournamentTiebreak,
+  setTestMatch,
   setTournamentChampion,
   setTournamentPlayerStats,
   setMatchTypeKey,

@@ -341,8 +341,8 @@ function PreMatchStages({
         moveOpponentPlayerToXI={moveOpponentPlayerToXI}
         removeOpponentPlayerFromXI={removeOpponentPlayerFromXI}
         moveOpponentPlayerInBattingOrder={moveOpponentPlayerInBattingOrder}
-        autoPickOwnXI={autoPickOwnXI}
-        autoPickOpponentXI={autoPickOpponentXI}
+        autoPickOwnXI={() => runAutoPosition(autoPickOwnXI)}
+        autoPickOpponentXI={() => runAutoPosition(autoPickOpponentXI)}
         autoPositionOwnXI={() => runAutoPosition(autoPositionOwnXI)}
         autoPositionOpponentXI={() => runAutoPosition(autoPositionOpponentXI)}
         autoPositionError={autoPositionError}

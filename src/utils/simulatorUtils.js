@@ -55,7 +55,7 @@ export const matchVisual = {
   practiceTestMini: 'P-MIN',
 };
 
-export const randomFrom = (arr = []) => arr[Math.floor(Math.random() * arr.length)];
+export const randomFrom = (arr = [], random = Math.random) => arr[Math.floor(random() * arr.length)];
 
 export const replaceName = (line, striker, partner) =>
   line.replaceAll('$$$$$', striker || 'Batsman').replaceAll('#####', partner || 'Runner');
@@ -170,7 +170,8 @@ export const getEligibleBowlerIndices = (players = [], minimumEligibleBowlers = 
   return players.map((_, index) => index).filter((index) => expandedEligibleSet.has(index));
 };
 
-export const getMaxOversPerBowler = (totalOvers) => Math.max(1, Math.floor(totalOvers / 5));
+export const getMaxOversPerBowler = (totalOvers, { unlimitedBowling = false } = {}) =>
+  unlimitedBowling ? Infinity : Math.max(1, Math.floor(totalOvers / 5));
 
 export const canSelectNextBatter = (inningState, playerIndex) => {
   const isOut = inningState.outBatterIndices.includes(playerIndex);

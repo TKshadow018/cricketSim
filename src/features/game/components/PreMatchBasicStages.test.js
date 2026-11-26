@@ -205,6 +205,8 @@ describe('PreMatchBasicStages', () => {
 
     const mode = makeProps({ stage: matchStatusEnum.ChooseGameMode });
     rerender(<PreMatchBasicStages {...mode} />);
+    expect(screen.getByText('Unified Match Rules')).toBeInTheDocument();
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /Quick Match/ }));
     expect(mode.selectGameMode).toHaveBeenCalledWith('quick');
     fireEvent.click(screen.getByRole('button', { name: /Play Series/ }));
@@ -244,6 +246,15 @@ describe('PreMatchBasicStages', () => {
     fireEvent.click(screen.getByRole('button', { name: /New Zealand/ }));
     expect(location.setLocationCountry).toHaveBeenCalledWith('New Zealand');
     expect(location.setSelectedStadium).toHaveBeenCalledWith('');
+  });
+
+  test('uses the full Test match format in the unified ruleset', () => {
+    const props = makeProps({ stage: matchStatusEnum.ChooseMatchType });
+    const { rerender } = render(<PreMatchBasicStages {...props} />);
+    expect(screen.getAllByText(/Up to four innings, declarations and follow-on/).length).toBeGreaterThan(0);
+    expect(screen.getByRole('button', { name: /PRACTICE TEST MINI/ })).toHaveTextContent('1 innings per team');
+    rerender(<PreMatchBasicStages {...props} game={{ ...props.game, ruleset: 'realism' }} />);
+    expect(screen.getByText(/Up to four innings, declarations and follow-on/)).toBeInTheDocument();
   });
 
   test('selects tournament opponents and fixtures and rejects invalid team counts', () => {

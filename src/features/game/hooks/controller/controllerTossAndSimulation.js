@@ -4,9 +4,12 @@ import { weather, pitchType, outfieldType } from '../../../../gameData/matchCond
 import { randomKey, MODE_TOURNAMENT, MODE_CAREER } from '../../utils/controllerCommonUtils';
 import { getOpponentDecision, isInningsReadyForNextBall } from '../../../../utils/simulatorUtils';
 import { speak } from '../../../../utils/speechUtils';
+import { beginMatchRandom } from '../../utils/matchRandom';
 
 export const useTossAndSimulationHandlers = ({
   dispatch,
+  game,
+  setMatchRandomAction,
   isCurrentMatchUserInvolved,
   stage,
   matchStatusEnumLocal = matchStatusEnum,
@@ -63,11 +66,14 @@ export const useTossAndSimulationHandlers = ({
   };
 
   const handleTossCall = (call) => {
-    const nextCondition = resolveStadiumConditionRef.current(selectedStadium, randomKey(weather));
+    const generator = game ? beginMatchRandom(game.matchRandom) : null;
+    const weatherKeys = Object.keys(weather);
+    const weatherKey = generator ? weatherKeys[Math.floor(generator.next() * weatherKeys.length)] : randomKey(weather);
+    const nextCondition = resolveStadiumConditionRef.current(selectedStadium, weatherKey);
     dispatch(setMatchConditionAction(nextCondition));
     dispatch(setTossCallAction(call));
 
-    const tossFace = Math.random() > 0.5 ? 'crown' : 'dollar';
+    const tossFace = (generator ? generator.next() : Math.random()) > 0.5 ? 'crown' : 'dollar';
     const userWins = tossFace === call;
     const userSideTeam = userTeamName || ownTeam;
     const opponentSideTeam = userSideTeam === ownTeam ? opponentTeam : ownTeam;
@@ -95,6 +101,7 @@ export const useTossAndSimulationHandlers = ({
       handleOpponentWonFlow(decision, winner);
     }
 
+    if (generator) dispatch(setMatchRandomAction(generator.snapshot()));
     dispatch(setStageAction(matchStatusEnumLocal.TossResult));
   };
 
@@ -172,8 +179,11 @@ export const useTossAndSimulationHandlers = ({
       return;
     }
 
-    const nextCondition = resolveStadiumConditionRef.current(selectedStadium, randomKey(weather));
-    const winner = Math.random() > 0.5 ? ownTeam : opponentTeam;
+    const generator = game ? beginMatchRandom(game.matchRandom) : null;
+    const weatherKeys = Object.keys(weather);
+    const weatherKey = generator ? weatherKeys[Math.floor(generator.next() * weatherKeys.length)] : randomKey(weather);
+    const nextCondition = resolveStadiumConditionRef.current(selectedStadium, weatherKey);
+    const winner = (generator ? generator.next() : Math.random()) > 0.5 ? ownTeam : opponentTeam;
     const decision = getOpponentDecision(nextCondition);
     const firstSide =
       decision === 'bat'
@@ -189,6 +199,7 @@ export const useTossAndSimulationHandlers = ({
     dispatch(setTossWinnerAction(winner));
     dispatch(setTossDecisionAction(decision));
     dispatch(setFirstBattingSideAction(firstSide));
+    if (generator) dispatch(setMatchRandomAction(generator.snapshot()));
     dispatch(setStageAction(matchStatusEnumLocal.TossResult));
   }, [
     gameMode,
@@ -207,6 +218,8 @@ export const useTossAndSimulationHandlers = ({
     setTossDecisionAction,
     setFirstBattingSideAction,
     setStageAction,
+    game,
+    setMatchRandomAction,
   ]);
 
   useEffect(() => {
@@ -214,8 +227,11 @@ export const useTossAndSimulationHandlers = ({
       return;
     }
 
-    const nextCondition = resolveStadiumConditionRef.current(selectedStadium, randomKey(weather));
-    const winner = Math.random() > 0.5 ? ownTeam : opponentTeam;
+    const generator = game ? beginMatchRandom(game.matchRandom) : null;
+    const weatherKeys = Object.keys(weather);
+    const weatherKey = generator ? weatherKeys[Math.floor(generator.next() * weatherKeys.length)] : randomKey(weather);
+    const nextCondition = resolveStadiumConditionRef.current(selectedStadium, weatherKey);
+    const winner = (generator ? generator.next() : Math.random()) > 0.5 ? ownTeam : opponentTeam;
     const decision = getOpponentDecision(nextCondition);
     const firstSide =
       decision === 'bat'
@@ -231,6 +247,7 @@ export const useTossAndSimulationHandlers = ({
     dispatch(setTossWinnerAction(winner));
     dispatch(setTossDecisionAction(decision));
     dispatch(setFirstBattingSideAction(firstSide));
+    if (generator) dispatch(setMatchRandomAction(generator.snapshot()));
     dispatch(setStageAction(matchStatusEnumLocal.TossResult));
   }, [
     gameMode,
@@ -248,6 +265,8 @@ export const useTossAndSimulationHandlers = ({
     setTossDecisionAction,
     setFirstBattingSideAction,
     setStageAction,
+    game,
+    setMatchRandomAction,
   ]);
 
   useEffect(() => {

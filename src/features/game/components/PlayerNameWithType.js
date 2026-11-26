@@ -19,6 +19,12 @@ export const resolvePlayerTypeKey = (input = {}) => {
   if (type === PLAYER_TYPES.WICKETKEEPER || type.includes('wicketkeeper')) {
     return 'wicketkeeper';
   }
+  if (!input.playerType && [PLAYER_TYPES.PACE_ALLROUNDER, PLAYER_TYPES.SPIN_ALLROUNDER].includes(type)) {
+    return (Number(input.paceAbility) || 0) >= (Number(input.spinAbility) || 0) ? 'paceAllrounder' : 'spinAllrounder';
+  }
+  if (!input.playerType && [PLAYER_TYPES.PACER, PLAYER_TYPES.SPINER].includes(type)) {
+    return (Number(input.paceAbility) || 0) >= (Number(input.spinAbility) || 0) ? 'pacer' : 'spinner';
+  }
   if (type === PLAYER_TYPES.PACE_ALLROUNDER || type.includes('allrounder pace')) {
     return 'paceAllrounder';
   }

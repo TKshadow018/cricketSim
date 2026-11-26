@@ -8,6 +8,7 @@ import {
 } from '../../../../utils/simulatorUtils';
 import { battingAction, bowlingAction } from '../../../../gameData/actionType';
 import { canUseSpecialBall, canUseSuperShot } from '../../utils/controllerOutcomeUtils';
+import { formatDismissal } from '../../utils/deliveryDismissalUtils';
 
 export const buildInningsViewModel = ({
   isFirstInnings,
@@ -17,7 +18,7 @@ export const buildInningsViewModel = ({
   maxBalls,
 }) => {
   const { isUserBatting, isUserBowling, battingSide, bowlingSide } = getContext(isFirstInnings);
-  const maxOversPerBowler = getMaxOversPerBowler(matchType.over);
+  const maxOversPerBowler = getMaxOversPerBowler(matchType.over, matchType);
   const striker =
     inningState.strikerIndex === null || inningState.strikerIndex === undefined
       ? null
@@ -72,7 +73,9 @@ export const buildInningsViewModel = ({
       economy: currentBowlerBalls > 0
         ? (Number(currentBowlerStat.runsConceded || 0) / (currentBowlerBalls / 6)).toFixed(2)
         : '0.00',
-      oversRemaining: `${Math.floor(oversRemainingBalls / 6)}.${oversRemainingBalls % 6}`,
+      oversRemaining: Number.isFinite(oversRemainingBalls)
+        ? `${Math.floor(oversRemainingBalls / 6)}.${oversRemainingBalls % 6}`
+        : 'Unlimited',
       oversLimit: maxOversPerBowler,
     },
     striker: {
@@ -220,7 +223,7 @@ export const buildInningsViewModel = ({
         balls: stat.balls,
         strikeRate,
         dismissal: stat.isOut
-          ? `b ${stat.outByBowler || 'Unknown'} @ ${stat.outAtScore || '-'} (${stat.outAtBall || '-'})`
+          ? formatDismissal(stat)
           : stat.balls > 0 || isCurrent
             ? 'Not Out'
             : 'Yet to bat',

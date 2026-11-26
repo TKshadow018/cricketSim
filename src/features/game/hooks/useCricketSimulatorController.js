@@ -12,6 +12,7 @@ import {
   resetMatchRuntime,
   resetMatchForCareer,
   setGameMode as setGameModeAction,
+  setRuleset as setRulesetAction, setMatchRandom as setMatchRandomAction,
   setBattingIntent as setBattingIntentAction,
   setBattingTactics as setBattingTacticsAction,
   setBowlingIntent as setBowlingIntentAction,
@@ -40,6 +41,8 @@ import {
   setSeriesResults as setSeriesResultsAction,
   setTournamentChampion as setTournamentChampionAction,
   setTournamentCurrentMatchId as setTournamentCurrentMatchIdAction,
+  setTournamentTiebreak as setTournamentTiebreakAction,
+  setTestMatch as setTestMatchAction,
   setTournamentMatches as setTournamentMatchesAction,
   setTournamentOpponentTeams as setTournamentOpponentTeamsAction,
   setTournamentPlayerStats as setTournamentPlayerStatsAction,
@@ -80,6 +83,7 @@ import { useControllerDerivedState } from './controller/useControllerDerivedStat
 import { buildControllerInningsActions } from './controller/controllerInningsActions';
 import { useControllerBootstrap } from './controller/useControllerBootstrap';
 import { prepareTournamentMatchState } from './controller/controllerTournamentMatchPrep';
+import { formatTestResult } from '../utils/testMatch';
 
 
 
@@ -153,6 +157,7 @@ export function useCricketSimulatorController() {
   const inProgressRef = useRef(false);
   const savedHistorySignatureRef = useRef('');
   const tournamentResultCommitSignatureRef = useRef('');
+  const seriesResultCommitSignatureRef = useRef('');
   const careerResultCommitSignatureRef = useRef('');
   const processDeliveryRef = useRef(null);
   const openInningsRef = useRef(null);
@@ -194,6 +199,7 @@ export function useCricketSimulatorController() {
   stage,
   gameMode,
   tournamentUserTeam,
+  tournamentTiebreak: game.tournamentTiebreak,
   matchTypeKey,
   ownTeam,
   opponentTeam,
@@ -255,6 +261,7 @@ export function useCricketSimulatorController() {
   setShowScoreboardAction,
   firstInningsTeamName,
   setStageAction,
+  setTestMatchAction, setMatchRandomAction,
   maxBalls,
   battingIntent,
   battingTactics,
@@ -265,6 +272,7 @@ export function useCricketSimulatorController() {
   matchCondition,
   matchTypeKey,
   locationCountry,
+  game,
   setBattingIntentAction,
   setBattingTacticsAction,
   setBowlingIntentAction,
@@ -289,6 +297,7 @@ processDeliveryRef.current = processDelivery;
       setSecondInningsAction,
       setShowScoreboardAction,
       setTournamentCurrentMatchIdAction,
+      setMatchRandomAction,
       tournamentResultCommitSignatureRef,
     });
   const {
@@ -342,7 +351,7 @@ processDeliveryRef.current = processDelivery;
 
   const resultSummary = useMemo(
     () =>
-      resolveResultSummary({
+      game.testMatch?.result ? formatTestResult(game.testMatch, { ownTeam, opponentTeam }) : resolveResultSummary({
         firstInningsScore: firstInnings.score,
         secondInningsScore: secondInnings.score,
         secondInningsWickets: secondInnings.wickets,
@@ -350,6 +359,9 @@ processDeliveryRef.current = processDelivery;
         secondInningsTeamName,
       }),
     [
+      game.testMatch,
+      ownTeam,
+      opponentTeam,
       firstInningsTeamName,
       firstInnings.score,
       secondInnings.score,
@@ -395,6 +407,8 @@ processDeliveryRef.current = processDelivery;
       resolveStadiumConditionRef,
       savedHistorySignatureRef,
       careerResultCommitSignatureRef,
+      tournamentResultCommitSignatureRef,
+      seriesResultCommitSignatureRef,
     },
     actions: {
       resetMatchRuntime,
@@ -406,7 +420,7 @@ processDeliveryRef.current = processDelivery;
       setStageAction, setOwnPlayingXIAction, setOwnBattingOrderIdsAction, setOwnTeamRolesAction,
       setOpponentPlayingXIAction, setOpponentBattingOrderIdsAction,
       setOpponentTeamRolesAction, setOwnCustomPlayersAction, setOpponentCustomPlayersAction,
-      setTournamentMatchesAction, setTournamentPlayerStatsAction, setSeriesResultsAction,
+      setTournamentMatchesAction, setTournamentPlayerStatsAction, setTournamentTiebreakAction, setTestMatchAction, setMatchRandomAction, setSeriesResultsAction,
       setSeriesPlayerStatsAction, setTossWinnerAction, setTossCallAction, setMatchConditionAction,
       setFirstInningsAction, setSecondInningsAction, setShowScoreboardAction,
       setSeriesCurrentMatchAction, setTournamentChampionAction,
@@ -428,7 +442,7 @@ processDeliveryRef.current = processDelivery;
       autoSimMode, availableVoices, countryList, matchType, venueStadiums,
       firstInningsTeamName, secondInningsTeamName, isUserWinner, firstInningsView,
       secondInningsView, savedGames, isSavingGame, isGlobalSaving, isSavesLoading,
-      saveMessage, firstInnings, secondInnings, resultSummary, availableOwnPlayers,
+      saveMessage, firstInnings, secondInnings, ownPlayers, opponentPlayers, resultSummary, availableOwnPlayers,
       availableOpponentPlayers, ownAvailablePool, opponentAvailablePool,
       ownSelectedXIIds, opponentSelectedXIIds, ownSelectedXIPlayers,
       opponentSelectedXIPlayers, ownSanitizedRoles, opponentSanitizedRoles,
@@ -456,6 +470,7 @@ processDeliveryRef.current = processDelivery;
       toggleScoreboard: () => dispatch(toggleShowScoreboard()),
     },
     mutations: {
+      setRuleset: (value) => dispatch(setRulesetAction(value)),
       setMatchTypeKey: (value) => dispatch(setMatchTypeKeyAction(value)),
       setOwnTeam: (value) => {
         dispatch(setOwnTeamAction(value));

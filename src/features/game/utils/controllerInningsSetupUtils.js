@@ -7,6 +7,7 @@ import {
   getTopOpenerIndices,
 } from '../../../utils/simulatorUtils';
 import { buildInitialInnings } from '../gameSlice';
+import { createSeededRandom } from './seededRandom';
 
 export const getBestEligibleBowlerIndex = (players = [], excludeIndex = null) => {
   const eligibleIndices = getEligibleBowlerIndices(players);
@@ -25,8 +26,8 @@ export const getBestEligibleBowlerIndex = (players = [], excludeIndex = null) =>
   return withoutExcluded ?? rankedIndices[0];
 };
 
-export const selectComputerBowler = ({ inningState, bowlingSide, previousBowlerIndex, overs }) => {
-  const maxOversPerBowler = getMaxOversPerBowler(overs);
+export const selectComputerBowler = ({ inningState, bowlingSide, previousBowlerIndex, overs, unlimitedBowling = false, random = Math.random }) => {
+  const maxOversPerBowler = getMaxOversPerBowler(overs, { unlimitedBowling });
   const completedOverBowlerIndices = inningState.completedOverBowlerIndices || [];
   const nextOverNumber = completedOverBowlerIndices.length + 1;
   const eligibleBowlerSet = new Set(getEligibleBowlerIndices(bowlingSide));
@@ -44,12 +45,12 @@ export const selectComputerBowler = ({ inningState, bowlingSide, previousBowlerI
 
   if (!validBowlerIndices.length) {
     if (underLimitIndices.length) {
-      return underLimitIndices[Math.floor(Math.random() * underLimitIndices.length)];
+      return underLimitIndices[Math.floor(random() * underLimitIndices.length)];
     }
     return null;
   }
 
-  const randomFromIndices = (indices) => indices[Math.floor(Math.random() * indices.length)];
+  const randomFromIndices = (indices) => indices[Math.floor(random() * indices.length)];
   const paceCandidates = validBowlerIndices.filter((index) => {
     const player = bowlingSide[index];
     const paceAbility = player?.paceAbility || 0;
@@ -70,7 +71,7 @@ export const selectComputerBowler = ({ inningState, bowlingSide, previousBowlerI
   }
 
   if (nextOverNumber === 3) {
-    const roll = Math.floor(Math.random() * 3) + 1;
+    const roll = Math.floor(random() * 3) + 1;
     if ((roll === 2 || roll === 3) && validBowlerIndices.includes(bowlerOne)) {
       return bowlerOne;
     }
@@ -79,7 +80,7 @@ export const selectComputerBowler = ({ inningState, bowlingSide, previousBowlerI
   }
 
   if (nextOverNumber === 4) {
-    const roll = Math.floor(Math.random() * 4) + 1;
+    const roll = Math.floor(random() * 4) + 1;
     if ((roll === 2 || roll === 3) && validBowlerIndices.includes(bowlerTwo)) {
       return bowlerTwo;
     }
@@ -95,8 +96,9 @@ export const selectComputerBowler = ({ inningState, bowlingSide, previousBowlerI
   return randomFromIndices(validBowlerIndices);
 };
 
-export const buildPreparedInnings = ({ battingSide, bowlingSide, isUserBatting, isUserBowling, overs }) => {
+export const buildPreparedInnings = ({ battingSide, bowlingSide, isUserBatting, isUserBowling, overs, randomSeed, unlimitedBowling = false }) => {
   const innings = buildInitialInnings();
+  const generator = randomSeed === undefined ? null : createSeededRandom(randomSeed);
   innings.battingStats = createBattingStats(battingSide);
   innings.bowlingStats = createBowlingStats(bowlingSide);
   const eligibleBowlerIndices = getEligibleBowlerIndices(bowlingSide);
@@ -130,9 +132,16 @@ export const buildPreparedInnings = ({ battingSide, bowlingSide, isUserBatting, 
       bowlingSide,
       previousBowlerIndex: null,
       overs,
+      unlimitedBowling,
+      random: generator ? generator.next : Math.random,
     });
     innings.currentBowlerIndex = openingBowlerIndex ?? getBestEligibleBowlerIndex(bowlingSide);
   }
 
+  if (generator) {
+    innings.randomSeed = randomSeed;
+    innings.randomState = generator.getState();
+    innings.randomAlgorithm = 'mulberry32-v1';
+  }
   return innings;
 };

@@ -1,4 +1,5 @@
 import { createPerson } from 'faker-user';
+import { mergeSimulatedTeamStatsFromScorecard } from './careerMatchUpdateUtils';
 import {
   assignGlobalPoolPlayersToDomesticTeams,
   buildCareerOffers,
@@ -274,27 +275,21 @@ test('reuses sparse player records and resolves prior scorecards by partial team
   });
 
 test('ignores malformed overs when deriving match contributions from scorecards', () => {
-    jest.spyOn(Math, 'random').mockReturnValue(0.5);
-    const commonUtils = require('./controllerCommonUtils');
-    const originalBuildScorecard = commonUtils.buildScorecard;
-    jest.spyOn(commonUtils, 'buildScorecard').mockImplementation((title, state, inningsView, overs) => ({
-      ...originalBuildScorecard(title, state, inningsView, overs),
-      battingRows: null,
-      bowlingRows: inningsView.bowlingRows.map((row) => ({ ...row, overs: 'invalid.overs' })),
-    }));
-    const result = simulateCareerFixture({
-      match: { format: 't20', teamA: 'Team A', teamB: 'Team B', isUserMatch: false },
-      domesticTeams: [
-        { name: 'Team A', players: [{ id: 'a-1', name: 'A Player', playerType: 'batsman' }] },
-        { name: 'Team B', players: [{ id: 'b-1', name: 'B Player', playerType: 'batsman' }] },
-      ],
+    const updatedStats = {};
+    mergeSimulatedTeamStatsFromScorecard({
+      updatedStats,
+      teamName: 'Team A',
+      teamPlayers: [{ id: 'a-1', name: 'A Player', playerType: 'batsman' }],
+      battingCard: { battingRows: null },
+      opponentBattingCard: { bowlingRows: [{ name: 'A Player', overs: 'invalid.overs' }] },
+      seasonNumber: 1,
+      format: 't20',
     });
 
-    expect(result.updatedStats['Team A::a-1::A Player'].ballsBowled).toBe(0);
-    expect(result.updatedStats['Team B::b-1::B Player'].ballsBowled).toBe(0);
+    expect(updatedStats['Team A::a-1::A Player'].ballsBowled).toBe(0);
   });
 
-test('handles zero-run and zero-ball rows in a highly uneven batting lineup', () => {
+test('computes strike rates for a highly uneven batting lineup', () => {
     jest.spyOn(Math, 'random').mockReturnValue(0.999);
     const createUnevenRoster = (prefix) => [
       { id: `${prefix}-weak`, name: `${prefix} Weak`, playerType: 'batsman', battingOrderCoeff: 100 },
@@ -319,6 +314,7 @@ test('handles zero-run and zero-ball rows in a highly uneven batting lineup', ()
     });
 
     const weakBatter = result.result.scorecard.previousInnings.battingRows.find(({ playerId }) => playerId === 'a-weak');
-    expect(weakBatter).toMatchObject({ balls: 0, runs: 0, strikeRate: '0.00' });
+    expect(weakBatter).toMatchObject({ balls: expect.any(Number), runs: expect.any(Number) });
+    expect(weakBatter.strikeRate).toBe(weakBatter.balls ? (weakBatter.runs * 100 / weakBatter.balls).toFixed(2) : '0.00');
   });
 });

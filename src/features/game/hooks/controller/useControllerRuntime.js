@@ -40,6 +40,8 @@ export const useControllerRuntime = ({
         ...base,
         dispatch,
         ...actions,
+        tournamentResultCommitSignatureRef: refs.tournamentResultCommitSignatureRef,
+        seriesResultCommitSignatureRef: refs.seriesResultCommitSignatureRef,
       },
       tossArgs: {
         ...base,

@@ -329,7 +329,10 @@ describe('processDelivery scoring and dismissal', () => {
       isWicket: true,
       isLegalDelivery: true,
     });
-    const superShotWicket = makeProps({ battingIntent: battingAction.superShot });
+    const superShotWicket = makeProps({
+      battingIntent: battingAction.superShot,
+      ruleset: 'realism',
+    });
     processDelivery(superShotWicket);
     expect(superShotWicket.setFirstInnings.mock.calls[0][0]).toMatchObject({
       superShotUsedInOver: 1,
@@ -339,6 +342,7 @@ describe('processDelivery scoring and dismissal', () => {
 
     const specialBallWicket = makeProps({
       bowlingIntent: bowlingAction.specialBowl,
+      ruleset: 'realism',
       getContext: jest.fn(() => ({
         isOwnBatting: false,
         isUserBatting: false,

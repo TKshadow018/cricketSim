@@ -224,6 +224,7 @@ function CareerAnalyticsModals({ analytics, state }) {
                       <th>W</th>
                       <th>L</th>
                       <th>T</th>
+                      {leagueTableFormatTab === 'firstClass' ? <th aria-label="Draws">D</th> : null}
                       <th>Pts</th>
                     </tr>
                   </thead>
@@ -236,6 +237,7 @@ function CareerAnalyticsModals({ analytics, state }) {
                         <td>{row.wins}</td>
                         <td>{row.losses}</td>
                         <td>{row.ties}</td>
+                        {leagueTableFormatTab === 'firstClass' ? <td>{row.draws || 0}</td> : null}
                         <td><strong>{row.points}</strong></td>
                       </tr>
                     ))}

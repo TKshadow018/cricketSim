@@ -18,6 +18,7 @@ import {
 import CareerSetupStage from './CareerSetupStage';
 import CareerAuctionStage from './CareerAuctionStage';
 import CareerSeasonScheduleStage from './CareerSeasonScheduleStage';
+import MatchRulesetInfo from './MatchRulesetInfo';
 
 function SetupStageShell({ title, isRedesignedDashboard, className = '', ...props }) {
   return (
@@ -205,8 +206,16 @@ function PreMatchBasicStages(props) {
             }}
             keyOf={(item) => item.key}
             renderTitle={(item) => String(item.nameKey || item.key || '').replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase()}
-            renderMeta={(item) => `${item.over} overs • ${item.innings} innings`}
-            renderDescription={(item) => `${item.day} day format`}
+            renderMeta={(item) => item.key === 'test'
+              ? `${item.day} days • ${item.over} overs per day`
+              : ['test', 'practiceTestMicro', 'practiceTestMini'].includes(item.key)
+                ? `${item.over} overs • 1 innings per team`
+                : `${item.over} overs • ${item.innings} innings`}
+            renderDescription={(item) => item.key === 'test'
+              ? 'Up to four innings, declarations and follow-on.'
+              : ['test', 'practiceTestMicro', 'practiceTestMini'].includes(item.key)
+                ? 'Simplified Test-style match with one innings per team.'
+                : `${item.day} day format`}
           />
         </SetupStageShell>
       )}
@@ -219,6 +228,7 @@ function PreMatchBasicStages(props) {
           subtitle="Pick how you want to play."
           className="sim-stage--game-mode"
         >
+          <MatchRulesetInfo />
           <div className="sim-series-mode-grid">
             <button type="button" className={`sim-series-mode-card apex-card apex-card--interactive ${game.gameMode === 'quick' ? 'active apex-card--selected' : ''}`} aria-pressed={game.gameMode === 'quick'} onClick={() => selectGameMode('quick')}>
               <h4>Quick Match</h4>
@@ -521,6 +531,7 @@ function PreMatchBasicStages(props) {
           careerDomesticTeams={careerDomesticTeams}
           careerPlayerProfile={careerPlayerProfile}
           careerRetired={careerRetired}
+          errorMessage={saveMessage}
           handleCareerStartNextMatch={handleCareerStartNextMatch}
           handleViewCareerHistory={handleViewCareerHistory}
         />

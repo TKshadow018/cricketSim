@@ -73,6 +73,8 @@ const makeHandlers = (overrides = {}) => {
     opponentCustomPlayers: [],
     ownXIReady: false,
     opponentXIReady: false,
+    ownBowlingRolesReady: false,
+    opponentBowlingRolesReady: false,
     ownRolesReady: false,
     opponentRolesReady: false,
     firstBattingSide: 'own',
@@ -117,6 +119,8 @@ describe('toss and match-start handling', () => {
       opponentXIReady: true,
       ownRolesReady: true,
       opponentRolesReady: true,
+      ownBowlingRolesReady: true,
+      opponentBowlingRolesReady: true,
       firstBattingSide: 'opponent',
     });
     ready.handlers.startMatchWithSelectedXI();
@@ -265,6 +269,18 @@ describe('team XI and role management', () => {
       type: 'setOwnTeamRolesAction',
       payload: expect.objectContaining({ selectedCount: 13 }),
     });
+    const ownAutoPickIndex = autoPick.dispatch.mock.calls.findIndex(
+      ([action]) => action.type === 'setOwnPlayingXIAction'
+    );
+    const ownBattingOrderIndex = autoPick.dispatch.mock.calls.findIndex(
+      ([action]) => action.type === 'setOwnBattingOrderIdsAction'
+    );
+    expect(ownBattingOrderIndex).toBeGreaterThan(ownAutoPickIndex);
+    const ownPickedIds = autoPick.dispatch.mock.calls[ownAutoPickIndex][0].payload;
+    const ownBattingOrderIds = autoPick.dispatch.mock.calls[ownBattingOrderIndex]?.[0].payload;
+    expect(ownBattingOrderIds).toHaveLength(11);
+    expect(new Set(ownBattingOrderIds)).toEqual(new Set(ownPickedIds));
+
     autoPick.handlers.autoPickOpponentXI();
     expect(autoPick.dispatch).toHaveBeenCalledWith({
       type: 'setOpponentPlayingXIAction',
@@ -274,6 +290,18 @@ describe('team XI and role management', () => {
       type: 'setOpponentTeamRolesAction',
       payload: expect.any(Object),
     });
+    const opponentAutoPickIndex = autoPick.dispatch.mock.calls.findIndex(
+      ([action]) => action.type === 'setOpponentPlayingXIAction'
+    );
+    const opponentBattingOrderIndex = autoPick.dispatch.mock.calls.findIndex(
+      ([action]) => action.type === 'setOpponentBattingOrderIdsAction'
+    );
+    expect(opponentBattingOrderIndex).toBeGreaterThan(opponentAutoPickIndex);
+    const opponentPickedIds = autoPick.dispatch.mock.calls[opponentAutoPickIndex][0].payload;
+    const opponentBattingOrderIds =
+      autoPick.dispatch.mock.calls[opponentBattingOrderIndex]?.[0].payload;
+    expect(opponentBattingOrderIds).toHaveLength(11);
+    expect(new Set(opponentBattingOrderIds)).toEqual(new Set(opponentPickedIds));
   });
 
   test('adds and removes opponent players and permits absent player metadata', () => {

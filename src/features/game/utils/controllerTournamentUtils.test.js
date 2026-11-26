@@ -88,7 +88,7 @@ describe('score-based match winners', () => {
   test('resolves either side winning and configurable ties', () => {
     expect(resolveWinnerFromScores(scores)).toBe('B');
     expect(resolveWinnerFromScores({ ...scores, secondInnings: { score: 99 } })).toBe('A');
-    expect(resolveWinnerFromScores({ ...scores, secondInnings: { score: 100 } })).toBe('A');
+    expect(resolveWinnerFromScores({ ...scores, secondInnings: { score: 100 } })).toBe('Tie');
     expect(resolveWinnerFromScores({ ...scores, secondInnings: { score: 100 }, tieAs: 'Shared' })).toBe('Shared');
   });
 });

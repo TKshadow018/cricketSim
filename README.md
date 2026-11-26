@@ -22,6 +22,7 @@ You set up match conditions (teams, stadium, commentator, toss, XI), then contro
 
 - Register/login with Email/Password or Google.
 - Configure match format (micro, mini, T10, T20, ODI, Test variants).
+- Choose Arcade or Realism rules, including a multi-innings Test in Realism.
 - Select own team, opponent, location country, and stadium.
 - Use stadium-driven pitch/outfield conditions and weather display.
 - Choose commentator voice with generated realistic display names.
@@ -104,7 +105,7 @@ The simulator progresses through these stages:
 
 - **Batting tactics** (when your side is batting): set a persistent Defend, Balanced, or Attack approach; choose a shot intent and select one of nine target sectors directly on the interactive field map.
 - Shot and target calls reset after a delivery by default. Enable **Keep shot & target for next ball** to retain them; a new batter or free-hit situation always gets a fresh call.
-- **Super Shot** and **Free Hit** remain contextual actions and follow their existing ability, credit, and dismissal rules.
+- **Super Shot** and **Special Delivery** are Arcade-only. Limited-overs free hits remain available in both rulesets.
 - **Bowling Plan** (when your side is bowling): choose Balanced, Attack, Build Pressure, or Protect Boundaries.
 - Set a field preset and call line, length, and a bowler-compatible variation for the next ball.
 - Arm a Special Delivery explicitly; the cockpit shows eligibility, remaining credits, and over use.
@@ -122,11 +123,12 @@ The simulator progresses through these stages:
 - Wicketkeeper must be set.
 - You can create custom players and auto-pick XIs.
 
-### Planned Engine Improvements
+### Match outcome models
 
-The [settings and fielding impact plan](src/features/game/match-engine-settings-impact-plan.md)
-compares three approaches to deeper batting, bowling, and field-placement interactions, with
-a recommended design and validation roadmap. It is a proposal only; gameplay is unchanged.
+Choose Arcade or Realism on the game-mode screen. Realism uses two-sided plans,
+position-based fields, fielding restrictions, and a multi-innings Test match.
+The [match outcome model guide](src/features/game/match-outcome-model.md) explains
+the rules, save compatibility, calibration data, and known limitations.
 
 ## Man of the Match (MoM)
 

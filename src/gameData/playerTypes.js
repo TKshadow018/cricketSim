@@ -5,6 +5,7 @@ export const PLAYER_TYPES = {
   SPIN_ALLROUNDER: 'spin allrounder',
   PACER: 'pacer',
   SPINER: 'spiner',
+  BOWLER: 'bowler',
 };
 
 const metric = (value) => Number(value) || 0;

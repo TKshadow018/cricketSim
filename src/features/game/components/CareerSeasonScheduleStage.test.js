@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import CareerSeasonScheduleStage from './CareerSeasonScheduleStage';
 
 jest.mock('faker-user', () => ({ createPerson: jest.fn() }));
@@ -15,7 +15,7 @@ jest.mock('./StageShell', () => ({
 }));
 
 jest.mock('../utils/controllerCareerScheduleUtils', () => ({
-  CAREER_FORMATS: ['t20', 'odi'],
+  CAREER_FORMATS: ['t20', 'odi', 'firstClass'],
   formatCareerMatchLabel: jest.fn(),
   getCareerFormatStandings: jest.fn(),
   sortStandings: jest.fn(),
@@ -153,6 +153,57 @@ describe('CareerSeasonScheduleStage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Close Scoreboard' }));
     fireEvent.keyDown(completedAgain, { key: 'ArrowDown' });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  test('shows first-class draws separately from ties in the points table', () => {
+    const props = makeProps({
+      careerStandings: {
+        firstClass: [{ team: 'Falcons', played: 2, wins: 0, losses: 0, ties: 0, draws: 2, points: 2 }],
+      },
+    });
+
+    render(<CareerSeasonScheduleStage {...props} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Show Points Table' }));
+    const panel = screen.getByText('FIRSTCLASS Standings').closest('.sim-scoreboard-panel');
+    expect(within(panel).getByRole('columnheader', { name: 'Draws' })).toBeInTheDocument();
+    expect(within(panel).getByText('Falcons').closest('tr')).toHaveTextContent('2');
+  });
+
+  test('shows each first-class innings instead of an aggregate wicket count', () => {
+    const card = (team, score, wickets) => ({
+      team,
+      score,
+      wickets,
+      scorecard: { title: `${team} Innings`, line: `${team} Innings ${score}/${wickets}`, overs: '50.0', battingRows: [], bowlingRows: [] },
+    });
+    const fixture = {
+      id: 'test',
+      matchNumber: 1,
+      teamA: 'Falcons',
+      teamB: 'Ravens',
+      format: 'firstClass',
+      isComplete: true,
+      isUserMatch: true,
+      result: {
+        winner: 'Draw',
+        summary: 'The match is drawn.',
+        teamAScore: 320,
+        teamAWickets: 13,
+        teamBScore: 300,
+        teamBWickets: 10,
+        scorecard: {
+          previousInnings: card('Falcons', 320, 13).scorecard,
+          currentInnings: card('Ravens', 300, 10).scorecard,
+          innings: [card('Falcons', 200, 10), card('Ravens', 300, 10), card('Falcons', 120, 3)],
+        },
+      },
+    };
+    render(<CareerSeasonScheduleStage {...makeProps({ careerSchedule: [fixture] })} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Show Full Schedule' }));
+    fireEvent.click(screen.getByRole('button', { name: /Match 1:/ }));
+    const dialog = screen.getByRole('dialog', { name: 'Completed fixture scoreboard' });
+    expect(dialog).toHaveTextContent('Falcons 200/10 & 120/3');
+    expect(dialog).not.toHaveTextContent('Falcons 320/13');
   });
 
   test('handles no fixtures, AI-only matches, and country-filtered leagues', () => {

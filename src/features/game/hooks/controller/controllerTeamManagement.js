@@ -31,6 +31,20 @@ const reorderBattingOrder = (selectedIds, battingOrderIds, playerId, direction) 
   return nextOrder;
 };
 
+const buildAutoPositionedXI = (roster, selectedIds) => {
+  if (selectedIds.length !== 11) {
+    return null;
+  }
+
+  const playersById = new Map(roster.map((player) => [player.id, player]));
+  const selectedPlayers = selectedIds.map((id) => playersById.get(id));
+  if (selectedPlayers.some((player) => !player)) {
+    throw new Error('Could not find all auto-selected players in the team roster.');
+  }
+
+  return autoPositionPlayers(selectedPlayers).map((player) => player.id);
+};
+
 export const createTeamManagementHandlers = ({
   dispatch,
   userTeamName,
@@ -265,12 +279,20 @@ export const createTeamManagementHandlers = ({
     const nextIds = selectAIPlayingXI({ roster: availableOwnPlayers, requireBowlingQuota: true });
     dispatch(setOwnPlayingXIAction(nextIds));
     dispatch(setOwnTeamRolesAction(pickDefaultRoles(availableOwnPlayers, nextIds)));
+    const battingOrderIds = buildAutoPositionedXI(availableOwnPlayers, nextIds);
+    if (battingOrderIds) {
+      dispatch(setOwnBattingOrderIdsAction(battingOrderIds));
+    }
   };
 
   const autoPickOpponentXI = () => {
     const nextIds = selectAIPlayingXI({ roster: availableOpponentPlayers, requireBowlingQuota: true });
     dispatch(setOpponentPlayingXIAction(nextIds));
     dispatch(setOpponentTeamRolesAction(pickDefaultRoles(availableOpponentPlayers, nextIds)));
+    const battingOrderIds = buildAutoPositionedXI(availableOpponentPlayers, nextIds);
+    if (battingOrderIds) {
+      dispatch(setOpponentBattingOrderIdsAction(battingOrderIds));
+    }
   };
 
   const autoPositionOwnXI = () => {

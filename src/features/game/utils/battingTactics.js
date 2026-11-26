@@ -167,7 +167,7 @@ export const getBattingTacticsResetPatch = (
   };
 };
 
-export const getBattingTacticShift = (input, bowlingTactics) => {
+export const getBattingTacticShift = (input, bowlingTactics, { includeTargetShift = true } = {}) => {
   const tactics = normalizeBattingTactics(input);
   const bowlingLine = bowlingTactics?.line;
   const hasBowlingLine = VALID_BOWLING_LINES.has(bowlingLine);
@@ -189,7 +189,7 @@ export const getBattingTacticShift = (input, bowlingTactics) => {
   return addShifts(
     approachShifts[tactics.approach],
     shotShifts[tactics.shot],
-    targetShifts[tactics.target],
+    includeTargetShift ? targetShifts[tactics.target] : null,
     lineTargetShift,
     yorkerAgainstLoft,
     boundaryFieldAgainstSideTarget

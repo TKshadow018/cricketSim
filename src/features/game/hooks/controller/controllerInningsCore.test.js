@@ -155,6 +155,28 @@ describe('innings context and state updates', () => {
     expect(dispatch).toHaveBeenNthCalledWith(1, { type: 'scoreboard', payload: false });
     expect(dispatch).toHaveBeenNthCalledWith(2, { type: 'stage', payload: matchStatusEnum.TeamOneBat });
   });
+
+  test('uses the injected match generator to seed both innings', () => {
+    const first = jest.fn();
+    const second = jest.fn();
+    const random = jest.fn().mockReturnValueOnce(0.25).mockReturnValueOnce(0.5);
+    const players = makePlayers('team');
+    openInnings({
+      firstSide: 'own',
+      getContext: () => ({ battingSide: players, bowlingSide: players, isUserBatting: false, isUserBowling: false }),
+      setFirstInnings: first,
+      setSecondInnings: second,
+      matchType: { over: 20 },
+      dispatch: jest.fn(),
+      setShowScoreboardAction: (payload) => ({ type: 'scoreboard', payload }),
+      firstInningsTeamName: 'Own',
+      setStageAction: (payload) => ({ type: 'stage', payload }),
+      matchStatusEnum,
+      random,
+    });
+    expect(first.mock.calls[0][0].randomSeed).toBe(1073741824);
+    expect(second.mock.calls[0][0].randomSeed).toBe(2147483648);
+  });
 });
 
 describe('innings player selections', () => {

@@ -53,4 +53,94 @@ export const fieldSettingList = [
       'backwardPoint',
     ],
   },
+  {
+    key: 'newBall',
+    label: 'New-ball field',
+    shortLabel: 'New ball',
+    description: 'Support seam bowling with two slips and a gully.',
+    positions: [
+      'wicketkeeper', 'firstSlip', 'secondSlip', 'gully', 'point',
+      'cover', 'midOff', 'midOn', 'squareLeg', 'fineLeg',
+    ],
+  },
+  {
+    key: 'spinAttack',
+    label: 'Attacking spin field',
+    shortLabel: 'Spin attack',
+    description: 'Place close catchers around the bat for an attacking spinner.',
+    positions: [
+      'wicketkeeper', 'slip', 'sillyPoint', 'shortLeg', 'shortMidOff',
+      'cover', 'midOff', 'midOn', 'squareLeg', 'deepMidWicket',
+    ],
+  },
+  {
+    key: 'powerplay',
+    label: 'Powerplay field',
+    shortLabel: 'Powerplay',
+    description: 'Combine a catching slip with an infield and selected deep protection.',
+    positions: [
+      'wicketkeeper', 'firstSlip', 'point', 'cover', 'extraCover',
+      'midOff', 'midOn', 'midWicket', 'fineLeg', 'thirdMan',
+    ],
+  },
+  {
+    key: 'ring',
+    label: 'Ring field',
+    shortLabel: 'Ring',
+    description: 'Pack the infield to make rotating the strike harder.',
+    positions: [
+      'wicketkeeper', 'backwardPoint', 'point', 'cover', 'extraCover',
+      'midOff', 'midOn', 'midWicket', 'squareLeg', 'shortFineLeg',
+    ],
+  },
+  {
+    key: 'middleOvers',
+    label: 'Middle-overs field',
+    shortLabel: 'Middle overs',
+    description: 'Balance infield pressure with protection on the rope.',
+    positions: [
+      'wicketkeeper', 'point', 'cover', 'midOff', 'midOn',
+      'midWicket', 'squareLeg', 'deepCover', 'deepMidWicket', 'longOn',
+    ],
+  },
+  {
+    key: 'deathOvers',
+    label: 'Death-overs field',
+    shortLabel: 'Death overs',
+    description: 'Protect the boundary against late-innings hitting.',
+    positions: [
+      'wicketkeeper', 'shortThirdMan', 'point', 'cover', 'longOff',
+      'longOn', 'deepMidWicket', 'deepSquareLeg', 'deepFineLeg', 'shortFineLeg',
+    ],
+  },
+  {
+    key: 'offSide',
+    label: 'Off-side field',
+    shortLabel: 'Off side',
+    description: 'Concentrate fielders on the off side for an outside-channel plan.',
+    positions: [
+      'wicketkeeper', 'firstSlip', 'gully', 'point', 'cover',
+      'extraCover', 'midOff', 'thirdMan', 'midOn', 'squareLeg',
+    ],
+  },
+  {
+    key: 'legSide',
+    label: 'Leg-side field',
+    shortLabel: 'Leg side',
+    description: 'Strengthen the leg side against shots through the on side.',
+    positions: [
+      'wicketkeeper', 'slip', 'point', 'cover', 'midOff',
+      'midOn', 'midWicket', 'squareLeg', 'fineLeg', 'deepSquareLeg',
+    ],
+  },
+  {
+    key: 'defendSingle',
+    label: 'Defend a single field',
+    shortLabel: 'Defend single',
+    description: 'Bring fielders in to challenge a quick single.',
+    positions: [
+      'wicketkeeper', 'shortThirdMan', 'backwardPoint', 'cover', 'extraCover',
+      'midOff', 'midOn', 'midWicket', 'squareLeg', 'shortFineLeg',
+    ],
+  },
 ];

@@ -66,6 +66,7 @@ test('handles default and empty inputs across career utility entry points', () =
 
     const emptyFixture = simulateCareerFixture({
       match: { teamA: 'Team A', teamB: 'Team B', format: 't20' },
+      ruleset: 'arcade',
     });
     expect(emptyFixture.updatedStats).toEqual({});
     expect(emptyFixture.updatedDomesticTeams).toEqual([]);

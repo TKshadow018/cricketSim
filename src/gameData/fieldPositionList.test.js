@@ -27,10 +27,25 @@ describe('cricket field reference data', () => {
       'balanced',
       'attacking',
       'boundary',
+      'newBall',
+      'spinAttack',
+      'powerplay',
+      'ring',
+      'middleOvers',
+      'deathOvers',
+      'offSide',
+      'legSide',
+      'defendSingle',
     ]);
 
+    expect(new Set(fieldSettingList.map(({ positions }) => [...positions].sort().join(','))).size)
+      .toBe(12);
     fieldSettingList.forEach((setting) => {
+      expect(setting.positions).toHaveLength(10);
       expect(new Set(setting.positions).size).toBe(10);
+      expect(setting.positions[0]).toBe('wicketkeeper');
+      expect(setting.positions).not.toContain('bowler');
+      expect(setting.description).toEqual(expect.any(String));
       setting.positions.forEach((positionKey) => {
         expect(positionKeys.has(positionKey)).toBe(true);
       });

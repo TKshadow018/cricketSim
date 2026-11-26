@@ -82,6 +82,8 @@ function CricketSimulator({
     isUserWinner,
     firstInningsView,
     secondInningsView,
+    ownPlayers,
+    opponentPlayers,
     savedGames,
     isSavingGame,
     isGlobalSaving,
@@ -779,6 +781,8 @@ function CricketSimulator({
               secondInningsTeamName={secondInningsTeamName}
               firstInningsView={firstInningsView}
               secondInningsView={secondInningsView}
+              ownPlayers={ownPlayers}
+              opponentPlayers={opponentPlayers}
               setBattingIntent={setBattingIntent}
               setBattingTactics={setBattingTactics}
               setBowlingIntent={setBowlingIntent}

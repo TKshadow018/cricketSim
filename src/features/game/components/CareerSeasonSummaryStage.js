@@ -236,6 +236,7 @@ function CareerSeasonSummaryStage({
                   <th style={{ textAlign: 'center', padding: '4px' }}>W</th>
                   <th style={{ textAlign: 'center', padding: '4px' }}>L</th>
                   <th style={{ textAlign: 'center', padding: '4px' }}>T</th>
+                  {entry.format === 'firstClass' ? <th aria-label="Draws" style={{ textAlign: 'center', padding: '4px' }}>D</th> : null}
                   <th style={{ textAlign: 'center', padding: '4px', fontWeight: 'bold' }}>Pts</th>
                 </tr>
               </thead>
@@ -251,6 +252,7 @@ function CareerSeasonSummaryStage({
                     <td style={{ textAlign: 'center', padding: '4px' }}>{row.wins}</td>
                     <td style={{ textAlign: 'center', padding: '4px' }}>{row.losses}</td>
                     <td style={{ textAlign: 'center', padding: '4px' }}>{row.ties}</td>
+                    {entry.format === 'firstClass' ? <td style={{ textAlign: 'center', padding: '4px' }}>{row.draws || 0}</td> : null}
                     <td style={{ textAlign: 'center', padding: '4px', fontWeight: 'bold' }}>{row.points}</td>
                   </tr>
                 ))}
@@ -345,7 +347,7 @@ function CareerSeasonSummaryStage({
       {userStanding && (
         <div className="sim-scoreboard-panel">
           <h4 className="sim-section-title">{careerTeam} Season Record</h4>
-          <p>{userStanding.wins}W / {userStanding.losses}L / {userStanding.ties}T — {userStanding.points} points</p>
+          <p>{userStanding.wins}W / {userStanding.losses}L / {userStanding.ties}T{userStanding.draws ? ` / ${userStanding.draws}D` : ''} — {userStanding.points} points</p>
         </div>
       )}
 

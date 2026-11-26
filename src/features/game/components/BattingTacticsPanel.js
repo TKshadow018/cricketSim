@@ -1,6 +1,8 @@
 import React from 'react';
 import PlayerNameWithType from './PlayerNameWithType';
 import BattingTargetMap from './BattingTargetMap';
+import OpponentFieldPanel from './OpponentFieldPanel';
+import { getBallEventLabel } from '../utils/ballEventLabel';
 import { battingAction } from '../../../gameData/actionType';
 import {
   BATTING_APPROACHES,
@@ -16,13 +18,6 @@ const formatConditionLabel = (value) => {
     .replace(/[_-]+/g, ' ')
     .toLowerCase();
   return words.charAt(0).toUpperCase() + words.slice(1);
-};
-
-const getBallLabel = (event) => {
-  if (event?.isWicket) return 'W';
-  if (event?.token === 'wide') return `WD +${formatNumber(event.extras || 1)}`;
-  if (event?.token === 'nb') return `NB +${formatNumber(event.extras || 1)}`;
-  return String(Number(event?.runs) || 0);
 };
 
 const findAction = (actions, key) => actions.find((action) => action.key === key);
@@ -199,11 +194,12 @@ function BattingTacticsPanel({
           </div>
           <span>{getBattingTarget(tactics?.target).label}</span>
         </div>
-        <div className="sim-batting-target-layout">
+        <div className={`sim-batting-target-layout${safeContext.opponentFieldPreset ? ' sim-batting-target-layout--field' : ''}`}>
           <BattingTargetMap
             target={tactics?.target}
             onTargetChange={(target) => updateTactics({ target })}
           />
+          <OpponentFieldPanel preset={safeContext.opponentFieldPreset} target={tactics?.target} />
         </div>
         <label className="sim-batting-retain-choice">
           <input
@@ -257,7 +253,7 @@ function BattingTacticsPanel({
 
       {lastCall ? (
         <p className="sim-batting-last-call" aria-live="polite">
-          Last call: {lastCallLabels} <span aria-hidden="true">→</span> {lastTacticalEvent.resultLabel || getBallLabel(lastTacticalEvent)}
+          Last call: {lastCallLabels} <span aria-hidden="true">→</span> {getBallEventLabel(lastTacticalEvent)}
         </p>
       ) : null}
 
@@ -276,14 +272,14 @@ function BattingTacticsPanel({
             return (
               <li key={number} className={event?.isWicket ? 'wicket' : event ? 'completed' : ''}>
                 <span>{number}</span>
-                <strong>{event ? getBallLabel(event) : number === nextBall ? 'Next' : '—'}</strong>
+                <strong>{event ? getBallEventLabel(event) : number === nextBall ? 'Next' : '—'}</strong>
               </li>
             );
           })}
         </ol>
         {extraEvents.length ? (
           <p className="sim-batting-extra-track">
-            Extras do not use a legal-ball slot: {extraEvents.map(getBallLabel).join(' · ')}
+            Extras do not use a legal-ball slot: {extraEvents.map(getBallEventLabel).join(' · ')}
           </p>
         ) : null}
       </section>

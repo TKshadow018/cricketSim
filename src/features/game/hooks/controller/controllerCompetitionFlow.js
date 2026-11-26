@@ -4,13 +4,21 @@ import { buildInitialInnings, buildRandomMatchCondition } from '../../gameSlice'
 import { MODE_QUICK, MODE_SERIES, MODE_TOURNAMENT, MODE_CAREER } from '../../utils/controllerCommonUtils';
 import { mergePlayerStatsForCurrentMatch } from '../../utils/controllerCareerUtils';
 import { ensureTournamentNextRound, resolveWinnerFromScores } from '../../utils/controllerTournamentUtils';
+import { startSuperOver } from '../../utils/superOver';
+import { getFirstInningsLeader, getTestWinner } from '../../utils/testMatch';
+import { beginMatchRandom } from '../../utils/matchRandom';
 
 export const createCompetitionFlowHandlers = ({
   dispatch,
+  game,
   gameMode,
   stage,
   tournamentCurrentMatchId,
   tournamentMatches,
+  userTeamName,
+  setTournamentTiebreakAction,
+  setTestMatchAction,
+  setMatchRandomAction,
   tournamentResultCommitSignatureRef,
   firstInnings,
   secondInnings,
@@ -64,17 +72,28 @@ export const createCompetitionFlowHandlers = ({
   };
 
   const resolveTournamentWinnerTeam = () => {
+    const testResult = game?.testMatch?.result;
+    if (testResult?.type === 'draw') return getFirstInningsLeader(game.testMatch, { ownTeam, opponentTeam });
+    if (testResult?.type === 'win') return getTestWinner(game.testMatch, { ownTeam, opponentTeam });
+    if (testResult?.type === 'tie' || (!testResult && firstInnings.score === secondInnings.score)) {
+      return game?.tournamentTiebreak?.winnerTeam || '';
+    }
     return resolveWinnerFromScores({
       firstInnings,
       secondInnings,
       firstInningsTeamName,
       secondInningsTeamName,
-      tieAs: firstInningsTeamName,
     });
   };
 
   const commitTournamentMatchIfNeeded = () => {
     if (gameMode !== MODE_TOURNAMENT || stage !== matchStatusEnum.MatchEnd || !tournamentCurrentMatchId) {
+      return { mergedMatches: tournamentMatches || [], winnerTeam: '' };
+    }
+    const isTied = game?.testMatch?.result
+      ? game.testMatch.result.type === 'tie'
+      : firstInnings.score === secondInnings.score;
+    if (isTied && game?.tournamentTiebreak?.phase !== 'resolved') {
       return { mergedMatches: tournamentMatches || [], winnerTeam: '' };
     }
 
@@ -100,11 +119,19 @@ export const createCompetitionFlowHandlers = ({
         ? {
             ...match,
             winnerTeam,
-            summary: resultSummary,
+            summary: game?.testMatch?.result?.type === 'draw'
+              ? `${resultSummary} ${winnerTeam} advances on the first-innings lead.`
+              : game?.tournamentTiebreak?.winnerTeam
+              ? `${resultSummary} ${winnerTeam} won Super Over ${game.tournamentTiebreak.round}.`
+              : resultSummary,
             firstInningsScore: firstInnings.score,
             firstInningsWickets: firstInnings.wickets,
             secondInningsScore: secondInnings.score,
             secondInningsWickets: secondInnings.wickets,
+            ...(game?.testMatch?.result?.type === 'draw' ? { matchResult: 'Draw' } : {}),
+            ...(game?.tournamentTiebreak?.winnerTeam
+              ? { superOvers: game.tournamentTiebreak.rounds || [], matchResult: 'Tie' }
+              : {}),
             isComplete: true,
           }
         : match
@@ -118,7 +145,9 @@ export const createCompetitionFlowHandlers = ({
 
   const buildSeriesMatchPayload = () => {
     let winnerTeam = 'Tie';
-    if (secondInnings.score > firstInnings.score) {
+    if (game?.testMatch?.result) {
+      winnerTeam = getTestWinner(game.testMatch, { ownTeam, opponentTeam });
+    } else if (secondInnings.score > firstInnings.score) {
       winnerTeam = secondInningsTeamName;
     } else if (secondInnings.score < firstInnings.score) {
       winnerTeam = firstInningsTeamName;
@@ -180,6 +209,8 @@ export const createCompetitionFlowHandlers = ({
   };
 
   const prepareNextSeriesMatch = () => {
+    if (game?.testMatch) dispatch(setTestMatchAction(null));
+    if (setMatchRandomAction) dispatch(setMatchRandomAction(null));
     dispatch(setTossWinnerAction(''));
     dispatch(setTossDecisionAction(''));
     dispatch(setTossCallAction(''));
@@ -207,7 +238,41 @@ export const createCompetitionFlowHandlers = ({
     }
 
     if (gameMode === MODE_TOURNAMENT) {
+      if (game?.testMatch?.result?.type === 'draw' && !getFirstInningsLeader(game.testMatch, { ownTeam, opponentTeam })) {
+        const fixture = (tournamentMatches || []).find((match) => match.id === tournamentCurrentMatchId);
+        if (!fixture) throw new Error('Cannot replay a Test match without its tournament fixture.');
+        const replay = {
+          ...fixture,
+          drawnReplays: [...(fixture.drawnReplays || []), { summary: resultSummary, innings: game.testMatch.innings }],
+        };
+        dispatch(setTournamentMatchesAction((tournamentMatches || []).map((match) => match.id === fixture.id ? replay : match)));
+        dispatch(setTestMatchAction(null));
+        prepareTournamentMatch(replay);
+        dispatch(setStageAction(matchStatusEnum.TossTime));
+        return;
+      }
+      const isTied = game?.testMatch?.result
+        ? game.testMatch.result.type === 'tie'
+        : firstInnings.score === secondInnings.score;
+      if (isTied && game?.tournamentTiebreak?.phase !== 'resolved') {
+        if (!game?.tournamentTiebreak) {
+          const generator = game && setMatchRandomAction ? beginMatchRandom(game.matchRandom) : null;
+          dispatch(setTournamentTiebreakAction(startSuperOver({
+            originalFirstSide: firstBattingSide,
+            ownPlayers,
+            opponentPlayers,
+            ownTeam,
+            opponentTeam,
+            userTeamName,
+            randomSeed: generator ? Math.floor(generator.next() * 4294967296) : undefined,
+          })));
+          if (generator) dispatch(setMatchRandomAction(generator.snapshot()));
+        }
+        return;
+      }
       const { mergedMatches } = commitTournamentMatchIfNeeded();
+      if (game?.tournamentTiebreak) dispatch(setTournamentTiebreakAction(null));
+      if (game?.testMatch) dispatch(setTestMatchAction(null));
       const pending = mergedMatches.find((match) => !match.isComplete && match.teamA && match.teamB);
 
       if (!pending) {

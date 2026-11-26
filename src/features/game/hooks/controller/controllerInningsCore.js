@@ -86,10 +86,13 @@ export const openInnings = ({
   firstInningsTeamName,
   setStageAction,
   matchStatusEnum,
+  random = Math.random,
 }) => {
   const resolvedFirstSide = firstSide || firstBattingSide;
   const firstContext = getContext(true, resolvedFirstSide);
   const secondContext = getContext(false, resolvedFirstSide);
+  const firstSeed = Math.floor(random() * 4294967296);
+  const secondSeed = Math.floor(random() * 4294967296);
 
   setFirstInnings(
     buildPreparedInnings({
@@ -98,6 +101,7 @@ export const openInnings = ({
       isUserBatting: firstContext.isUserBatting,
       isUserBowling: firstContext.isUserBowling,
       overs: matchType.over,
+      randomSeed: firstSeed,
     })
   );
   setSecondInnings(
@@ -107,6 +111,7 @@ export const openInnings = ({
       isUserBatting: secondContext.isUserBatting,
       isUserBowling: secondContext.isUserBowling,
       overs: matchType.over,
+      randomSeed: secondSeed,
     })
   );
 
@@ -183,7 +188,12 @@ export const handleSelectNextBatter = ({
       return previous;
     }
 
-    const occupied = [previous.nonStrikerIndex];
+    const strikerVacant = previous.strikerIndex === null || previous.outBatterIndices.includes(previous.strikerIndex);
+    const nonStrikerVacant = previous.nonStrikerIndex === null || previous.outBatterIndices.includes(previous.nonStrikerIndex);
+    const occupied = [
+      strikerVacant ? null : previous.strikerIndex,
+      nonStrikerVacant ? null : previous.nonStrikerIndex,
+    ];
     const nextBatterIndex = getNextBatterIndex(battingSide, previous.outBatterIndices, [
       ...occupied,
       batterIndex,
@@ -194,7 +204,8 @@ export const handleSelectNextBatter = ({
     return {
       ...previous,
       waitingForNextBatter: false,
-      strikerIndex: batterIndex,
+      strikerIndex: strikerVacant ? batterIndex : previous.strikerIndex,
+      nonStrikerIndex: nonStrikerVacant ? batterIndex : previous.nonStrikerIndex,
       nextBatterIndex,
       battingOrderIndices: previous.battingOrderIndices.includes(batterIndex)
         ? previous.battingOrderIndices
@@ -212,7 +223,7 @@ export const handleSelectBowler = ({
   updateState,
 }) => {
   const { bowlingSide } = getContext(isFirstInnings);
-  const maxOversPerBowler = getMaxOversPerBowler(matchType.over);
+  const maxOversPerBowler = getMaxOversPerBowler(matchType.over, matchType);
 
   updateState(isFirstInnings, (previous) => {
     if (!previous.waitingForNextBowler) {
